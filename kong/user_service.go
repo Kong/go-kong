@@ -104,7 +104,8 @@ func (s *UserService) Delete(ctx context.Context,
 	return err
 }
 
-// List fetches a list of all Users in Kong.
+// List fetches a list of Users in Kong.
+// opt can be used to control pagination.
 func (s *UserService) List(ctx context.Context,
 	opt *ListOpt) ([]*User, *ListOpt, error) {
 
