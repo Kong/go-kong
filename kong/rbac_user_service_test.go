@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUserService(T *testing.T) {
+func TestRBACUserService(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", true)
 	assert := assert.New(T)
 
@@ -16,7 +16,7 @@ func TestUserService(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	user := &User{
+	user := &RBACUser{
 		Name:      String("newUser"),
 		Enabled:   Bool(true),
 		Comment:   String("testing"),
@@ -41,7 +41,7 @@ func TestUserService(T *testing.T) {
 	assert.Nil(err)
 }
 
-func TestUserServiceWorkspace(T *testing.T) {
+func TestRBACUserServiceWorkspace(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", true)
 	assert := assert.New(T)
 
@@ -64,7 +64,7 @@ func TestUserServiceWorkspace(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(workspaceClient)
 
-	user := &User{
+	user := &RBACUser{
 		Name:      String("newUser"),
 		Enabled:   Bool(true),
 		Comment:   String("testing"),

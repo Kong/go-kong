@@ -7,12 +7,12 @@ import (
 	"fmt"
 )
 
-// UserService handles Users in Kong.
-type UserService service
+// RBACUserService handles Users in Kong.
+type RBACUserService service
 
 // Create creates a User in Kong.
-func (s *UserService) Create(ctx context.Context,
-	user *User) (*User, error) {
+func (s *RBACUserService) Create(ctx context.Context,
+	user *RBACUser) (*RBACUser, error) {
 
 	if user == nil {
 		return nil, errors.New("cannot create a nil user")
@@ -30,7 +30,7 @@ func (s *UserService) Create(ctx context.Context,
 		return nil, err
 	}
 
-	var createdUser User
+	var createdUser RBACUser
 	_, err = s.client.Do(ctx, req, &createdUser)
 	if err != nil {
 		return nil, err
@@ -39,8 +39,8 @@ func (s *UserService) Create(ctx context.Context,
 }
 
 // Get fetches a User in Kong.
-func (s *UserService) Get(ctx context.Context,
-	nameOrID *string) (*User, error) {
+func (s *RBACUserService) Get(ctx context.Context,
+	nameOrID *string) (*RBACUser, error) {
 
 	if isEmptyString(nameOrID) {
 		return nil, errors.New("nameOrID cannot be nil for Get operation")
@@ -52,17 +52,17 @@ func (s *UserService) Get(ctx context.Context,
 		return nil, err
 	}
 
-	var User User
-	_, err = s.client.Do(ctx, req, &User)
+	var RBACUser RBACUser
+	_, err = s.client.Do(ctx, req, &RBACUser)
 	if err != nil {
 		return nil, err
 	}
-	return &User, nil
+	return &RBACUser, nil
 }
 
 // Update updates a User in Kong.
-func (s *UserService) Update(ctx context.Context,
-	user *User) (*User, error) {
+func (s *RBACUserService) Update(ctx context.Context,
+	user *RBACUser) (*RBACUser, error) {
 
 	if user == nil {
 		return nil, errors.New("cannot update a nil User")
@@ -78,7 +78,7 @@ func (s *UserService) Update(ctx context.Context,
 		return nil, err
 	}
 
-	var updatedUser User
+	var updatedUser RBACUser
 	_, err = s.client.Do(ctx, req, &updatedUser)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (s *UserService) Update(ctx context.Context,
 }
 
 // Delete deletes a User in Kong
-func (s *UserService) Delete(ctx context.Context,
+func (s *RBACUserService) Delete(ctx context.Context,
 	userOrID *string) error {
 
 	if isEmptyString(userOrID) {
@@ -106,20 +106,20 @@ func (s *UserService) Delete(ctx context.Context,
 
 // List fetches a list of Users in Kong.
 // opt can be used to control pagination.
-func (s *UserService) List(ctx context.Context,
-	opt *ListOpt) ([]*User, *ListOpt, error) {
+func (s *RBACUserService) List(ctx context.Context,
+	opt *ListOpt) ([]*RBACUser, *ListOpt, error) {
 
 	data, next, err := s.client.list(ctx, "/rbac/users/", opt)
 	if err != nil {
 		return nil, nil, err
 	}
-	var users []*User
+	var users []*RBACUser
 	for _, object := range data {
 		b, err := object.MarshalJSON()
 		if err != nil {
 			return nil, nil, err
 		}
-		var user User
+		var user RBACUser
 		err = json.Unmarshal(b, &user)
 		if err != nil {
 			return nil, nil, err
@@ -131,9 +131,9 @@ func (s *UserService) List(ctx context.Context,
 }
 
 // ListAll fetches all users in Kong.
-func (s *UserService) ListAll(ctx context.Context) ([]*User, error) {
+func (s *RBACUserService) ListAll(ctx context.Context) ([]*RBACUser, error) {
 
-	var users, data []*User
+	var users, data []*RBACUser
 	var err error
 	opt := &ListOpt{Size: pageSize}
 
