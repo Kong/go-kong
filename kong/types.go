@@ -238,7 +238,7 @@ type Admin struct {
 	Token            *string `json:"token,omitempty" yaml:"token,omitempty"`
 }
 
-// User represents an RBAC user in Kong Enterprise
+// RBACUser represents an RBAC user in Kong Enterprise
 type RBACUser struct {
 	CreatedAt      *int    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Comment        *string `json:"comment,omitempty" yaml:"comment,omitempty"`

@@ -10,7 +10,7 @@ import (
 // RBACUserService handles Users in Kong.
 type RBACUserService service
 
-// Create creates a User in Kong.
+// Create creates an RBAC User in Kong.
 func (s *RBACUserService) Create(ctx context.Context,
 	user *RBACUser) (*RBACUser, error) {
 
