@@ -23,21 +23,21 @@ func TestRBACUserService(T *testing.T) {
 		UserToken: String("foo"),
 	}
 
-	createdUser, err := client.Users.Create(defaultCtx, user)
+	createdUser, err := client.RBACUsers.Create(defaultCtx, user)
 	assert.Nil(err)
 	assert.NotNil(createdUser)
 
-	user, err = client.Users.Get(defaultCtx, createdUser.ID)
+	user, err = client.RBACUsers.Get(defaultCtx, createdUser.ID)
 	assert.Nil(err)
 	assert.NotNil(user)
 
 	user.Comment = String("new comment")
-	user, err = client.Users.Update(defaultCtx, user)
+	user, err = client.RBACUsers.Update(defaultCtx, user)
 	assert.Nil(err)
 	assert.NotNil(user)
 	assert.Equal("new comment", *user.Comment)
 
-	err = client.Users.Delete(defaultCtx, createdUser.ID)
+	err = client.RBACUsers.Delete(defaultCtx, createdUser.ID)
 	assert.Nil(err)
 }
 
@@ -71,21 +71,21 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 		UserToken: String("foo"),
 	}
 
-	createdUser, err := workspaceClient.Users.Create(defaultCtx, user)
+	createdUser, err := workspaceClient.RBACUsers.Create(defaultCtx, user)
 	assert.Nil(err)
 	assert.NotNil(createdUser)
 
-	user, err = workspaceClient.Users.Get(defaultCtx, createdUser.ID)
+	user, err = workspaceClient.RBACUsers.Get(defaultCtx, createdUser.ID)
 	assert.Nil(err)
 	assert.NotNil(user)
 
 	user.Comment = String("new comment")
-	user, err = workspaceClient.Users.Update(defaultCtx, user)
+	user, err = workspaceClient.RBACUsers.Update(defaultCtx, user)
 	assert.Nil(err)
 	assert.NotNil(user)
 	assert.Equal("new comment", *user.Comment)
 
-	err = workspaceClient.Users.Delete(defaultCtx, createdUser.ID)
+	err = workspaceClient.RBACUsers.Delete(defaultCtx, createdUser.ID)
 	assert.Nil(err)
 
 	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.Name)
