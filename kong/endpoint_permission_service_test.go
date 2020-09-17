@@ -48,7 +48,8 @@ func TestEndpointPermissionService(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(createdEndpointPermission)
 
-	ep, err = client.EndpointPermissions.Get(defaultCtx, createdRole.ID, createdWorkspace.ID, createdEndpointPermission.Endpoint)
+	ep, err = client.EndpointPermissions.Get(
+		defaultCtx, createdRole.ID, createdWorkspace.ID, createdEndpointPermission.Endpoint)
 	assert.Nil(err)
 	assert.NotNil(ep)
 
@@ -58,11 +59,12 @@ func TestEndpointPermissionService(T *testing.T) {
 	assert.NotNil(ep)
 	assert.Equal("new comment", *ep.Comment)
 
-	err = client.EndpointPermissions.Delete(defaultCtx, createdRole.ID, createdWorkspace.ID, createdEndpointPermission.Endpoint)
+	err = client.EndpointPermissions.Delete(
+		defaultCtx, createdRole.ID, createdWorkspace.ID, createdEndpointPermission.Endpoint)
 	assert.Nil(err)
-	err = client.Roles.Delete(nil, createdRole.ID)
+	err = client.Roles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
-	err = client.Workspaces.Delete(nil, createdWorkspace.ID)
+	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
 
 }

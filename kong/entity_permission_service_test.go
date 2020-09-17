@@ -68,9 +68,9 @@ func TestEntityPermissionService(T *testing.T) {
 
 	err = workspaceClient.EntityPermissions.Delete(defaultCtx, createdRole.ID, createdEntityPermission.EntityID)
 	assert.Nil(err)
-	err = workspaceClient.Roles.Delete(nil, createdRole.ID)
+	err = workspaceClient.Roles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
-	err = client.Workspaces.Delete(nil, createdWorkspace.ID)
+	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
 
 }

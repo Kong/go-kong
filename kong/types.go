@@ -276,7 +276,7 @@ type PermissionRoleID struct {
 	ID *string `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
-// EndpointPermission represents an RBAC Endpoint Permisson in Kong Enterprise
+// EndpointPermission represents an RBAC Endpoint Permission in Kong Enterprise
 type EndpointPermission struct {
 	CreatedAt *int              `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Workspace *string           `json:"workspace,omitempty" yaml:"workspace,omitempty"`
