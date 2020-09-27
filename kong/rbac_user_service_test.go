@@ -113,7 +113,7 @@ func TestUserRoles(T *testing.T) {
 	assert.Nil(err)
 
 	ep := &RBACEndpointPermission{
-		Role: &RBACPermissionRoleID{
+		Role: &RBACRole{
 			ID: createdRoleA.ID,
 		},
 		Endpoint: String("/rbac"),

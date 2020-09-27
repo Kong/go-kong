@@ -42,7 +42,7 @@ func TestRBACEntityPermissionservice(T *testing.T) {
 
 	// Add Entity Permission to Role
 	ep := &RBACEntityPermission{
-		Role: &RBACPermissionRoleID{
+		Role: &RBACRole{
 			ID: createdRole.ID,
 		},
 		EntityID: String("*"),
@@ -101,7 +101,7 @@ func TestRBACEntityPermissionserviceList(T *testing.T) {
 	assert.NotNil(createdRole)
 
 	ep1 := &RBACEntityPermission{
-		Role: &RBACPermissionRoleID{
+		Role: &RBACRole{
 			ID: createdRole.ID,
 		},
 		EntityID: String("*"),
@@ -111,7 +111,7 @@ func TestRBACEntityPermissionserviceList(T *testing.T) {
 		},
 	}
 	ep2 := &RBACEntityPermission{
-		Role: &RBACPermissionRoleID{
+		Role: &RBACRole{
 			ID: createdRole.ID,
 		},
 		EntityID: createdWorkspace.ID,

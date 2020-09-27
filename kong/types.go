@@ -271,32 +271,27 @@ type RBACRole struct {
 	IsDefault *bool   `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 }
 
-// RBACPermissionRoleID represents a Role identifier within a permission struct
-type RBACPermissionRoleID struct {
-	ID *string `json:"id,omitempty" yaml:"id,omitempty"`
-}
-
 // RBACEndpointPermission represents an RBAC Endpoint Permission in Kong Enterprise
 type RBACEndpointPermission struct {
-	CreatedAt *int                  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	Workspace *string               `json:"workspace,omitempty" yaml:"workspace,omitempty"`
-	Endpoint  *string               `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
-	Actions   []*string             `json:"actions,omitempty" yaml:"actions,omitempty"`
-	Negative  *bool                 `json:"negative,omitempty" yaml:"negative,omitempty"`
-	Role      *RBACPermissionRoleID `json:"role,omitempty" yaml:"role,omitempty"`
-	Comment   *string               `json:"comment,omitempty" yaml:"comment,omitempty"`
+	CreatedAt *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Workspace *string   `json:"workspace,omitempty" yaml:"workspace,omitempty"`
+	Endpoint  *string   `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+	Actions   []*string `json:"actions,omitempty" yaml:"actions,omitempty"`
+	Negative  *bool     `json:"negative,omitempty" yaml:"negative,omitempty"`
+	Role      *RBACRole `json:"role,omitempty" yaml:"role,omitempty"`
+	Comment   *string   `json:"comment,omitempty" yaml:"comment,omitempty"`
 }
 
 // MarshalJSON marshals an endpoint permission into a suitable form for the Kong admin API
 func (e *RBACEndpointPermission) MarshalJSON() ([]byte, error) {
 	type ep struct {
-		CreatedAt *int                  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-		Workspace *string               `json:"workspace,omitempty" yaml:"workspace,omitempty"`
-		Endpoint  *string               `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
-		Actions   *string               `json:"actions,omitempty" yaml:"actions,omitempty"`
-		Negative  *bool                 `json:"negative,omitempty" yaml:"negative,omitempty"`
-		Role      *RBACPermissionRoleID `json:"role,omitempty" yaml:"role,omitempty"`
-		Comment   *string               `json:"comment,omitempty" yaml:"comment,omitempty"`
+		CreatedAt *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+		Workspace *string   `json:"workspace,omitempty" yaml:"workspace,omitempty"`
+		Endpoint  *string   `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+		Actions   *string   `json:"actions,omitempty" yaml:"actions,omitempty"`
+		Negative  *bool     `json:"negative,omitempty" yaml:"negative,omitempty"`
+		Role      *RBACRole `json:"role,omitempty" yaml:"role,omitempty"`
+		Comment   *string   `json:"comment,omitempty" yaml:"comment,omitempty"`
 	}
 	var actions []string
 	for _, action := range e.Actions {
@@ -313,25 +308,25 @@ func (e *RBACEndpointPermission) MarshalJSON() ([]byte, error) {
 
 // RBACEntityPermission represents an RBAC Entity Permission in Kong Enterprise
 type RBACEntityPermission struct {
-	CreatedAt  *int                  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	EntityID   *string               `json:"entity_id,omitempty" yaml:"entity_id,omitempty"`
-	EntityType *string               `json:"entity_type,omitempty" yaml:"entity_type,omitempty"`
-	Actions    []*string             `json:"actions,omitempty" yaml:"actions,omitempty"`
-	Negative   *bool                 `json:"negative,omitempty" yaml:"negative,omitempty"`
-	Role       *RBACPermissionRoleID `json:"role,omitempty" yaml:"role,omitempty"`
-	Comment    *string               `json:"comment,omitempty" yaml:"comment,omitempty"`
+	CreatedAt  *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	EntityID   *string   `json:"entity_id,omitempty" yaml:"entity_id,omitempty"`
+	EntityType *string   `json:"entity_type,omitempty" yaml:"entity_type,omitempty"`
+	Actions    []*string `json:"actions,omitempty" yaml:"actions,omitempty"`
+	Negative   *bool     `json:"negative,omitempty" yaml:"negative,omitempty"`
+	Role       *RBACRole `json:"role,omitempty" yaml:"role,omitempty"`
+	Comment    *string   `json:"comment,omitempty" yaml:"comment,omitempty"`
 }
 
 // MarshalJSON marshals an endpoint permission into a suitable form for the Kong admin API
 func (e *RBACEntityPermission) MarshalJSON() ([]byte, error) {
 	type ep struct {
-		CreatedAt  *int                  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-		EntityID   *string               `json:"entity_id,omitempty" yaml:"entity_id,omitempty"`
-		EntityType *string               `json:"entity_type,omitempty" yaml:"entity_type,omitempty"`
-		Actions    *string               `json:"actions,omitempty" yaml:"actions,omitempty"`
-		Negative   *bool                 `json:"negative,omitempty" yaml:"negative,omitempty"`
-		Role       *RBACPermissionRoleID `json:"role,omitempty" yaml:"role,omitempty"`
-		Comment    *string               `json:"comment,omitempty" yaml:"comment,omitempty"`
+		CreatedAt  *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+		EntityID   *string   `json:"entity_id,omitempty" yaml:"entity_id,omitempty"`
+		EntityType *string   `json:"entity_type,omitempty" yaml:"entity_type,omitempty"`
+		Actions    *string   `json:"actions,omitempty" yaml:"actions,omitempty"`
+		Negative   *bool     `json:"negative,omitempty" yaml:"negative,omitempty"`
+		Role       *RBACRole `json:"role,omitempty" yaml:"role,omitempty"`
+		Comment    *string   `json:"comment,omitempty" yaml:"comment,omitempty"`
 	}
 	var actions []string
 	for _, action := range e.Actions {

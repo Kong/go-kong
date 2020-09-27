@@ -34,7 +34,7 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 
 	// Add Endpoint Permission to Role
 	ep := &RBACEndpointPermission{
-		Role: &RBACPermissionRoleID{
+		Role: &RBACRole{
 			ID: createdRole.ID,
 		},
 		Endpoint: String("/rbac"),
