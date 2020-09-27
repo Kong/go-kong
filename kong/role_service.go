@@ -12,7 +12,7 @@ type RoleService service
 
 // Create creates a Role in Kong.
 func (s *RoleService) Create(ctx context.Context,
-	role *Role) (*Role, error) {
+	role *RBACRole) (*RBACRole, error) {
 
 	if role == nil {
 		return nil, errors.New("cannot create a nil role")
@@ -30,7 +30,7 @@ func (s *RoleService) Create(ctx context.Context,
 		return nil, err
 	}
 
-	var createdRole Role
+	var createdRole RBACRole
 	_, err = s.client.Do(ctx, req, &createdRole)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (s *RoleService) Create(ctx context.Context,
 
 // Get fetches a Role in Kong.
 func (s *RoleService) Get(ctx context.Context,
-	nameOrID *string) (*Role, error) {
+	nameOrID *string) (*RBACRole, error) {
 
 	if isEmptyString(nameOrID) {
 		return nil, errors.New("nameOrID cannot be nil for Get operation")
@@ -52,7 +52,7 @@ func (s *RoleService) Get(ctx context.Context,
 		return nil, err
 	}
 
-	var Role Role
+	var Role RBACRole
 	_, err = s.client.Do(ctx, req, &Role)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (s *RoleService) Get(ctx context.Context,
 
 // Update updates a Role in Kong.
 func (s *RoleService) Update(ctx context.Context,
-	role *Role) (*Role, error) {
+	role *RBACRole) (*RBACRole, error) {
 
 	if role == nil {
 		return nil, errors.New("cannot update a nil Role")
@@ -78,7 +78,7 @@ func (s *RoleService) Update(ctx context.Context,
 		return nil, err
 	}
 
-	var updatedRole Role
+	var updatedRole RBACRole
 	_, err = s.client.Do(ctx, req, &updatedRole)
 	if err != nil {
 		return nil, err
@@ -105,19 +105,19 @@ func (s *RoleService) Delete(ctx context.Context,
 }
 
 // List fetches a list of all Roles in Kong.
-func (s *RoleService) List(ctx context.Context) ([]*Role, error) {
+func (s *RoleService) List(ctx context.Context) ([]*RBACRole, error) {
 
 	data, _, err := s.client.list(ctx, "/rbac/roles/", nil)
 	if err != nil {
 		return nil, err
 	}
-	var roles []*Role
+	var roles []*RBACRole
 	for _, object := range data {
 		b, err := object.MarshalJSON()
 		if err != nil {
 			return nil, err
 		}
-		var role Role
+		var role RBACRole
 		err = json.Unmarshal(b, &role)
 		if err != nil {
 			return nil, err

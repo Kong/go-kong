@@ -15,40 +15,40 @@ func TestRoleService(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	role := &Role{
+	role := &RBACRole{
 		Name: String("roleA"),
 	}
 
-	createdRole, err := client.Roles.Create(defaultCtx, role)
+	createdRole, err := client.RBACRoles.Create(defaultCtx, role)
 	assert.Nil(err)
 	assert.NotNil(createdRole)
 
-	role, err = client.Roles.Get(defaultCtx, createdRole.ID)
+	role, err = client.RBACRoles.Get(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 	assert.NotNil(role)
 
 	role.Comment = String("new comment")
-	role, err = client.Roles.Update(defaultCtx, role)
+	role, err = client.RBACRoles.Update(defaultCtx, role)
 	assert.Nil(err)
 	assert.NotNil(role)
 	assert.Equal("roleA", *role.Name)
 
-	err = client.Roles.Delete(defaultCtx, createdRole.ID)
+	err = client.RBACRoles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 
 	// ID can be specified
 	id := uuid.NewV4().String()
-	role = &Role{
+	role = &RBACRole{
 		Name: String("teamB"),
 		ID:   String(id),
 	}
 
-	createdRole, err = client.Roles.Create(defaultCtx, role)
+	createdRole, err = client.RBACRoles.Create(defaultCtx, role)
 	assert.Nil(err)
 	assert.NotNil(createdRole)
 	assert.Equal(id, *createdRole.ID)
 
-	err = client.Roles.Delete(defaultCtx, createdRole.ID)
+	err = client.RBACRoles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 }
 func TestRoleServiceList(T *testing.T) {
@@ -59,26 +59,26 @@ func TestRoleServiceList(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	roleA := &Role{
+	roleA := &RBACRole{
 		Name: String("roleA"),
 	}
-	roleB := &Role{
+	roleB := &RBACRole{
 		Name: String("roleB"),
 	}
 
-	createdRoleA, err := client.Roles.Create(defaultCtx, roleA)
+	createdRoleA, err := client.RBACRoles.Create(defaultCtx, roleA)
 	assert.Nil(err)
-	createdRoleB, err := client.Roles.Create(defaultCtx, roleB)
+	createdRoleB, err := client.RBACRoles.Create(defaultCtx, roleB)
 	assert.Nil(err)
 
-	roles, err := client.Roles.List(defaultCtx)
+	roles, err := client.RBACRoles.List(defaultCtx)
 	assert.Nil(err)
 	assert.NotNil(roles)
 	// Counts default roles (super-admin, admin, read-only)
 	assert.Equal(5, len(roles))
 
-	err = client.Roles.Delete(defaultCtx, createdRoleA.ID)
+	err = client.RBACRoles.Delete(defaultCtx, createdRoleA.ID)
 	assert.Nil(err)
-	err = client.Roles.Delete(defaultCtx, createdRoleB.ID)
+	err = client.RBACRoles.Delete(defaultCtx, createdRoleB.ID)
 	assert.Nil(err)
 }
