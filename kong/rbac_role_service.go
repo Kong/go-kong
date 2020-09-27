@@ -7,11 +7,11 @@ import (
 	"fmt"
 )
 
-// RoleService handles Roles in Kong.
-type RoleService service
+// RBACRoleService handles Roles in Kong.
+type RBACRoleService service
 
 // Create creates a Role in Kong.
-func (s *RoleService) Create(ctx context.Context,
+func (s *RBACRoleService) Create(ctx context.Context,
 	role *RBACRole) (*RBACRole, error) {
 
 	if role == nil {
@@ -39,7 +39,7 @@ func (s *RoleService) Create(ctx context.Context,
 }
 
 // Get fetches a Role in Kong.
-func (s *RoleService) Get(ctx context.Context,
+func (s *RBACRoleService) Get(ctx context.Context,
 	nameOrID *string) (*RBACRole, error) {
 
 	if isEmptyString(nameOrID) {
@@ -61,7 +61,7 @@ func (s *RoleService) Get(ctx context.Context,
 }
 
 // Update updates a Role in Kong.
-func (s *RoleService) Update(ctx context.Context,
+func (s *RBACRoleService) Update(ctx context.Context,
 	role *RBACRole) (*RBACRole, error) {
 
 	if role == nil {
@@ -87,7 +87,7 @@ func (s *RoleService) Update(ctx context.Context,
 }
 
 // Delete deletes a Role in Kong
-func (s *RoleService) Delete(ctx context.Context,
+func (s *RBACRoleService) Delete(ctx context.Context,
 	RoleOrID *string) error {
 
 	if isEmptyString(RoleOrID) {
@@ -105,7 +105,7 @@ func (s *RoleService) Delete(ctx context.Context,
 }
 
 // List fetches a list of all Roles in Kong.
-func (s *RoleService) List(ctx context.Context) ([]*RBACRole, error) {
+func (s *RBACRoleService) List(ctx context.Context) ([]*RBACRole, error) {
 
 	data, _, err := s.client.list(ctx, "/rbac/roles/", nil)
 	if err != nil {

@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRoleService(T *testing.T) {
+func TestRBACRoleService(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", true)
 	assert := assert.New(T)
 
@@ -51,7 +51,7 @@ func TestRoleService(T *testing.T) {
 	err = client.RBACRoles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 }
-func TestRoleServiceList(T *testing.T) {
+func TestRBACRoleServiceList(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", true)
 	assert := assert.New(T)
 

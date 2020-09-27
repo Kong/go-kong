@@ -151,7 +151,7 @@ func (s *RBACUserService) ListAll(ctx context.Context) ([]*RBACUser, error) {
 
 // AddRoles adds a comma separated list of roles to a User.
 func (s *RBACUserService) AddRoles(ctx context.Context,
-	nameOrID *string, roles []*Role) ([]*Role, error) {
+	nameOrID *string, roles []*RBACRole) ([]*RBACRole, error) {
 
 	var updateRoles struct {
 		NameOrID *string `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
@@ -172,8 +172,8 @@ func (s *RBACUserService) AddRoles(ctx context.Context,
 		return nil, err
 	}
 	var listRoles struct {
-		Roles []*Role   `json:"roles,omitempty" yaml:"roles,omitempty"`
-		User  *RBACUser `json:"user,omitempty" yaml:"user,omitempty"`
+		Roles []*RBACRole `json:"roles,omitempty" yaml:"roles,omitempty"`
+		User  *RBACUser   `json:"user,omitempty" yaml:"user,omitempty"`
 	}
 	_, err = s.client.Do(ctx, req, &listRoles)
 	if err != nil {
@@ -184,7 +184,7 @@ func (s *RBACUserService) AddRoles(ctx context.Context,
 
 // DeleteRoles deletes roles associated with a User
 func (s *RBACUserService) DeleteRoles(ctx context.Context,
-	nameOrID *string, roles []*Role) error {
+	nameOrID *string, roles []*RBACRole) error {
 
 	var updateRoles struct {
 		NameOrID *string `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
@@ -215,7 +215,7 @@ func (s *RBACUserService) DeleteRoles(ctx context.Context,
 
 // ListRoles returns a slice of Kong RBAC roles associated with a User.
 func (s *RBACUserService) ListRoles(ctx context.Context,
-	nameOrID *string) ([]*Role, error) {
+	nameOrID *string) ([]*RBACRole, error) {
 
 	endpoint := fmt.Sprintf("/rbac/users/%v/roles", *nameOrID)
 	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
@@ -224,7 +224,7 @@ func (s *RBACUserService) ListRoles(ctx context.Context,
 	}
 
 	var listRoles struct {
-		Roles []*Role `json:"roles,omitempty" yaml:"roles,omitempty"`
+		Roles []*RBACRole `json:"roles,omitempty" yaml:"roles,omitempty"`
 	}
 	_, err = s.client.Do(ctx, req, &listRoles)
 	if err != nil {

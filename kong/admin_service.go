@@ -207,7 +207,7 @@ func (s *AdminService) ListWorkspaces(ctx context.Context,
 
 // ListRoles returns a slice of Kong RBAC roles associated with an Admin.
 func (s *AdminService) ListRoles(ctx context.Context,
-	emailOrID *string, opt *ListOpt) ([]*Role, error) {
+	emailOrID *string, opt *ListOpt) ([]*RBACRole, error) {
 
 	endpoint := fmt.Sprintf("/admins/%v/roles", *emailOrID)
 	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
@@ -216,7 +216,7 @@ func (s *AdminService) ListRoles(ctx context.Context,
 	}
 
 	var listRoles struct {
-		Roles []*Role `json:"roles,omitempty" yaml:"roles,omitempty"`
+		Roles []*RBACRole `json:"roles,omitempty" yaml:"roles,omitempty"`
 	}
 	_, err = s.client.Do(ctx, req, &listRoles)
 	if err != nil {
@@ -228,7 +228,7 @@ func (s *AdminService) ListRoles(ctx context.Context,
 
 // UpdateRoles creates or updates roles associated with an Admin
 func (s *AdminService) UpdateRoles(ctx context.Context,
-	emailOrID *string, roles []*Role) ([]*Role, error) {
+	emailOrID *string, roles []*RBACRole) ([]*RBACRole, error) {
 
 	var updateRoles struct {
 		NameOrID *string `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
@@ -249,7 +249,7 @@ func (s *AdminService) UpdateRoles(ctx context.Context,
 		return nil, err
 	}
 	var listRoles struct {
-		Roles []*Role `json:"roles,omitempty" yaml:"roles,omitempty"`
+		Roles []*RBACRole `json:"roles,omitempty" yaml:"roles,omitempty"`
 	}
 	_, err = s.client.Do(ctx, req, &listRoles)
 	if err != nil {
@@ -260,7 +260,7 @@ func (s *AdminService) UpdateRoles(ctx context.Context,
 
 // DeleteRoles deletes roles associated with an Admin
 func (s *AdminService) DeleteRoles(ctx context.Context,
-	emailOrID *string, roles []*Role) error {
+	emailOrID *string, roles []*RBACRole) error {
 
 	var updateRoles struct {
 		NameOrID *string `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
