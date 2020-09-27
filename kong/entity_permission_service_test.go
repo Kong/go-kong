@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEntityPermissionService(T *testing.T) {
+func TestRBACEntityPermissionservice(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", true)
 	assert := assert.New(T)
 
@@ -41,8 +41,8 @@ func TestEntityPermissionService(T *testing.T) {
 	assert.NotNil(createdRole)
 
 	// Add Entity Permission to Role
-	ep := &EntityPermission{
-		Role: &PermissionRoleID{
+	ep := &RBACEntityPermission{
+		Role: &RBACPermissionRoleID{
 			ID: createdRole.ID,
 		},
 		EntityID: String("*"),
@@ -52,21 +52,21 @@ func TestEntityPermissionService(T *testing.T) {
 		},
 	}
 
-	createdEntityPermission, err := workspaceClient.EntityPermissions.Create(defaultCtx, ep)
+	createdEntityPermission, err := workspaceClient.RBACEntityPermissions.Create(defaultCtx, ep)
 	assert.Nil(err)
 	assert.NotNil(createdEntityPermission)
 
-	ep, err = workspaceClient.EntityPermissions.Get(defaultCtx, createdRole.ID, createdEntityPermission.EntityID)
+	ep, err = workspaceClient.RBACEntityPermissions.Get(defaultCtx, createdRole.ID, createdEntityPermission.EntityID)
 	assert.Nil(err)
 	assert.NotNil(ep)
 
 	ep.Comment = String("new comment")
-	ep, err = workspaceClient.EntityPermissions.Update(defaultCtx, ep)
+	ep, err = workspaceClient.RBACEntityPermissions.Update(defaultCtx, ep)
 	assert.Nil(err)
 	assert.NotNil(ep)
 	assert.Equal("new comment", *ep.Comment)
 
-	err = workspaceClient.EntityPermissions.Delete(defaultCtx, createdRole.ID, createdEntityPermission.EntityID)
+	err = workspaceClient.RBACEntityPermissions.Delete(defaultCtx, createdRole.ID, createdEntityPermission.EntityID)
 	assert.Nil(err)
 	err = workspaceClient.Roles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
@@ -75,7 +75,7 @@ func TestEntityPermissionService(T *testing.T) {
 
 }
 
-func TestEntityPermissionServiceList(T *testing.T) {
+func TestRBACEntityPermissionserviceList(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", true)
 	assert := assert.New(T)
 
@@ -100,8 +100,8 @@ func TestEntityPermissionServiceList(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(createdRole)
 
-	ep1 := &EntityPermission{
-		Role: &PermissionRoleID{
+	ep1 := &RBACEntityPermission{
+		Role: &RBACPermissionRoleID{
 			ID: createdRole.ID,
 		},
 		EntityID: String("*"),
@@ -110,8 +110,8 @@ func TestEntityPermissionServiceList(T *testing.T) {
 			String("read"),
 		},
 	}
-	ep2 := &EntityPermission{
-		Role: &PermissionRoleID{
+	ep2 := &RBACEntityPermission{
+		Role: &RBACPermissionRoleID{
 			ID: createdRole.ID,
 		},
 		EntityID: createdWorkspace.ID,
@@ -121,20 +121,20 @@ func TestEntityPermissionServiceList(T *testing.T) {
 		},
 	}
 
-	createdEntityPermissionA, err := client.EntityPermissions.Create(defaultCtx, ep1)
+	createdEntityPermissionA, err := client.RBACEntityPermissions.Create(defaultCtx, ep1)
 	assert.Nil(err)
-	createdEntityPermissionB, err := client.EntityPermissions.Create(defaultCtx, ep2)
+	createdEntityPermissionB, err := client.RBACEntityPermissions.Create(defaultCtx, ep2)
 	assert.Nil(err)
 
-	eps, err := client.EntityPermissions.ListAllForRole(defaultCtx, createdRole.ID)
+	eps, err := client.RBACEntityPermissions.ListAllForRole(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 	assert.NotNil(eps)
 	// Counts default ep
 	assert.Equal(2, len(eps))
 
-	err = client.EntityPermissions.Delete(defaultCtx, createdRole.ID, createdEntityPermissionA.EntityID)
+	err = client.RBACEntityPermissions.Delete(defaultCtx, createdRole.ID, createdEntityPermissionA.EntityID)
 	assert.Nil(err)
-	err = client.EntityPermissions.Delete(defaultCtx, createdRole.ID, createdEntityPermissionB.EntityID)
+	err = client.RBACEntityPermissions.Delete(defaultCtx, createdRole.ID, createdEntityPermissionB.EntityID)
 	assert.Nil(err)
 	err = client.Roles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)

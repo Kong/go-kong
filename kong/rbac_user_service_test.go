@@ -112,8 +112,8 @@ func TestUserRoles(T *testing.T) {
 	createdRoleB, err := client.Roles.Create(defaultCtx, roleB)
 	assert.Nil(err)
 
-	ep := &EndpointPermission{
-		Role: &PermissionRoleID{
+	ep := &RBACEndpointPermission{
+		Role: &RBACPermissionRoleID{
 			ID: createdRoleA.ID,
 		},
 		Endpoint: String("/rbac"),
@@ -123,7 +123,7 @@ func TestUserRoles(T *testing.T) {
 		},
 	}
 
-	createdEndpointPermission, err := client.EndpointPermissions.Create(defaultCtx, ep)
+	createdEndpointPermission, err := client.RBACEndpointPermissions.Create(defaultCtx, ep)
 	assert.Nil(err)
 	assert.NotNil(createdEndpointPermission)
 
@@ -157,7 +157,7 @@ func TestUserRoles(T *testing.T) {
 	assert.NotNil(permissionsList)
 	assert.Equal(1, len(permissionsList.Endpoints))
 
-	err = client.EndpointPermissions.Delete(
+	err = client.RBACEndpointPermissions.Delete(
 		defaultCtx, createdRoleA.ID, String("default"), createdEndpointPermission.Endpoint)
 	assert.Nil(err)
 	err = client.RBACUsers.Delete(defaultCtx, createdUser.ID)

@@ -7,12 +7,12 @@ import (
 	"fmt"
 )
 
-// EndpointPermissionService handles EndpointPermissions in Kong.
-type EndpointPermissionService service
+// RBACEndpointPermissionservice handles RBACEndpointPermissions in Kong.
+type RBACEndpointPermissionservice service
 
-// Create creates a EndpointPermission in Kong.
-func (s *EndpointPermissionService) Create(ctx context.Context,
-	ep *EndpointPermission) (*EndpointPermission, error) {
+// Create creates a RBACEndpointPermission in Kong.
+func (s *RBACEndpointPermissionservice) Create(ctx context.Context,
+	ep *RBACEndpointPermission) (*RBACEndpointPermission, error) {
 
 	if ep == nil {
 		return nil, errors.New("cannot create a nil endpointpermission")
@@ -29,7 +29,7 @@ func (s *EndpointPermissionService) Create(ctx context.Context,
 		return nil, err
 	}
 
-	var createdEndpointPermission EndpointPermission
+	var createdEndpointPermission RBACEndpointPermission
 
 	_, err = s.client.Do(ctx, req, &createdEndpointPermission)
 	if err != nil {
@@ -38,9 +38,9 @@ func (s *EndpointPermissionService) Create(ctx context.Context,
 	return &createdEndpointPermission, nil
 }
 
-// Get fetches a EndpointPermission in Kong.
-func (s *EndpointPermissionService) Get(ctx context.Context,
-	roleNameOrID *string, workspaceNameOrID *string, endpointName *string) (*EndpointPermission, error) {
+// Get fetches a RBACEndpointPermission in Kong.
+func (s *RBACEndpointPermissionservice) Get(ctx context.Context,
+	roleNameOrID *string, workspaceNameOrID *string, endpointName *string) (*RBACEndpointPermission, error) {
 
 	if isEmptyString(endpointName) {
 		return nil, errors.New("endpointName cannot be nil for Get operation")
@@ -54,7 +54,7 @@ func (s *EndpointPermissionService) Get(ctx context.Context,
 		return nil, err
 	}
 
-	var EndpointPermission EndpointPermission
+	var EndpointPermission RBACEndpointPermission
 	_, err = s.client.Do(ctx, req, &EndpointPermission)
 	if err != nil {
 		return nil, err
@@ -62,9 +62,9 @@ func (s *EndpointPermissionService) Get(ctx context.Context,
 	return &EndpointPermission, nil
 }
 
-// Update updates a EndpointPermission in Kong.
-func (s *EndpointPermissionService) Update(ctx context.Context,
-	ep *EndpointPermission) (*EndpointPermission, error) {
+// Update updates a RBACEndpointPermission in Kong.
+func (s *RBACEndpointPermissionservice) Update(ctx context.Context,
+	ep *RBACEndpointPermission) (*RBACEndpointPermission, error) {
 
 	if ep == nil {
 		return nil, errors.New("cannot update a nil EndpointPermission")
@@ -87,7 +87,7 @@ func (s *EndpointPermissionService) Update(ctx context.Context,
 		return nil, err
 	}
 
-	var updatedEndpointPermission EndpointPermission
+	var updatedEndpointPermission RBACEndpointPermission
 	_, err = s.client.Do(ctx, req, &updatedEndpointPermission)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func (s *EndpointPermissionService) Update(ctx context.Context,
 }
 
 // Delete deletes a EndpointPermission in Kong
-func (s *EndpointPermissionService) Delete(ctx context.Context,
+func (s *RBACEndpointPermissionservice) Delete(ctx context.Context,
 	roleNameOrID *string, workspaceNameOrID *string, endpoint *string) error {
 
 	if endpoint == nil {
@@ -120,21 +120,21 @@ func (s *EndpointPermissionService) Delete(ctx context.Context,
 	return err
 }
 
-// ListAllForRole fetches a list of all EndpointPermissions in Kong for a given role.
-func (s *EndpointPermissionService) ListAllForRole(ctx context.Context,
-	roleNameOrID *string) ([]*EndpointPermission, error) {
+// ListAllForRole fetches a list of all RBACEndpointPermissions in Kong for a given role.
+func (s *RBACEndpointPermissionservice) ListAllForRole(ctx context.Context,
+	roleNameOrID *string) ([]*RBACEndpointPermission, error) {
 
 	data, _, err := s.client.list(ctx, fmt.Sprintf("/rbac/roles/%v/endpoints", *roleNameOrID), nil)
 	if err != nil {
 		return nil, err
 	}
-	var eps []*EndpointPermission
+	var eps []*RBACEndpointPermission
 	for _, object := range data {
 		b, err := object.MarshalJSON()
 		if err != nil {
 			return nil, err
 		}
-		var ep EndpointPermission
+		var ep RBACEndpointPermission
 		err = json.Unmarshal(b, &ep)
 		if err != nil {
 			return nil, err

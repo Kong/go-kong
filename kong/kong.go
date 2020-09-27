@@ -29,25 +29,25 @@ var (
 // Client talks to the Admin API or control plane of a
 // Kong cluster
 type Client struct {
-	client              *http.Client
-	baseURL             string
-	common              service
-	Consumers           *ConsumerService
-	Services            *Svcservice
-	Routes              *RouteService
-	CACertificates      *CACertificateService
-	Certificates        *CertificateService
-	Plugins             *PluginService
-	SNIs                *SNIService
-	Upstreams           *UpstreamService
-	Targets             *TargetService
-	Workspaces          *WorkspaceService
-	Admins              *AdminService
-	RBACUsers           *RBACUserService
-	RBACRoles           *RBACRoleService
-	EndpointPermissions *EndpointPermissionService
-	EntityPermissions   *EntityPermissionService
-	Roles               *RoleService
+	client                  *http.Client
+	baseURL                 string
+	common                  service
+	Consumers               *ConsumerService
+	Services                *Svcservice
+	Routes                  *RouteService
+	CACertificates          *CACertificateService
+	Certificates            *CertificateService
+	Plugins                 *PluginService
+	SNIs                    *SNIService
+	Upstreams               *UpstreamService
+	Targets                 *TargetService
+	Workspaces              *WorkspaceService
+	Admins                  *AdminService
+	RBACUsers               *RBACUserService
+	RBACRoles               *RBACRoleService
+	RBACEndpointPermissions *RBACEndpointPermissionservice
+	RBACEntityPermissions   *RBACEntityPermissionservice
+	Roles                   *RoleService
 
 	credentials *credentialService
 	KeyAuths    *KeyAuthService
@@ -115,8 +115,8 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.Admins = (*AdminService)(&kong.common)
 	kong.RBACUsers = (*RBACUserService)(&kong.common)
 	kong.RBACRoles = (*RBACRoleService)(&kong.common)
-	kong.EndpointPermissions = (*EndpointPermissionService)(&kong.common)
-	kong.EntityPermissions = (*EntityPermissionService)(&kong.common)
+	kong.RBACEndpointPermissions = (*RBACEndpointPermissionservice)(&kong.common)
+	kong.RBACEntityPermissions = (*RBACEntityPermissionservice)(&kong.common)
 	kong.Roles = (*RoleService)(&kong.common)
 
 	kong.credentials = (*credentialService)(&kong.common)

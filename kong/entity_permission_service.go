@@ -7,12 +7,12 @@ import (
 	"fmt"
 )
 
-// EntityPermissionService handles EntityPermissions in Kong.
-type EntityPermissionService service
+// RBACEntityPermissionservice handles RBACEntityPermissions in Kong.
+type RBACEntityPermissionservice service
 
-// Create creates an EntityPermission in Kong.
-func (s *EntityPermissionService) Create(ctx context.Context,
-	ep *EntityPermission) (*EntityPermission, error) {
+// Create creates an RBACEntityPermission in Kong.
+func (s *RBACEntityPermissionservice) Create(ctx context.Context,
+	ep *RBACEntityPermission) (*RBACEntityPermission, error) {
 
 	if ep == nil {
 		return nil, errors.New("cannot create a nil entitypermission")
@@ -29,7 +29,7 @@ func (s *EntityPermissionService) Create(ctx context.Context,
 		return nil, err
 	}
 
-	var createdEntityPermission EntityPermission
+	var createdEntityPermission RBACEntityPermission
 
 	_, err = s.client.Do(ctx, req, &createdEntityPermission)
 	if err != nil {
@@ -39,8 +39,8 @@ func (s *EntityPermissionService) Create(ctx context.Context,
 }
 
 // Get fetches an EntityPermission in Kong.
-func (s *EntityPermissionService) Get(ctx context.Context,
-	roleNameOrID *string, entityName *string) (*EntityPermission, error) {
+func (s *RBACEntityPermissionservice) Get(ctx context.Context,
+	roleNameOrID *string, entityName *string) (*RBACEntityPermission, error) {
 
 	if isEmptyString(entityName) {
 		return nil, errors.New("entityName cannot be nil for Get operation")
@@ -52,7 +52,7 @@ func (s *EntityPermissionService) Get(ctx context.Context,
 		return nil, err
 	}
 
-	var EntityPermission EntityPermission
+	var EntityPermission RBACEntityPermission
 	_, err = s.client.Do(ctx, req, &EntityPermission)
 	if err != nil {
 		return nil, err
@@ -61,8 +61,8 @@ func (s *EntityPermissionService) Get(ctx context.Context,
 }
 
 // Update updates an EntityPermission in Kong.
-func (s *EntityPermissionService) Update(ctx context.Context,
-	ep *EntityPermission) (*EntityPermission, error) {
+func (s *RBACEntityPermissionservice) Update(ctx context.Context,
+	ep *RBACEntityPermission) (*RBACEntityPermission, error) {
 
 	if ep == nil {
 		return nil, errors.New("cannot update a nil EntityPermission")
@@ -83,7 +83,7 @@ func (s *EntityPermissionService) Update(ctx context.Context,
 		return nil, err
 	}
 
-	var updatedEntityPermission EntityPermission
+	var updatedEntityPermission RBACEntityPermission
 	_, err = s.client.Do(ctx, req, &updatedEntityPermission)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (s *EntityPermissionService) Update(ctx context.Context,
 }
 
 // Delete deletes an EntityPermission in Kong
-func (s *EntityPermissionService) Delete(ctx context.Context,
+func (s *RBACEntityPermissionservice) Delete(ctx context.Context,
 	roleNameOrID *string, entityID *string) error {
 
 	if roleNameOrID == nil {
@@ -113,22 +113,22 @@ func (s *EntityPermissionService) Delete(ctx context.Context,
 	return err
 }
 
-// ListAllForRole fetches a list of all EntityPermissions in Kong for a given role.
-func (s *EntityPermissionService) ListAllForRole(ctx context.Context,
-	roleNameOrID *string) ([]*EntityPermission, error) {
+// ListAllForRole fetches a list of all RBACEntityPermissions in Kong for a given role.
+func (s *RBACEntityPermissionservice) ListAllForRole(ctx context.Context,
+	roleNameOrID *string) ([]*RBACEntityPermission, error) {
 
 	endpoint := fmt.Sprintf("/rbac/roles/%v/entities", *roleNameOrID)
 	data, _, err := s.client.list(ctx, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
-	var eps []*EntityPermission
+	var eps []*RBACEntityPermission
 	for _, object := range data {
 		b, err := object.MarshalJSON()
 		if err != nil {
 			return nil, err
 		}
-		var ep EntityPermission
+		var ep RBACEntityPermission
 		err = json.Unmarshal(b, &ep)
 		if err != nil {
 			return nil, err

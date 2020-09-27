@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEndpointPermissionService(T *testing.T) {
+func TestRBACEndpointPermissionservice(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", true)
 	assert := assert.New(T)
 
@@ -33,8 +33,8 @@ func TestEndpointPermissionService(T *testing.T) {
 	assert.NotNil(createdRole)
 
 	// Add Endpoint Permission to Role
-	ep := &EndpointPermission{
-		Role: &PermissionRoleID{
+	ep := &RBACEndpointPermission{
+		Role: &RBACPermissionRoleID{
 			ID: createdRole.ID,
 		},
 		Endpoint: String("/rbac"),
@@ -44,22 +44,22 @@ func TestEndpointPermissionService(T *testing.T) {
 		},
 	}
 
-	createdEndpointPermission, err := client.EndpointPermissions.Create(defaultCtx, ep)
+	createdEndpointPermission, err := client.RBACEndpointPermissions.Create(defaultCtx, ep)
 	assert.Nil(err)
 	assert.NotNil(createdEndpointPermission)
 
-	ep, err = client.EndpointPermissions.Get(
+	ep, err = client.RBACEndpointPermissions.Get(
 		defaultCtx, createdRole.ID, createdWorkspace.ID, createdEndpointPermission.Endpoint)
 	assert.Nil(err)
 	assert.NotNil(ep)
 
 	ep.Comment = String("new comment")
-	ep, err = client.EndpointPermissions.Update(defaultCtx, ep)
+	ep, err = client.RBACEndpointPermissions.Update(defaultCtx, ep)
 	assert.Nil(err)
 	assert.NotNil(ep)
 	assert.Equal("new comment", *ep.Comment)
 
-	err = client.EndpointPermissions.Delete(
+	err = client.RBACEndpointPermissions.Delete(
 		defaultCtx, createdRole.ID, createdWorkspace.ID, createdEndpointPermission.Endpoint)
 	assert.Nil(err)
 	err = client.Roles.Delete(defaultCtx, createdRole.ID)
