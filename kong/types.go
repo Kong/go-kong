@@ -259,7 +259,7 @@ type WorkspaceEntity struct {
 	WorkspaceName    *string `json:"workspace_name,omitempty" yaml:"workspace_name,omitempty"`
 }
 
-// Role represents an RBAC Role in Kong.
+// RBACRole represents an RBAC Role in Kong.
 type RBACRole struct {
 	CreatedAt *int    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string `json:"id,omitempty" yaml:"id,omitempty"`
