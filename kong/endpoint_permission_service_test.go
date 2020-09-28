@@ -28,7 +28,7 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 		Name: String("test-role-endpoint-perm"),
 	}
 
-	createdRole, err := client.Roles.Create(defaultCtx, role)
+	createdRole, err := client.RBACRoles.Create(defaultCtx, role)
 	assert.Nil(err)
 	assert.NotNil(createdRole)
 
@@ -62,7 +62,7 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 	err = client.RBACEndpointPermissions.Delete(
 		defaultCtx, createdRole.ID, createdWorkspace.ID, createdEndpointPermission.Endpoint)
 	assert.Nil(err)
-	err = client.Roles.Delete(defaultCtx, createdRole.ID)
+	err = client.RBACRoles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)

@@ -36,7 +36,7 @@ func TestRBACEntityPermissionservice(T *testing.T) {
 		Name: String("test-role-entity-perm"),
 	}
 
-	createdRole, err := workspaceClient.Roles.Create(defaultCtx, role)
+	createdRole, err := workspaceClient.RBACRoles.Create(defaultCtx, role)
 	assert.Nil(err)
 	assert.NotNil(createdRole)
 
@@ -68,7 +68,7 @@ func TestRBACEntityPermissionservice(T *testing.T) {
 
 	err = workspaceClient.RBACEntityPermissions.Delete(defaultCtx, createdRole.ID, createdEntityPermission.EntityID)
 	assert.Nil(err)
-	err = workspaceClient.Roles.Delete(defaultCtx, createdRole.ID)
+	err = workspaceClient.RBACRoles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
@@ -96,7 +96,7 @@ func TestRBACEntityPermissionserviceList(T *testing.T) {
 	role := &RBACRole{
 		Name: String("test-role-entity-perm"),
 	}
-	createdRole, err := client.Roles.Create(defaultCtx, role)
+	createdRole, err := client.RBACRoles.Create(defaultCtx, role)
 	assert.Nil(err)
 	assert.NotNil(createdRole)
 
@@ -136,7 +136,7 @@ func TestRBACEntityPermissionserviceList(T *testing.T) {
 	assert.Nil(err)
 	err = client.RBACEntityPermissions.Delete(defaultCtx, createdRole.ID, createdEntityPermissionB.EntityID)
 	assert.Nil(err)
-	err = client.Roles.Delete(defaultCtx, createdRole.ID)
+	err = client.RBACRoles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
