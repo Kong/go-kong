@@ -7,18 +7,18 @@ import (
 	"fmt"
 )
 
-// RBACEndpointPermissionservice handles RBACEndpointPermissions in Kong.
-type RBACEndpointPermissionservice service
+// RBACEndpointPermissionService handles RBACEndpointPermissions in Kong.
+type RBACEndpointPermissionService service
 
 // Create creates a RBACEndpointPermission in Kong.
-func (s *RBACEndpointPermissionservice) Create(ctx context.Context,
+func (s *RBACEndpointPermissionService) Create(ctx context.Context,
 	ep *RBACEndpointPermission) (*RBACEndpointPermission, error) {
 
 	if ep == nil {
 		return nil, errors.New("cannot create a nil endpointpermission")
 	}
-	if ep.Role.ID == nil {
-		return nil, errors.New("cannot create endpoint permission with role id undefined")
+	if ep.Role == nil || ep.Role.ID == nil {
+		return nil, errors.New("cannot create endpoint permission with role or role id undefined")
 	}
 
 	method := "POST"
@@ -39,7 +39,7 @@ func (s *RBACEndpointPermissionservice) Create(ctx context.Context,
 }
 
 // Get fetches a RBACEndpointPermission in Kong.
-func (s *RBACEndpointPermissionservice) Get(ctx context.Context,
+func (s *RBACEndpointPermissionService) Get(ctx context.Context,
 	roleNameOrID *string, workspaceNameOrID *string, endpointName *string) (*RBACEndpointPermission, error) {
 
 	if isEmptyString(endpointName) {
@@ -63,7 +63,7 @@ func (s *RBACEndpointPermissionservice) Get(ctx context.Context,
 }
 
 // Update updates a RBACEndpointPermission in Kong.
-func (s *RBACEndpointPermissionservice) Update(ctx context.Context,
+func (s *RBACEndpointPermissionService) Update(ctx context.Context,
 	ep *RBACEndpointPermission) (*RBACEndpointPermission, error) {
 
 	if ep == nil {
@@ -72,8 +72,8 @@ func (s *RBACEndpointPermissionservice) Update(ctx context.Context,
 	if ep.Workspace == nil {
 		return nil, errors.New("cannot update an EndpointPermission with workspace as nil")
 	}
-	if ep.Role.ID == nil {
-		return nil, errors.New("cannot update an EndpointPermission with role ID as nil")
+	if ep.Role == nil || ep.Role.ID == nil {
+		return nil, errors.New("cannot create endpoint permission with role or role id undefined")
 	}
 
 	if isEmptyString(ep.Endpoint) {
@@ -96,7 +96,7 @@ func (s *RBACEndpointPermissionservice) Update(ctx context.Context,
 }
 
 // Delete deletes a EndpointPermission in Kong
-func (s *RBACEndpointPermissionservice) Delete(ctx context.Context,
+func (s *RBACEndpointPermissionService) Delete(ctx context.Context,
 	roleNameOrID *string, workspaceNameOrID *string, endpoint *string) error {
 
 	if endpoint == nil {
@@ -121,7 +121,7 @@ func (s *RBACEndpointPermissionservice) Delete(ctx context.Context,
 }
 
 // ListAllForRole fetches a list of all RBACEndpointPermissions in Kong for a given role.
-func (s *RBACEndpointPermissionservice) ListAllForRole(ctx context.Context,
+func (s *RBACEndpointPermissionService) ListAllForRole(ctx context.Context,
 	roleNameOrID *string) ([]*RBACEndpointPermission, error) {
 
 	data, _, err := s.client.list(ctx, fmt.Sprintf("/rbac/roles/%v/endpoints", *roleNameOrID), nil)

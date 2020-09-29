@@ -7,18 +7,18 @@ import (
 	"fmt"
 )
 
-// RBACEntityPermissionservice handles RBACEntityPermissions in Kong.
-type RBACEntityPermissionservice service
+// RBACEntityPermissionService handles RBACEntityPermissions in Kong.
+type RBACEntityPermissionService service
 
 // Create creates an RBACEntityPermission in Kong.
-func (s *RBACEntityPermissionservice) Create(ctx context.Context,
+func (s *RBACEntityPermissionService) Create(ctx context.Context,
 	ep *RBACEntityPermission) (*RBACEntityPermission, error) {
 
 	if ep == nil {
 		return nil, errors.New("cannot create a nil entitypermission")
 	}
-	if ep.Role.ID == nil {
-		return nil, errors.New("cannot create entity permission with role id undefined")
+	if ep.Role == nil || ep.Role.ID == nil {
+		return nil, errors.New("cannot create entity permission with role or role id undefined")
 	}
 
 	method := "POST"
@@ -39,7 +39,7 @@ func (s *RBACEntityPermissionservice) Create(ctx context.Context,
 }
 
 // Get fetches an EntityPermission in Kong.
-func (s *RBACEntityPermissionservice) Get(ctx context.Context,
+func (s *RBACEntityPermissionService) Get(ctx context.Context,
 	roleNameOrID *string, entityName *string) (*RBACEntityPermission, error) {
 
 	if isEmptyString(entityName) {
@@ -61,15 +61,15 @@ func (s *RBACEntityPermissionservice) Get(ctx context.Context,
 }
 
 // Update updates an EntityPermission in Kong.
-func (s *RBACEntityPermissionservice) Update(ctx context.Context,
+func (s *RBACEntityPermissionService) Update(ctx context.Context,
 	ep *RBACEntityPermission) (*RBACEntityPermission, error) {
 
 	if ep == nil {
 		return nil, errors.New("cannot update a nil EntityPermission")
 	}
 
-	if ep.Role.ID == nil {
-		return nil, errors.New("cannot update an EntityPermission with role ID as nil")
+	if ep.Role == nil || ep.Role.ID == nil {
+		return nil, errors.New("cannot create entity permission with role or role id undefined")
 	}
 
 	if isEmptyString(ep.EntityID) {
@@ -92,7 +92,7 @@ func (s *RBACEntityPermissionservice) Update(ctx context.Context,
 }
 
 // Delete deletes an EntityPermission in Kong
-func (s *RBACEntityPermissionservice) Delete(ctx context.Context,
+func (s *RBACEntityPermissionService) Delete(ctx context.Context,
 	roleNameOrID *string, entityID *string) error {
 
 	if roleNameOrID == nil {
@@ -114,7 +114,7 @@ func (s *RBACEntityPermissionservice) Delete(ctx context.Context,
 }
 
 // ListAllForRole fetches a list of all RBACEntityPermissions in Kong for a given role.
-func (s *RBACEntityPermissionservice) ListAllForRole(ctx context.Context,
+func (s *RBACEntityPermissionService) ListAllForRole(ctx context.Context,
 	roleNameOrID *string) ([]*RBACEntityPermission, error) {
 
 	endpoint := fmt.Sprintf("/rbac/roles/%v/entities", *roleNameOrID)
