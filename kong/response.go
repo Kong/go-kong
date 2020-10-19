@@ -17,18 +17,6 @@ func newResponse(res *http.Response) *Response {
 	return &Response{Response: res}
 }
 
-func hasError(res *http.Response) error {
-	if res.StatusCode >= 200 && res.StatusCode <= 399 {
-		return nil
-	}
-
-	body, _ := ioutil.ReadAll(res.Body) // TODO error in error?
-	return &kongAPIError{
-		httpCode: res.StatusCode,
-		message:  messageFromBody(body),
-	}
-}
-
 func messageFromBody(b []byte) string {
 	s := struct {
 		Message string
@@ -39,4 +27,16 @@ func messageFromBody(b []byte) string {
 	}
 
 	return s.Message
+}
+
+func hasError(res *http.Response) error {
+	if res.StatusCode >= 200 && res.StatusCode <= 399 {
+		return nil
+	}
+
+	body, _ := ioutil.ReadAll(res.Body) // TODO error in error?
+	return &kongAPIError{
+		httpCode: res.StatusCode,
+		message:  messageFromBody(body),
+	}
 }

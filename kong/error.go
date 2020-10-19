@@ -1,13 +1,8 @@
 package kong
 
-import "fmt"
-
-type err404 struct {
-}
-
-func (e err404) Error() string {
-	return "Not found"
-}
+import (
+	"fmt"
+)
 
 type kongAPIError struct {
 	httpCode int
