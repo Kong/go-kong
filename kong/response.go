@@ -1,7 +1,8 @@
 package kong
 
 import (
-	"errors"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -21,10 +22,21 @@ func hasError(res *http.Response) error {
 		return nil
 	}
 
-	if res.StatusCode == http.StatusNotFound {
-		return err404{}
+	body, _ := ioutil.ReadAll(res.Body) // TODO error in error?
+	return &kongAPIError{
+		httpCode: res.StatusCode,
+		message:  messageFromBody(body),
+	}
+}
+
+func messageFromBody(b []byte) string {
+	s := struct {
+		Message string
+	}{}
+
+	if err := json.Unmarshal(b, &s); err != nil {
+		return fmt.Sprintf("<failed to parse response body: %v>", err)
 	}
 
-	body, _ := ioutil.ReadAll(res.Body) // TODO error in error?
-	return errors.New(res.Status + " " + string(body))
+	return s.Message
 }
