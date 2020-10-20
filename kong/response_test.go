@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMessageFromBody(T *testing.T) {
+func TestHasError(T *testing.T) {
 	for _, tt := range []struct {
 		name     string
 		response http.Response
@@ -31,6 +31,39 @@ func TestMessageFromBody(T *testing.T) {
 			want: &kongAPIError{
 				httpCode: 404,
 				message:  "potayto pohtato",
+			},
+		},
+		{
+			name: "code 404, message field missing",
+			response: http.Response{
+				StatusCode: 404,
+				Body:       ioutil.NopCloser(strings.NewReader(`{"nothing": "nothing"}`)),
+			},
+			want: &kongAPIError{
+				httpCode: 404,
+				message:  "",
+			},
+		},
+		{
+			name: "code 404, empty body",
+			response: http.Response{
+				StatusCode: 404,
+				Body:       ioutil.NopCloser(strings.NewReader(``)),
+			},
+			want: &kongAPIError{
+				httpCode: 404,
+				message:  "<failed to parse response body: unexpected end of JSON input>",
+			},
+		},
+		{
+			name: "code 404, unparseable json",
+			response: http.Response{
+				StatusCode: 404,
+				Body:       ioutil.NopCloser(strings.NewReader(`This is not json`)),
+			},
+			want: &kongAPIError{
+				httpCode: 404,
+				message:  "<failed to parse response body: invalid character 'T' looking for beginning of value>",
 			},
 		},
 	} {
