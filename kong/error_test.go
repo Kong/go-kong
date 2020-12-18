@@ -10,7 +10,7 @@ import (
 func TestIsNotFoundErr(T *testing.T) {
 
 	assert := assert.New(T)
-	var e error = &KongAPIError{httpCode: 404}
+	var e error = &APIError{httpCode: 404}
 	assert.True(IsNotFoundErr(e))
 	assert.False(IsNotFoundErr(nil))
 
@@ -32,7 +32,7 @@ func TestIsNotFoundErrE2E(T *testing.T) {
 	assert.True(IsNotFoundErr(err))
 }
 
-func TestKongAPIError_Code(T *testing.T) {
+func TestAPIError_Code(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -43,7 +43,7 @@ func TestKongAPIError_Code(T *testing.T) {
 	assert.Nil(consumer)
 	assert.NotNil(err)
 
-	kongErr, ok := err.(*KongAPIError)
+	kongErr, ok := err.(*APIError)
 	assert.True(ok)
 	assert.True(kongErr.Code() == 404)
 }

@@ -88,7 +88,7 @@ func (s *ConsumerService) GetByCustomID(ctx context.Context,
 	}
 
 	if len(resp.Data) == 0 {
-		return nil, &KongAPIError{httpCode: http.StatusNotFound, message: "Not found"}
+		return nil, &APIError{httpCode: http.StatusNotFound, message: "Not found"}
 	}
 
 	return &resp.Data[0], nil
