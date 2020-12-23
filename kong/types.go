@@ -166,12 +166,12 @@ type HealthDataWeight struct {
 // HealthData represents the health data of a target
 // +k8s:deepcopy-gen=true
 type HealthData struct {
-	Host       *string             `json:"host,omitempty" yaml:"host,omitempty"`
-	Port       *int                `json:"port,omitempty" yaml:"port,omitempty"`
-	NodeWeight *int                `json:"nodeWeight,omitempty" yaml:"nodeWeight,omitempty"`
-	Weight     *HealthDataWeight   `json:"weight,omitempty" yaml:"weight,omitempty"`
-	Addresses  []HealthDataAddress `json:"addresses,omitempty" yaml:"addresses,omitempty"`
-	DNS        *string             `json:"dns,omitempty" yaml:"dns,omitempty"`
+	Host       *string              `json:"host,omitempty" yaml:"host,omitempty"`
+	Port       *int                 `json:"port,omitempty" yaml:"port,omitempty"`
+	NodeWeight *int                 `json:"nodeWeight,omitempty" yaml:"nodeWeight,omitempty"`
+	Weight     *HealthDataWeight    `json:"weight,omitempty" yaml:"weight,omitempty"`
+	Addresses  []*HealthDataAddress `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	DNS        *string              `json:"dns,omitempty" yaml:"dns,omitempty"`
 }
 
 // UpstreamNodeHealth represents the node health of a upstream

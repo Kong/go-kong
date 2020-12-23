@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-// MTLSAuthService handles Upstream Node Healths in Kong.
+// UpstreamNodeHealthService handles Upstream Node Healths in Kong.
 type UpstreamNodeHealthService service
 
 // List fetches a list of Upstream Node Healths in Kong.

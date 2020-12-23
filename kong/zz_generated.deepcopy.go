@@ -486,9 +486,13 @@ func (in *HealthData) DeepCopyInto(out *HealthData) {
 	}
 	if in.Addresses != nil {
 		in, out := &in.Addresses, &out.Addresses
-		*out = make([]HealthDataAddress, len(*in))
+		*out = make([]*HealthDataAddress, len(*in))
 		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
+				*out = new(HealthDataAddress)
+				(*in).DeepCopyInto(*out)
+			}
 		}
 	}
 	if in.DNS != nil {
