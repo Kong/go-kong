@@ -157,7 +157,7 @@ type PassiveHealthcheck struct {
 type Healthcheck struct {
 	Active    *ActiveHealthcheck  `json:"active,omitempty" yaml:"active,omitempty"`
 	Passive   *PassiveHealthcheck `json:"passive,omitempty" yaml:"passive,omitempty"`
-	Threshold *float64            `json:"threshold,omitempty" yaml:"threshold,omitempty"`
+	Threshold *json.Number        `json:"threshold,omitempty" yaml:"threshold,omitempty"`
 }
 
 // HealthDataAddress represents the health data address of a target
@@ -191,14 +191,14 @@ type HealthData struct {
 // UpstreamNodeHealth represents the node health of a upstream
 // +k8s:deepcopy-gen=true
 type UpstreamNodeHealth struct {
-	ID        *string     `json:"id,omitempty" yaml:"id,omitempty"`
-	CreatedAt *float64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	Data      *HealthData `json:"data,omitempty" yaml:"data,omitempty"`
-	Health    *string     `json:"health,omitempty" yaml:"data,omitempty"`
-	Target    *string     `json:"target,omitempty" yaml:"target,omitempty"`
-	Upstream  *Upstream   `json:"upstream,omitempty" yaml:"upstream,omitempty"`
-	Weight    *int        `json:"weight,omitempty" yaml:"weight,omitempty"`
-	Tags      []*string   `json:"tags,omitempty" yaml:"tags,omitempty"`
+	ID        *string      `json:"id,omitempty" yaml:"id,omitempty"`
+	CreatedAt *json.Number `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Data      *HealthData  `json:"data,omitempty" yaml:"data,omitempty"`
+	Health    *string      `json:"health,omitempty" yaml:"data,omitempty"`
+	Target    *string      `json:"target,omitempty" yaml:"target,omitempty"`
+	Upstream  *Upstream    `json:"upstream,omitempty" yaml:"upstream,omitempty"`
+	Weight    *int         `json:"weight,omitempty" yaml:"weight,omitempty"`
+	Tags      []*string    `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 // Upstream represents an Upstream in Kong.
@@ -224,12 +224,12 @@ type Upstream struct {
 // Target represents a Target in Kong.
 // +k8s:deepcopy-gen=true
 type Target struct {
-	CreatedAt *float64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
-	Target    *string   `json:"target,omitempty" yaml:"target,omitempty"`
-	Upstream  *Upstream `json:"upstream,omitempty" yaml:"upstream,omitempty"`
-	Weight    *int      `json:"weight,omitempty" yaml:"weight,omitempty"`
-	Tags      []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	CreatedAt *json.Number `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID        *string      `json:"id,omitempty" yaml:"id,omitempty"`
+	Target    *string      `json:"target,omitempty" yaml:"target,omitempty"`
+	Upstream  *Upstream    `json:"upstream,omitempty" yaml:"upstream,omitempty"`
+	Weight    *int         `json:"weight,omitempty" yaml:"weight,omitempty"`
+	Tags      []*string    `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 // Configuration represents a config of a plugin in Kong.
