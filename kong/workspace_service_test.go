@@ -132,7 +132,7 @@ func TestWorkspaceServiceListAll(T *testing.T) {
 // Workspace entities
 
 func TestWorkspaceService_Entities(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0 <2.1.0", false)
+	runWhenEnterprise(T, ">=0.33.0 <=2.0.5", false)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
