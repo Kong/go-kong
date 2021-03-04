@@ -151,6 +151,8 @@ func (s *WorkspaceService) ListAll(ctx context.Context) ([]*Workspace, error) {
 // AddEntities adds entity ids given as a a comma delimited string
 // to a given workspace in Kong. The response is a representation
 // of the entity that was added to the workspace.
+//
+// Deprecated: Kong 2.x removed this endpoint.
 func (s *WorkspaceService) AddEntities(ctx context.Context,
 	workspaceNameOrID *string, entityIds *string) (*[]map[string]interface{}, error) {
 
@@ -181,6 +183,8 @@ func (s *WorkspaceService) AddEntities(ctx context.Context,
 
 // DeleteEntities deletes entity ids given as a a comma delimited string
 // to a given workspace in Kong.
+//
+// Deprecated: Kong 2.x removed this endpoint.
 func (s *WorkspaceService) DeleteEntities(ctx context.Context,
 	workspaceNameOrID *string, entityIds *string) error {
 
@@ -208,6 +212,8 @@ func (s *WorkspaceService) DeleteEntities(ctx context.Context,
 }
 
 // ListEntities fetches a list of all workspace entities in Kong.
+//
+// Deprecated: Kong 2.x removed this endpoint.
 func (s *WorkspaceService) ListEntities(ctx context.Context,
 	workspaceNameOrID *string) ([]*WorkspaceEntity, error) {
 
