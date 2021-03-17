@@ -88,7 +88,7 @@ func (s *ConsumerService) GetByCustomID(ctx context.Context,
 	}
 
 	if len(resp.Data) == 0 {
-		return nil, &APIError{httpCode: http.StatusNotFound, message: "Not found"}
+		return nil, NewAPIError(http.StatusNotFound, "Not found")
 	}
 
 	return &resp.Data[0], nil
