@@ -26,6 +26,16 @@ var (
 	defaultCtx = context.Background()
 )
 
+type AbstractConsumerService interface {
+	Create(ctx context.Context, consumer *Consumer) (*Consumer, error)
+	Get(ctx context.Context, usernameOrID *string) (*Consumer, error)
+	GetByCustomID(ctx context.Context, customID *string) (*Consumer, error)
+	Update(ctx context.Context, consumer *Consumer) (*Consumer, error)
+	Delete(ctx context.Context, usernameOrID *string) error
+	List(ctx context.Context, opt *ListOpt) ([]*Consumer, *ListOpt, error)
+	ListAll(ctx context.Context) ([]*Consumer, error)
+}
+
 // Client talks to the Admin API or control plane of a
 // Kong cluster
 type Client struct {
