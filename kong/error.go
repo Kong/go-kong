@@ -10,6 +10,13 @@ type APIError struct {
 	message  string
 }
 
+func NewAPIError(code int, msg string) *APIError {
+	return &APIError{
+		httpCode: code,
+		message:  msg,
+	}
+}
+
 func (e *APIError) Error() string {
 	return fmt.Sprintf("HTTP status %d (message: %q)", e.httpCode, e.message)
 }
