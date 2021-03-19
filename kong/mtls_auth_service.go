@@ -5,6 +5,25 @@ import (
 	"encoding/json"
 )
 
+// AbstractMTLSAuthService handles MTLS credentials in Kong.
+type AbstractMTLSAuthService interface {
+	// Create creates an MTLS credential in Kong
+	Create(ctx context.Context, consumerUsernameOrID *string, mtlsAuth *MTLSAuth) (*MTLSAuth, error)
+	// Get fetches an MTLS credential from Kong.
+	Get(ctx context.Context, consumerUsernameOrID, keyOrID *string) (*MTLSAuth, error)
+	// Update updates an MTLS credential in Kong
+	Update(ctx context.Context, consumerUsernameOrID *string, mtlsAuth *MTLSAuth) (*MTLSAuth, error)
+	// Delete deletes an MTLS credential in Kong
+	Delete(ctx context.Context, consumerUsernameOrID, keyOrID *string) error
+	// List fetches a list of MTLS credentials in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*MTLSAuth, *ListOpt, error)
+	// ListAll fetches all MTLS credentials in Kong.
+	ListAll(ctx context.Context) ([]*MTLSAuth, error)
+	// ListForConsumer fetches a list of mtls credentials
+	// in Kong associated with a specific consumer.
+	ListForConsumer(ctx context.Context, consumerUsernameOrID *string, opt *ListOpt) ([]*MTLSAuth, *ListOpt, error)
+}
+
 // MTLSAuthService handles MTLS credentials in Kong.
 type MTLSAuthService service
 

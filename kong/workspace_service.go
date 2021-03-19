@@ -7,6 +7,37 @@ import (
 	"fmt"
 )
 
+// AbstractWorkspaceService handles Workspaces in Kong.
+type AbstractWorkspaceService interface {
+	// Create creates a Workspace in Kong.
+	Create(ctx context.Context, workspace *Workspace) (*Workspace, error)
+	// Get fetches a Workspace in Kong.
+	Get(ctx context.Context, nameOrID *string) (*Workspace, error)
+	// Update updates a Workspace in Kong.
+	Update(ctx context.Context, workspace *Workspace) (*Workspace, error)
+	// Delete deletes a Workspace in Kong
+	Delete(ctx context.Context, WorkspaceOrID *string) error
+	// List fetches a list of all Workspaces in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*Workspace, *ListOpt, error)
+	// ListAll fetches all workspaces in Kong.
+	ListAll(ctx context.Context) ([]*Workspace, error)
+	// AddEntities adds entity ids given as a a comma delimited string
+	// to a given workspace in Kong. The response is a representation
+	// of the entity that was added to the workspace.
+	//
+	// Deprecated: Kong 2.x removed this endpoint.
+	AddEntities(ctx context.Context, workspaceNameOrID *string, entityIds *string) (*[]map[string]interface{}, error)
+	// DeleteEntities deletes entity ids given as a a comma delimited string
+	// to a given workspace in Kong.
+	//
+	// Deprecated: Kong 2.x removed this endpoint.
+	DeleteEntities(ctx context.Context, workspaceNameOrID *string, entityIds *string) error
+	// ListEntities fetches a list of all workspace entities in Kong.
+	//
+	// Deprecated: Kong 2.x removed this endpoint.
+	ListEntities(ctx context.Context, workspaceNameOrID *string) ([]*WorkspaceEntity, error)
+}
+
 // WorkspaceService handles Workspaces in Kong.
 type WorkspaceService service
 

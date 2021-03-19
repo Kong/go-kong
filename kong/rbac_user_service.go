@@ -8,6 +8,31 @@ import (
 	"strings"
 )
 
+// AbstractRBACUserService handles Users in Kong.
+type AbstractRBACUserService interface {
+	// Create creates an RBAC User in Kong.
+	Create(ctx context.Context, user *RBACUser) (*RBACUser, error)
+	// Get fetches a User in Kong.
+	Get(ctx context.Context, nameOrID *string) (*RBACUser, error)
+	// Update updates a User in Kong.
+	Update(ctx context.Context, user *RBACUser) (*RBACUser, error)
+	// Delete deletes a User in Kong
+	Delete(ctx context.Context, userOrID *string) error
+	// List fetches a list of Users in Kong.
+	// opt can be used to control pagination.
+	List(ctx context.Context, opt *ListOpt) ([]*RBACUser, *ListOpt, error)
+	// ListAll fetches all users in Kong.
+	ListAll(ctx context.Context) ([]*RBACUser, error)
+	// AddRoles adds a comma separated list of roles to a User.
+	AddRoles(ctx context.Context, nameOrID *string, roles []*RBACRole) ([]*RBACRole, error)
+	// DeleteRoles deletes roles associated with a User
+	DeleteRoles(ctx context.Context, nameOrID *string, roles []*RBACRole) error
+	// ListRoles returns a slice of Kong RBAC roles associated with a User.
+	ListRoles(ctx context.Context, nameOrID *string) ([]*RBACRole, error)
+	// ListPermissions returns the entity and endpoint permissions associated with a user.
+	ListPermissions(ctx context.Context, nameOrID *string) (*RBACPermissionsList, error)
+}
+
 // RBACUserService handles Users in Kong.
 type RBACUserService service
 

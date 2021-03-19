@@ -7,6 +7,20 @@ import (
 	"fmt"
 )
 
+// AbstractRBACRoleService handles Roles in Kong.
+type AbstractRBACRoleService interface {
+	// Create creates a Role in Kong.
+	Create(ctx context.Context, role *RBACRole) (*RBACRole, error)
+	// Get fetches a Role in Kong.
+	Get(ctx context.Context, nameOrID *string) (*RBACRole, error)
+	// Update updates a Role in Kong.
+	Update(ctx context.Context, role *RBACRole) (*RBACRole, error)
+	// Delete deletes a Role in Kong
+	Delete(ctx context.Context, RoleOrID *string) error
+	// List fetches a list of all Roles in Kong.
+	List(ctx context.Context) ([]*RBACRole, error)
+}
+
 // RBACRoleService handles Roles in Kong.
 type RBACRoleService service
 

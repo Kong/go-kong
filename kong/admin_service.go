@@ -8,6 +8,39 @@ import (
 	"strings"
 )
 
+// AbstractAdminService handles Admins in Kong.
+type AbstractAdminService interface {
+	// Invite creates an Admin in Kong.
+	Invite(ctx context.Context, admin *Admin) (*Admin, error)
+	// Create aliases the Invite function as it performs
+	// essentially the same operation.
+	Create(ctx context.Context, admin *Admin) (*Admin, error)
+	// Get fetches a Admin in Kong.
+	Get(ctx context.Context, nameOrID *string) (*Admin, error)
+	// GenerateRegisterURL fetches an Admin in Kong
+	// and returns a unique registration URL for the Admin
+	GenerateRegisterURL(ctx context.Context, nameOrID *string) (*Admin, error)
+	// Update updates an Admin in Kong.
+	Update(ctx context.Context, admin *Admin) (*Admin, error)
+	// Delete deletes an Admin in Kong
+	Delete(ctx context.Context, AdminOrID *string) error
+	// List fetches a list of all Admins in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*Admin, *ListOpt, error)
+	// RegisterCredentials registers credentials for existing Kong Admins
+	RegisterCredentials(ctx context.Context, admin *Admin) error
+	// ListWorkspaces lists the workspaces associated with an admin
+	ListWorkspaces(ctx context.Context, emailOrID *string) ([]*Workspace, error)
+	// ListRoles returns a slice of Kong RBAC roles associated with an Admin.
+	ListRoles(ctx context.Context, emailOrID *string, opt *ListOpt) ([]*RBACRole, error)
+	// UpdateRoles creates or updates roles associated with an Admin
+	UpdateRoles(ctx context.Context, emailOrID *string, roles []*RBACRole) ([]*RBACRole, error)
+	// DeleteRoles deletes roles associated with an Admin
+	DeleteRoles(ctx context.Context, emailOrID *string, roles []*RBACRole) error
+	// GetConsumer fetches the Consumer that gets generated for an Admin when
+	// the Admin is created.
+	GetConsumer(ctx context.Context, emailOrID *string) (*Consumer, error)
+}
+
 // AdminService handles Admins in Kong.
 type AdminService service
 

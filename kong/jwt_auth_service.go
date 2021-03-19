@@ -5,6 +5,25 @@ import (
 	"encoding/json"
 )
 
+// AbstractJWTAuthService handles JWT credentials in Kong.
+type AbstractJWTAuthService interface {
+	// Create creates a JWT credential in Kong
+	Create(ctx context.Context, consumerUsernameOrID *string, jwtAuth *JWTAuth) (*JWTAuth, error)
+	// Get fetches a JWT credential from Kong.
+	Get(ctx context.Context, consumerUsernameOrID, keyOrID *string) (*JWTAuth, error)
+	// Update updates a JWT credential in Kong
+	Update(ctx context.Context, consumerUsernameOrID *string, jwtAuth *JWTAuth) (*JWTAuth, error)
+	// Delete deletes a JWT credential in Kong
+	Delete(ctx context.Context, consumerUsernameOrID, keyOrID *string) error
+	// List fetches a list of JWT credentials in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*JWTAuth, *ListOpt, error)
+	// ListAll fetches all JWT credentials in Kong.
+	ListAll(ctx context.Context) ([]*JWTAuth, error)
+	// ListForConsumer fetches a list of jwt credentials
+	// in Kong associated with a specific consumer.
+	ListForConsumer(ctx context.Context, consumerUsernameOrID *string, opt *ListOpt) ([]*JWTAuth, *ListOpt, error)
+}
+
 // JWTAuthService handles JWT credentials in Kong.
 type JWTAuthService service
 

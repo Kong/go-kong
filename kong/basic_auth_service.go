@@ -5,6 +5,26 @@ import (
 	"encoding/json"
 )
 
+// AbstractBasicAuthService handles basic-auth credentials in Kong.
+type AbstractBasicAuthService interface {
+	// Create creates a basic-auth credential in Kong
+	// is auto-generated.
+	Create(ctx context.Context, consumerUsernameOrID *string, basicAuth *BasicAuth) (*BasicAuth, error)
+	// Get fetches a basic-auth credential from Kong.
+	Get(ctx context.Context, consumerUsernameOrID, usernameOrID *string) (*BasicAuth, error)
+	// Update updates a basic-auth credential in Kong
+	Update(ctx context.Context, consumerUsernameOrID *string, basicAuth *BasicAuth) (*BasicAuth, error)
+	// Delete deletes a basic-auth credential in Kong
+	Delete(ctx context.Context, consumerUsernameOrID, usernameOrID *string) error
+	// List fetches a list of basic-auth credentials in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*BasicAuth, *ListOpt, error)
+	// ListAll fetches all basic-auth credentials in Kong.
+	ListAll(ctx context.Context) ([]*BasicAuth, error)
+	// ListForConsumer fetches a list of basic-auth credentials
+	// in Kong associated with a specific consumer.
+	ListForConsumer(ctx context.Context, consumerUsernameOrID *string, opt *ListOpt) ([]*BasicAuth, *ListOpt, error)
+}
+
 // BasicAuthService handles basic-auth credentials in Kong.
 type BasicAuthService service
 

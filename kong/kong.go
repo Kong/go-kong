@@ -33,35 +33,35 @@ type Client struct {
 	baseURL                 string
 	common                  service
 	Consumers               AbstractConsumerService
-	Services                *Svcservice
-	Routes                  *RouteService
-	CACertificates          *CACertificateService
-	Certificates            *CertificateService
+	Services                AbstractSvcService
+	Routes                  AbstractRouteService
+	CACertificates          AbstractCACertificateService
+	Certificates            AbstractCertificateService
 	Plugins                 AbstractPluginService
-	SNIs                    *SNIService
-	Upstreams               *UpstreamService
-	UpstreamNodeHealth      *UpstreamNodeHealthService
-	Targets                 *TargetService
-	Workspaces              *WorkspaceService
-	Admins                  *AdminService
-	RBACUsers               *RBACUserService
-	RBACRoles               *RBACRoleService
-	RBACEndpointPermissions *RBACEndpointPermissionService
-	RBACEntityPermissions   *RBACEntityPermissionService
+	SNIs                    AbstractSNIService
+	Upstreams               AbstractUpstreamService
+	UpstreamNodeHealth      AbstractUpstreamNodeHealthService
+	Targets                 AbstractTargetService
+	Workspaces              AbstractWorkspaceService
+	Admins                  AbstractAdminService
+	RBACUsers               AbstractRBACUserService
+	RBACRoles               AbstractRBACRoleService
+	RBACEndpointPermissions AbstractRBACEndpointPermissionService
+	RBACEntityPermissions   AbstractRBACEntityPermissionService
 
-	credentials *credentialService
-	KeyAuths    *KeyAuthService
-	BasicAuths  *BasicAuthService
-	HMACAuths   *HMACAuthService
-	JWTAuths    *JWTAuthService
-	MTLSAuths   *MTLSAuthService
-	ACLs        *ACLService
+	credentials abstractCredentialService
+	KeyAuths    AbstractKeyAuthService
+	BasicAuths  AbstractBasicAuthService
+	HMACAuths   AbstractHMACAuthService
+	JWTAuths    AbstractJWTAuthService
+	MTLSAuths   AbstractMTLSAuthService
+	ACLs        AbstractACLService
 
-	Oauth2Credentials *Oauth2Service
+	Oauth2Credentials AbstractOauth2Service
 
 	logger         io.Writer
 	debug          bool
-	CustomEntities *CustomEntityService
+	CustomEntities AbstractCustomEntityService
 
 	custom.Registry
 }

@@ -5,6 +5,25 @@ import (
 	"encoding/json"
 )
 
+// AbstractOauth2Service handles oauth2 credentials in Kong.
+type AbstractOauth2Service interface {
+	// Create creates an oauth2 credential in Kong
+	Create(ctx context.Context, consumerUsernameOrID *string, oauth2Cred *Oauth2Credential) (*Oauth2Credential, error)
+	// Get fetches an oauth2 credential from Kong.
+	Get(ctx context.Context, consumerUsernameOrID, clientIDorID *string) (*Oauth2Credential, error)
+	// Update updates an oauth2 credential in Kong.
+	Update(ctx context.Context, consumerUsernameOrID *string, oauth2Cred *Oauth2Credential) (*Oauth2Credential, error)
+	// Delete deletes an oauth2 credential in Kong.
+	Delete(ctx context.Context, consumerUsernameOrID, clientIDorID *string) error
+	// List fetches a list of oauth2 credentials in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*Oauth2Credential, *ListOpt, error)
+	// ListAll fetches all oauth2 credentials in Kong.
+	ListAll(ctx context.Context) ([]*Oauth2Credential, error)
+	// ListForConsumer fetches a list of oauth2 credentials
+	// in Kong associated with a specific consumer.
+	ListForConsumer(ctx context.Context, consumerUsernameOrID *string, opt *ListOpt) ([]*Oauth2Credential, *ListOpt, error)
+}
+
 // Oauth2Service handles oauth2 credentials in Kong.
 type Oauth2Service service
 

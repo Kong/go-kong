@@ -7,6 +7,20 @@ import (
 	"fmt"
 )
 
+// AbstractRBACEntityPermissionService handles RBACEntityPermissions in Kong.
+type AbstractRBACEntityPermissionService interface {
+	// Create creates an RBACEntityPermission in Kong.
+	Create(ctx context.Context, ep *RBACEntityPermission) (*RBACEntityPermission, error)
+	// Get fetches an EntityPermission in Kong.
+	Get(ctx context.Context, roleNameOrID *string, entityName *string) (*RBACEntityPermission, error)
+	// Update updates an EntityPermission in Kong.
+	Update(ctx context.Context, ep *RBACEntityPermission) (*RBACEntityPermission, error)
+	// Delete deletes an EntityPermission in Kong
+	Delete(ctx context.Context, roleNameOrID *string, entityID *string) error
+	// ListAllForRole fetches a list of all RBACEntityPermissions in Kong for a given role.
+	ListAllForRole(ctx context.Context, roleNameOrID *string) ([]*RBACEntityPermission, error)
+}
+
 // RBACEntityPermissionService handles RBACEntityPermissions in Kong.
 type RBACEntityPermissionService service
 

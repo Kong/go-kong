@@ -5,6 +5,25 @@ import (
 	"encoding/json"
 )
 
+// AbstractACLService handles consumer ACL groups in Kong.
+type AbstractACLService interface {
+	// Create adds a consumer to an ACL group in Kong
+	Create(ctx context.Context, consumerUsernameOrID *string, aclGroup *ACLGroup) (*ACLGroup, error)
+	// Get fetches an ACL group for a consumer in Kong.
+	Get(ctx context.Context, consumerUsernameOrID, groupOrID *string) (*ACLGroup, error)
+	// Update updates an ACL group for a consumer in Kong
+	Update(ctx context.Context, consumerUsernameOrID *string, aclGroup *ACLGroup) (*ACLGroup, error)
+	// Delete deletes an ACL group association for a consumer in Kong
+	Delete(ctx context.Context, consumerUsernameOrID, groupOrID *string) error
+	// List fetches a list of all ACL group and consumer associations in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*ACLGroup, *ListOpt, error)
+	// ListAll fetches all all ACL group associations in Kong.
+	ListAll(ctx context.Context) ([]*ACLGroup, error)
+	// ListForConsumer fetches a list of ACL groups
+	// in Kong associated with a specific consumer.
+	ListForConsumer(ctx context.Context, consumerUsernameOrID *string, opt *ListOpt) ([]*ACLGroup, *ListOpt, error)
+}
+
 // ACLService handles consumer ACL groups in Kong.
 type ACLService service
 

@@ -7,6 +7,26 @@ import (
 	"fmt"
 )
 
+// AbstractRouteService handles routes in Kong.
+type AbstractRouteService interface {
+	// Create creates a Route in Kong
+	Create(ctx context.Context, route *Route) (*Route, error)
+	// CreateInService creates a route associated with serviceID
+	CreateInService(ctx context.Context, serviceID *string, route *Route) (*Route, error)
+	// Get fetches a Route in Kong.
+	Get(ctx context.Context, nameOrID *string) (*Route, error)
+	// Update updates a Route in Kong
+	Update(ctx context.Context, route *Route) (*Route, error)
+	// Delete deletes a Route in Kong
+	Delete(ctx context.Context, nameOrID *string) error
+	// List fetches a list of Routes in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*Route, *ListOpt, error)
+	// ListAll fetches all Routes in Kong.
+	ListAll(ctx context.Context) ([]*Route, error)
+	// ListForService fetches a list of Routes in Kong associated with a service.
+	ListForService(ctx context.Context, serviceNameOrID *string, opt *ListOpt) ([]*Route, *ListOpt, error)
+}
+
 // RouteService handles routes in Kong.
 type RouteService service
 
