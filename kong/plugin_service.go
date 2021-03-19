@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 )
 
 type AbstractPluginService interface {
@@ -17,6 +18,7 @@ type AbstractPluginService interface {
 	ListAllForConsumer(ctx context.Context, consumerIDorName *string) ([]*Plugin, error)
 	ListAllForService(ctx context.Context, serviceIDorName *string) ([]*Plugin, error)
 	ListAllForRoute(ctx context.Context, routeID *string) ([]*Plugin, error)
+	Validate(ctx context.Context, plugin *Plugin) (bool, error)
 }
 
 // PluginService handles Plugins in Kong.
@@ -109,6 +111,23 @@ func (s *PluginService) Delete(ctx context.Context,
 
 	_, err = s.client.Do(ctx, req, nil)
 	return err
+}
+
+// Validate validates a Plugin against its schema
+func (s *PluginService) Validate(ctx context.Context, plugin *Plugin) (bool, error) {
+	endpoint := "/schemas/plugins/validate"
+	req, err := s.client.NewRequest("POST", endpoint, nil, &plugin)
+	if err != nil {
+		return false, err
+	}
+	resp, err := s.client.Do(ctx, req, nil)
+	if err != nil {
+		return false, err
+	} else if resp.StatusCode == http.StatusCreated {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }
 
 // listByPath fetches a list of Plugins in Kong
