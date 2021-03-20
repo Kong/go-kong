@@ -6,6 +6,14 @@ import (
 	"fmt"
 )
 
+// AbstractUpstreamNodeHealthService handles Upstream Node Healths in Kong.
+type AbstractUpstreamNodeHealthService interface {
+	// List fetches a list of Upstream Node Healths in Kong.
+	List(ctx context.Context, upstreamNameOrID *string, opt *ListOpt) ([]*UpstreamNodeHealth, *ListOpt, error)
+	// ListAll fetches all Upstream Node Healths in Kong.
+	ListAll(ctx context.Context, upstreamNameOrID *string) ([]*UpstreamNodeHealth, error)
+}
+
 // UpstreamNodeHealthService handles Upstream Node Healths in Kong.
 type UpstreamNodeHealthService service
 

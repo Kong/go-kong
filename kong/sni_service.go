@@ -7,6 +7,24 @@ import (
 	"fmt"
 )
 
+// AbstractSNIService handles SNIs in Kong.
+type AbstractSNIService interface {
+	// Create creates a SNI in Kong.
+	Create(ctx context.Context, sni *SNI) (*SNI, error)
+	// Get fetches a SNI in Kong.
+	Get(ctx context.Context, usernameOrID *string) (*SNI, error)
+	// Update updates a SNI in Kong
+	Update(ctx context.Context, sni *SNI) (*SNI, error)
+	// Delete deletes a SNI in Kong
+	Delete(ctx context.Context, usernameOrID *string) error
+	// List fetches a list of SNIs in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*SNI, *ListOpt, error)
+	// ListForCertificate fetches a list of SNIs
+	ListForCertificate(ctx context.Context, certificateID *string, opt *ListOpt) ([]*SNI, *ListOpt, error)
+	// ListAll fetches all SNIs in Kong.
+	ListAll(ctx context.Context) ([]*SNI, error)
+}
+
 // SNIService handles SNIs in Kong.
 type SNIService service
 

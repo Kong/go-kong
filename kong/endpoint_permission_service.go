@@ -7,6 +7,21 @@ import (
 	"fmt"
 )
 
+// AbstractRBACEndpointPermissionService handles RBACEndpointPermissions in Kong.
+type AbstractRBACEndpointPermissionService interface {
+	// Create creates a RBACEndpointPermission in Kong.
+	Create(ctx context.Context, ep *RBACEndpointPermission) (*RBACEndpointPermission, error)
+	// Get fetches a RBACEndpointPermission in Kong.
+	Get(ctx context.Context, roleNameOrID *string, workspaceNameOrID *string,
+		endpointName *string) (*RBACEndpointPermission, error)
+	// Update updates a RBACEndpointPermission in Kong.
+	Update(ctx context.Context, ep *RBACEndpointPermission) (*RBACEndpointPermission, error)
+	// Delete deletes a EndpointPermission in Kong
+	Delete(ctx context.Context, roleNameOrID *string, workspaceNameOrID *string, endpoint *string) error
+	// ListAllForRole fetches a list of all RBACEndpointPermissions in Kong for a given role.
+	ListAllForRole(ctx context.Context, roleNameOrID *string) ([]*RBACEndpointPermission, error)
+}
+
 // RBACEndpointPermissionService handles RBACEndpointPermissions in Kong.
 type RBACEndpointPermissionService service
 

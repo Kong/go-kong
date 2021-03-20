@@ -7,6 +7,22 @@ import (
 	"fmt"
 )
 
+// AbstractUpstreamService handles Upstreams in Kong.
+type AbstractUpstreamService interface {
+	// Create creates a Upstream in Kong.
+	Create(ctx context.Context, upstream *Upstream) (*Upstream, error)
+	// Get fetches a Upstream in Kong.
+	Get(ctx context.Context, upstreamNameOrID *string) (*Upstream, error)
+	// Update updates a Upstream in Kong
+	Update(ctx context.Context, upstream *Upstream) (*Upstream, error)
+	// Delete deletes a Upstream in Kong
+	Delete(ctx context.Context, upstreamNameOrID *string) error
+	// List fetches a list of Upstreams in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*Upstream, *ListOpt, error)
+	// ListAll fetches all Upstreams in Kong.
+	ListAll(ctx context.Context) ([]*Upstream, error)
+}
+
 // UpstreamService handles Upstreams in Kong.
 type UpstreamService service
 

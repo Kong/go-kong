@@ -7,6 +7,22 @@ import (
 	"fmt"
 )
 
+// AbstractCertificateService handles Certificates in Kong.
+type AbstractCertificateService interface {
+	// Create creates a Certificate in Kong.
+	Create(ctx context.Context, certificate *Certificate) (*Certificate, error)
+	// Get fetches a Certificate in Kong.
+	Get(ctx context.Context, usernameOrID *string) (*Certificate, error)
+	// Update updates a Certificate in Kong
+	Update(ctx context.Context, certificate *Certificate) (*Certificate, error)
+	// Delete deletes a Certificate in Kong
+	Delete(ctx context.Context, usernameOrID *string) error
+	// List fetches a list of certificate in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*Certificate, *ListOpt, error)
+	// ListAll fetches all Certificates in Kong.
+	ListAll(ctx context.Context) ([]*Certificate, error)
+}
+
 // CertificateService handles Certificates in Kong.
 type CertificateService service
 

@@ -5,7 +5,32 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 )
+
+// AbstractPluginService handles Plugins in Kong.
+type AbstractPluginService interface {
+	// Create creates a Plugin in Kong.
+	Create(ctx context.Context, plugin *Plugin) (*Plugin, error)
+	// Get fetches a Plugin in Kong.
+	Get(ctx context.Context, usernameOrID *string) (*Plugin, error)
+	// Update updates a Plugin in Kong
+	Update(ctx context.Context, plugin *Plugin) (*Plugin, error)
+	// Delete deletes a Plugin in Kong
+	Delete(ctx context.Context, usernameOrID *string) error
+	// List fetches a list of Plugins in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*Plugin, *ListOpt, error)
+	// ListAll fetches all Plugins in Kong.
+	ListAll(ctx context.Context) ([]*Plugin, error)
+	// ListAllForConsumer fetches all Plugins in Kong enabled for a consumer.
+	ListAllForConsumer(ctx context.Context, consumerIDorName *string) ([]*Plugin, error)
+	// ListAllForService fetches all Plugins in Kong enabled for a service.
+	ListAllForService(ctx context.Context, serviceIDorName *string) ([]*Plugin, error)
+	// ListAllForRoute fetches all Plugins in Kong enabled for a service.
+	ListAllForRoute(ctx context.Context, routeID *string) ([]*Plugin, error)
+	// Validate validates a Plugin against its schema
+	Validate(ctx context.Context, plugin *Plugin) (bool, error)
+}
 
 // PluginService handles Plugins in Kong.
 type PluginService service
@@ -97,6 +122,23 @@ func (s *PluginService) Delete(ctx context.Context,
 
 	_, err = s.client.Do(ctx, req, nil)
 	return err
+}
+
+// Validate validates a Plugin against its schema
+func (s *PluginService) Validate(ctx context.Context, plugin *Plugin) (bool, error) {
+	endpoint := "/schemas/plugins/validate"
+	req, err := s.client.NewRequest("POST", endpoint, nil, &plugin)
+	if err != nil {
+		return false, err
+	}
+	resp, err := s.client.Do(ctx, req, nil)
+	if err != nil {
+		return false, err
+	} else if resp.StatusCode == http.StatusCreated {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }
 
 // listByPath fetches a list of Plugins in Kong

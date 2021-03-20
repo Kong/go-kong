@@ -5,6 +5,25 @@ import (
 	"encoding/json"
 )
 
+// AbstractHMACAuthService handles hmac-auth credentials in Kong.
+type AbstractHMACAuthService interface {
+	// Create creates a hmac-auth credential in Kong
+	Create(ctx context.Context, consumerUsernameOrID *string, hmacAuth *HMACAuth) (*HMACAuth, error)
+	// Get fetches a hmac-auth credential from Kong.
+	Get(ctx context.Context, consumerUsernameOrID, usernameOrID *string) (*HMACAuth, error)
+	// Update updates a hmac-auth credential in Kong
+	Update(ctx context.Context, consumerUsernameOrID *string, hmacAuth *HMACAuth) (*HMACAuth, error)
+	// Delete deletes a hmac-auth credential in Kong
+	Delete(ctx context.Context, consumerUsernameOrID, usernameOrID *string) error
+	// List fetches a list of hmac-auth credentials in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*HMACAuth, *ListOpt, error)
+	// ListAll fetches all hmac-auth credentials in Kong.
+	ListAll(ctx context.Context) ([]*HMACAuth, error)
+	// ListForConsumer fetches a list of hmac-auth credentials
+	// in Kong associated with a specific consumer.
+	ListForConsumer(ctx context.Context, consumerUsernameOrID *string, opt *ListOpt) ([]*HMACAuth, *ListOpt, error)
+}
+
 // HMACAuthService handles hmac-auth credentials in Kong.
 type HMACAuthService service
 

@@ -5,6 +5,24 @@ import (
 	"encoding/json"
 )
 
+// AbstractKeyAuthService handles key-auth credentials in Kong.
+type AbstractKeyAuthService interface {
+	// Create creates a key-auth credential in Kong
+	Create(ctx context.Context, consumerUsernameOrID *string, keyAuth *KeyAuth) (*KeyAuth, error)
+	// Get fetches a key-auth credential from Kong.
+	Get(ctx context.Context, consumerUsernameOrID, keyOrID *string) (*KeyAuth, error)
+	// Update updates a key-auth credential in Kong
+	Update(ctx context.Context, consumerUsernameOrID *string, keyAuth *KeyAuth) (*KeyAuth, error)
+	// Delete deletes a key-auth credential in Kong
+	Delete(ctx context.Context, consumerUsernameOrID, keyOrID *string) error
+	// List fetches a list of key-auth credentials in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*KeyAuth, *ListOpt, error)
+	// ListAll fetches all key-auth credentials in Kong.
+	ListAll(ctx context.Context) ([]*KeyAuth, error)
+	// ListForConsumer fetches a list of key-auth credentials
+	ListForConsumer(ctx context.Context, consumerUsernameOrID *string, opt *ListOpt) ([]*KeyAuth, *ListOpt, error)
+}
+
 // KeyAuthService handles key-auth credentials in Kong.
 type KeyAuthService service
 

@@ -8,6 +8,24 @@ import (
 	"net/http"
 )
 
+// AbstractConsumerService handles Consumers in Kong.
+type AbstractConsumerService interface {
+	// Create creates a Consumer in Kong.
+	Create(ctx context.Context, consumer *Consumer) (*Consumer, error)
+	// Get fetches a Consumer in Kong.
+	Get(ctx context.Context, usernameOrID *string) (*Consumer, error)
+	// GetByCustomID fetches a Consumer in Kong.
+	GetByCustomID(ctx context.Context, customID *string) (*Consumer, error)
+	// Update updates a Consumer in Kong
+	Update(ctx context.Context, consumer *Consumer) (*Consumer, error)
+	// Delete deletes a Consumer in Kong
+	Delete(ctx context.Context, usernameOrID *string) error
+	// List fetches a list of Consumers in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*Consumer, *ListOpt, error)
+	// ListAll fetches all Consumers in Kong.
+	ListAll(ctx context.Context) ([]*Consumer, error)
+}
+
 // ConsumerService handles Consumers in Kong.
 type ConsumerService service
 
@@ -88,7 +106,7 @@ func (s *ConsumerService) GetByCustomID(ctx context.Context,
 	}
 
 	if len(resp.Data) == 0 {
-		return nil, &APIError{httpCode: http.StatusNotFound, message: "Not found"}
+		return nil, NewAPIError(http.StatusNotFound, "Not found")
 	}
 
 	return &resp.Data[0], nil
