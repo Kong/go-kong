@@ -29,18 +29,18 @@ var (
 // Client talks to the Admin API or control plane of a
 // Kong cluster
 type Client struct {
-	client         *http.Client
-	baseURL        string
-	common         service
-	Consumers      AbstractConsumerService
-	DeveloperRoles AbstractDeveloperRoleService
-	Services       AbstractSvcService
-	Routes         AbstractRouteService
-	CACertificates AbstractCACertificateService
-	Certificates   AbstractCertificateService
-	Plugins        AbstractPluginService
-	SNIs           AbstractSNIService
-	Upstreams      AbstractUpstreamService
+	client                  *http.Client
+	baseURL                 string
+	common                  service
+	Consumers               AbstractConsumerService
+	DeveloperRoles          AbstractDeveloperRoleService
+	Services                AbstractSvcService
+	Routes                  AbstractRouteService
+	CACertificates          AbstractCACertificateService
+	Certificates            AbstractCertificateService
+	Plugins                 AbstractPluginService
+	SNIs                    AbstractSNIService
+	Upstreams               AbstractUpstreamService
 
 	UpstreamNodeHealth      AbstractUpstreamNodeHealthService
 	Targets                 AbstractTargetService
