@@ -29,36 +29,37 @@ var (
 // Client talks to the Admin API or control plane of a
 // Kong cluster
 type Client struct {
-	client                  *http.Client
-	baseURL                 string
-	common                  service
-	Consumers               *ConsumerService
-	DeveloperRoles          *DeveloperRoleService
-	Services                *Svcservice
-	Routes                  *RouteService
-	CACertificates          *CACertificateService
-	Certificates            *CertificateService
-	Plugins                 *PluginService
-	SNIs                    *SNIService
-	Upstreams               *UpstreamService
-	UpstreamNodeHealth      *UpstreamNodeHealthService
-	Targets                 *TargetService
-	Workspaces              *WorkspaceService
-	Admins                  *AdminService
-	RBACUsers               *RBACUserService
-	RBACRoles               *RBACRoleService
-	RBACEndpointPermissions *RBACEndpointPermissionService
-	RBACEntityPermissions   *RBACEntityPermissionService
+	client         *http.Client
+	baseURL        string
+	common         service
+	Consumers      AbstractConsumerService
+	DeveloperRoles AbstractDeveloperRoleService
+	Services       AbstractSvcService
+	Routes         AbstractRouteService
+	CACertificates AbstractCACertificateService
+	Certificates   AbstractCertificateService
+	Plugins        AbstractPluginService
+	SNIs           AbstractSNIService
+	Upstreams      AbstractUpstreamService
 
-	credentials *credentialService
-	KeyAuths    *KeyAuthService
-	BasicAuths  *BasicAuthService
-	HMACAuths   *HMACAuthService
-	JWTAuths    *JWTAuthService
-	MTLSAuths   *MTLSAuthService
-	ACLs        *ACLService
+	UpstreamNodeHealth      AbstractUpstreamNodeHealthService
+	Targets                 AbstractTargetService
+	Workspaces              AbstractWorkspaceService
+	Admins                  AbstractAdminService
+	RBACUsers               AbstractRBACUserService
+	RBACRoles               AbstractRBACRoleService
+	RBACEndpointPermissions AbstractRBACEndpointPermissionService
+	RBACEntityPermissions   AbstractRBACEntityPermissionService
 
-	Oauth2Credentials *Oauth2Service
+	credentials abstractCredentialService
+	KeyAuths    AbstractKeyAuthService
+	BasicAuths  AbstractBasicAuthService
+	HMACAuths   AbstractHMACAuthService
+	JWTAuths    AbstractJWTAuthService
+	MTLSAuths   AbstractMTLSAuthService
+	ACLs        AbstractACLService
+
+	Oauth2Credentials AbstractOauth2Service
 
 	logger         io.Writer
 	debug          bool
