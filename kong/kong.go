@@ -50,7 +50,7 @@ type Client struct {
 	RBACEndpointPermissions AbstractRBACEndpointPermissionService
 	RBACEntityPermissions   AbstractRBACEntityPermissionService
 
-	credentials AbstractCredentialService
+	credentials abstractCredentialService
 	KeyAuths    AbstractKeyAuthService
 	BasicAuths  AbstractBasicAuthService
 	HMACAuths   AbstractHMACAuthService

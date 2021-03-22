@@ -8,8 +8,8 @@ import (
 	"reflect"
 )
 
-// AbstractCredentialService handles credentials in Kong.
-type AbstractCredentialService interface {
+// abstractCredentialService handles credentials in Kong.
+type abstractCredentialService interface {
 	// Create creates a credential in Kong of type credType.
 	Create(ctx context.Context, credType string, consumerUsernameOrID *string,
 		credential interface{}) (json.RawMessage, error)
