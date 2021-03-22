@@ -408,3 +408,12 @@ type RBACPermissionsList struct {
 	Endpoints map[string]interface{} `json:"endpoints,omitempty" yaml:"endpoints,omitempty"`
 	Entities  map[string]interface{} `json:"entities,omitempty" yaml:"entities,omitempty"`
 }
+
+// DeveloperRole represents an Developer Role in Kong.
+// +k8s:deepcopy-gen=true
+type DeveloperRole struct {
+	Comment   *string `json:"comment,omitempty" yaml:"comment,omitempty"`
+	CreatedAt *int    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID        *string `json:"id,omitempty" yaml:"id,omitempty"`
+	Name      *string `json:"name,omitempty" yaml:"name,omitempty"`
+}
