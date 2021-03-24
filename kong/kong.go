@@ -33,6 +33,7 @@ type Client struct {
 	baseURL                 string
 	common                  service
 	Consumers               AbstractConsumerService
+	Developers              AbstractDeveloperService
 	DeveloperRoles          AbstractDeveloperRoleService
 	Services                AbstractSvcService
 	Routes                  AbstractRouteService
@@ -104,6 +105,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 
 	kong.common.client = kong
 	kong.Consumers = (*ConsumerService)(&kong.common)
+	kong.Developers = (*DeveloperService)(&kong.common)
 	kong.DeveloperRoles = (*DeveloperRoleService)(&kong.common)
 	kong.Services = (*Svcservice)(&kong.common)
 	kong.Routes = (*RouteService)(&kong.common)
