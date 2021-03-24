@@ -8,6 +8,7 @@ import (
 )
 
 func TestDevelopersService(T *testing.T) {
+	runWhenEnterprise(T, ">=0.33.0", false)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -63,6 +64,7 @@ func TestDevelopersService(T *testing.T) {
 }
 
 func TestDeveloperListEndpoint(T *testing.T) {
+	runWhenEnterprise(T, ">=0.33.0", false)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
