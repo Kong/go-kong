@@ -17,8 +17,10 @@ type AbstractRBACRoleService interface {
 	Update(ctx context.Context, role *RBACRole) (*RBACRole, error)
 	// Delete deletes a Role in Kong
 	Delete(ctx context.Context, RoleOrID *string) error
+	// List fetches a list of Roles in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*RBACRole, *ListOpt, error)
 	// List fetches a list of all Roles in Kong.
-	List(ctx context.Context) ([]*RBACRole, error)
+	ListAll(ctx context.Context) ([]*RBACRole, error)
 }
 
 // RBACRoleService handles Roles in Kong.
@@ -119,25 +121,44 @@ func (s *RBACRoleService) Delete(ctx context.Context,
 }
 
 // List fetches a list of all Roles in Kong.
-func (s *RBACRoleService) List(ctx context.Context) ([]*RBACRole, error) {
+func (s *RBACRoleService) List(ctx context.Context,
+	opt *ListOpt) ([]*RBACRole, *ListOpt, error) {
 
-	data, _, err := s.client.list(ctx, "/rbac/roles/", nil)
+	data, next, err := s.client.list(ctx, "/rbac/roles/", opt)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var roles []*RBACRole
 	for _, object := range data {
 		b, err := object.MarshalJSON()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		var role RBACRole
 		err = json.Unmarshal(b, &role)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		roles = append(roles, &role)
 	}
 
+	return roles, next, nil
+}
+
+// ListAll fetches all  Roles in Kong.
+// This method can take a while if there
+// a lot of Roles present.
+func (s *RBACRoleService) ListAll(ctx context.Context) ([]*RBACRole, error) {
+	var roles, data []*RBACRole
+	var err error
+	opt := &ListOpt{Size: pageSize}
+
+	for opt != nil {
+		data, opt, err = s.List(ctx, opt)
+		if err != nil {
+			return nil, err
+		}
+		roles = append(roles, data...)
+	}
 	return roles, nil
 }
