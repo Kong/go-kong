@@ -134,7 +134,7 @@ func runWhenKong(t *testing.T, semverRange string) {
 // fall within the semver range. If a test requires
 // RBAC and RBAC is not enabled on Kong the test
 // will be skipped
-func runWhenEnterprise(t *testing.T, semverRange string, rbacRequired bool) {
+func runWhenEnterprise(t *testing.T, semverRange string, rbacRequired bool, portalRequired bool) {
 	client, err := NewTestClient(nil, nil)
 	if err != nil {
 		t.Error(err)
@@ -155,12 +155,18 @@ func runWhenEnterprise(t *testing.T, semverRange string, rbacRequired bool) {
 		t.Skip()
 	}
 
+	p := res["configuration"].(map[string]interface{})["portal"]
+
+	if portalRequired && p != true {
+		t.Skip()
+	}
+
 	runWhenKong(t, semverRange)
 
 }
 
 func TestRunWhenEnterprise(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", false)
+	runWhenEnterprise(T, ">=0.33.0", false, false)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
