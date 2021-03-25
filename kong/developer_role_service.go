@@ -36,10 +36,6 @@ func (s *DeveloperRoleService) Create(ctx context.Context,
 
 	endpoint := "/developers/roles"
 	method := "POST"
-	if role.ID != nil {
-		endpoint = endpoint + "/" + *role.ID
-		method = "PUT"
-	}
 	req, err := s.client.NewRequest(method, endpoint, nil, role)
 
 	if err != nil {
