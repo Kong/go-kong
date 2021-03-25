@@ -17,8 +17,10 @@ type AbstractDeveloperRoleService interface {
 	Update(ctx context.Context, role *DeveloperRole) (*DeveloperRole, error)
 	// Delete deletes a Developer Role in Kong
 	Delete(ctx context.Context, RoleOrID *string) error
+	// List fetches a list of Developer Roles in Kong.
+	List(ctx context.Context, opt *ListOpt) ([]*DeveloperRole, *ListOpt, error)
 	// List fetches a list of all Developer Roles in Kong.
-	List(ctx context.Context) ([]*DeveloperRole, error)
+	ListAll(ctx context.Context) ([]*DeveloperRole, error)
 }
 
 // DeveloperRoleService handles Developer Roles in Kong.
@@ -119,25 +121,44 @@ func (s *DeveloperRoleService) Delete(ctx context.Context,
 }
 
 // List fetches a list of all Developer Roles in Kong.
-func (s *DeveloperRoleService) List(ctx context.Context) ([]*DeveloperRole, error) {
-
-	data, _, err := s.client.list(ctx, "/developers/roles/", nil)
+// opt can be used to control pagination.
+func (s *DeveloperRoleService) List(ctx context.Context,
+	opt *ListOpt) ([]*DeveloperRole, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, "/developers/roles/", opt)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var roles []*DeveloperRole
 	for _, object := range data {
 		b, err := object.MarshalJSON()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		var role DeveloperRole
 		err = json.Unmarshal(b, &role)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		roles = append(roles, &role)
 	}
 
+	return roles, next, nil
+}
+
+// ListAll fetches all Developer Roles in Kong.
+// This method can take a while if there
+// a lot of Developer Roles present.
+func (s *DeveloperRoleService) ListAll(ctx context.Context) ([]*DeveloperRole, error) {
+	var roles, data []*DeveloperRole
+	var err error
+	opt := &ListOpt{Size: pageSize}
+
+	for opt != nil {
+		data, opt, err = s.List(ctx, opt)
+		if err != nil {
+			return nil, err
+		}
+		roles = append(roles, data...)
+	}
 	return roles, nil
 }
