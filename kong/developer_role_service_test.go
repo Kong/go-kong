@@ -8,12 +8,18 @@ import (
 )
 
 func TestDeveloperRoleService(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", true)
+	runWhenEnterprise(T, ">=0.33.0", false, true)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
+
+	defaultWorkspace, err := client.Workspaces.Get(defaultCtx, String("default"))
+	assert.Nil(err)
+	defaultWorkspace.Config = map[string]interface{}{"portal": true}
+	_, err = client.Workspaces.Update(defaultCtx, defaultWorkspace)
+	assert.Nil(err)
 
 	role := &DeveloperRole{
 		Name: String("roleA"),
@@ -50,14 +56,24 @@ func TestDeveloperRoleService(T *testing.T) {
 
 	err = client.DeveloperRoles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
+
+	defaultWorkspace.Config = map[string]interface{}{"portal": false}
+	_, err = client.Workspaces.Update(defaultCtx, defaultWorkspace)
+	assert.Nil(err)
 }
 func TestDeveloperRoleServiceList(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", true)
+	runWhenEnterprise(T, ">=0.33.0", false, true)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
+
+	defaultWorkspace, err := client.Workspaces.Get(defaultCtx, String("default"))
+	assert.Nil(err)
+	defaultWorkspace.Config = map[string]interface{}{"portal": true}
+	_, err = client.Workspaces.Update(defaultCtx, defaultWorkspace)
+	assert.Nil(err)
 
 	roleA := &DeveloperRole{
 		Name: String("roleA"),
@@ -81,15 +97,25 @@ func TestDeveloperRoleServiceList(T *testing.T) {
 	assert.Nil(err)
 	err = client.DeveloperRoles.Delete(defaultCtx, createdRoleB.ID)
 	assert.Nil(err)
+
+	defaultWorkspace.Config = map[string]interface{}{"portal": false}
+	_, err = client.Workspaces.Update(defaultCtx, defaultWorkspace)
+	assert.Nil(err)
 }
 
 func TestDeveloperRoleListEndpoint(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", true)
+	runWhenEnterprise(T, ">=0.33.0", false, true)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
+
+	defaultWorkspace, err := client.Workspaces.Get(defaultCtx, String("default"))
+	assert.Nil(err)
+	defaultWorkspace.Config = map[string]interface{}{"portal": true}
+	_, err = client.Workspaces.Update(defaultCtx, defaultWorkspace)
+	assert.Nil(err)
 
 	// fixtures
 	roles := []*DeveloperRole{
@@ -151,6 +177,10 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 	for i := 0; i < len(roles); i++ {
 		assert.Nil(client.DeveloperRoles.Delete(defaultCtx, roles[i].ID))
 	}
+
+	defaultWorkspace.Config = map[string]interface{}{"portal": false}
+	_, err = client.Workspaces.Update(defaultCtx, defaultWorkspace)
+	assert.Nil(err)
 }
 
 func compareDeveloperRoles(expected, actual []*DeveloperRole) bool {

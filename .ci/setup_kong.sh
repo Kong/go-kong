@@ -43,6 +43,7 @@ echo $KONG_LICENSE_DATA | sudo tee /etc/kong/license.json
 export KONG_LICENSE_PATH=/tmp/license.json
 export KONG_PASSWORD=kong
 export KONG_ENFORCE_RBAC=on
+export KONG_PORTAL=on
 
 sudo kong migrations bootstrap
 sudo kong version

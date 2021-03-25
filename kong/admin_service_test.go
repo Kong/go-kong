@@ -10,7 +10,7 @@ import (
 )
 
 func TestAdminService(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", false)
+	runWhenEnterprise(T, ">=0.33.0", false, false)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -43,7 +43,7 @@ func TestAdminService(T *testing.T) {
 }
 
 func TestAdminServiceWorkspace(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", false)
+	runWhenEnterprise(T, ">=0.33.0", false, false)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -93,7 +93,7 @@ func TestAdminServiceWorkspace(T *testing.T) {
 func TestAdminServiceList(T *testing.T) {
 	assert := assert.New(T)
 	client, err := NewTestClient(nil, nil)
-	runWhenEnterprise(T, ">=0.33.0", false)
+	runWhenEnterprise(T, ">=0.33.0", false, false)
 
 	assert.Nil(err)
 	assert.NotNil(client)
@@ -142,7 +142,7 @@ func TestAdminServiceList(T *testing.T) {
 // XXX:
 // This test requires RBAC to be enabled.
 func TestAdminServiceRegisterCredentials(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", true)
+	runWhenEnterprise(T, ">=0.33.0", true, false)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
