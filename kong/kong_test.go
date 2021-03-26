@@ -128,13 +128,18 @@ func runWhenKong(t *testing.T, semverRange string) {
 
 }
 
+type requiredFeatures struct {
+	portal bool
+	rbac   bool
+}
+
 // runWhenEnterprise skips a test if the version
 // of Kong running is not enterprise edition. Skips
 // the current test if the version of Kong doesn't
 // fall within the semver range. If a test requires
 // RBAC and RBAC is not enabled on Kong the test
 // will be skipped
-func runWhenEnterprise(t *testing.T, semverRange string, rbacRequired bool, portalRequired bool) {
+func runWhenEnterprise(t *testing.T, semverRange string, required requiredFeatures) {
 	client, err := NewTestClient(nil, nil)
 	if err != nil {
 		t.Error(err)
@@ -151,13 +156,13 @@ func runWhenEnterprise(t *testing.T, semverRange string, rbacRequired bool, port
 
 	r := res["configuration"].(map[string]interface{})["rbac"].(string)
 
-	if rbacRequired && r != "on" {
+	if required.rbac && r != "on" {
 		t.Skip()
 	}
 
 	p := res["configuration"].(map[string]interface{})["portal"]
 
-	if portalRequired && p != true {
+	if required.portal && p != true {
 		t.Skip()
 	}
 
@@ -166,7 +171,7 @@ func runWhenEnterprise(t *testing.T, semverRange string, rbacRequired bool, port
 }
 
 func TestRunWhenEnterprise(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", false, false)
+	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
