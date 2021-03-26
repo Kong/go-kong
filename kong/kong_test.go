@@ -200,3 +200,71 @@ func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
 	}
 	return NewClient(baseURL, client)
 }
+
+type TestWorkspace struct {
+	workspace      *Workspace
+	client         *Client
+	originalConfig map[string]interface{}
+}
+
+// NewTestWorkspace takes a client and workspace name and returns a TestWorkspace
+// containing the workspace object for the workspace with that name, the workspace's
+// original configuration, and the client. It returns an error if that workspace
+// cannot be retrieved.
+func NewTestWorkspace(client *Client, wsName string) (*TestWorkspace, error) {
+	workspace, err := client.Workspaces.Get(defaultCtx, String(wsName))
+	if err != nil {
+		return nil, err
+	}
+	testWs := TestWorkspace{client: client, workspace: workspace}
+	testWs.originalConfig = map[string]interface{}{}
+	for k, v := range workspace.Config {
+		testWs.originalConfig[k] = v
+	}
+	return &testWs, nil
+}
+
+// Reset restores a test workspace to its original configuration.
+func (t *TestWorkspace) Reset() error {
+	t.workspace.Config = t.originalConfig
+	_, err := t.client.Workspaces.Update(defaultCtx, t.workspace)
+	return err
+}
+
+// UpdateConfig patches a workspace's configuration with the provided values.
+func (t *TestWorkspace) UpdateConfig(config map[string]interface{}) error {
+	t.workspace.Config = config
+	_, err := t.client.Workspaces.Update(defaultCtx, t.workspace)
+	return err
+}
+
+func TestTestWorkspace(T *testing.T) {
+	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	wsName := "default"
+
+	origWorkspace, err := client.Workspaces.Get(defaultCtx, String(wsName))
+	assert.Nil(err)
+
+	testWs, err := NewTestWorkspace(client, wsName)
+	assert.Nil(err)
+	assert.Equal(wsName, *testWs.workspace.Name)
+
+	err = testWs.UpdateConfig(map[string]interface{}{"portal": true, "portal_auto_approve": true})
+	assert.Nil(err)
+	currWorkspace, err := client.Workspaces.Get(defaultCtx, String(wsName))
+	assert.Nil(err)
+	assert.Equal(currWorkspace.Config["portal"], true)
+	assert.Equal(currWorkspace.Config["portal_auto_approve"], true)
+
+	err = testWs.Reset()
+	assert.Nil(err)
+	currWorkspace, err = client.Workspaces.Get(defaultCtx, String(wsName))
+	assert.Nil(err)
+	assert.Equal(currWorkspace.Config, origWorkspace.Config)
+}
