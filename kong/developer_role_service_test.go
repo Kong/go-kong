@@ -8,7 +8,7 @@ import (
 )
 
 func TestDeveloperRoleService(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", false, true)
+	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -62,7 +62,7 @@ func TestDeveloperRoleService(T *testing.T) {
 	assert.Nil(err)
 }
 func TestDeveloperRoleServiceList(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", false, true)
+	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -104,7 +104,7 @@ func TestDeveloperRoleServiceList(T *testing.T) {
 }
 
 func TestDeveloperRoleListEndpoint(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", false, true)
+	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

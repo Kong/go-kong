@@ -9,7 +9,7 @@ import (
 )
 
 func TestRBACEntityPermissionservice(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", true, false)
+	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -76,7 +76,7 @@ func TestRBACEntityPermissionservice(T *testing.T) {
 }
 
 func TestRBACEntityPermissionserviceList(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", true, false)
+	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
