@@ -60,11 +60,14 @@ func TestRBACEntityPermissionservice(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(ep)
 
+	negative := true
 	ep.Comment = String("new comment")
+	ep.Negative = &negative
 	ep, err = workspaceClient.RBACEntityPermissions.Update(defaultCtx, ep)
 	assert.Nil(err)
 	assert.NotNil(ep)
 	assert.Equal("new comment", *ep.Comment)
+	assert.Equal(negative, *ep.Negative)
 
 	err = workspaceClient.RBACEntityPermissions.Delete(defaultCtx, createdRole.ID, createdEntityPermission.EntityID)
 	assert.Nil(err)

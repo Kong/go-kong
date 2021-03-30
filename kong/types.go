@@ -363,6 +363,7 @@ func (e *RBACEndpointPermission) MarshalJSON() ([]byte, error) {
 		Workspace: e.Workspace,
 		Endpoint:  e.Endpoint,
 		Actions:   String(strings.Join(actions, ",")),
+		Negative:  e.Negative,
 		Comment:   e.Comment,
 	})
 }
@@ -399,6 +400,7 @@ func (e *RBACEntityPermission) MarshalJSON() ([]byte, error) {
 		EntityID:   e.EntityID,
 		EntityType: e.EntityType,
 		Actions:    String(strings.Join(actions, ",")),
+		Negative:   e.Negative,
 		Comment:    e.Comment,
 	})
 }
