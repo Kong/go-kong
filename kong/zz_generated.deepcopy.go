@@ -463,6 +463,11 @@ func (in *Developer) DeepCopyInto(out *Developer) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.Password != nil {
+		in, out := &in.Password, &out.Password
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 
