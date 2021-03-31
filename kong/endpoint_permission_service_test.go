@@ -53,11 +53,14 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(ep)
 
+	negative := true
 	ep.Comment = String("new comment")
+	ep.Negative = &negative
 	ep, err = client.RBACEndpointPermissions.Update(defaultCtx, ep)
 	assert.Nil(err)
 	assert.NotNil(ep)
 	assert.Equal("new comment", *ep.Comment)
+	assert.Equal(negative, *ep.Negative)
 
 	err = client.RBACEndpointPermissions.Delete(
 		defaultCtx, createdRole.ID, createdWorkspace.ID, createdEndpointPermission.Endpoint)
