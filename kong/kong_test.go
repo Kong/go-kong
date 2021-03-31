@@ -151,18 +151,21 @@ func runWhenEnterprise(t *testing.T, semverRange string, required requiredFeatur
 	v := res["version"].(string)
 
 	if !strings.Contains(v, "enterprise-edition") {
+		t.Log("non-Enterprise test Kong instance, skipping")
 		t.Skip()
 	}
 
 	r := res["configuration"].(map[string]interface{})["rbac"].(string)
 
 	if required.rbac && r != "on" {
+		t.Log("RBAC not enabled on test Kong instance, skipping")
 		t.Skip()
 	}
 
 	p := res["configuration"].(map[string]interface{})["portal"]
 
 	if required.portal && p != true {
+		t.Log("Portal not enabled on test Kong instance, skipping")
 		t.Skip()
 	}
 
