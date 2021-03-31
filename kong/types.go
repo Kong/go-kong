@@ -333,6 +333,8 @@ type RBACRole struct {
 
 // RBACEndpointPermission represents an RBAC Endpoint Permission in Kong Enterprise
 // +k8s:deepcopy-gen=true
+// Note: this type implements a custom JSON marshaler. Review the associated MarshalJSON()
+// function if it does not marshal as expected.
 type RBACEndpointPermission struct {
 	CreatedAt *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Workspace *string   `json:"workspace,omitempty" yaml:"workspace,omitempty"`
@@ -370,6 +372,8 @@ func (e *RBACEndpointPermission) MarshalJSON() ([]byte, error) {
 
 // RBACEntityPermission represents an RBAC Entity Permission in Kong Enterprise
 // +k8s:deepcopy-gen=true
+// Note: this type implements a custom JSON marshaler. Review the associated MarshalJSON()
+// function if it does not marshal as expected.
 type RBACEntityPermission struct {
 	CreatedAt  *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	EntityID   *string   `json:"entity_id,omitempty" yaml:"entity_id,omitempty"`
