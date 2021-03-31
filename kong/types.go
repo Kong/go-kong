@@ -421,6 +421,7 @@ type Developer struct {
 	Roles     []*string `json:"roles,omitempty" yaml:"roles,omitempty"`
 	RbacUser  *RBACUser `json:"rbac_user,omitempty" yaml:"rbac_user,omitempty"`
 	Meta      *string   `json:"meta,omitempty" yaml:"meta,omitempty"`
+	Password  *string   `json:"password,omitempty" yaml:"password,omitempty"`
 }
 
 // DeveloperRole represents a Developer Role in Kong.

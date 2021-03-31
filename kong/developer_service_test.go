@@ -16,8 +16,10 @@ func TestDevelopersService(T *testing.T) {
 	assert.NotNil(client)
 
 	developer := &Developer{
-		Email:    String("foo@example.com"),
+		Meta:     String("{\"full_name\": \"Foo BAR\"}"),
+		Email:    String("foo.bar@example.com"),
 		CustomID: String("custom_id_foo"),
+		Password: String("F00P@ssword"),
 	}
 
 	createdDeveloper, err := client.Developers.Create(defaultCtx, developer)
@@ -50,8 +52,10 @@ func TestDevelopersService(T *testing.T) {
 	// ID can be specified
 	id := uuid.NewV4().String()
 	developer = &Developer{
-		Email: String("foo@example.com"),
-		ID:    String(id),
+		Meta:     String("{\"full_name\": \"Foo BAR\"}"),
+		Email:    String("foo.bar@example.com"),
+		Password: String("F00P@ssword"),
+		ID:       String(id),
 	}
 
 	createdDeveloper, err = client.Developers.Create(defaultCtx, developer)
@@ -74,13 +78,19 @@ func TestDeveloperListEndpoint(T *testing.T) {
 	// fixtures
 	developers := []*Developer{
 		{
-			Email: String("foo1@example.com"),
+			Email:    String("foo1.bar@example.com"),
+			Meta:     String("{\"full_name\": \"Foo1 BAR\"}"),
+			Password: String("F001P@ssword"),
 		},
 		{
-			Email: String("foo2@example.com"),
+			Email:    String("foo2@example.com"),
+			Meta:     String("{\"full_name\": \"Foo2 BAR\"}"),
+			Password: String("F002P@ssword"),
 		},
 		{
-			Email: String("foo3@example.com"),
+			Email:    String("foo3@example.com"),
+			Meta:     String("{\"full_name\": \"Foo3 BAR\"}"),
+			Password: String("F003P@ssword"),
 		},
 	}
 
