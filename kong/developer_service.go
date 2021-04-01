@@ -125,13 +125,15 @@ func (s *DeveloperService) Update(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedAPI Developer
-	_, err = s.client.Do(ctx, req, &updatedAPI)
+	type Response struct {
+		Developer Developer
+	}
+	var resp Response
+	_, err = s.client.Do(ctx, req, &resp)
 	if err != nil {
 		return nil, err
 	}
-	return &updatedAPI, nil
+	return &resp.Developer, nil
 }
 
 // Delete deletes a Developer in Kong
