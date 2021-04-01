@@ -8,12 +8,18 @@ import (
 )
 
 func TestDevelopersService(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", false)
+	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
+
+	testWs, err := NewTestWorkspace(client, "default")
+	assert.Nil(err)
+	assert.NoError(testWs.UpdateConfig(map[string]interface{}{"portal_auth": "basic-auth",
+		"portal_session_conf": map[string]interface{}{"secret": "garbage"},
+		"portal":              true}))
 
 	developer := &Developer{
 		Meta:     String("{\"full_name\": \"Foo BAR\"}"),
@@ -65,15 +71,23 @@ func TestDevelopersService(T *testing.T) {
 
 	err = client.Developers.Delete(defaultCtx, createdDeveloper.ID)
 	assert.Nil(err)
+
+	assert.NoError(testWs.Reset())
 }
 
 func TestDeveloperListEndpoint(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", false)
+	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
+
+	testWs, err := NewTestWorkspace(client, "default")
+	assert.Nil(err)
+	assert.NoError(testWs.UpdateConfig(map[string]interface{}{"portal_auth": "basic-auth",
+		"portal_session_conf": map[string]interface{}{"secret": "garbage"},
+		"portal":              true}))
 
 	// fixtures
 	developers := []*Developer{
@@ -141,6 +155,8 @@ func TestDeveloperListEndpoint(T *testing.T) {
 	for i := 0; i < len(developers); i++ {
 		assert.Nil(client.Developers.Delete(defaultCtx, developers[i].ID))
 	}
+
+	assert.NoError(testWs.Reset())
 }
 
 func compareDevelopers(expected, actual []*Developer) bool {
