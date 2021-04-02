@@ -33,15 +33,15 @@ type DeveloperService service
 // If an ID is specified, it will be used to
 // create a developer in Kong, otherwise an ID
 // is auto-generated.
+// This call does _not_ use a PUT when provided an ID.
+// Although /developers accepts PUTs, PUTs do not accept passwords and do not create
+// the hidden consumer that backs the developer. Subsequent attempts to use such developers
+// result in fatal errors.
 func (s *DeveloperService) Create(ctx context.Context,
 	developer *Developer) (*Developer, error) {
 
 	queryPath := "/developers"
 	method := "POST"
-	if developer.ID != nil {
-		queryPath = queryPath + "/" + *developer.ID
-		method = "PUT"
-	}
 	req, err := s.client.NewRequest(method, queryPath, nil, developer)
 
 	if err != nil {
