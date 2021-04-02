@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.17.0](#v0170---20210405)
 - [v0.16.0](#v0160---20210303)
 - [v0.15.0](#v0150---20210122)
 - [v0.14.0](#v0140---20210112)
@@ -20,6 +21,30 @@
 - [0.3.0](#030---20181219)
 - [0.2.0](#020---20181219)
 - [0.1.0](#010---20181201)
+
+## [v0.17.0] - 2021/04/05
+
+### Added
+
+- Added support for Developer entities. Thanks to @ChristianJacquot!
+  [#27](https://github.com/Kong/go-kong/pull/27)
+- Added support for Developer Role entities. Thanks to @mmorel-35!
+  [#30](https://github.com/Kong/go-kong/pull/27)
+- RBAC roles now support pagination and listing all entities. Thanks to
+  @mmorel-35!
+  [#30](https://github.com/Kong/go-kong/pull/27)
+- Tests can now require the Portal. Added helpers to enable the Portal and
+  related settings.
+  [#30](https://github.com/Kong/go-kong/pull/27)
+- Clients now use interfaces. Other libraries that use go-kong can define mock
+  types that implement these interfaces for unit tests that do not require an
+  actual Kong instance.
+  [#24](https://github.com/Kong/go-kong/pull/27)
+
+### Fixed
+
+- RBAC roles now properly include their `negative` field in requests to Kong.
+  [#32](https://github.com/Kong/go-kong/pull/27)
 
 ## [v0.16.0] - 2021/03/03
 
@@ -291,6 +316,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.17.0]: https://github.com/Kong/go-kong/compare/v0.16.0...v0.17.0
 [v0.16.0]: https://github.com/Kong/go-kong/compare/v0.15.0...v0.16.0
 [v0.15.0]: https://github.com/Kong/go-kong/compare/v0.14.0...v0.15.0
 [v0.14.0]: https://github.com/Kong/go-kong/compare/v0.13.0...v0.14.0
