@@ -29,6 +29,38 @@ type qs struct {
 	Tags   string `url:"tags,omitempty"`
 }
 
+//Instantiate a ListOpt with the default page size an a deduplicted list of tags when present
+func newOpt(tags []string) *ListOpt {
+	opt := new(ListOpt)
+	opt.Size = pageSize
+	opt.Tags = StringSlice(deduplicate(tags)...)
+	opt.MatchAllTags = true
+	return opt
+}
+
+// list fetches a list of an entity in Kong.
+// opt can be used to control pagination and tags
+// allowNotFound allow to return an empty list for entities that are disabled or just doesn't exists on the used version
+func (c *Client) listAll(ctx context.Context, endpoint string, opt *ListOpt, allowNotFound bool) ([]json.RawMessage, error) {
+	var list, data []json.RawMessage
+	var err error
+
+	for opt != nil {
+		data, opt, err = c.list(ctx, endpoint, opt)
+		if allowNotFound && IsNotFoundErr(err) {
+			return list, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		list = append(list, data...)
+	}
+	return list, nil
+}
+
 // list fetches a list of an entity in Kong.
 // opt can be used to control pagination.
 func (c *Client) list(ctx context.Context,

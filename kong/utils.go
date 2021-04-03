@@ -25,6 +25,21 @@ func isEmptyString(s *string) bool {
 	return s == nil || strings.TrimSpace(*s) == ""
 }
 
+//Deduplicates a list a strings
+func deduplicate(stringSlice []string) []string {
+	existing := map[string]struct{}{}
+	result := []string{}
+
+	for _, s := range stringSlice {
+		if _, exists := existing[s]; !exists {
+			existing[s] = struct{}{}
+			result = append(result, s)
+		}
+	}
+
+	return result
+}
+
 // StringSlice converts a slice of string to a
 // slice of *string
 func StringSlice(elements ...string) []*string {

@@ -119,22 +119,35 @@ func (s *ACLService) List(ctx context.Context,
 	return aclGroups, next, nil
 }
 
-// ListAll fetches all all ACL group associations in Kong.
-// This method can take a while if there
-// a lot of ACLGroup associations are present.
-func (s *ACLService) ListAll(ctx context.Context) ([]*ACLGroup, error) {
-	var aclGroups, data []*ACLGroup
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
+func (s *ACLService) ListAllByOpt(ctx context.Context,
+	opt *ListOpt) ([]*ACLGroup, error) {
+	data, err := s.client.listAll(ctx, "/acls", opt, true)
+	if err != nil {
+		return nil, err
+	}
+	var aclGroups []*ACLGroup
+	for _, object := range data {
+		b, err := object.MarshalJSON()
 		if err != nil {
 			return nil, err
 		}
-		aclGroups = append(aclGroups, data...)
+		var aclGroup ACLGroup
+		err = json.Unmarshal(b, &aclGroup)
+		if err != nil {
+			return nil, err
+		}
+		aclGroups = append(aclGroups, &aclGroup)
 	}
+
 	return aclGroups, nil
+}
+
+// ListAll fetches all all ACL group associations in Kong.
+// This method can take a while if there
+// a lot of ACLGroup associations are present.
+// tags are not supported on credentials
+func (s *ACLService) ListAll(ctx context.Context) ([]*ACLGroup, error) {
+	return s.ListAllByOpt(ctx, newOpt(nil))
 }
 
 // ListForConsumer fetches a list of ACL groups
