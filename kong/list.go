@@ -41,7 +41,9 @@ func newOpt(tags []string) *ListOpt {
 // list fetches a list of an entity in Kong.
 // opt can be used to control pagination and tags
 // allowNotFound allow to return an empty list for entities that are disabled or just doesn't exists on the used version
-func (c *Client) listAll(ctx context.Context, endpoint string, opt *ListOpt, allowNotFound bool) ([]json.RawMessage, error) {
+func (c *Client) listAll(ctx context.Context,
+	endpoint string, opt *ListOpt,
+	allowNotFound bool) ([]json.RawMessage, error) {
 	var list, data []json.RawMessage
 	var err error
 
