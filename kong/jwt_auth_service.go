@@ -98,39 +98,14 @@ func (s *JWTAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *JWTAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*JWTAuth, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/jwts", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var jwts []*JWTAuth
-	for _, object := range data {
-		var jwtAuth JWTAuth
-		err = json.Unmarshal(object, &jwtAuth)
-		if err != nil {
-			return nil, nil, err
-		}
-		jwts = append(jwts, &jwtAuth)
-	}
-
-	return jwts, next, nil
+	return s.ListByEndpointAndOpt(ctx, "/jwt", opt)
 }
 
 // ListAll fetches all JWT credentials in Kong.
 // This method can take a while if there
 // a lot of JWT credentials present.
 func (s *JWTAuthService) ListAll(ctx context.Context) ([]*JWTAuth, error) {
-	var jwts, data []*JWTAuth
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
-		if err != nil {
-			return nil, err
-		}
-		jwts = append(jwts, data...)
-	}
-	return jwts, nil
+	return s.ListAllByEndpointAndOpt(ctx, "/jwt", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of jwt credentials
@@ -138,8 +113,12 @@ func (s *JWTAuthService) ListAll(ctx context.Context) ([]*JWTAuth, error) {
 // opt can be used to control pagination.
 func (s *JWTAuthService) ListForConsumer(ctx context.Context,
 	consumerUsernameOrID *string, opt *ListOpt) ([]*JWTAuth, *ListOpt, error) {
-	data, next, err := s.client.list(ctx,
-		"/consumers/"+*consumerUsernameOrID+"/jwt", opt)
+	return s.ListByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/jwt", opt)
+}
+
+func (s *JWTAuthService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*JWTAuth, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -154,4 +133,23 @@ func (s *JWTAuthService) ListForConsumer(ctx context.Context,
 	}
 
 	return jwts, next, nil
+}
+
+func (s *JWTAuthService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*JWTAuth, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, true)
+	if err != nil {
+		return nil, err
+	}
+	var jwts []*JWTAuth
+	for _, object := range data {
+		var jwtAuth JWTAuth
+		err = json.Unmarshal(object, &jwtAuth)
+		if err != nil {
+			return nil, err
+		}
+		jwts = append(jwts, &jwtAuth)
+	}
+
+	return jwts, nil
 }
