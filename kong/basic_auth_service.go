@@ -99,14 +99,14 @@ func (s *BasicAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *BasicAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*BasicAuth, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/basic-auth", opt)
+	return s.ListByEndpointAndOpt(ctx, "/basic-auths", opt)
 }
 
 // ListAll fetches all basic-auth credentials in Kong.
 // This method can take a while if there
 // a lot of basic-auth credentials present.
 func (s *BasicAuthService) ListAll(ctx context.Context) ([]*BasicAuth, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/basic-auth", newOpt(nil))
+	return s.ListAllByEndpointAndOpt(ctx, "/basic-auths", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of basic-auth credentials
