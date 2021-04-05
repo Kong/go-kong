@@ -22,6 +22,8 @@ type AbstractPluginService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Plugin, *ListOpt, error)
 	// ListAll fetches all Plugins in Kong.
 	ListAll(ctx context.Context) ([]*Plugin, error)
+	// ListAll fetches all Plugins in Kong.
+	ListAllByTags(ctx context.Context, tags []string) ([]*Plugin, error)
 	// ListAllForConsumer fetches all Plugins in Kong enabled for a consumer.
 	ListAllForConsumer(ctx context.Context, consumerIDorName *string) ([]*Plugin, error)
 	// ListAllForService fetches all Plugins in Kong enabled for a service.
@@ -170,17 +172,26 @@ func (s *PluginService) listByPath(ctx context.Context,
 // a lot of Plugins present.
 func (s *PluginService) listAllByPath(ctx context.Context,
 	path string) ([]*Plugin, error) {
-	var plugins, data []*Plugin
-	var err error
-	opt := &ListOpt{Size: pageSize}
+	return s.ListAllByEndpointAndOpt(ctx, path, newOpt(nil))
+}
 
-	for opt != nil {
-		data, opt, err = s.listByPath(ctx, path, opt)
+func (s *PluginService) ListAllByEndpointAndOpt(ctx context.Context,
+	path string, opt *ListOpt) ([]*Plugin, error) {
+	data, err := s.client.listAll(ctx, path, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var plugins []*Plugin
+
+	for _, object := range data {
+		var plugin Plugin
+		err = json.Unmarshal(object, &plugin)
 		if err != nil {
 			return nil, err
 		}
-		plugins = append(plugins, data...)
+		plugins = append(plugins, &plugin)
 	}
+
 	return plugins, nil
 }
 
@@ -195,7 +206,14 @@ func (s *PluginService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of Plugins present.
 func (s *PluginService) ListAll(ctx context.Context) ([]*Plugin, error) {
-	return s.listAllByPath(ctx, "/plugins")
+	return s.ListAllByTags(ctx, nil)
+}
+
+// ListAll fetches all Plugins in Kong.
+// This method can take a while if there
+// a lot of Plugins present.
+func (s *PluginService) ListAllByTags(ctx context.Context, tags []string) ([]*Plugin, error) {
+	return s.ListAllByEndpointAndOpt(ctx, "/plugins", newOpt(tags))
 }
 
 // ListAllForConsumer fetches all Plugins in Kong enabled for a consumer.
