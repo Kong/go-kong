@@ -98,26 +98,28 @@ func (s *ACLService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *ACLService) List(ctx context.Context,
 	opt *ListOpt) ([]*ACLGroup, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/acls", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var aclGroups []*ACLGroup
-	for _, object := range data {
-		var aclGroup ACLGroup
-		err = json.Unmarshal(object, &aclGroup)
-		if err != nil {
-			return nil, nil, err
-		}
-		aclGroups = append(aclGroups, &aclGroup)
-	}
-
-	return aclGroups, next, nil
+	return s.ListByEndpointAndOpt(ctx, "/acls", opt)
 }
 
-func (s *ACLService) ListAllByOpt(ctx context.Context,
-	opt *ListOpt) ([]*ACLGroup, error) {
-	data, err := s.client.listAll(ctx, "/acls", opt, true)
+// ListAll fetches all all ACL group associations in Kong.
+// This method can take a while if there
+// a lot of ACLGroup associations are present.
+// tags are not supported on credentials
+func (s *ACLService) ListAll(ctx context.Context) ([]*ACLGroup, error) {
+	return s.ListAllByEndpointAndOpt(ctx, "/acls", newOpt(nil))
+}
+
+// ListForConsumer fetches a list of ACL groups
+// in Kong associated with a specific consumer.
+// opt can be used to control pagination.
+func (s *ACLService) ListForConsumer(ctx context.Context,
+	consumerUsernameOrID *string, opt *ListOpt) ([]*ACLGroup, *ListOpt, error) {
+	return s.ListByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/acls", opt)
+}
+
+func (s *ACLService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*ACLGroup, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, true)
 	if err != nil {
 		return nil, err
 	}
@@ -134,21 +136,9 @@ func (s *ACLService) ListAllByOpt(ctx context.Context,
 	return aclGroups, nil
 }
 
-// ListAll fetches all all ACL group associations in Kong.
-// This method can take a while if there
-// a lot of ACLGroup associations are present.
-// tags are not supported on credentials
-func (s *ACLService) ListAll(ctx context.Context) ([]*ACLGroup, error) {
-	return s.ListAllByOpt(ctx, newOpt(nil))
-}
-
-// ListForConsumer fetches a list of ACL groups
-// in Kong associated with a specific consumer.
-// opt can be used to control pagination.
-func (s *ACLService) ListForConsumer(ctx context.Context,
-	consumerUsernameOrID *string, opt *ListOpt) ([]*ACLGroup, *ListOpt, error) {
-	data, next, err := s.client.list(ctx,
-		"/consumers/"+*consumerUsernameOrID+"/acls", opt)
+func (s *ACLService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*ACLGroup, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
