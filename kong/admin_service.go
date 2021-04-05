@@ -197,13 +197,13 @@ func (s *AdminService) RegisterCredentials(ctx context.Context,
 	}
 
 	if isEmptyString(admin.Username) {
-		return errors.New("Username cannot be nil for a registration operation")
+		return errors.New("username cannot be nil for a registration operation")
 	}
 	if isEmptyString(admin.Email) {
-		return errors.New("Email cannot be nil for a registration operation")
+		return errors.New("email cannot be nil for a registration operation")
 	}
 	if isEmptyString(admin.Password) {
-		return errors.New("Password cannot be nil for a registration operation")
+		return errors.New("password cannot be nil for a registration operation")
 	}
 
 	req, err := s.client.NewRequest("POST", "/admins/register", nil, admin)
