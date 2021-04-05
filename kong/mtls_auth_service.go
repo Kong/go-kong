@@ -98,39 +98,14 @@ func (s *MTLSAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *MTLSAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*MTLSAuth, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/mtls-auths", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var mtlss []*MTLSAuth
-	for _, object := range data {
-		var mtlsAuth MTLSAuth
-		err = json.Unmarshal(object, &mtlsAuth)
-		if err != nil {
-			return nil, nil, err
-		}
-		mtlss = append(mtlss, &mtlsAuth)
-	}
-
-	return mtlss, next, nil
+	return s.ListByEndpointAndOpt(ctx, "/mtls-auth", opt)
 }
 
 // ListAll fetches all MTLS credentials in Kong.
 // This method can take a while if there
 // a lot of MTLS credentials present.
 func (s *MTLSAuthService) ListAll(ctx context.Context) ([]*MTLSAuth, error) {
-	var mtlss, data []*MTLSAuth
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
-		if err != nil {
-			return nil, err
-		}
-		mtlss = append(mtlss, data...)
-	}
-	return mtlss, nil
+	return s.ListAllByEndpointAndOpt(ctx, "/mtls-auths", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of mtls credentials
@@ -138,8 +113,12 @@ func (s *MTLSAuthService) ListAll(ctx context.Context) ([]*MTLSAuth, error) {
 // opt can be used to control pagination.
 func (s *MTLSAuthService) ListForConsumer(ctx context.Context,
 	consumerUsernameOrID *string, opt *ListOpt) ([]*MTLSAuth, *ListOpt, error) {
-	data, next, err := s.client.list(ctx,
-		"/consumers/"+*consumerUsernameOrID+"/mtls-auth", opt)
+	return s.ListByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/mtls-auth", opt)
+}
+
+func (s *MTLSAuthService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*MTLSAuth, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -154,4 +133,23 @@ func (s *MTLSAuthService) ListForConsumer(ctx context.Context,
 	}
 
 	return mtlss, next, nil
+}
+
+func (s *MTLSAuthService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*MTLSAuth, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, true)
+	if err != nil {
+		return nil, err
+	}
+	var mtlss []*MTLSAuth
+	for _, object := range data {
+		var mtlsAuth MTLSAuth
+		err = json.Unmarshal(object, &mtlsAuth)
+		if err != nil {
+			return nil, err
+		}
+		mtlss = append(mtlss, &mtlsAuth)
+	}
+
+	return mtlss, nil
 }
