@@ -119,7 +119,28 @@ func (s *CACertificateService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *CACertificateService) List(ctx context.Context,
 	opt *ListOpt) ([]*CACertificate, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/ca_certificates", opt)
+	return s.ListByEndpointAndOpt(ctx, "/ca_certificates", opt)
+}
+
+// ListAll fetches all Certificates in Kong.
+// This method can take a while if there
+// a lot of Certificates present.
+func (s *CACertificateService) ListAll(ctx context.Context) ([]*CACertificate,
+	error) {
+	return s.ListAllByTags(ctx, nil)
+}
+
+// ListAll fetches all Certificates in Kong, filtered by tags
+// This method can take a while if there
+// a lot of Certificates present.
+func (s *CACertificateService) ListAllByTags(ctx context.Context, tags []string) ([]*CACertificate,
+	error) {
+	return s.ListAllByEndpointAndOpt(ctx, "/ca_certificates", newOpt(tags))
+}
+
+func (s *CACertificateService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*CACertificate, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -136,21 +157,21 @@ func (s *CACertificateService) List(ctx context.Context,
 	return certificates, next, nil
 }
 
-// ListAll fetches all Certificates in Kong.
-// This method can take a while if there
-// a lot of Certificates present.
-func (s *CACertificateService) ListAll(ctx context.Context) ([]*CACertificate,
-	error) {
-	var certificates, data []*CACertificate
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
+func (s *CACertificateService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*CACertificate, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, true)
+	if err != nil {
+		return nil, err
+	}
+	var certificates []*CACertificate
+	for _, object := range data {
+		var certificate CACertificate
+		err = json.Unmarshal(object, &certificate)
 		if err != nil {
 			return nil, err
 		}
-		certificates = append(certificates, data...)
+		certificates = append(certificates, &certificate)
 	}
+
 	return certificates, nil
 }
