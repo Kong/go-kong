@@ -17,6 +17,8 @@ type AbstractTargetService interface {
 	List(ctx context.Context, upstreamNameOrID *string, opt *ListOpt) ([]*Target, *ListOpt, error)
 	// ListAll fetches all Targets in Kong for an upstream.
 	ListAll(ctx context.Context, upstreamNameOrID *string) ([]*Target, error)
+	// ListAll fetches all Targets filtered by tags in Kong for an upstream.
+	ListAllByTags(ctx context.Context, upstreamNameOrID *string, tags []string) ([]*Target, error)
 	// MarkHealthy marks target belonging to upstreamNameOrID as healthy in
 	// Kong's load balancer.
 	MarkHealthy(ctx context.Context, upstreamNameOrID *string, target *Target) error
@@ -86,42 +88,23 @@ func (s *TargetService) Delete(ctx context.Context,
 func (s *TargetService) List(ctx context.Context,
 	upstreamNameOrID *string, opt *ListOpt) ([]*Target, *ListOpt, error) {
 	if isEmptyString(upstreamNameOrID) {
-		return nil, nil, errors.New(
-			"upstreamNameOrID cannot be nil for Get operation")
+		return nil, nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
 	}
-	data, next, err := s.client.list(ctx,
-		"/upstreams/"+*upstreamNameOrID+"/targets", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var targets []*Target
-	for _, object := range data {
-		var target Target
-		err = json.Unmarshal(object, &target)
-		if err != nil {
-			return nil, nil, err
-		}
-		targets = append(targets, &target)
-	}
-
-	return targets, next, nil
+	return s.ListByEndpointAndOpt(ctx, "/upstreams/"+*upstreamNameOrID+"/targets", opt)
 }
 
 // ListAll fetches all Targets in Kong for an upstream.
 func (s *TargetService) ListAll(ctx context.Context,
 	upstreamNameOrID *string) ([]*Target, error) {
-	var targets, data []*Target
-	var err error
-	opt := &ListOpt{Size: pageSize}
+	return s.ListAllByTags(ctx, upstreamNameOrID, nil)
+}
 
-	for opt != nil {
-		data, opt, err = s.List(ctx, upstreamNameOrID, opt)
-		if err != nil {
-			return nil, err
-		}
-		targets = append(targets, data...)
+func (s *TargetService) ListAllByTags(ctx context.Context,
+	upstreamNameOrID *string, tags []string) ([]*Target, error) {
+	if isEmptyString(upstreamNameOrID) {
+		return nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
 	}
-	return targets, nil
+	return s.ListAllByEndpointAndOpt(ctx, "/upstreams/"+*upstreamNameOrID+"/targets", newOpt(tags))
 }
 
 // MarkHealthy marks target belonging to upstreamNameOrID as healthy in
@@ -186,4 +169,42 @@ func (s *TargetService) MarkUnhealthy(ctx context.Context,
 
 	_, err = s.client.Do(ctx, req, nil)
 	return err
+}
+
+func (s *TargetService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Target, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
+	if err != nil {
+		return nil, nil, err
+	}
+	var targets []*Target
+	for _, object := range data {
+		var target Target
+		err = json.Unmarshal(object, &target)
+		if err != nil {
+			return nil, nil, err
+		}
+		targets = append(targets, &target)
+	}
+
+	return targets, next, nil
+}
+
+func (s *TargetService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Target, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var targets []*Target
+	for _, object := range data {
+		var target Target
+		err = json.Unmarshal(object, &target)
+		if err != nil {
+			return nil, err
+		}
+		targets = append(targets, &target)
+	}
+
+	return targets, nil
 }
