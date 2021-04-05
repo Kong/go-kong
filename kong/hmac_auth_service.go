@@ -98,39 +98,14 @@ func (s *HMACAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *HMACAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*HMACAuth, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/hmac-auths", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var hmacAuths []*HMACAuth
-	for _, object := range data {
-		var hmacAuth HMACAuth
-		err = json.Unmarshal(object, &hmacAuth)
-		if err != nil {
-			return nil, nil, err
-		}
-		hmacAuths = append(hmacAuths, &hmacAuth)
-	}
-
-	return hmacAuths, next, nil
+	return s.ListByEndpointAndOpt(ctx, "/hmac-auth", opt)
 }
 
 // ListAll fetches all hmac-auth credentials in Kong.
 // This method can take a while if there
 // a lot of hmac-auth credentials present.
 func (s *HMACAuthService) ListAll(ctx context.Context) ([]*HMACAuth, error) {
-	var hmacAuths, data []*HMACAuth
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
-		if err != nil {
-			return nil, err
-		}
-		hmacAuths = append(hmacAuths, data...)
-	}
-	return hmacAuths, nil
+	return s.ListAllByEndpointAndOpt(ctx, "/hmac-auth", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of hmac-auth credentials
@@ -138,8 +113,12 @@ func (s *HMACAuthService) ListAll(ctx context.Context) ([]*HMACAuth, error) {
 // opt can be used to control pagination.
 func (s *HMACAuthService) ListForConsumer(ctx context.Context,
 	consumerUsernameOrID *string, opt *ListOpt) ([]*HMACAuth, *ListOpt, error) {
-	data, next, err := s.client.list(ctx,
-		"/consumers/"+*consumerUsernameOrID+"/hmac-auth", opt)
+	return s.ListByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/hmac-auth", opt)
+}
+
+func (s *HMACAuthService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*HMACAuth, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -154,4 +133,23 @@ func (s *HMACAuthService) ListForConsumer(ctx context.Context,
 	}
 
 	return hmacAuths, next, nil
+}
+
+func (s *HMACAuthService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*HMACAuth, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, true)
+	if err != nil {
+		return nil, err
+	}
+	var hmacAuths []*HMACAuth
+	for _, object := range data {
+		var hmacAuth HMACAuth
+		err = json.Unmarshal(object, &hmacAuth)
+		if err != nil {
+			return nil, err
+		}
+		hmacAuths = append(hmacAuths, &hmacAuth)
+	}
+
+	return hmacAuths, nil
 }
