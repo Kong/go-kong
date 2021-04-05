@@ -99,39 +99,14 @@ func (s *BasicAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *BasicAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*BasicAuth, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/basic-auths", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var basicAuths []*BasicAuth
-	for _, object := range data {
-		var basicAuth BasicAuth
-		err = json.Unmarshal(object, &basicAuth)
-		if err != nil {
-			return nil, nil, err
-		}
-		basicAuths = append(basicAuths, &basicAuth)
-	}
-
-	return basicAuths, next, nil
+	return s.ListByEndpointAndOpt(ctx, "/basic-auth", opt)
 }
 
 // ListAll fetches all basic-auth credentials in Kong.
 // This method can take a while if there
 // a lot of basic-auth credentials present.
 func (s *BasicAuthService) ListAll(ctx context.Context) ([]*BasicAuth, error) {
-	var basicAuths, data []*BasicAuth
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
-		if err != nil {
-			return nil, err
-		}
-		basicAuths = append(basicAuths, data...)
-	}
-	return basicAuths, nil
+	return s.ListAllByEndpointAndOpt(ctx, "/basic-auth", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of basic-auth credentials
@@ -139,8 +114,31 @@ func (s *BasicAuthService) ListAll(ctx context.Context) ([]*BasicAuth, error) {
 // opt can be used to control pagination.
 func (s *BasicAuthService) ListForConsumer(ctx context.Context,
 	consumerUsernameOrID *string, opt *ListOpt) ([]*BasicAuth, *ListOpt, error) {
-	data, next, err := s.client.list(ctx,
-		"/consumers/"+*consumerUsernameOrID+"/basic-auth", opt)
+	return s.ListByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/basic-auth", opt)
+}
+
+func (s *BasicAuthService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*BasicAuth, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, true)
+	if err != nil {
+		return nil, err
+	}
+	var basicAuths []*BasicAuth
+	for _, object := range data {
+		var basicAuth BasicAuth
+		err = json.Unmarshal(object, &basicAuth)
+		if err != nil {
+			return nil, err
+		}
+		basicAuths = append(basicAuths, &basicAuth)
+	}
+
+	return basicAuths, nil
+}
+
+func (s *BasicAuthService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*BasicAuth, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
