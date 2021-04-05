@@ -123,8 +123,20 @@ func (s *RBACRoleService) Delete(ctx context.Context,
 // List fetches a list of all Roles in Kong.
 func (s *RBACRoleService) List(ctx context.Context,
 	opt *ListOpt) ([]*RBACRole, *ListOpt, error) {
+	return s.ListByEndpointAndOpt(ctx, "/rbac/roles/", opt)
+}
 
-	data, next, err := s.client.list(ctx, "/rbac/roles/", opt)
+// ListAll fetches all  Roles in Kong.
+// This method can take a while if there
+// a lot of Roles present.
+func (s *RBACRoleService) ListAll(ctx context.Context) ([]*RBACRole, error) {
+	return s.ListAllByEndpointAndOpt(ctx, "/rbac/roles/", newOpt(nil))
+}
+
+func (s *RBACRoleService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*RBACRole, *ListOpt, error) {
+
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -141,20 +153,22 @@ func (s *RBACRoleService) List(ctx context.Context,
 	return roles, next, nil
 }
 
-// ListAll fetches all  Roles in Kong.
-// This method can take a while if there
-// a lot of Roles present.
-func (s *RBACRoleService) ListAll(ctx context.Context) ([]*RBACRole, error) {
-	var roles, data []*RBACRole
-	var err error
-	opt := &ListOpt{Size: pageSize}
+func (s *RBACRoleService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*RBACRole, error) {
 
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var roles []*RBACRole
+	for _, object := range data {
+		var role RBACRole
+		err = json.Unmarshal(object, &role)
 		if err != nil {
 			return nil, err
 		}
-		roles = append(roles, data...)
+		roles = append(roles, &role)
 	}
+
 	return roles, nil
 }
