@@ -97,39 +97,14 @@ func (s *KeyAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *KeyAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*KeyAuth, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/key-auths", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var keyAuths []*KeyAuth
-	for _, object := range data {
-		var keyAuth KeyAuth
-		err = json.Unmarshal(object, &keyAuth)
-		if err != nil {
-			return nil, nil, err
-		}
-		keyAuths = append(keyAuths, &keyAuth)
-	}
-
-	return keyAuths, next, nil
+	return s.ListByEndpointAndOpt(ctx, "/key-auth", opt)
 }
 
 // ListAll fetches all key-auth credentials in Kong.
 // This method can take a while if there
 // a lot of key-auth credentials present.
 func (s *KeyAuthService) ListAll(ctx context.Context) ([]*KeyAuth, error) {
-	var keyAuths, data []*KeyAuth
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
-		if err != nil {
-			return nil, err
-		}
-		keyAuths = append(keyAuths, data...)
-	}
-	return keyAuths, nil
+	return s.ListAllByEndpointAndOpt(ctx, "/key-auth", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of key-auth credentials
@@ -137,8 +112,12 @@ func (s *KeyAuthService) ListAll(ctx context.Context) ([]*KeyAuth, error) {
 // opt can be used to control pagination.
 func (s *KeyAuthService) ListForConsumer(ctx context.Context,
 	consumerUsernameOrID *string, opt *ListOpt) ([]*KeyAuth, *ListOpt, error) {
-	data, next, err := s.client.list(ctx,
-		"/consumers/"+*consumerUsernameOrID+"/key-auth", opt)
+	return s.ListByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/key-auth", opt)
+}
+
+func (s *KeyAuthService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*KeyAuth, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -153,4 +132,23 @@ func (s *KeyAuthService) ListForConsumer(ctx context.Context,
 	}
 
 	return keyAuths, next, nil
+}
+
+func (s *KeyAuthService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*KeyAuth, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, true)
+	if err != nil {
+		return nil, err
+	}
+	var keyAuths []*KeyAuth
+	for _, object := range data {
+		var keyAuth KeyAuth
+		err = json.Unmarshal(object, &keyAuth)
+		if err != nil {
+			return nil, err
+		}
+		keyAuths = append(keyAuths, &keyAuth)
+	}
+
+	return keyAuths, nil
 }
