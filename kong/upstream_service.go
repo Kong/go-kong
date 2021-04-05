@@ -127,12 +127,8 @@ func (s *UpstreamService) List(ctx context.Context,
 	var upstreams []*Upstream
 
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var upstream Upstream
-		err = json.Unmarshal(b, &upstream)
+		err = json.Unmarshal(object, &upstream)
 		if err != nil {
 			return nil, nil, err
 		}

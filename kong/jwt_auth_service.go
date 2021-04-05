@@ -104,12 +104,8 @@ func (s *JWTAuthService) List(ctx context.Context,
 	}
 	var jwts []*JWTAuth
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var jwtAuth JWTAuth
-		err = json.Unmarshal(b, &jwtAuth)
+		err = json.Unmarshal(object, &jwtAuth)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -149,12 +145,8 @@ func (s *JWTAuthService) ListForConsumer(ctx context.Context,
 	}
 	var jwts []*JWTAuth
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var jwtAuth JWTAuth
-		err = json.Unmarshal(b, &jwtAuth)
+		err = json.Unmarshal(object, &jwtAuth)
 		if err != nil {
 			return nil, nil, err
 		}

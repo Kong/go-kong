@@ -103,12 +103,8 @@ func (s *KeyAuthService) List(ctx context.Context,
 	}
 	var keyAuths []*KeyAuth
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var keyAuth KeyAuth
-		err = json.Unmarshal(b, &keyAuth)
+		err = json.Unmarshal(object, &keyAuth)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -148,12 +144,8 @@ func (s *KeyAuthService) ListForConsumer(ctx context.Context,
 	}
 	var keyAuths []*KeyAuth
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var keyAuth KeyAuth
-		err = json.Unmarshal(b, &keyAuth)
+		err = json.Unmarshal(object, &keyAuth)
 		if err != nil {
 			return nil, nil, err
 		}

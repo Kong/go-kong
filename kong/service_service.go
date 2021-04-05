@@ -155,12 +155,8 @@ func (s *Svcservice) List(ctx context.Context,
 	}
 	var services []*Service
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var service Service
-		err = json.Unmarshal(b, &service)
+		err = json.Unmarshal(object, &service)
 		if err != nil {
 			return nil, nil, err
 		}

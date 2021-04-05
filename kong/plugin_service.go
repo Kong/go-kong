@@ -154,12 +154,8 @@ func (s *PluginService) listByPath(ctx context.Context,
 	var plugins []*Plugin
 
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var plugin Plugin
-		err = json.Unmarshal(b, &plugin)
+		err = json.Unmarshal(object, &plugin)
 		if err != nil {
 			return nil, nil, err
 		}

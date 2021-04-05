@@ -146,12 +146,8 @@ func (s *WorkspaceService) List(ctx context.Context,
 	}
 	var workspaces []*Workspace
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var workspace Workspace
-		err = json.Unmarshal(b, &workspace)
+		err = json.Unmarshal(object, &workspace)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -256,12 +252,8 @@ func (s *WorkspaceService) ListEntities(ctx context.Context,
 	}
 	var workspaceEntities []*WorkspaceEntity
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, err
-		}
 		var workspaceEntity WorkspaceEntity
-		err = json.Unmarshal(b, &workspaceEntity)
+		err = json.Unmarshal(object, &workspaceEntity)
 		if err != nil {
 			return nil, err
 		}

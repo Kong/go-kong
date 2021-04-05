@@ -184,12 +184,8 @@ func (s *CustomEntityService) List(ctx context.Context, opt *ListOpt,
 	var entities []custom.Entity
 
 	for _, o := range data {
-		b, err := o.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var object custom.Object
-		err = json.Unmarshal(b, &object)
+		err = json.Unmarshal(o, &object)
 		if err != nil {
 			return nil, nil, err
 		}

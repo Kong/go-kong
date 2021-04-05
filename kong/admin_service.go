@@ -177,12 +177,8 @@ func (s *AdminService) List(ctx context.Context,
 	}
 	var admins []*Admin
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var admin Admin
-		err = json.Unmarshal(b, &admin)
+		err = json.Unmarshal(object, &admin)
 		if err != nil {
 			return nil, nil, err
 		}

@@ -106,12 +106,8 @@ func (s *Oauth2Service) List(ctx context.Context,
 	}
 	var oauth2Creds []*Oauth2Credential
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var oauth2Cred Oauth2Credential
-		err = json.Unmarshal(b, &oauth2Cred)
+		err = json.Unmarshal(object, &oauth2Cred)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -153,12 +149,8 @@ func (s *Oauth2Service) ListForConsumer(ctx context.Context,
 	}
 	var oauth2Creds []*Oauth2Credential
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var oauth2Cred Oauth2Credential
-		err = json.Unmarshal(b, &oauth2Cred)
+		err = json.Unmarshal(object, &oauth2Cred)
 		if err != nil {
 			return nil, nil, err
 		}

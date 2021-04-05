@@ -130,12 +130,8 @@ func (s *RBACRoleService) List(ctx context.Context,
 	}
 	var roles []*RBACRole
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var role RBACRole
-		err = json.Unmarshal(b, &role)
+		err = json.Unmarshal(object, &role)
 		if err != nil {
 			return nil, nil, err
 		}

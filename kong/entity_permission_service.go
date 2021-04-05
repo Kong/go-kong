@@ -138,12 +138,8 @@ func (s *RBACEntityPermissionService) ListAllForRole(ctx context.Context,
 	}
 	var eps []*RBACEntityPermission
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, err
-		}
 		var ep RBACEntityPermission
-		err = json.Unmarshal(b, &ep)
+		err = json.Unmarshal(object, &ep)
 		if err != nil {
 			return nil, err
 		}

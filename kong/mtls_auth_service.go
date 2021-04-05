@@ -104,12 +104,8 @@ func (s *MTLSAuthService) List(ctx context.Context,
 	}
 	var mtlss []*MTLSAuth
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var mtlsAuth MTLSAuth
-		err = json.Unmarshal(b, &mtlsAuth)
+		err = json.Unmarshal(object, &mtlsAuth)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -149,12 +145,8 @@ func (s *MTLSAuthService) ListForConsumer(ctx context.Context,
 	}
 	var mtlss []*MTLSAuth
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var mtlsAuth MTLSAuth
-		err = json.Unmarshal(b, &mtlsAuth)
+		err = json.Unmarshal(object, &mtlsAuth)
 		if err != nil {
 			return nil, nil, err
 		}

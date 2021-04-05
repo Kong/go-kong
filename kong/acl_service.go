@@ -104,12 +104,8 @@ func (s *ACLService) List(ctx context.Context,
 	}
 	var aclGroups []*ACLGroup
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var aclGroup ACLGroup
-		err = json.Unmarshal(b, &aclGroup)
+		err = json.Unmarshal(object, &aclGroup)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -127,12 +123,8 @@ func (s *ACLService) ListAllByOpt(ctx context.Context,
 	}
 	var aclGroups []*ACLGroup
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, err
-		}
 		var aclGroup ACLGroup
-		err = json.Unmarshal(b, &aclGroup)
+		err = json.Unmarshal(object, &aclGroup)
 		if err != nil {
 			return nil, err
 		}
@@ -162,12 +154,8 @@ func (s *ACLService) ListForConsumer(ctx context.Context,
 	}
 	var aclGroups []*ACLGroup
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var aclGroup ACLGroup
-		err = json.Unmarshal(b, &aclGroup)
+		err = json.Unmarshal(object, &aclGroup)
 		if err != nil {
 			return nil, nil, err
 		}

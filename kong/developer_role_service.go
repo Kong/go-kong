@@ -126,12 +126,8 @@ func (s *DeveloperRoleService) List(ctx context.Context,
 	}
 	var roles []*DeveloperRole
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var role DeveloperRole
-		err = json.Unmarshal(b, &role)
+		err = json.Unmarshal(object, &role)
 		if err != nil {
 			return nil, nil, err
 		}

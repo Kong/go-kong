@@ -141,12 +141,8 @@ func (s *RBACUserService) List(ctx context.Context,
 	}
 	var users []*RBACUser
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var user RBACUser
-		err = json.Unmarshal(b, &user)
+		err = json.Unmarshal(object, &user)
 		if err != nil {
 			return nil, nil, err
 		}

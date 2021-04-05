@@ -163,12 +163,8 @@ func (s *ConsumerService) List(ctx context.Context,
 	var consumers []*Consumer
 
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var consumer Consumer
-		err = json.Unmarshal(b, &consumer)
+		err = json.Unmarshal(object, &consumer)
 		if err != nil {
 			return nil, nil, err
 		}

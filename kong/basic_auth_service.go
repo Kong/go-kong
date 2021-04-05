@@ -105,12 +105,8 @@ func (s *BasicAuthService) List(ctx context.Context,
 	}
 	var basicAuths []*BasicAuth
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var basicAuth BasicAuth
-		err = json.Unmarshal(b, &basicAuth)
+		err = json.Unmarshal(object, &basicAuth)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -150,12 +146,8 @@ func (s *BasicAuthService) ListForConsumer(ctx context.Context,
 	}
 	var basicAuths []*BasicAuth
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var basicAuth BasicAuth
-		err = json.Unmarshal(b, &basicAuth)
+		err = json.Unmarshal(object, &basicAuth)
 		if err != nil {
 			return nil, nil, err
 		}

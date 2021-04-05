@@ -38,13 +38,13 @@ func newOpt(tags []string) *ListOpt {
 	return opt
 }
 
-// list fetches a list of an entity in Kong.
+// listAll fetches a list of all an entity in Kong.
 // opt can be used to control pagination and tags
 // allowNotFound allow to return an empty list for entities that are disabled or just doesn't exists on the used version
 func (c *Client) listAll(ctx context.Context,
 	endpoint string, opt *ListOpt,
-	allowNotFound bool) ([]json.RawMessage, error) {
-	var list, data []json.RawMessage
+	allowNotFound bool) ([][]byte, error) {
+	var list, data [][]byte
 	var err error
 
 	for opt != nil {
@@ -66,7 +66,7 @@ func (c *Client) listAll(ctx context.Context,
 // list fetches a list of an entity in Kong.
 // opt can be used to control pagination.
 func (c *Client) list(ctx context.Context,
-	endpoint string, opt *ListOpt) ([]json.RawMessage, *ListOpt, error) {
+	endpoint string, opt *ListOpt) ([][]byte, *ListOpt, error) {
 
 	q := constructQueryString(opt)
 	req, err := c.NewRequest("GET", endpoint, &q, nil)
@@ -96,7 +96,16 @@ func (c *Client) list(ctx context.Context,
 		}
 	}
 
-	return list.Data, next, nil
+	var data [][]byte
+	for _, object := range list.Data {
+		b, err := object.MarshalJSON()
+		if err != nil {
+			return nil, nil, err
+		}
+		data = append(data, b)
+	}
+
+	return data, next, nil
 }
 
 func constructQueryString(opt *ListOpt) qs {

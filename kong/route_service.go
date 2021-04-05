@@ -149,12 +149,8 @@ func (s *RouteService) List(ctx context.Context,
 	}
 	var routes []*Route
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var route Route
-		err = json.Unmarshal(b, &route)
+		err = json.Unmarshal(object, &route)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -193,12 +189,8 @@ func (s *RouteService) ListForService(ctx context.Context,
 	}
 	var routes []*Route
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var route Route
-		err = json.Unmarshal(b, &route)
+		err = json.Unmarshal(object, &route)
 		if err != nil {
 			return nil, nil, err
 		}

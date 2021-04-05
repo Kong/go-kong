@@ -125,12 +125,8 @@ func (s *SNIService) List(ctx context.Context,
 	}
 	var snis []*SNI
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var sni SNI
-		err = json.Unmarshal(b, &sni)
+		err = json.Unmarshal(object, &sni)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -152,12 +148,8 @@ func (s *SNIService) ListForCertificate(ctx context.Context,
 	}
 	var snis []*SNI
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var sni SNI
-		err = json.Unmarshal(b, &sni)
+		err = json.Unmarshal(object, &sni)
 		if err != nil {
 			return nil, nil, err
 		}

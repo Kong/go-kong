@@ -165,12 +165,8 @@ func (s *DeveloperService) List(ctx context.Context,
 	var developers []*Developer
 
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var developer Developer
-		err = json.Unmarshal(b, &developer)
+		err = json.Unmarshal(object, &developer)
 		if err != nil {
 			return nil, nil, err
 		}

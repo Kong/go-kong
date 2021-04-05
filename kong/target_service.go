@@ -96,12 +96,8 @@ func (s *TargetService) List(ctx context.Context,
 	}
 	var targets []*Target
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var target Target
-		err = json.Unmarshal(b, &target)
+		err = json.Unmarshal(object, &target)
 		if err != nil {
 			return nil, nil, err
 		}

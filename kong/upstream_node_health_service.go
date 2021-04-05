@@ -32,12 +32,8 @@ func (s *UpstreamNodeHealthService) List(
 	var upstreamNodeHealths []*UpstreamNodeHealth
 
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var upstreamNodeHealth UpstreamNodeHealth
-		err = json.Unmarshal(b, &upstreamNodeHealth)
+		err = json.Unmarshal(object, &upstreamNodeHealth)
 		if err != nil {
 			return nil, nil, err
 		}

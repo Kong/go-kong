@@ -125,12 +125,8 @@ func (s *CACertificateService) List(ctx context.Context,
 	}
 	var certificates []*CACertificate
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var certificate CACertificate
-		err = json.Unmarshal(b, &certificate)
+		err = json.Unmarshal(object, &certificate)
 		if err != nil {
 			return nil, nil, err
 		}

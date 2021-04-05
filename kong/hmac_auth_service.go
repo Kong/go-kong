@@ -104,12 +104,8 @@ func (s *HMACAuthService) List(ctx context.Context,
 	}
 	var hmacAuths []*HMACAuth
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var hmacAuth HMACAuth
-		err = json.Unmarshal(b, &hmacAuth)
+		err = json.Unmarshal(object, &hmacAuth)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -149,12 +145,8 @@ func (s *HMACAuthService) ListForConsumer(ctx context.Context,
 	}
 	var hmacAuths []*HMACAuth
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var hmacAuth HMACAuth
-		err = json.Unmarshal(b, &hmacAuth)
+		err = json.Unmarshal(object, &hmacAuth)
 		if err != nil {
 			return nil, nil, err
 		}
