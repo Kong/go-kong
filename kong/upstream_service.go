@@ -21,6 +21,8 @@ type AbstractUpstreamService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Upstream, *ListOpt, error)
 	// ListAll fetches all Upstreams in Kong.
 	ListAll(ctx context.Context) ([]*Upstream, error)
+	// ListAll fetches all Upstreams filterd by tags in Kong.
+	ListAllByTags(ctx context.Context, tags []string) ([]*Upstream, error)
 }
 
 // UpstreamService handles Upstreams in Kong.
@@ -120,7 +122,23 @@ func (s *UpstreamService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *UpstreamService) List(ctx context.Context,
 	opt *ListOpt) ([]*Upstream, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/upstreams", opt)
+	return s.ListByEndpointAndOpt(ctx, "/upstreams", opt)
+}
+
+// ListAll fetches all Upstreams in Kong.
+// This method can take a while if there
+// a lot of Upstreams present.
+func (s *UpstreamService) ListAll(ctx context.Context) ([]*Upstream, error) {
+	return s.ListAllByTags(ctx, nil)
+}
+
+func (s *UpstreamService) ListAllByTags(ctx context.Context, tags []string) ([]*Upstream, error) {
+	return s.ListAllByEndpointAndOpt(ctx, "/upstreams", newOpt(tags))
+}
+
+func (s *UpstreamService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Upstream, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -138,20 +156,22 @@ func (s *UpstreamService) List(ctx context.Context,
 	return upstreams, next, nil
 }
 
-// ListAll fetches all Upstreams in Kong.
-// This method can take a while if there
-// a lot of Upstreams present.
-func (s *UpstreamService) ListAll(ctx context.Context) ([]*Upstream, error) {
-	var upstreams, data []*Upstream
-	var err error
-	opt := &ListOpt{Size: pageSize}
+func (s *UpstreamService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Upstream, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var upstreams []*Upstream
 
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
+	for _, object := range data {
+		var upstream Upstream
+		err = json.Unmarshal(object, &upstream)
 		if err != nil {
 			return nil, err
 		}
-		upstreams = append(upstreams, data...)
+		upstreams = append(upstreams, &upstream)
 	}
+
 	return upstreams, nil
 }
