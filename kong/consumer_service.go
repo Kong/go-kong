@@ -24,6 +24,8 @@ type AbstractConsumerService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Consumer, *ListOpt, error)
 	// ListAll fetches all Consumers in Kong.
 	ListAll(ctx context.Context) ([]*Consumer, error)
+	// ListAll fetches all Consumers filterd by tags in Kong.
+	ListAllByTags(ctx context.Context, tags []string) ([]*Consumer, error)
 }
 
 // ConsumerService handles Consumers in Kong.
@@ -156,7 +158,26 @@ func (s *ConsumerService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *ConsumerService) List(ctx context.Context,
 	opt *ListOpt) ([]*Consumer, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/consumers", opt)
+	return s.ListByEndpointAndOpt(ctx, "/consumers", opt)
+}
+
+// ListAll fetches all Consumers in Kong.
+// This method can take a while if there
+// a lot of Consumers present.
+func (s *ConsumerService) ListAll(ctx context.Context) ([]*Consumer, error) {
+	return s.ListAllByTags(ctx, nil)
+}
+
+// ListAll fetches all Consumers filtered by tags in Kong.
+// This method can take a while if there
+// a lot of Consumers present.
+func (s *ConsumerService) ListAllByTags(ctx context.Context, tags []string) ([]*Consumer, error) {
+	return s.ListAllByEndpointAndOpt(ctx, "/consumers", newOpt(tags))
+}
+
+func (s *ConsumerService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Consumer, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -174,20 +195,22 @@ func (s *ConsumerService) List(ctx context.Context,
 	return consumers, next, nil
 }
 
-// ListAll fetches all Consumers in Kong.
-// This method can take a while if there
-// a lot of Consumers present.
-func (s *ConsumerService) ListAll(ctx context.Context) ([]*Consumer, error) {
-	var consumers, data []*Consumer
-	var err error
-	opt := &ListOpt{Size: pageSize}
+func (s *ConsumerService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Consumer, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var consumers []*Consumer
 
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
+	for _, object := range data {
+		var consumer Consumer
+		err = json.Unmarshal(object, &consumer)
 		if err != nil {
 			return nil, err
 		}
-		consumers = append(consumers, data...)
+		consumers = append(consumers, &consumer)
 	}
+
 	return consumers, nil
 }
