@@ -139,40 +139,12 @@ func (s *WorkspaceService) Delete(ctx context.Context,
 // List fetches a list of all Workspaces in Kong.
 func (s *WorkspaceService) List(ctx context.Context,
 	opt *ListOpt) ([]*Workspace, *ListOpt, error) {
-
-	data, next, err := s.client.list(ctx, "/workspaces/", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var workspaces []*Workspace
-	for _, object := range data {
-		var workspace Workspace
-		err = json.Unmarshal(object, &workspace)
-		if err != nil {
-			return nil, nil, err
-		}
-		workspaces = append(workspaces, &workspace)
-	}
-
-	return workspaces, next, nil
+	return s.ListByEndpointAndOpt(ctx, "/workspaces/", opt)
 }
 
 // ListAll fetches all workspaces in Kong.
 func (s *WorkspaceService) ListAll(ctx context.Context) ([]*Workspace, error) {
-
-	var workspaces, data []*Workspace
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
-		if err != nil {
-			return nil, err
-		}
-		workspaces = append(workspaces, data...)
-	}
-
-	return workspaces, nil
+	return s.ListAllByEndpointAndOpt(ctx, "/workspaces/", newOpt(nil))
 }
 
 // AddEntities adds entity ids given as a a comma delimited string
@@ -261,4 +233,43 @@ func (s *WorkspaceService) ListEntities(ctx context.Context,
 	}
 
 	return workspaceEntities, nil
+}
+
+func (s *WorkspaceService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Workspace, *ListOpt, error) {
+
+	data, next, err := s.client.list(ctx, endpoint, opt)
+	if err != nil {
+		return nil, nil, err
+	}
+	var workspaces []*Workspace
+	for _, object := range data {
+		var workspace Workspace
+		err = json.Unmarshal(object, &workspace)
+		if err != nil {
+			return nil, nil, err
+		}
+		workspaces = append(workspaces, &workspace)
+	}
+
+	return workspaces, next, nil
+}
+
+func (s *WorkspaceService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Workspace, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var workspaces []*Workspace
+	for _, object := range data {
+		var workspace Workspace
+		err = json.Unmarshal(object, &workspace)
+		if err != nil {
+			return nil, err
+		}
+		workspaces = append(workspaces, &workspace)
+	}
+
+	return workspaces, nil
 }
