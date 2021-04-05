@@ -23,6 +23,8 @@ type AbstractRouteService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Route, *ListOpt, error)
 	// ListAll fetches all Routes in Kong.
 	ListAll(ctx context.Context) ([]*Route, error)
+	// ListAll fetches all Routes filtered by tags in Kong.
+	ListAllByTags(ctx context.Context, tags []string) ([]*Route, error)
 	// ListForService fetches a list of Routes in Kong associated with a service.
 	ListForService(ctx context.Context, serviceNameOrID *string, opt *ListOpt) ([]*Route, *ListOpt, error)
 }
@@ -143,47 +145,30 @@ func (s *RouteService) Delete(ctx context.Context, nameOrID *string) error {
 // opt can be used to control pagination.
 func (s *RouteService) List(ctx context.Context,
 	opt *ListOpt) ([]*Route, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/routes", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var routes []*Route
-	for _, object := range data {
-		var route Route
-		err = json.Unmarshal(object, &route)
-		if err != nil {
-			return nil, nil, err
-		}
-		routes = append(routes, &route)
-	}
-
-	return routes, next, nil
+	return s.ListByEndpointAndOpt(ctx, "/routes", opt)
 }
 
 // ListAll fetches all Routes in Kong.
 // This method can take a while if there
 // a lot of Routes present.
 func (s *RouteService) ListAll(ctx context.Context) ([]*Route, error) {
-	var routes, data []*Route
-	var err error
-	opt := &ListOpt{Size: pageSize}
+	return s.ListAllByTags(ctx, nil)
+}
 
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
-		if err != nil {
-			return nil, err
-		}
-		routes = append(routes, data...)
-	}
-	return routes, nil
+func (s *RouteService) ListAllByTags(ctx context.Context, tags []string) ([]*Route, error) {
+	return s.ListAllByEndpointAndOpt(ctx, "/routes", newOpt(tags))
 }
 
 // ListForService fetches a list of Routes in Kong associated with a service.
 // opt can be used to control pagination.
 func (s *RouteService) ListForService(ctx context.Context,
 	serviceNameOrID *string, opt *ListOpt) ([]*Route, *ListOpt, error) {
-	data, next, err := s.client.list(ctx,
-		"/services/"+*serviceNameOrID+"/routes", opt)
+	return s.ListByEndpointAndOpt(ctx, "/services/"+*serviceNameOrID+"/routes", opt)
+}
+
+func (s *RouteService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Route, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -198,4 +183,23 @@ func (s *RouteService) ListForService(ctx context.Context,
 	}
 
 	return routes, next, nil
+}
+
+func (s *RouteService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Route, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var routes []*Route
+	for _, object := range data {
+		var route Route
+		err = json.Unmarshal(object, &route)
+		if err != nil {
+			return nil, err
+		}
+		routes = append(routes, &route)
+	}
+
+	return routes, nil
 }
