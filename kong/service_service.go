@@ -23,7 +23,7 @@ type AbstractSvcService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Service, *ListOpt, error)
 	// ListAll fetches all Services in Kong.
 	ListAll(ctx context.Context) ([]*Service, error)
-	// ListAll fetches all Services filterd by tags in Kong.
+	// ListAll fetches all Services filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*Service, error)
 }
 
