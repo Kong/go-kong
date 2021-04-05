@@ -23,6 +23,8 @@ type AbstractSvcService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Service, *ListOpt, error)
 	// ListAll fetches all Services in Kong.
 	ListAll(ctx context.Context) ([]*Service, error)
+	// ListAll fetches all Services filterd by tags in Kong.
+	ListAllByTags(ctx context.Context, tags []string) ([]*Service, error)
 }
 
 // Svcservice handles services in Kong.
@@ -149,7 +151,23 @@ func (s *Svcservice) Delete(ctx context.Context, nameOrID *string) error {
 // opt can be used to control pagination.
 func (s *Svcservice) List(ctx context.Context,
 	opt *ListOpt) ([]*Service, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/services", opt)
+	return s.ListByEndpointAndOpt(ctx, "/services", opt)
+}
+
+// ListAll fetches all Services in Kong.
+// This method can take a while if there
+// a lot of Services present.
+func (s *Svcservice) ListAll(ctx context.Context) ([]*Service, error) {
+	return s.ListAllByTags(ctx, nil)
+}
+
+func (s *Svcservice) ListAllByTags(ctx context.Context, tags []string) ([]*Service, error) {
+	return s.ListAllByEndpointAndOpt(ctx, "/services", newOpt(tags))
+}
+
+func (s *Svcservice) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Service, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -166,20 +184,21 @@ func (s *Svcservice) List(ctx context.Context,
 	return services, next, nil
 }
 
-// ListAll fetches all Services in Kong.
-// This method can take a while if there
-// a lot of Services present.
-func (s *Svcservice) ListAll(ctx context.Context) ([]*Service, error) {
-	var services, data []*Service
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
+func (s *Svcservice) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Service, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var services []*Service
+	for _, object := range data {
+		var service Service
+		err = json.Unmarshal(object, &service)
 		if err != nil {
 			return nil, err
 		}
-		services = append(services, data...)
+		services = append(services, &service)
 	}
+
 	return services, nil
 }
