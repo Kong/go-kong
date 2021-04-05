@@ -97,14 +97,14 @@ func (s *KeyAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *KeyAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*KeyAuth, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/key-auth", opt)
+	return s.ListByEndpointAndOpt(ctx, "/key-auths", opt)
 }
 
 // ListAll fetches all key-auth credentials in Kong.
 // This method can take a while if there
 // a lot of key-auth credentials present.
 func (s *KeyAuthService) ListAll(ctx context.Context) ([]*KeyAuth, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/key-auth", newOpt(nil))
+	return s.ListAllByEndpointAndOpt(ctx, "/key-auths", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of key-auth credentials

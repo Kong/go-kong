@@ -98,14 +98,14 @@ func (s *HMACAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *HMACAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*HMACAuth, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/hmac-auth", opt)
+	return s.ListByEndpointAndOpt(ctx, "/hmac-auths", opt)
 }
 
 // ListAll fetches all hmac-auth credentials in Kong.
 // This method can take a while if there
 // a lot of hmac-auth credentials present.
 func (s *HMACAuthService) ListAll(ctx context.Context) ([]*HMACAuth, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/hmac-auth", newOpt(nil))
+	return s.ListAllByEndpointAndOpt(ctx, "/hmac-auths", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of hmac-auth credentials

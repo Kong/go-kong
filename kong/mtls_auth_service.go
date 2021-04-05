@@ -98,7 +98,7 @@ func (s *MTLSAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *MTLSAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*MTLSAuth, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/mtls-auth", opt)
+	return s.ListByEndpointAndOpt(ctx, "/mtls-auths", opt)
 }
 
 // ListAll fetches all MTLS credentials in Kong.
