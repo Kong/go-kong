@@ -17,7 +17,7 @@ type AbstractTargetService interface {
 	List(ctx context.Context, upstreamNameOrID *string, opt *ListOpt) ([]*Target, *ListOpt, error)
 	// ListAll fetches all Targets in Kong for an upstream.
 	ListAll(ctx context.Context, upstreamNameOrID *string) ([]*Target, error)
-	// ListAll fetches all Targets filtered by tags in Kong for an upstream.
+	// ListAllByTags fetches all Targets filtered by tags in Kong for an upstream.
 	ListAllByTags(ctx context.Context, upstreamNameOrID *string, tags []string) ([]*Target, error)
 	// MarkHealthy marks target belonging to upstreamNameOrID as healthy in
 	// Kong's load balancer.

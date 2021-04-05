@@ -19,7 +19,7 @@ type AbstractRBACRoleService interface {
 	Delete(ctx context.Context, RoleOrID *string) error
 	// List fetches a list of Roles in Kong.
 	List(ctx context.Context, opt *ListOpt) ([]*RBACRole, *ListOpt, error)
-	// List fetches a list of all Roles in Kong.
+	// ListAll fetches a list of all Roles in Kong.
 	ListAll(ctx context.Context) ([]*RBACRole, error)
 }
 

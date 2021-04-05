@@ -21,7 +21,7 @@ type AbstractUpstreamService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Upstream, *ListOpt, error)
 	// ListAll fetches all Upstreams in Kong.
 	ListAll(ctx context.Context) ([]*Upstream, error)
-	// ListAll fetches all Upstreams filtered by tags in Kong.
+	// ListAllByTags fetches all Upstreams filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*Upstream, error)
 }
 

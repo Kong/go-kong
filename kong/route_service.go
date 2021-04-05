@@ -23,7 +23,7 @@ type AbstractRouteService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Route, *ListOpt, error)
 	// ListAll fetches all Routes in Kong.
 	ListAll(ctx context.Context) ([]*Route, error)
-	// ListAll fetches all Routes filtered by tags in Kong.
+	// ListAllByTags fetches all Routes filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*Route, error)
 	// ListForService fetches a list of Routes in Kong associated with a service.
 	ListForService(ctx context.Context, serviceNameOrID *string, opt *ListOpt) ([]*Route, *ListOpt, error)

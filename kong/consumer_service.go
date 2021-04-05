@@ -24,7 +24,7 @@ type AbstractConsumerService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Consumer, *ListOpt, error)
 	// ListAll fetches all Consumers in Kong.
 	ListAll(ctx context.Context) ([]*Consumer, error)
-	// ListAll fetches all Consumers filtered by tags in Kong.
+	// ListAllByTags fetches all Consumers filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*Consumer, error)
 }
 

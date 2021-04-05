@@ -22,7 +22,7 @@ type AbstractPluginService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Plugin, *ListOpt, error)
 	// ListAll fetches all Plugins in Kong.
 	ListAll(ctx context.Context) ([]*Plugin, error)
-	// ListAll fetches all Plugins in Kong.
+	// ListAllByTags fetches all Plugins filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*Plugin, error)
 	// ListAllForConsumer fetches all Plugins in Kong enabled for a consumer.
 	ListAllForConsumer(ctx context.Context, consumerIDorName *string) ([]*Plugin, error)
@@ -209,7 +209,7 @@ func (s *PluginService) ListAll(ctx context.Context) ([]*Plugin, error) {
 	return s.ListAllByTags(ctx, nil)
 }
 
-// ListAll fetches all Plugins in Kong.
+// ListAll fetches all Plugins filtered by tags in Kong.
 // This method can take a while if there
 // a lot of Plugins present.
 func (s *PluginService) ListAllByTags(ctx context.Context, tags []string) ([]*Plugin, error) {

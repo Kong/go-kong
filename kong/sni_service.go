@@ -23,7 +23,7 @@ type AbstractSNIService interface {
 	ListForCertificate(ctx context.Context, certificateID *string, opt *ListOpt) ([]*SNI, *ListOpt, error)
 	// ListAll fetches all SNIs in Kong.
 	ListAll(ctx context.Context) ([]*SNI, error)
-	// ListAll fetches all SNIs filtered by tags in Kong.
+	// ListAllByTags fetches all SNIs filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*SNI, error)
 }
 
