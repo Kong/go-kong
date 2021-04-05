@@ -22,7 +22,7 @@ type AbstractCertificateService interface {
 	// ListAll fetches all Certificates in Kong.
 	ListAll(ctx context.Context) ([]*Certificate, error)
 	// ListAll fetches all Certificates filtered by tags in Kong.
-	ListAllByTags(ctx context.Context) ([]*Certificate, error)
+	ListAllByTags(ctx context.Context, tags []string) ([]*Certificate, error)
 }
 
 // CertificateService handles Certificates in Kong.
