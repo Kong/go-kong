@@ -21,6 +21,8 @@ type AbstractCertificateService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Certificate, *ListOpt, error)
 	// ListAll fetches all Certificates in Kong.
 	ListAll(ctx context.Context) ([]*Certificate, error)
+	// ListAll fetches all Certificates filtered by tags in Kong.
+	ListAllByTags(ctx context.Context) ([]*Certificate, error)
 }
 
 // CertificateService handles Certificates in Kong.
@@ -119,7 +121,26 @@ func (s *CertificateService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *CertificateService) List(ctx context.Context,
 	opt *ListOpt) ([]*Certificate, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/certificates", opt)
+	return s.ListByEndpointAndOpt(ctx, "/certificates", opt)
+}
+
+// ListAll fetches all Certificates in Kong.
+// This method can take a while if there
+// a lot of Certificates present.
+func (s *CertificateService) ListAll(ctx context.Context) ([]*Certificate,
+	error) {
+	return s.ListAllByTags(ctx, nil)
+}
+
+func (s *CertificateService) ListAllByTags(ctx context.Context,
+	tags []string) ([]*Certificate,
+	error) {
+	return s.ListAllByEndpointAndOpt(ctx, "/certificates", newOpt(tags))
+}
+
+func (s *CertificateService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Certificate, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -136,21 +157,21 @@ func (s *CertificateService) List(ctx context.Context,
 	return certificates, next, nil
 }
 
-// ListAll fetches all Certificates in Kong.
-// This method can take a while if there
-// a lot of Certificates present.
-func (s *CertificateService) ListAll(ctx context.Context) ([]*Certificate,
-	error) {
-	var certificates, data []*Certificate
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
+func (s *CertificateService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Certificate, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var certificates []*Certificate
+	for _, object := range data {
+		var certificate Certificate
+		err = json.Unmarshal(object, &certificate)
 		if err != nil {
 			return nil, err
 		}
-		certificates = append(certificates, data...)
+		certificates = append(certificates, &certificate)
 	}
+
 	return certificates, nil
 }
