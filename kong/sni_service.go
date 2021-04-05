@@ -23,6 +23,8 @@ type AbstractSNIService interface {
 	ListForCertificate(ctx context.Context, certificateID *string, opt *ListOpt) ([]*SNI, *ListOpt, error)
 	// ListAll fetches all SNIs in Kong.
 	ListAll(ctx context.Context) ([]*SNI, error)
+	// ListAll fetches all SNIs filterd by tags in Kong.
+	ListAllByTags(ctx context.Context, tags []string) ([]*SNI, error)
 }
 
 // SNIService handles SNIs in Kong.
@@ -119,21 +121,7 @@ func (s *SNIService) Delete(ctx context.Context, usernameOrID *string) error {
 // opt can be used to control pagination.
 func (s *SNIService) List(ctx context.Context,
 	opt *ListOpt) ([]*SNI, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/snis", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var snis []*SNI
-	for _, object := range data {
-		var sni SNI
-		err = json.Unmarshal(object, &sni)
-		if err != nil {
-			return nil, nil, err
-		}
-		snis = append(snis, &sni)
-	}
-
-	return snis, next, nil
+	return s.ListByEndpointAndOpt(ctx, "/snis", opt)
 }
 
 // ListForCertificate fetches a list of SNIs
@@ -141,8 +129,23 @@ func (s *SNIService) List(ctx context.Context,
 // opt can be used to control pagination.
 func (s *SNIService) ListForCertificate(ctx context.Context,
 	certificateID *string, opt *ListOpt) ([]*SNI, *ListOpt, error) {
-	data, next, err := s.client.list(ctx,
-		"/certificates/"+*certificateID+"/snis", opt)
+	return s.ListByEndpointAndOpt(ctx, "/certificates/"+*certificateID+"/snis", opt)
+}
+
+// ListAll fetches all SNIs in Kong.
+// This method can take a while if there
+// a lot of SNIs present.
+func (s *SNIService) ListAll(ctx context.Context) ([]*SNI, error) {
+	return s.ListAllByTags(ctx, nil)
+}
+
+func (s *SNIService) ListAllByTags(ctx context.Context, tags []string) ([]*SNI, error) {
+	return s.ListAllByEndpointAndOpt(ctx, "/snis", newOpt(tags))
+}
+
+func (s *SNIService) ListByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*SNI, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -159,20 +162,21 @@ func (s *SNIService) ListForCertificate(ctx context.Context,
 	return snis, next, nil
 }
 
-// ListAll fetches all SNIs in Kong.
-// This method can take a while if there
-// a lot of SNIs present.
-func (s *SNIService) ListAll(ctx context.Context) ([]*SNI, error) {
-	var snis, data []*SNI
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
+func (s *SNIService) ListAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*SNI, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var snis []*SNI
+	for _, object := range data {
+		var sni SNI
+		err = json.Unmarshal(object, &sni)
 		if err != nil {
 			return nil, err
 		}
-		snis = append(snis, data...)
+		snis = append(snis, &sni)
 	}
+
 	return snis, nil
 }
