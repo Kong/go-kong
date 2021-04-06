@@ -123,17 +123,17 @@ func (s *RBACRoleService) Delete(ctx context.Context,
 // List fetches a list of all Roles in Kong.
 func (s *RBACRoleService) List(ctx context.Context,
 	opt *ListOpt) ([]*RBACRole, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/rbac/roles/", opt)
+	return s.listByEndpointAndOpt(ctx, "/rbac/roles/", opt)
 }
 
 // ListAll fetches all  Roles in Kong.
 // This method can take a while if there
 // a lot of Roles present.
 func (s *RBACRoleService) ListAll(ctx context.Context) ([]*RBACRole, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/rbac/roles/", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/rbac/roles/", newOpt(nil))
 }
 
-func (s *RBACRoleService) ListByEndpointAndOpt(ctx context.Context,
+func (s *RBACRoleService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*RBACRole, *ListOpt, error) {
 
 	data, next, err := s.client.list(ctx, endpoint, opt)
@@ -153,7 +153,7 @@ func (s *RBACRoleService) ListByEndpointAndOpt(ctx context.Context,
 	return roles, next, nil
 }
 
-func (s *RBACRoleService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *RBACRoleService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*RBACRole, error) {
 
 	data, err := s.client.listAll(ctx, endpoint, opt, false)

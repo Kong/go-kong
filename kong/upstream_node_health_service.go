@@ -27,7 +27,7 @@ func (s *UpstreamNodeHealthService) List(ctx context.Context,
 	}
 	endpoint := fmt.Sprintf("/upstreams/%v/health", *upstreamNameOrID)
 
-	return s.ListByEndpointAndOpt(ctx, endpoint, opt)
+	return s.listByEndpointAndOpt(ctx, endpoint, opt)
 }
 
 // ListAll fetches all Upstream Node Healths in Kong.
@@ -39,10 +39,10 @@ func (s *UpstreamNodeHealthService) ListAll(ctx context.Context,
 		return nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
 	}
 	endpoint := fmt.Sprintf("/upstreams/%v/health", *upstreamNameOrID)
-	return s.ListAllByEndpointAndOpt(ctx, endpoint, newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, endpoint, newOpt(nil))
 }
 
-func (s *UpstreamNodeHealthService) ListByEndpointAndOpt(ctx context.Context,
+func (s *UpstreamNodeHealthService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*UpstreamNodeHealth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
@@ -62,7 +62,7 @@ func (s *UpstreamNodeHealthService) ListByEndpointAndOpt(ctx context.Context,
 	return upstreamNodeHealths, next, nil
 }
 
-func (s *UpstreamNodeHealthService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *UpstreamNodeHealthService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*UpstreamNodeHealth, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, false)
 	if err != nil {

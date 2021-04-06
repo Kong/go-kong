@@ -99,14 +99,14 @@ func (s *BasicAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *BasicAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*BasicAuth, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/basic-auths", opt)
+	return s.listByEndpointAndOpt(ctx, "/basic-auths", opt)
 }
 
 // ListAll fetches all basic-auth credentials in Kong.
 // This method can take a while if there
 // a lot of basic-auth credentials present.
 func (s *BasicAuthService) ListAll(ctx context.Context) ([]*BasicAuth, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/basic-auths", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/basic-auths", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of basic-auth credentials
@@ -114,10 +114,10 @@ func (s *BasicAuthService) ListAll(ctx context.Context) ([]*BasicAuth, error) {
 // opt can be used to control pagination.
 func (s *BasicAuthService) ListForConsumer(ctx context.Context,
 	consumerUsernameOrID *string, opt *ListOpt) ([]*BasicAuth, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/basic-auth", opt)
+	return s.listByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/basic-auth", opt)
 }
 
-func (s *BasicAuthService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *BasicAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*BasicAuth, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, true)
 	if err != nil {
@@ -136,7 +136,7 @@ func (s *BasicAuthService) ListAllByEndpointAndOpt(ctx context.Context,
 	return basicAuths, nil
 }
 
-func (s *BasicAuthService) ListByEndpointAndOpt(ctx context.Context,
+func (s *BasicAuthService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*BasicAuth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {

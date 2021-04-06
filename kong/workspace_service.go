@@ -139,12 +139,12 @@ func (s *WorkspaceService) Delete(ctx context.Context,
 // List fetches a list of all Workspaces in Kong.
 func (s *WorkspaceService) List(ctx context.Context,
 	opt *ListOpt) ([]*Workspace, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/workspaces/", opt)
+	return s.listByEndpointAndOpt(ctx, "/workspaces/", opt)
 }
 
 // ListAll fetches all workspaces in Kong.
 func (s *WorkspaceService) ListAll(ctx context.Context) ([]*Workspace, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/workspaces/", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/workspaces/", newOpt(nil))
 }
 
 // AddEntities adds entity ids given as a a comma delimited string
@@ -235,7 +235,7 @@ func (s *WorkspaceService) ListEntities(ctx context.Context,
 	return workspaceEntities, nil
 }
 
-func (s *WorkspaceService) ListByEndpointAndOpt(ctx context.Context,
+func (s *WorkspaceService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Workspace, *ListOpt, error) {
 
 	data, next, err := s.client.list(ctx, endpoint, opt)
@@ -255,7 +255,7 @@ func (s *WorkspaceService) ListByEndpointAndOpt(ctx context.Context,
 	return workspaces, next, nil
 }
 
-func (s *WorkspaceService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *WorkspaceService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Workspace, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, false)
 	if err != nil {

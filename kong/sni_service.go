@@ -121,7 +121,7 @@ func (s *SNIService) Delete(ctx context.Context, usernameOrID *string) error {
 // opt can be used to control pagination.
 func (s *SNIService) List(ctx context.Context,
 	opt *ListOpt) ([]*SNI, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/snis", opt)
+	return s.listByEndpointAndOpt(ctx, "/snis", opt)
 }
 
 // ListForCertificate fetches a list of SNIs
@@ -129,7 +129,7 @@ func (s *SNIService) List(ctx context.Context,
 // opt can be used to control pagination.
 func (s *SNIService) ListForCertificate(ctx context.Context,
 	certificateID *string, opt *ListOpt) ([]*SNI, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/certificates/"+*certificateID+"/snis", opt)
+	return s.listByEndpointAndOpt(ctx, "/certificates/"+*certificateID+"/snis", opt)
 }
 
 // ListAll fetches all SNIs in Kong.
@@ -140,10 +140,10 @@ func (s *SNIService) ListAll(ctx context.Context) ([]*SNI, error) {
 }
 
 func (s *SNIService) ListAllByTags(ctx context.Context, tags []string) ([]*SNI, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/snis", newOpt(tags))
+	return s.listAllByEndpointAndOpt(ctx, "/snis", newOpt(tags))
 }
 
-func (s *SNIService) ListByEndpointAndOpt(ctx context.Context,
+func (s *SNIService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*SNI, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
@@ -162,7 +162,7 @@ func (s *SNIService) ListByEndpointAndOpt(ctx context.Context,
 	return snis, next, nil
 }
 
-func (s *SNIService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *SNIService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*SNI, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, false)
 	if err != nil {

@@ -90,7 +90,7 @@ func (s *TargetService) List(ctx context.Context,
 	if isEmptyString(upstreamNameOrID) {
 		return nil, nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
 	}
-	return s.ListByEndpointAndOpt(ctx, "/upstreams/"+*upstreamNameOrID+"/targets", opt)
+	return s.listByEndpointAndOpt(ctx, "/upstreams/"+*upstreamNameOrID+"/targets", opt)
 }
 
 // ListAll fetches all Targets in Kong for an upstream.
@@ -104,7 +104,7 @@ func (s *TargetService) ListAllByTags(ctx context.Context,
 	if isEmptyString(upstreamNameOrID) {
 		return nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
 	}
-	return s.ListAllByEndpointAndOpt(ctx, "/upstreams/"+*upstreamNameOrID+"/targets", newOpt(tags))
+	return s.listAllByEndpointAndOpt(ctx, "/upstreams/"+*upstreamNameOrID+"/targets", newOpt(tags))
 }
 
 // MarkHealthy marks target belonging to upstreamNameOrID as healthy in
@@ -171,7 +171,7 @@ func (s *TargetService) MarkUnhealthy(ctx context.Context,
 	return err
 }
 
-func (s *TargetService) ListByEndpointAndOpt(ctx context.Context,
+func (s *TargetService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Target, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
@@ -190,7 +190,7 @@ func (s *TargetService) ListByEndpointAndOpt(ctx context.Context,
 	return targets, next, nil
 }
 
-func (s *TargetService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *TargetService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Target, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, false)
 	if err != nil {

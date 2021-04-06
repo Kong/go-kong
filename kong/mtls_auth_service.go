@@ -98,14 +98,14 @@ func (s *MTLSAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *MTLSAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*MTLSAuth, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/mtls-auths", opt)
+	return s.listByEndpointAndOpt(ctx, "/mtls-auths", opt)
 }
 
 // ListAll fetches all MTLS credentials in Kong.
 // This method can take a while if there
 // a lot of MTLS credentials present.
 func (s *MTLSAuthService) ListAll(ctx context.Context) ([]*MTLSAuth, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/mtls-auths", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/mtls-auths", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of mtls credentials
@@ -113,10 +113,10 @@ func (s *MTLSAuthService) ListAll(ctx context.Context) ([]*MTLSAuth, error) {
 // opt can be used to control pagination.
 func (s *MTLSAuthService) ListForConsumer(ctx context.Context,
 	consumerUsernameOrID *string, opt *ListOpt) ([]*MTLSAuth, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/mtls-auth", opt)
+	return s.listByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/mtls-auth", opt)
 }
 
-func (s *MTLSAuthService) ListByEndpointAndOpt(ctx context.Context,
+func (s *MTLSAuthService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*MTLSAuth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
@@ -135,7 +135,7 @@ func (s *MTLSAuthService) ListByEndpointAndOpt(ctx context.Context,
 	return mtlss, next, nil
 }
 
-func (s *MTLSAuthService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *MTLSAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*MTLSAuth, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, true)
 	if err != nil {

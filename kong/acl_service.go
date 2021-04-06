@@ -98,7 +98,7 @@ func (s *ACLService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *ACLService) List(ctx context.Context,
 	opt *ListOpt) ([]*ACLGroup, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/acls", opt)
+	return s.listByEndpointAndOpt(ctx, "/acls", opt)
 }
 
 // ListAll fetches all all ACL group associations in Kong.
@@ -106,7 +106,7 @@ func (s *ACLService) List(ctx context.Context,
 // a lot of ACLGroup associations are present.
 // tags are not supported on credentials
 func (s *ACLService) ListAll(ctx context.Context) ([]*ACLGroup, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/acls", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/acls", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of ACL groups
@@ -114,10 +114,10 @@ func (s *ACLService) ListAll(ctx context.Context) ([]*ACLGroup, error) {
 // opt can be used to control pagination.
 func (s *ACLService) ListForConsumer(ctx context.Context,
 	consumerUsernameOrID *string, opt *ListOpt) ([]*ACLGroup, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/acls", opt)
+	return s.listByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/acls", opt)
 }
 
-func (s *ACLService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *ACLService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*ACLGroup, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, true)
 	if err != nil {
@@ -136,7 +136,7 @@ func (s *ACLService) ListAllByEndpointAndOpt(ctx context.Context,
 	return aclGroups, nil
 }
 
-func (s *ACLService) ListByEndpointAndOpt(ctx context.Context,
+func (s *ACLService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*ACLGroup, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {

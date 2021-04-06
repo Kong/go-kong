@@ -158,7 +158,7 @@ func (s *ConsumerService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *ConsumerService) List(ctx context.Context,
 	opt *ListOpt) ([]*Consumer, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/consumers", opt)
+	return s.listByEndpointAndOpt(ctx, "/consumers", opt)
 }
 
 // ListAll fetches all Consumers in Kong.
@@ -172,10 +172,10 @@ func (s *ConsumerService) ListAll(ctx context.Context) ([]*Consumer, error) {
 // This method can take a while if there
 // a lot of Consumers present.
 func (s *ConsumerService) ListAllByTags(ctx context.Context, tags []string) ([]*Consumer, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/consumers", newOpt(tags))
+	return s.listAllByEndpointAndOpt(ctx, "/consumers", newOpt(tags))
 }
 
-func (s *ConsumerService) ListByEndpointAndOpt(ctx context.Context,
+func (s *ConsumerService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Consumer, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
@@ -195,7 +195,7 @@ func (s *ConsumerService) ListByEndpointAndOpt(ctx context.Context,
 	return consumers, next, nil
 }
 
-func (s *ConsumerService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *ConsumerService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Consumer, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, false)
 	if err != nil {

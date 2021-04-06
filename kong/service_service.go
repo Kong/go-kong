@@ -151,7 +151,7 @@ func (s *Svcservice) Delete(ctx context.Context, nameOrID *string) error {
 // opt can be used to control pagination.
 func (s *Svcservice) List(ctx context.Context,
 	opt *ListOpt) ([]*Service, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/services", opt)
+	return s.listByEndpointAndOpt(ctx, "/services", opt)
 }
 
 // ListAll fetches all Services in Kong.
@@ -162,10 +162,10 @@ func (s *Svcservice) ListAll(ctx context.Context) ([]*Service, error) {
 }
 
 func (s *Svcservice) ListAllByTags(ctx context.Context, tags []string) ([]*Service, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/services", newOpt(tags))
+	return s.listAllByEndpointAndOpt(ctx, "/services", newOpt(tags))
 }
 
-func (s *Svcservice) ListByEndpointAndOpt(ctx context.Context,
+func (s *Svcservice) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Service, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
@@ -184,7 +184,7 @@ func (s *Svcservice) ListByEndpointAndOpt(ctx context.Context,
 	return services, next, nil
 }
 
-func (s *Svcservice) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *Svcservice) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Service, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, false)
 	if err != nil {

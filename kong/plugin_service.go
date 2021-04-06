@@ -172,10 +172,10 @@ func (s *PluginService) listByPath(ctx context.Context,
 // a lot of Plugins present.
 func (s *PluginService) listAllByPath(ctx context.Context,
 	path string) ([]*Plugin, error) {
-	return s.ListAllByEndpointAndOpt(ctx, path, newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, path, newOpt(nil))
 }
 
-func (s *PluginService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *PluginService) listAllByEndpointAndOpt(ctx context.Context,
 	path string, opt *ListOpt) ([]*Plugin, error) {
 	data, err := s.client.listAll(ctx, path, opt, false)
 	if err != nil {
@@ -213,7 +213,7 @@ func (s *PluginService) ListAll(ctx context.Context) ([]*Plugin, error) {
 // This method can take a while if there
 // a lot of Plugins present.
 func (s *PluginService) ListAllByTags(ctx context.Context, tags []string) ([]*Plugin, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/plugins", newOpt(tags))
+	return s.listAllByEndpointAndOpt(ctx, "/plugins", newOpt(tags))
 }
 
 // ListAllForConsumer fetches all Plugins in Kong enabled for a consumer.

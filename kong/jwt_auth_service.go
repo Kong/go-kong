@@ -98,14 +98,14 @@ func (s *JWTAuthService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *JWTAuthService) List(ctx context.Context,
 	opt *ListOpt) ([]*JWTAuth, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/jwts", opt)
+	return s.listByEndpointAndOpt(ctx, "/jwts", opt)
 }
 
 // ListAll fetches all JWT credentials in Kong.
 // This method can take a while if there
 // a lot of JWT credentials present.
 func (s *JWTAuthService) ListAll(ctx context.Context) ([]*JWTAuth, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/jwts", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/jwts", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of jwt credentials
@@ -113,10 +113,10 @@ func (s *JWTAuthService) ListAll(ctx context.Context) ([]*JWTAuth, error) {
 // opt can be used to control pagination.
 func (s *JWTAuthService) ListForConsumer(ctx context.Context,
 	consumerUsernameOrID *string, opt *ListOpt) ([]*JWTAuth, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/jwt", opt)
+	return s.listByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/jwt", opt)
 }
 
-func (s *JWTAuthService) ListByEndpointAndOpt(ctx context.Context,
+func (s *JWTAuthService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*JWTAuth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
@@ -135,7 +135,7 @@ func (s *JWTAuthService) ListByEndpointAndOpt(ctx context.Context,
 	return jwts, next, nil
 }
 
-func (s *JWTAuthService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *JWTAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*JWTAuth, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, true)
 	if err != nil {

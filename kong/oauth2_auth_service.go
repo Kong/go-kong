@@ -100,7 +100,7 @@ func (s *Oauth2Service) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *Oauth2Service) List(ctx context.Context,
 	opt *ListOpt) ([]*Oauth2Credential, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/oauth2", opt)
+	return s.listByEndpointAndOpt(ctx, "/oauth2", opt)
 }
 
 // ListAll fetches all oauth2 credentials in Kong.
@@ -108,7 +108,7 @@ func (s *Oauth2Service) List(ctx context.Context,
 // a lot of oauth2 credentials present.
 func (s *Oauth2Service) ListAll(
 	ctx context.Context) ([]*Oauth2Credential, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/oauth2", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/oauth2", newOpt(nil))
 }
 
 // ListForConsumer fetches a list of oauth2 credentials
@@ -117,10 +117,10 @@ func (s *Oauth2Service) ListAll(
 func (s *Oauth2Service) ListForConsumer(ctx context.Context,
 	consumerUsernameOrID *string, opt *ListOpt) ([]*Oauth2Credential,
 	*ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/oauth2", opt)
+	return s.listByEndpointAndOpt(ctx, "/consumers/"+*consumerUsernameOrID+"/oauth2", opt)
 }
 
-func (s *Oauth2Service) ListByEndpointAndOpt(ctx context.Context,
+func (s *Oauth2Service) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Oauth2Credential, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
@@ -139,7 +139,7 @@ func (s *Oauth2Service) ListByEndpointAndOpt(ctx context.Context,
 	return oauth2Creds, next, nil
 }
 
-func (s *Oauth2Service) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *Oauth2Service) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Oauth2Credential, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, true)
 	if err != nil {

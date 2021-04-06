@@ -122,7 +122,7 @@ func (s *UpstreamService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *UpstreamService) List(ctx context.Context,
 	opt *ListOpt) ([]*Upstream, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/upstreams", opt)
+	return s.listByEndpointAndOpt(ctx, "/upstreams", opt)
 }
 
 // ListAll fetches all Upstreams in Kong.
@@ -133,10 +133,10 @@ func (s *UpstreamService) ListAll(ctx context.Context) ([]*Upstream, error) {
 }
 
 func (s *UpstreamService) ListAllByTags(ctx context.Context, tags []string) ([]*Upstream, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/upstreams", newOpt(tags))
+	return s.listAllByEndpointAndOpt(ctx, "/upstreams", newOpt(tags))
 }
 
-func (s *UpstreamService) ListByEndpointAndOpt(ctx context.Context,
+func (s *UpstreamService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Upstream, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
@@ -156,7 +156,7 @@ func (s *UpstreamService) ListByEndpointAndOpt(ctx context.Context,
 	return upstreams, next, nil
 }
 
-func (s *UpstreamService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *UpstreamService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Upstream, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, false)
 	if err != nil {

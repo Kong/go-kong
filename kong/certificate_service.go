@@ -121,7 +121,7 @@ func (s *CertificateService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *CertificateService) List(ctx context.Context,
 	opt *ListOpt) ([]*Certificate, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/certificates", opt)
+	return s.listByEndpointAndOpt(ctx, "/certificates", opt)
 }
 
 // ListAll fetches all Certificates in Kong.
@@ -135,10 +135,10 @@ func (s *CertificateService) ListAll(ctx context.Context) ([]*Certificate,
 func (s *CertificateService) ListAllByTags(ctx context.Context,
 	tags []string) ([]*Certificate,
 	error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/certificates", newOpt(tags))
+	return s.listAllByEndpointAndOpt(ctx, "/certificates", newOpt(tags))
 }
 
-func (s *CertificateService) ListByEndpointAndOpt(ctx context.Context,
+func (s *CertificateService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Certificate, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
@@ -157,7 +157,7 @@ func (s *CertificateService) ListByEndpointAndOpt(ctx context.Context,
 	return certificates, next, nil
 }
 
-func (s *CertificateService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *CertificateService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Certificate, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, false)
 	if err != nil {

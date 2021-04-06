@@ -145,7 +145,7 @@ func (s *RouteService) Delete(ctx context.Context, nameOrID *string) error {
 // opt can be used to control pagination.
 func (s *RouteService) List(ctx context.Context,
 	opt *ListOpt) ([]*Route, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/routes", opt)
+	return s.listByEndpointAndOpt(ctx, "/routes", opt)
 }
 
 // ListAll fetches all Routes in Kong.
@@ -156,17 +156,17 @@ func (s *RouteService) ListAll(ctx context.Context) ([]*Route, error) {
 }
 
 func (s *RouteService) ListAllByTags(ctx context.Context, tags []string) ([]*Route, error) {
-	return s.ListAllByEndpointAndOpt(ctx, "/routes", newOpt(tags))
+	return s.listAllByEndpointAndOpt(ctx, "/routes", newOpt(tags))
 }
 
 // ListForService fetches a list of Routes in Kong associated with a service.
 // opt can be used to control pagination.
 func (s *RouteService) ListForService(ctx context.Context,
 	serviceNameOrID *string, opt *ListOpt) ([]*Route, *ListOpt, error) {
-	return s.ListByEndpointAndOpt(ctx, "/services/"+*serviceNameOrID+"/routes", opt)
+	return s.listByEndpointAndOpt(ctx, "/services/"+*serviceNameOrID+"/routes", opt)
 }
 
-func (s *RouteService) ListByEndpointAndOpt(ctx context.Context,
+func (s *RouteService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Route, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
@@ -185,7 +185,7 @@ func (s *RouteService) ListByEndpointAndOpt(ctx context.Context,
 	return routes, next, nil
 }
 
-func (s *RouteService) ListAllByEndpointAndOpt(ctx context.Context,
+func (s *RouteService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*Route, error) {
 	data, err := s.client.listAll(ctx, endpoint, opt, false)
 	if err != nil {
