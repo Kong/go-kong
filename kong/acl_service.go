@@ -19,6 +19,8 @@ type AbstractACLService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*ACLGroup, *ListOpt, error)
 	// ListAll fetches all all ACL group associations in Kong.
 	ListAll(ctx context.Context) ([]*ACLGroup, error)
+	// ListAllByTags fetches all all ACL group associations filtered by tags in Kong.
+	ListAllByTags(ctx context.Context, tags []string) ([]*ACLGroup, error)
 	// ListForConsumer fetches a list of ACL groups
 	// in Kong associated with a specific consumer.
 	ListForConsumer(ctx context.Context, consumerUsernameOrID *string, opt *ListOpt) ([]*ACLGroup, *ListOpt, error)
@@ -104,9 +106,15 @@ func (s *ACLService) List(ctx context.Context,
 // ListAll fetches all all ACL group associations in Kong.
 // This method can take a while if there
 // a lot of ACLGroup associations are present.
-// tags are not supported on credentials
 func (s *ACLService) ListAll(ctx context.Context) ([]*ACLGroup, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/acls", newOpt(nil))
+	return s.ListAllByTags(ctx, nil)
+}
+
+// ListAllByTags fetches all all ACL group associations filtered by tags in Kong.
+// This method can take a while if there
+// a lot of ACLGroup associations are present.
+func (s *ACLService) ListAllByTags(ctx context.Context, tags []string) ([]*ACLGroup, error) {
+	return s.listAllByEndpointAndOpt(ctx, "/acls", newOpt(tags))
 }
 
 // ListForConsumer fetches a list of ACL groups
