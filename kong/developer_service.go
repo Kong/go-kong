@@ -158,7 +158,19 @@ func (s *DeveloperService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *DeveloperService) List(ctx context.Context,
 	opt *ListOpt) ([]*Developer, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/developers", opt)
+	return s.listByEndpointAndOpt(ctx, "/developers", opt)
+}
+
+// ListAll fetches all Developers in Kong.
+// This method can take a while if there
+// a lot of Developers present.
+func (s *DeveloperService) ListAll(ctx context.Context) ([]*Developer, error) {
+	return s.listAllByEndpointAndOpt(ctx, "/developers", newOpt(nil))
+}
+
+func (s *DeveloperService) listByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Developer, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -176,20 +188,22 @@ func (s *DeveloperService) List(ctx context.Context,
 	return developers, next, nil
 }
 
-// ListAll fetches all Developers in Kong.
-// This method can take a while if there
-// a lot of Developers present.
-func (s *DeveloperService) ListAll(ctx context.Context) ([]*Developer, error) {
-	var developers, data []*Developer
-	var err error
-	opt := &ListOpt{Size: pageSize}
+func (s *DeveloperService) listAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*Developer, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var developers []*Developer
 
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
+	for _, object := range data {
+		var developer Developer
+		err = json.Unmarshal(object, &developer)
 		if err != nil {
 			return nil, err
 		}
-		developers = append(developers, data...)
+		developers = append(developers, &developer)
 	}
+
 	return developers, nil
 }
