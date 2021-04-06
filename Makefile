@@ -27,10 +27,6 @@ update-codegen:
 setup-kong:
 	bash .ci/setup_kong.sh
 
-.PHONY: setup-lint
-setup-lint:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.25.0
-
 .PHONY: coverage
 coverage:
 	go test -tags=enterprise -race -v -count=1 -coverprofile=coverage.out.tmp ./...
