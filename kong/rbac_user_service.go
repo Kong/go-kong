@@ -134,40 +134,12 @@ func (s *RBACUserService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *RBACUserService) List(ctx context.Context,
 	opt *ListOpt) ([]*RBACUser, *ListOpt, error) {
-
-	data, next, err := s.client.list(ctx, "/rbac/users/", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var users []*RBACUser
-	for _, object := range data {
-		var user RBACUser
-		err = json.Unmarshal(object, &user)
-		if err != nil {
-			return nil, nil, err
-		}
-		users = append(users, &user)
-	}
-
-	return users, next, nil
+	return s.listByEndpointAndOpt(ctx, "/rbac/users/", opt)
 }
 
 // ListAll fetches all users in Kong.
 func (s *RBACUserService) ListAll(ctx context.Context) ([]*RBACUser, error) {
-
-	var users, data []*RBACUser
-	var err error
-	opt := &ListOpt{Size: pageSize}
-
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
-		if err != nil {
-			return nil, err
-		}
-		users = append(users, data...)
-	}
-
-	return users, nil
+	return s.listAllByEndpointAndOpt(ctx, "/rbac/users/", newOpt(nil))
 }
 
 // AddRoles adds a comma separated list of roles to a User.
@@ -271,4 +243,42 @@ func (s *RBACUserService) ListPermissions(ctx context.Context,
 	}
 
 	return &permissionsList, nil
+}
+
+func (s *RBACUserService) listByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*RBACUser, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
+	if err != nil {
+		return nil, nil, err
+	}
+	var users []*RBACUser
+	for _, object := range data {
+		var user RBACUser
+		err = json.Unmarshal(object, &user)
+		if err != nil {
+			return nil, nil, err
+		}
+		users = append(users, &user)
+	}
+
+	return users, next, nil
+}
+
+func (s *RBACUserService) listAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*RBACUser, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	var users []*RBACUser
+	for _, object := range data {
+		var user RBACUser
+		err = json.Unmarshal(object, &user)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+
+	return users, nil
 }
