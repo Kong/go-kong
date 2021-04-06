@@ -13,11 +13,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Setup golangci-lint
-        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.25.0
+        run: setup-lint
       - name: Run golangci-lint
-        run: golangci-lint run ./...
+        run: make lint
       - name: Verify Codegen
-        run: ./hack/verify-deepcopy-gen.sh
+        run: make verify-codegen
   test:
     strategy:
       matrix:
@@ -58,9 +58,9 @@ jobs:
           psql -c 'create user kong;' -U postgres -h 127.0.0.1 -p 5432
           psql -c 'GRANT ALL PRIVILEGES ON DATABASE "kong" to kong;' -U postgres -h 127.0.0.1 -p 5432
       - name: Setup Kong
-        run: bash .ci/setup_kong.sh
+        run: make setup-kong
       - name: Run tests
-        run: go test -v ./...
+        run: make test
   test-enterprise:
     # temporary to run all jobs and see all failures
     continue-on-error: true
@@ -100,6 +100,45 @@ jobs:
           psql -c 'create user kong;' -U postgres -h 127.0.0.1 -p 5432
           psql -c 'GRANT ALL PRIVILEGES ON DATABASE "kong" to kong;' -U postgres -h 127.0.0.1 -p 5432
       - name: Setup Kong
-        run: bash .ci/setup_kong.sh
+        run: make setup-kong
       - name: Run tests
-        run: go test -tags=enterprise -v ./...
+        run: make test-enterprise
+  test-coverage:
+    strategy:
+      matrix:
+        kong_version:
+        # Only one report suffice
+        - 'enterprise-2.3.2.0'
+    env:
+      KONG_VERSION: ${{ matrix.kong_version }}
+      KONG_ENTERPRISE_REPO_USERNAME: ${{ secrets.KONG_ENTERPRISE_REPO_USERNAME }}
+      KONG_ENTERPRISE_REPO_PASSSWORD: ${{ secrets.KONG_ENTERPRISE_REPO_PASSSWORD }}
+      KONG_LICENSE_DATA: ${{ secrets.KONG_LICENSE_DATA }}
+      KONG_ANONYMOUS_REPORTS: "off"
+      KONG_ADMIN_TOKEN: kong
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:11.6-alpine
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.16'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Postgres
+        run: |
+          psql -c 'create database kong;' -U postgres -h 127.0.0.1 -p 5432
+          psql -c 'create user kong;' -U postgres -h 127.0.0.1 -p 5432
+          psql -c 'GRANT ALL PRIVILEGES ON DATABASE "kong" to kong;' -U postgres -h 127.0.0.1 -p 5432
+      - name: Setup Kong
+        run: make setup-kong
+      - name: Run tests with Coverage
+        run: make coverage
+      - name: Upload Code Coverage
+        run: make upload-coverage
