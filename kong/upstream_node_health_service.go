@@ -50,7 +50,7 @@ func (s *UpstreamNodeHealthService) ListAllByTags(ctx context.Context,
 	return s.ListAllByOpt(ctx, upstreamNameOrID, newOpt(tags))
 }
 
-// ListAll fetches all Upstream Node Healths filterd by opt in Kong.
+// ListAll fetches all Upstream Node Healths filtered by opt in Kong.
 // This method can take a while if there are
 // a lot of Upstream Node Healths present.
 func (s *UpstreamNodeHealthService) ListAllByOpt(ctx context.Context,
