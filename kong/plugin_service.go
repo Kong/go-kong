@@ -22,6 +22,8 @@ type AbstractPluginService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Plugin, *ListOpt, error)
 	// ListAll fetches all Plugins in Kong.
 	ListAll(ctx context.Context) ([]*Plugin, error)
+	// ListAllByOpt fetches all Plugins filtered by opt in Kong.
+	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Plugin, error)
 	// ListAllByTags fetches all Plugins filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*Plugin, error)
 	// ListAllForConsumer fetches all Plugins in Kong enabled for a consumer.
@@ -209,11 +211,18 @@ func (s *PluginService) ListAll(ctx context.Context) ([]*Plugin, error) {
 	return s.ListAllByTags(ctx, nil)
 }
 
-// ListAll fetches all Plugins filtered by tags in Kong.
+// ListAllByTags fetches all Plugins filtered by tags in Kong.
 // This method can take a while if there
 // a lot of Plugins present.
 func (s *PluginService) ListAllByTags(ctx context.Context, tags []string) ([]*Plugin, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/plugins", newOpt(tags))
+	return s.ListAllByOpt(ctx, newOpt(tags))
+}
+
+// ListAll fetches all Plugins filtered by opt in Kong.
+// This method can take a while if there
+// a lot of Plugins present.
+func (s *PluginService) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Plugin, error) {
+	return s.listAllByEndpointAndOpt(ctx, "/plugins", opt)
 }
 
 // ListAllForConsumer fetches all Plugins in Kong enabled for a consumer.

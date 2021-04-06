@@ -21,6 +21,8 @@ type AbstractUpstreamService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Upstream, *ListOpt, error)
 	// ListAll fetches all Upstreams in Kong.
 	ListAll(ctx context.Context) ([]*Upstream, error)
+	// ListAllByOpt fetches all Upstreams filtered by opt in Kong.
+	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Upstream, error)
 	// ListAllByTags fetches all Upstreams filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*Upstream, error)
 }
@@ -132,8 +134,18 @@ func (s *UpstreamService) ListAll(ctx context.Context) ([]*Upstream, error) {
 	return s.ListAllByTags(ctx, nil)
 }
 
+// ListAllByTags fetches all Upstreams filtered by tags in Kong.
+// This method can take a while if there
+// a lot of Upstreams present.
 func (s *UpstreamService) ListAllByTags(ctx context.Context, tags []string) ([]*Upstream, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/upstreams", newOpt(tags))
+	return s.ListAllByOpt(ctx, newOpt(tags))
+}
+
+// ListAllByOpt fetches all Upstreams filtered by opt in Kong.
+// This method can take a while if there
+// a lot of Upstreams present.
+func (s *UpstreamService) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Upstream, error) {
+	return s.listAllByEndpointAndOpt(ctx, "/upstreams", opt)
 }
 
 func (s *UpstreamService) listByEndpointAndOpt(ctx context.Context,

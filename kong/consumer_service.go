@@ -24,6 +24,8 @@ type AbstractConsumerService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Consumer, *ListOpt, error)
 	// ListAll fetches all Consumers in Kong.
 	ListAll(ctx context.Context) ([]*Consumer, error)
+	// ListAllByOpt fetches all Consumers filtered by opt in Kong.
+	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Consumer, error)
 	// ListAllByTags fetches all Consumers filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*Consumer, error)
 }
@@ -172,7 +174,14 @@ func (s *ConsumerService) ListAll(ctx context.Context) ([]*Consumer, error) {
 // This method can take a while if there
 // a lot of Consumers present.
 func (s *ConsumerService) ListAllByTags(ctx context.Context, tags []string) ([]*Consumer, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/consumers", newOpt(tags))
+	return s.ListAllByOpt(ctx, newOpt(tags))
+}
+
+// ListAll fetches all Consumers filtered by opt in Kong.
+// This method can take a while if there
+// a lot of Consumers present.
+func (s *ConsumerService) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Consumer, error) {
+	return s.listAllByEndpointAndOpt(ctx, "/consumers", opt)
 }
 
 func (s *ConsumerService) listByEndpointAndOpt(ctx context.Context,

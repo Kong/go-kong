@@ -17,6 +17,8 @@ type AbstractTargetService interface {
 	List(ctx context.Context, upstreamNameOrID *string, opt *ListOpt) ([]*Target, *ListOpt, error)
 	// ListAll fetches all Targets in Kong for an upstream.
 	ListAll(ctx context.Context, upstreamNameOrID *string) ([]*Target, error)
+	// ListAllByTags fetches all Targets filtered by opt in Kong for an upstream.
+	ListAllByOpt(ctx context.Context, upstreamNameOrID *string, opt *ListOpt) ([]*Target, error)
 	// ListAllByTags fetches all Targets filtered by tags in Kong for an upstream.
 	ListAllByTags(ctx context.Context, upstreamNameOrID *string, tags []string) ([]*Target, error)
 	// MarkHealthy marks target belonging to upstreamNameOrID as healthy in
@@ -99,12 +101,19 @@ func (s *TargetService) ListAll(ctx context.Context,
 	return s.ListAllByTags(ctx, upstreamNameOrID, nil)
 }
 
+// ListAll fetches all Targets filtered by tags in Kong for an upstream.
 func (s *TargetService) ListAllByTags(ctx context.Context,
 	upstreamNameOrID *string, tags []string) ([]*Target, error) {
+	return s.ListAllByOpt(ctx, upstreamNameOrID, newOpt(tags))
+}
+
+// ListAll fetches all Targets filtered by opt in Kong for an upstream.
+func (s *TargetService) ListAllByOpt(ctx context.Context,
+	upstreamNameOrID *string, opt *ListOpt) ([]*Target, error) {
 	if isEmptyString(upstreamNameOrID) {
 		return nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
 	}
-	return s.listAllByEndpointAndOpt(ctx, "/upstreams/"+*upstreamNameOrID+"/targets", newOpt(tags))
+	return s.listAllByEndpointAndOpt(ctx, "/upstreams/"+*upstreamNameOrID+"/targets", opt)
 }
 
 // MarkHealthy marks target belonging to upstreamNameOrID as healthy in

@@ -23,6 +23,8 @@ type AbstractRouteService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Route, *ListOpt, error)
 	// ListAll fetches all Routes in Kong.
 	ListAll(ctx context.Context) ([]*Route, error)
+	// ListAllByOpt fetches all Routes filtered by opt in Kong.
+	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Route, error)
 	// ListAllByTags fetches all Routes filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*Route, error)
 	// ListForService fetches a list of Routes in Kong associated with a service.
@@ -155,8 +157,18 @@ func (s *RouteService) ListAll(ctx context.Context) ([]*Route, error) {
 	return s.ListAllByTags(ctx, nil)
 }
 
+// ListAllByTags fetches all Routes filtered by tags in Kong.
+// This method can take a while if there
+// a lot of Routes present.
 func (s *RouteService) ListAllByTags(ctx context.Context, tags []string) ([]*Route, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/routes", newOpt(tags))
+	return s.ListAllByOpt(ctx, newOpt(tags))
+}
+
+// ListAllByOpt fetches all Routes filtered by opt in Kong.
+// This method can take a while if there
+// a lot of Routes present.
+func (s *RouteService) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Route, error) {
+	return s.listAllByEndpointAndOpt(ctx, "/routes", opt)
 }
 
 // ListForService fetches a list of Routes in Kong associated with a service.

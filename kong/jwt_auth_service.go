@@ -19,6 +19,8 @@ type AbstractJWTAuthService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*JWTAuth, *ListOpt, error)
 	// ListAll fetches all JWT credentials in Kong.
 	ListAll(ctx context.Context) ([]*JWTAuth, error)
+	// ListAllByTags fetches all JWT credentials filtered by opt in Kong.
+	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*JWTAuth, error)
 	// ListAllByTags fetches all JWT credentials filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*JWTAuth, error)
 	// ListForConsumer fetches a list of jwt credentials
@@ -114,7 +116,14 @@ func (s *JWTAuthService) ListAll(ctx context.Context) ([]*JWTAuth, error) {
 // This method can take a while if there
 // a lot of JWT credentials present.
 func (s *JWTAuthService) ListAllByTags(ctx context.Context, tags []string) ([]*JWTAuth, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/jwts", newOpt(tags))
+	return s.ListAllByOpt(ctx, newOpt(tags))
+}
+
+// ListAllByOpt fetches all JWT credentials filtered by opt in Kong.
+// This method can take a while if there
+// a lot of JWT credentials present.
+func (s *JWTAuthService) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*JWTAuth, error) {
+	return s.listAllByEndpointAndOpt(ctx, "/jwts", opt)
 }
 
 // ListForConsumer fetches a list of jwt credentials

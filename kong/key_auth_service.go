@@ -19,6 +19,8 @@ type AbstractKeyAuthService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*KeyAuth, *ListOpt, error)
 	// ListAll fetches all key-auth credentials in Kong.
 	ListAll(ctx context.Context) ([]*KeyAuth, error)
+	// ListAllByOpt fetches all key-auth credentials filtered by opt in Kong.
+	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*KeyAuth, error)
 	// ListAllByTags fetches all key-auth credentials filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*KeyAuth, error)
 	// ListForConsumer fetches a list of key-auth credentials
@@ -114,6 +116,13 @@ func (s *KeyAuthService) ListAll(ctx context.Context) ([]*KeyAuth, error) {
 // a lot of key-auth credentials present.
 func (s *KeyAuthService) ListAllByTags(ctx context.Context, tags []string) ([]*KeyAuth, error) {
 	return s.listAllByEndpointAndOpt(ctx, "/key-auths", newOpt(tags))
+}
+
+// ListAllByTags fetches all key-auth credentials filtered by tags in Kong.
+// This method can take a while if there
+// a lot of key-auth credentials present.
+func (s *KeyAuthService) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*KeyAuth, error) {
+	return s.listAllByEndpointAndOpt(ctx, "/key-auths", opt)
 }
 
 // ListForConsumer fetches a list of key-auth credentials

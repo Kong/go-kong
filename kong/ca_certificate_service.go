@@ -21,6 +21,8 @@ type AbstractCACertificateService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*CACertificate, *ListOpt, error)
 	// ListAll fetches all Certificates in Kong.
 	ListAll(ctx context.Context) ([]*CACertificate, error)
+	// ListAllByOpt fetches all Certificates filtered by opt in Kong.
+	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*CACertificate, error)
 	// ListAllByTags fetches all Certificates filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*CACertificate, error)
 }
@@ -132,12 +134,20 @@ func (s *CACertificateService) ListAll(ctx context.Context) ([]*CACertificate,
 	return s.ListAllByTags(ctx, nil)
 }
 
-// ListAll fetches all Certificates in Kong, filtered by tags
+// ListAllByTags fetches all Certificates filtered by tags in Kong
 // This method can take a while if there
 // a lot of Certificates present.
 func (s *CACertificateService) ListAllByTags(ctx context.Context, tags []string) ([]*CACertificate,
 	error) {
-	return s.listAllByEndpointAndOpt(ctx, "/ca_certificates", newOpt(tags))
+	return s.ListAllByOpt(ctx, newOpt(tags))
+}
+
+// ListAllByOpt fetches all Certificates filtered by opt in Kong
+// This method can take a while if there
+// a lot of Certificates present.
+func (s *CACertificateService) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*CACertificate,
+	error) {
+	return s.listAllByEndpointAndOpt(ctx, "/ca_certificates", opt)
 }
 
 func (s *CACertificateService) listByEndpointAndOpt(ctx context.Context,

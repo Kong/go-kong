@@ -15,11 +15,13 @@ type AbstractACLService interface {
 	Update(ctx context.Context, consumerUsernameOrID *string, aclGroup *ACLGroup) (*ACLGroup, error)
 	// Delete deletes an ACL group association for a consumer in Kong
 	Delete(ctx context.Context, consumerUsernameOrID, groupOrID *string) error
-	// List fetches a list of all ACL group and consumer associations in Kong.
+	// List fetches a list of ACL group and consumer associations in Kong.
 	List(ctx context.Context, opt *ListOpt) ([]*ACLGroup, *ListOpt, error)
-	// ListAll fetches all all ACL group associations in Kong.
+	// ListAll fetches all ACL group associations in Kong.
 	ListAll(ctx context.Context) ([]*ACLGroup, error)
-	// ListAllByTags fetches all all ACL group associations filtered by tags in Kong.
+	// ListAllByOpt fetches all ACL group associations filtered by opt in Kong.
+	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*ACLGroup, error)
+	// ListAllByTags fetches all ACL group associations filtered by tags in Kong.
 	ListAllByTags(ctx context.Context, tags []string) ([]*ACLGroup, error)
 	// ListForConsumer fetches a list of ACL groups
 	// in Kong associated with a specific consumer.
@@ -96,25 +98,32 @@ func (s *ACLService) Delete(ctx context.Context,
 		consumerUsernameOrID, groupOrID)
 }
 
-// List fetches a list of all ACL group and consumer associations in Kong.
+// List fetches a list of ACL group and consumer associations in Kong.
 // opt can be used to control pagination.
 func (s *ACLService) List(ctx context.Context,
 	opt *ListOpt) ([]*ACLGroup, *ListOpt, error) {
 	return s.listByEndpointAndOpt(ctx, "/acls", opt)
 }
 
-// ListAll fetches all all ACL group associations in Kong.
+// ListAll fetches all ACL group associations in Kong.
 // This method can take a while if there
 // a lot of ACLGroup associations are present.
 func (s *ACLService) ListAll(ctx context.Context) ([]*ACLGroup, error) {
 	return s.ListAllByTags(ctx, nil)
 }
 
-// ListAllByTags fetches all all ACL group associations filtered by tags in Kong.
+// ListAllByTags fetches all ACL group associations filtered by tags in Kong.
 // This method can take a while if there
 // a lot of ACLGroup associations are present.
 func (s *ACLService) ListAllByTags(ctx context.Context, tags []string) ([]*ACLGroup, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/acls", newOpt(tags))
+	return s.ListAllByOpt(ctx, newOpt(tags))
+}
+
+// ListAllByOpt fetches all ACL group associations filtered by opt in Kong.
+// This method can take a while if there
+// a lot of ACLGroup associations are present.
+func (s *ACLService) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*ACLGroup, error) {
+	return s.listAllByEndpointAndOpt(ctx, "/acls", opt)
 }
 
 // ListForConsumer fetches a list of ACL groups
