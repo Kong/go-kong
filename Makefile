@@ -8,7 +8,7 @@ test:
 	go test -v ./...
 
 .PHONY: test-enterprise
-test:
+test-enterprise:
 	go test -tags=enterprise -v ./...
 
 .PHONY: lint
