@@ -174,11 +174,7 @@ func (s *SNIService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	snis, err := asSNI(data)
-	if err != nil {
-		return nil, err
-	}
-	return snis, nil
+	return asSNI(data)
 }
 
 func asSNI(data [][]byte) ([]*SNI, error) {

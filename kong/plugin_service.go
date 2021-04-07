@@ -176,11 +176,7 @@ func (s *PluginService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	plugins, err := asPlugin(data)
-	if err != nil {
-		return nil, err
-	}
-	return plugins, nil
+	return asPlugin(data)
 }
 
 // List fetches a list of Plugins in Kong.

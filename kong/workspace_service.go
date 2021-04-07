@@ -255,11 +255,7 @@ func (s *WorkspaceService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	workspaces, err := asWorkspace(data)
-	if err != nil {
-		return nil, err
-	}
-	return workspaces, nil
+	return asWorkspace(data)
 }
 
 func asWorkspace(data [][]byte) ([]*Workspace, error) {

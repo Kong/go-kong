@@ -152,11 +152,7 @@ func (s *KeyAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	keyAuths, err := asKeyAuth(data)
-	if err != nil {
-		return nil, err
-	}
-	return keyAuths, nil
+	return asKeyAuth(data)
 }
 
 func asKeyAuth(data [][]byte) ([]*KeyAuth, error) {

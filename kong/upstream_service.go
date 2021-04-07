@@ -167,11 +167,7 @@ func (s *UpstreamService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	upstreams, err := asUpstream(data)
-	if err != nil {
-		return nil, err
-	}
-	return upstreams, nil
+	return asUpstream(data)
 }
 
 func asUpstream(data [][]byte) ([]*Upstream, error) {

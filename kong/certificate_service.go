@@ -169,11 +169,7 @@ func (s *CertificateService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	certificates, err := asCertificate(data)
-	if err != nil {
-		return nil, err
-	}
-	return certificates, nil
+	return asCertificate(data)
 }
 
 func asCertificate(data [][]byte) ([]*Certificate, error) {

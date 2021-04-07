@@ -153,11 +153,7 @@ func (s *JWTAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	jwts, err := asJWTAuth(data)
-	if err != nil {
-		return nil, err
-	}
-	return jwts, nil
+	return asJWTAuth(data)
 }
 
 func asJWTAuth(data [][]byte) ([]*JWTAuth, error) {

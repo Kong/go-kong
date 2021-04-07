@@ -140,11 +140,7 @@ func (s *ACLService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	aclGroups, err := asACLGroups(data)
-	if err != nil {
-		return nil, err
-	}
-	return aclGroups, nil
+	return asACLGroups(data)
 }
 
 func (s *ACLService) listByEndpointAndOpt(ctx context.Context,

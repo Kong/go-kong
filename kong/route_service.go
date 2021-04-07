@@ -197,11 +197,7 @@ func (s *RouteService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	routes, err := asRoute(data)
-	if err != nil {
-		return nil, err
-	}
-	return routes, nil
+	return asRoute(data)
 }
 
 func asRoute(data [][]byte) ([]*Route, error) {

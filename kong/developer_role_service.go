@@ -149,11 +149,7 @@ func (s *DeveloperRoleService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	roles, err := asDeveloperRole(data)
-	if err != nil {
-		return nil, err
-	}
-	return roles, nil
+	return asDeveloperRole(data)
 }
 
 func asDeveloperRole(data [][]byte) ([]*DeveloperRole, error) {

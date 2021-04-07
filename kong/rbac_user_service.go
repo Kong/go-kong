@@ -264,11 +264,7 @@ func (s *RBACUserService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	users, err := asRBACUser(data)
-	if err != nil {
-		return nil, err
-	}
-	return users, nil
+	return asRBACUser(data)
 }
 
 func asRBACUser(data [][]byte) ([]*RBACUser, error) {

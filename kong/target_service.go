@@ -199,11 +199,7 @@ func (s *TargetService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	targets, err := asTarget(data)
-	if err != nil {
-		return nil, err
-	}
-	return targets, nil
+	return asTarget(data)
 }
 
 func asTarget(data [][]byte) ([]*Target, error) {

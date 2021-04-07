@@ -142,11 +142,7 @@ func (s *BasicAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	basicAuths, err := asBasicAuth(data)
-	if err != nil {
-		return nil, err
-	}
-	return basicAuths, nil
+	return asBasicAuth(data)
 }
 
 func (s *BasicAuthService) listByEndpointAndOpt(ctx context.Context,

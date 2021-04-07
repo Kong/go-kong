@@ -147,11 +147,7 @@ func (s *RBACEndpointPermissionService) listAllByEndpointAndOpt(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
-	eps, err := asRBACEndpointPermission(data)
-	if err != nil {
-		return nil, err
-	}
-	return eps, nil
+	return asRBACEndpointPermission(data)
 }
 
 func asRBACEndpointPermission(data [][]byte) ([]*RBACEndpointPermission, error) {

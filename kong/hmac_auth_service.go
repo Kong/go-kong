@@ -153,11 +153,7 @@ func (s *HMACAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	hmacAuths, err := asHMACAuth(data)
-	if err != nil {
-		return nil, err
-	}
-	return hmacAuths, nil
+	return asHMACAuth(data)
 }
 
 func asHMACAuth(data [][]byte) ([]*HMACAuth, error) {

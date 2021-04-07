@@ -152,11 +152,7 @@ func (s *RBACRoleService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	roles, err := asRBACRole(data)
-	if err != nil {
-		return nil, err
-	}
-	return roles, nil
+	return asRBACRole(data)
 }
 
 func asRBACRole(data [][]byte) ([]*RBACRole, error) {

@@ -203,11 +203,7 @@ func (s *ConsumerService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	consumers, err := asConsumer(data)
-	if err != nil {
-		return nil, err
-	}
-	return consumers, nil
+	return asConsumer(data)
 }
 
 func asConsumer(data [][]byte) ([]*Consumer, error) {

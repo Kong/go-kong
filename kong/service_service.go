@@ -196,11 +196,7 @@ func (s *Svcservice) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	services, err := asService(data)
-	if err != nil {
-		return nil, err
-	}
-	return services, nil
+	return asService(data)
 }
 
 func asService(data [][]byte) ([]*Service, error) {

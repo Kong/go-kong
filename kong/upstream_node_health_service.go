@@ -81,11 +81,7 @@ func (s *UpstreamNodeHealthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	upstreamNodeHealths, err := asUpstreamNodeHealth(data)
-	if err != nil {
-		return nil, err
-	}
-	return upstreamNodeHealths, nil
+	return asUpstreamNodeHealth(data)
 }
 
 func asUpstreamNodeHealth(data [][]byte) ([]*UpstreamNodeHealth, error) {

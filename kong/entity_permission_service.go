@@ -136,11 +136,7 @@ func (s *RBACEntityPermissionService) ListAllForRole(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	eps, err := asRBACEntityPermission(data)
-	if err != nil {
-		return nil, err
-	}
-	return eps, nil
+	return asRBACEntityPermission(data)
 }
 
 func asRBACEntityPermission(data [][]byte) ([]*RBACEntityPermission, error) {

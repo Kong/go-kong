@@ -187,11 +187,7 @@ func (s *DeveloperService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	developers, err := asDeveloper(data)
-	if err != nil {
-		return nil, err
-	}
-	return developers, nil
+	return asDeveloper(data)
 }
 
 func asDeveloper(data [][]byte) ([]*Developer, error) {

@@ -156,11 +156,7 @@ func (s *Oauth2Service) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	oauth2Creds, err := asOauth2Credential(data)
-	if err != nil {
-		return nil, err
-	}
-	return oauth2Creds, nil
+	return asOauth2Credential(data)
 }
 
 func asOauth2Credential(data [][]byte) ([]*Oauth2Credential, error) {

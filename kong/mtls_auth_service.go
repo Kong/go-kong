@@ -151,11 +151,7 @@ func (s *MTLSAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	mtlss, err := asMTLSAuth(data)
-	if err != nil {
-		return nil, err
-	}
-	return mtlss, nil
+	return asMTLSAuth(data)
 }
 
 func asMTLSAuth(data [][]byte) ([]*MTLSAuth, error) {
