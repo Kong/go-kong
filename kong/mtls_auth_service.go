@@ -138,16 +138,10 @@ func (s *MTLSAuthService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var mtlss []*MTLSAuth
-	for _, object := range data {
-		var mtlsAuth MTLSAuth
-		err = json.Unmarshal(object, &mtlsAuth)
-		if err != nil {
-			return nil, nil, err
-		}
-		mtlss = append(mtlss, &mtlsAuth)
+	mtlss, err := asMTLSAuth(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return mtlss, next, nil
 }
 
@@ -157,15 +151,22 @@ func (s *MTLSAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	mtlss, err := asMTLSAuth(data)
+	if err != nil {
+		return nil, err
+	}
+	return mtlss, nil
+}
+
+func asMTLSAuth(data [][]byte) ([]*MTLSAuth, error) {
 	var mtlss []*MTLSAuth
 	for _, object := range data {
 		var mtlsAuth MTLSAuth
-		err = json.Unmarshal(object, &mtlsAuth)
+		err := json.Unmarshal(object, &mtlsAuth)
 		if err != nil {
 			return nil, err
 		}
 		mtlss = append(mtlss, &mtlsAuth)
 	}
-
 	return mtlss, nil
 }

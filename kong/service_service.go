@@ -183,16 +183,10 @@ func (s *Svcservice) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var services []*Service
-	for _, object := range data {
-		var service Service
-		err = json.Unmarshal(object, &service)
-		if err != nil {
-			return nil, nil, err
-		}
-		services = append(services, &service)
+	services, err := asService(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return services, next, nil
 }
 
@@ -202,15 +196,22 @@ func (s *Svcservice) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	services, err := asService(data)
+	if err != nil {
+		return nil, err
+	}
+	return services, nil
+}
+
+func asService(data [][]byte) ([]*Service, error) {
 	var services []*Service
 	for _, object := range data {
 		var service Service
-		err = json.Unmarshal(object, &service)
+		err := json.Unmarshal(object, &service)
 		if err != nil {
 			return nil, err
 		}
 		services = append(services, &service)
 	}
-
 	return services, nil
 }

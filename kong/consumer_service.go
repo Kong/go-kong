@@ -190,17 +190,10 @@ func (s *ConsumerService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var consumers []*Consumer
-
-	for _, object := range data {
-		var consumer Consumer
-		err = json.Unmarshal(object, &consumer)
-		if err != nil {
-			return nil, nil, err
-		}
-		consumers = append(consumers, &consumer)
+	consumers, err := asConsumer(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return consumers, next, nil
 }
 
@@ -210,16 +203,22 @@ func (s *ConsumerService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	var consumers []*Consumer
+	consumers, err := asConsumer(data)
+	if err != nil {
+		return nil, err
+	}
+	return consumers, nil
+}
 
+func asConsumer(data [][]byte) ([]*Consumer, error) {
+	var consumers []*Consumer
 	for _, object := range data {
 		var consumer Consumer
-		err = json.Unmarshal(object, &consumer)
+		err := json.Unmarshal(object, &consumer)
 		if err != nil {
 			return nil, err
 		}
 		consumers = append(consumers, &consumer)
 	}
-
 	return consumers, nil
 }

@@ -184,16 +184,10 @@ func (s *RouteService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var routes []*Route
-	for _, object := range data {
-		var route Route
-		err = json.Unmarshal(object, &route)
-		if err != nil {
-			return nil, nil, err
-		}
-		routes = append(routes, &route)
+	routes, err := asRoute(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return routes, next, nil
 }
 
@@ -203,15 +197,22 @@ func (s *RouteService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	routes, err := asRoute(data)
+	if err != nil {
+		return nil, err
+	}
+	return routes, nil
+}
+
+func asRoute(data [][]byte) ([]*Route, error) {
 	var routes []*Route
 	for _, object := range data {
 		var route Route
-		err = json.Unmarshal(object, &route)
+		err := json.Unmarshal(object, &route)
 		if err != nil {
 			return nil, err
 		}
 		routes = append(routes, &route)
 	}
-
 	return routes, nil
 }

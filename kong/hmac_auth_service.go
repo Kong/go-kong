@@ -140,16 +140,10 @@ func (s *HMACAuthService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var hmacAuths []*HMACAuth
-	for _, object := range data {
-		var hmacAuth HMACAuth
-		err = json.Unmarshal(object, &hmacAuth)
-		if err != nil {
-			return nil, nil, err
-		}
-		hmacAuths = append(hmacAuths, &hmacAuth)
+	hmacAuths, err := asHMACAuth(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return hmacAuths, next, nil
 }
 
@@ -159,15 +153,22 @@ func (s *HMACAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	hmacAuths, err := asHMACAuth(data)
+	if err != nil {
+		return nil, err
+	}
+	return hmacAuths, nil
+}
+
+func asHMACAuth(data [][]byte) ([]*HMACAuth, error) {
 	var hmacAuths []*HMACAuth
 	for _, object := range data {
 		var hmacAuth HMACAuth
-		err = json.Unmarshal(object, &hmacAuth)
+		err := json.Unmarshal(object, &hmacAuth)
 		if err != nil {
 			return nil, err
 		}
 		hmacAuths = append(hmacAuths, &hmacAuth)
 	}
-
 	return hmacAuths, nil
 }

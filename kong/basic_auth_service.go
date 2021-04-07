@@ -142,16 +142,10 @@ func (s *BasicAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	var basicAuths []*BasicAuth
-	for _, object := range data {
-		var basicAuth BasicAuth
-		err = json.Unmarshal(object, &basicAuth)
-		if err != nil {
-			return nil, err
-		}
-		basicAuths = append(basicAuths, &basicAuth)
+	basicAuths, err := asBasicAuth(data)
+	if err != nil {
+		return nil, err
 	}
-
 	return basicAuths, nil
 }
 
@@ -161,15 +155,22 @@ func (s *BasicAuthService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
+	basicAuths, err := asBasicAuth(data)
+	if err != nil {
+		return nil, nil, err
+	}
+	return basicAuths, next, nil
+}
+
+func asBasicAuth(data [][]byte) ([]*BasicAuth, error) {
 	var basicAuths []*BasicAuth
 	for _, object := range data {
 		var basicAuth BasicAuth
-		err = json.Unmarshal(object, &basicAuth)
+		err := json.Unmarshal(object, &basicAuth)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		basicAuths = append(basicAuths, &basicAuth)
 	}
-
-	return basicAuths, next, nil
+	return basicAuths, nil
 }

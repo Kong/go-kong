@@ -251,16 +251,10 @@ func (s *RBACUserService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var users []*RBACUser
-	for _, object := range data {
-		var user RBACUser
-		err = json.Unmarshal(object, &user)
-		if err != nil {
-			return nil, nil, err
-		}
-		users = append(users, &user)
+	users, err := asRBACUser(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return users, next, nil
 }
 
@@ -270,15 +264,22 @@ func (s *RBACUserService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	users, err := asRBACUser(data)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func asRBACUser(data [][]byte) ([]*RBACUser, error) {
 	var users []*RBACUser
 	for _, object := range data {
 		var user RBACUser
-		err = json.Unmarshal(object, &user)
+		err := json.Unmarshal(object, &user)
 		if err != nil {
 			return nil, err
 		}
 		users = append(users, &user)
 	}
-
 	return users, nil
 }

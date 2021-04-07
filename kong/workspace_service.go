@@ -242,16 +242,10 @@ func (s *WorkspaceService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var workspaces []*Workspace
-	for _, object := range data {
-		var workspace Workspace
-		err = json.Unmarshal(object, &workspace)
-		if err != nil {
-			return nil, nil, err
-		}
-		workspaces = append(workspaces, &workspace)
+	workspaces, err := asWorkspace(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return workspaces, next, nil
 }
 
@@ -261,15 +255,22 @@ func (s *WorkspaceService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	workspaces, err := asWorkspace(data)
+	if err != nil {
+		return nil, err
+	}
+	return workspaces, nil
+}
+
+func asWorkspace(data [][]byte) ([]*Workspace, error) {
 	var workspaces []*Workspace
 	for _, object := range data {
 		var workspace Workspace
-		err = json.Unmarshal(object, &workspace)
+		err := json.Unmarshal(object, &workspace)
 		if err != nil {
 			return nil, err
 		}
 		workspaces = append(workspaces, &workspace)
 	}
-
 	return workspaces, nil
 }

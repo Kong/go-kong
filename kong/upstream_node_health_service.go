@@ -68,17 +68,10 @@ func (s *UpstreamNodeHealthService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var upstreamNodeHealths []*UpstreamNodeHealth
-
-	for _, object := range data {
-		var upstreamNodeHealth UpstreamNodeHealth
-		err = json.Unmarshal(object, &upstreamNodeHealth)
-		if err != nil {
-			return nil, nil, err
-		}
-		upstreamNodeHealths = append(upstreamNodeHealths, &upstreamNodeHealth)
+	upstreamNodeHealths, err := asUpstreamNodeHealth(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return upstreamNodeHealths, next, nil
 }
 
@@ -88,16 +81,22 @@ func (s *UpstreamNodeHealthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	var upstreamNodeHealths []*UpstreamNodeHealth
+	upstreamNodeHealths, err := asUpstreamNodeHealth(data)
+	if err != nil {
+		return nil, err
+	}
+	return upstreamNodeHealths, nil
+}
 
+func asUpstreamNodeHealth(data [][]byte) ([]*UpstreamNodeHealth, error) {
+	var upstreamNodeHealths []*UpstreamNodeHealth
 	for _, object := range data {
 		var upstreamNodeHealth UpstreamNodeHealth
-		err = json.Unmarshal(object, &upstreamNodeHealth)
+		err := json.Unmarshal(object, &upstreamNodeHealth)
 		if err != nil {
 			return nil, err
 		}
 		upstreamNodeHealths = append(upstreamNodeHealths, &upstreamNodeHealth)
 	}
-
 	return upstreamNodeHealths, nil
 }

@@ -139,16 +139,10 @@ func (s *KeyAuthService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var keyAuths []*KeyAuth
-	for _, object := range data {
-		var keyAuth KeyAuth
-		err = json.Unmarshal(object, &keyAuth)
-		if err != nil {
-			return nil, nil, err
-		}
-		keyAuths = append(keyAuths, &keyAuth)
+	keyAuths, err := asKeyAuth(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return keyAuths, next, nil
 }
 
@@ -158,15 +152,22 @@ func (s *KeyAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	keyAuths, err := asKeyAuth(data)
+	if err != nil {
+		return nil, err
+	}
+	return keyAuths, nil
+}
+
+func asKeyAuth(data [][]byte) ([]*KeyAuth, error) {
 	var keyAuths []*KeyAuth
 	for _, object := range data {
 		var keyAuth KeyAuth
-		err = json.Unmarshal(object, &keyAuth)
+		err := json.Unmarshal(object, &keyAuth)
 		if err != nil {
 			return nil, err
 		}
 		keyAuths = append(keyAuths, &keyAuth)
 	}
-
 	return keyAuths, nil
 }

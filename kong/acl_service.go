@@ -140,16 +140,10 @@ func (s *ACLService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	var aclGroups []*ACLGroup
-	for _, object := range data {
-		var aclGroup ACLGroup
-		err = json.Unmarshal(object, &aclGroup)
-		if err != nil {
-			return nil, err
-		}
-		aclGroups = append(aclGroups, &aclGroup)
+	aclGroups, err := asACLGroups(data)
+	if err != nil {
+		return nil, err
 	}
-
 	return aclGroups, nil
 }
 
@@ -159,15 +153,22 @@ func (s *ACLService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
+	aclGroups, err := asACLGroups(data)
+	if err != nil {
+		return nil, nil, err
+	}
+	return aclGroups, next, nil
+}
+
+func asACLGroups(data [][]byte) ([]*ACLGroup, error) {
 	var aclGroups []*ACLGroup
 	for _, object := range data {
 		var aclGroup ACLGroup
-		err = json.Unmarshal(object, &aclGroup)
+		err := json.Unmarshal(object, &aclGroup)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		aclGroups = append(aclGroups, &aclGroup)
 	}
-
-	return aclGroups, next, nil
+	return aclGroups, nil
 }

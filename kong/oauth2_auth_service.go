@@ -143,16 +143,10 @@ func (s *Oauth2Service) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var oauth2Creds []*Oauth2Credential
-	for _, object := range data {
-		var oauth2Cred Oauth2Credential
-		err = json.Unmarshal(object, &oauth2Cred)
-		if err != nil {
-			return nil, nil, err
-		}
-		oauth2Creds = append(oauth2Creds, &oauth2Cred)
+	oauth2Creds, err := asOauth2Credential(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return oauth2Creds, next, nil
 }
 
@@ -162,15 +156,22 @@ func (s *Oauth2Service) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	oauth2Creds, err := asOauth2Credential(data)
+	if err != nil {
+		return nil, err
+	}
+	return oauth2Creds, nil
+}
+
+func asOauth2Credential(data [][]byte) ([]*Oauth2Credential, error) {
 	var oauth2Creds []*Oauth2Credential
 	for _, object := range data {
 		var oauth2Cred Oauth2Credential
-		err = json.Unmarshal(object, &oauth2Cred)
+		err := json.Unmarshal(object, &oauth2Cred)
 		if err != nil {
 			return nil, err
 		}
 		oauth2Creds = append(oauth2Creds, &oauth2Cred)
 	}
-
 	return oauth2Creds, nil
 }

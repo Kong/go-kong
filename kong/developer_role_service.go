@@ -120,37 +120,51 @@ func (s *DeveloperRoleService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *DeveloperRoleService) List(ctx context.Context,
 	opt *ListOpt) ([]*DeveloperRole, *ListOpt, error) {
-	data, next, err := s.client.list(ctx, "/developers/roles/", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var roles []*DeveloperRole
-	for _, object := range data {
-		var role DeveloperRole
-		err = json.Unmarshal(object, &role)
-		if err != nil {
-			return nil, nil, err
-		}
-		roles = append(roles, &role)
-	}
-
-	return roles, next, nil
+	return s.listByEndpointAndOpt(ctx, "/developers/roles/", opt)
 }
 
 // ListAll fetches all Developer Roles in Kong.
 // This method can take a while if there
 // a lot of Developer Roles present.
 func (s *DeveloperRoleService) ListAll(ctx context.Context) ([]*DeveloperRole, error) {
-	var roles, data []*DeveloperRole
-	var err error
-	opt := &ListOpt{Size: pageSize}
+	return s.listAllByEndpointAndOpt(ctx, "/developers/roles/", newOpt(nil))
+}
 
-	for opt != nil {
-		data, opt, err = s.List(ctx, opt)
+func (s *DeveloperRoleService) listByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*DeveloperRole, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, endpoint, opt)
+	if err != nil {
+		return nil, nil, err
+	}
+	roles, err := asDeveloperRole(data)
+	if err != nil {
+		return nil, nil, err
+	}
+	return roles, next, nil
+}
+
+func (s *DeveloperRoleService) listAllByEndpointAndOpt(ctx context.Context,
+	endpoint string, opt *ListOpt) ([]*DeveloperRole, error) {
+	data, err := s.client.listAll(ctx, endpoint, opt, false)
+	if err != nil {
+		return nil, err
+	}
+	roles, err := asDeveloperRole(data)
+	if err != nil {
+		return nil, err
+	}
+	return roles, nil
+}
+
+func asDeveloperRole(data [][]byte) ([]*DeveloperRole, error) {
+	var roles []*DeveloperRole
+	for _, object := range data {
+		var role DeveloperRole
+		err := json.Unmarshal(object, &role)
 		if err != nil {
 			return nil, err
 		}
-		roles = append(roles, data...)
+		roles = append(roles, &role)
 	}
 	return roles, nil
 }

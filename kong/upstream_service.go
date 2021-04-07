@@ -154,17 +154,10 @@ func (s *UpstreamService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var upstreams []*Upstream
-
-	for _, object := range data {
-		var upstream Upstream
-		err = json.Unmarshal(object, &upstream)
-		if err != nil {
-			return nil, nil, err
-		}
-		upstreams = append(upstreams, &upstream)
+	upstreams, err := asUpstream(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return upstreams, next, nil
 }
 
@@ -174,16 +167,22 @@ func (s *UpstreamService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	var upstreams []*Upstream
+	upstreams, err := asUpstream(data)
+	if err != nil {
+		return nil, err
+	}
+	return upstreams, nil
+}
 
+func asUpstream(data [][]byte) ([]*Upstream, error) {
+	var upstreams []*Upstream
 	for _, object := range data {
 		var upstream Upstream
-		err = json.Unmarshal(object, &upstream)
+		err := json.Unmarshal(object, &upstream)
 		if err != nil {
 			return nil, err
 		}
 		upstreams = append(upstreams, &upstream)
 	}
-
 	return upstreams, nil
 }

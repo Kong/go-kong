@@ -140,16 +140,10 @@ func (s *JWTAuthService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var jwts []*JWTAuth
-	for _, object := range data {
-		var jwtAuth JWTAuth
-		err = json.Unmarshal(object, &jwtAuth)
-		if err != nil {
-			return nil, nil, err
-		}
-		jwts = append(jwts, &jwtAuth)
+	jwts, err := asJWTAuth(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return jwts, next, nil
 }
 
@@ -159,15 +153,22 @@ func (s *JWTAuthService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	jwts, err := asJWTAuth(data)
+	if err != nil {
+		return nil, err
+	}
+	return jwts, nil
+}
+
+func asJWTAuth(data [][]byte) ([]*JWTAuth, error) {
 	var jwts []*JWTAuth
 	for _, object := range data {
 		var jwtAuth JWTAuth
-		err = json.Unmarshal(object, &jwtAuth)
+		err := json.Unmarshal(object, &jwtAuth)
 		if err != nil {
 			return nil, err
 		}
 		jwts = append(jwts, &jwtAuth)
 	}
-
 	return jwts, nil
 }

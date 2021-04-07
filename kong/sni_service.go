@@ -161,16 +161,10 @@ func (s *SNIService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var snis []*SNI
-	for _, object := range data {
-		var sni SNI
-		err = json.Unmarshal(object, &sni)
-		if err != nil {
-			return nil, nil, err
-		}
-		snis = append(snis, &sni)
+	snis, err := asSNI(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return snis, next, nil
 }
 
@@ -180,15 +174,22 @@ func (s *SNIService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	snis, err := asSNI(data)
+	if err != nil {
+		return nil, err
+	}
+	return snis, nil
+}
+
+func asSNI(data [][]byte) ([]*SNI, error) {
 	var snis []*SNI
 	for _, object := range data {
 		var sni SNI
-		err = json.Unmarshal(object, &sni)
+		err := json.Unmarshal(object, &sni)
 		if err != nil {
 			return nil, err
 		}
 		snis = append(snis, &sni)
 	}
-
 	return snis, nil
 }

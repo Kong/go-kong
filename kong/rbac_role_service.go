@@ -135,40 +135,39 @@ func (s *RBACRoleService) ListAll(ctx context.Context) ([]*RBACRole, error) {
 
 func (s *RBACRoleService) listByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*RBACRole, *ListOpt, error) {
-
 	data, next, err := s.client.list(ctx, endpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
-	var roles []*RBACRole
-	for _, object := range data {
-		var role RBACRole
-		err = json.Unmarshal(object, &role)
-		if err != nil {
-			return nil, nil, err
-		}
-		roles = append(roles, &role)
+	roles, err := asRBACRole(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return roles, next, nil
 }
 
 func (s *RBACRoleService) listAllByEndpointAndOpt(ctx context.Context,
 	endpoint string, opt *ListOpt) ([]*RBACRole, error) {
-
 	data, err := s.client.listAll(ctx, endpoint, opt, false)
 	if err != nil {
 		return nil, err
 	}
+	roles, err := asRBACRole(data)
+	if err != nil {
+		return nil, err
+	}
+	return roles, nil
+}
+
+func asRBACRole(data [][]byte) ([]*RBACRole, error) {
 	var roles []*RBACRole
 	for _, object := range data {
 		var role RBACRole
-		err = json.Unmarshal(object, &role)
+		err := json.Unmarshal(object, &role)
 		if err != nil {
 			return nil, err
 		}
 		roles = append(roles, &role)
 	}
-
 	return roles, nil
 }

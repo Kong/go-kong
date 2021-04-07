@@ -174,17 +174,10 @@ func (s *DeveloperService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var developers []*Developer
-
-	for _, object := range data {
-		var developer Developer
-		err = json.Unmarshal(object, &developer)
-		if err != nil {
-			return nil, nil, err
-		}
-		developers = append(developers, &developer)
+	developers, err := asDeveloper(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return developers, next, nil
 }
 
@@ -194,16 +187,22 @@ func (s *DeveloperService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	var developers []*Developer
+	developers, err := asDeveloper(data)
+	if err != nil {
+		return nil, err
+	}
+	return developers, nil
+}
 
+func asDeveloper(data [][]byte) ([]*Developer, error) {
+	var developers []*Developer
 	for _, object := range data {
 		var developer Developer
-		err = json.Unmarshal(object, &developer)
+		err := json.Unmarshal(object, &developer)
 		if err != nil {
 			return nil, err
 		}
 		developers = append(developers, &developer)
 	}
-
 	return developers, nil
 }

@@ -155,17 +155,10 @@ func (s *PluginService) listByPath(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var plugins []*Plugin
-
-	for _, object := range data {
-		var plugin Plugin
-		err = json.Unmarshal(object, &plugin)
-		if err != nil {
-			return nil, nil, err
-		}
-		plugins = append(plugins, &plugin)
+	plugins, err := asPlugin(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return plugins, next, nil
 }
 
@@ -183,17 +176,10 @@ func (s *PluginService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	var plugins []*Plugin
-
-	for _, object := range data {
-		var plugin Plugin
-		err = json.Unmarshal(object, &plugin)
-		if err != nil {
-			return nil, err
-		}
-		plugins = append(plugins, &plugin)
+	plugins, err := asPlugin(data)
+	if err != nil {
+		return nil, err
 	}
-
 	return plugins, nil
 }
 
@@ -250,4 +236,17 @@ func (s *PluginService) ListAllForRoute(ctx context.Context,
 		return nil, errors.New("routeID cannot be nil")
 	}
 	return s.listAllByPath(ctx, "/routes/"+*routeID+"/plugins")
+}
+
+func asPlugin(data [][]byte) ([]*Plugin, error) {
+	var plugins []*Plugin
+	for _, object := range data {
+		var plugin Plugin
+		err := json.Unmarshal(object, &plugin)
+		if err != nil {
+			return nil, err
+		}
+		plugins = append(plugins, &plugin)
+	}
+	return plugins, nil
 }

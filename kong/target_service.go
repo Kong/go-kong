@@ -186,16 +186,10 @@ func (s *TargetService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var targets []*Target
-	for _, object := range data {
-		var target Target
-		err = json.Unmarshal(object, &target)
-		if err != nil {
-			return nil, nil, err
-		}
-		targets = append(targets, &target)
+	targets, err := asTarget(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return targets, next, nil
 }
 
@@ -205,15 +199,22 @@ func (s *TargetService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	targets, err := asTarget(data)
+	if err != nil {
+		return nil, err
+	}
+	return targets, nil
+}
+
+func asTarget(data [][]byte) ([]*Target, error) {
 	var targets []*Target
 	for _, object := range data {
 		var target Target
-		err = json.Unmarshal(object, &target)
+		err := json.Unmarshal(object, &target)
 		if err != nil {
 			return nil, err
 		}
 		targets = append(targets, &target)
 	}
-
 	return targets, nil
 }

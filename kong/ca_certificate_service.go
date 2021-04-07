@@ -156,16 +156,10 @@ func (s *CACertificateService) listByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var certificates []*CACertificate
-	for _, object := range data {
-		var certificate CACertificate
-		err = json.Unmarshal(object, &certificate)
-		if err != nil {
-			return nil, nil, err
-		}
-		certificates = append(certificates, &certificate)
+	certificates, err := asCACertificate(data)
+	if err != nil {
+		return nil, nil, err
 	}
-
 	return certificates, next, nil
 }
 
@@ -175,15 +169,22 @@ func (s *CACertificateService) listAllByEndpointAndOpt(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	certificates, err := asCACertificate(data)
+	if err != nil {
+		return nil, err
+	}
+	return certificates, nil
+}
+
+func asCACertificate(data [][]byte) ([]*CACertificate, error) {
 	var certificates []*CACertificate
 	for _, object := range data {
 		var certificate CACertificate
-		err = json.Unmarshal(object, &certificate)
+		err := json.Unmarshal(object, &certificate)
 		if err != nil {
 			return nil, err
 		}
 		certificates = append(certificates, &certificate)
 	}
-
 	return certificates, nil
 }
