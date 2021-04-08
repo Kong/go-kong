@@ -1,6 +1,3 @@
-.PHONY: test-all
-test-all: lint test
-
 .PHONY: test
 test:
 	go test -v ./...
