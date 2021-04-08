@@ -1,5 +1,3 @@
-.DEFAULT_GOAL := test-all
-
 .PHONY: test-all
 test-all: lint test
 
