@@ -111,7 +111,7 @@ func (s *KeyAuthService) ListAll(ctx context.Context) ([]*KeyAuth, error) {
 // This method can take a while if there
 // a lot of key-auth credentials present.
 func (s *KeyAuthService) listAllByTags(ctx context.Context, tags []string) ([]*KeyAuth, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/key-auths", newOpt(tags))
+	return s.listAllByOpt(ctx, newOpt(tags))
 }
 
 // listAllByTags fetches all key-auth credentials filtered by tags in Kong.

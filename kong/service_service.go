@@ -163,7 +163,7 @@ func (s *Svcservice) ListAll(ctx context.Context) ([]*Service, error) {
 // This method can take a while if there
 // a lot of Services present.
 func (s *Svcservice) listAllByTags(ctx context.Context, tags []string) ([]*Service, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/services", newOpt(tags))
+	return s.listAllByOpt(ctx, newOpt(tags))
 }
 
 // listAllByOpt fetches all Services filtered by opt in Kong.
