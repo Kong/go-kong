@@ -23,10 +23,6 @@ type AbstractSvcService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Service, *ListOpt, error)
 	// ListAll fetches all Services in Kong.
 	ListAll(ctx context.Context) ([]*Service, error)
-	// ListAllByTags fetches all Services filtered by opt in Kong.
-	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Service, error)
-	// ListAllByTags fetches all Services filtered by tags in Kong.
-	ListAllByTags(ctx context.Context, tags []string) ([]*Service, error)
 }
 
 // Svcservice handles services in Kong.
@@ -160,20 +156,20 @@ func (s *Svcservice) List(ctx context.Context,
 // This method can take a while if there
 // a lot of Services present.
 func (s *Svcservice) ListAll(ctx context.Context) ([]*Service, error) {
-	return s.ListAllByTags(ctx, nil)
+	return s.listAllByTags(ctx, nil)
 }
 
-// ListAllByTags fetches all Services filtered by tags in Kong.
+// listAllByTags fetches all Services filtered by tags in Kong.
 // This method can take a while if there
 // a lot of Services present.
-func (s *Svcservice) ListAllByTags(ctx context.Context, tags []string) ([]*Service, error) {
+func (s *Svcservice) listAllByTags(ctx context.Context, tags []string) ([]*Service, error) {
 	return s.listAllByEndpointAndOpt(ctx, "/services", newOpt(tags))
 }
 
-// ListAllByOpt fetches all Services filtered by opt in Kong.
+// listAllByOpt fetches all Services filtered by opt in Kong.
 // This method can take a while if there
 // a lot of Services present.
-func (s *Svcservice) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Service, error) {
+func (s *Svcservice) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*Service, error) {
 	return s.listAllByEndpointAndOpt(ctx, "/services", opt)
 }
 

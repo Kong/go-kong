@@ -19,10 +19,6 @@ type AbstractOauth2Service interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Oauth2Credential, *ListOpt, error)
 	// ListAll fetches all oauth2 credentials in Kong.
 	ListAll(ctx context.Context) ([]*Oauth2Credential, error)
-	// ListAllByOpt fetches all oauth2 credentials filtered by opt in Kong.
-	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Oauth2Credential, error)
-	// ListAllByTags fetches all oauth2 credentials filtered by tags in Kong.
-	ListAllByTags(ctx context.Context, tags []string) ([]*Oauth2Credential, error)
 	// ListForConsumer fetches a list of oauth2 credentials
 	// in Kong associated with a specific consumer.
 	ListForConsumer(ctx context.Context, consumerUsernameOrID *string, opt *ListOpt) ([]*Oauth2Credential, *ListOpt, error)
@@ -111,20 +107,20 @@ func (s *Oauth2Service) List(ctx context.Context,
 // This method can take a while if there
 // a lot of oauth2 credentials present.
 func (s *Oauth2Service) ListAll(ctx context.Context) ([]*Oauth2Credential, error) {
-	return s.ListAllByTags(ctx, nil)
+	return s.listAllByTags(ctx, nil)
 }
 
-// ListAllByTags fetches all oauth2 credentials filtered by tags in Kong.
+// listAllByTags fetches all oauth2 credentials filtered by tags in Kong.
 // This method can take a while if there
 // a lot of oauth2 credentials present.
-func (s *Oauth2Service) ListAllByTags(ctx context.Context, tags []string) ([]*Oauth2Credential, error) {
-	return s.ListAllByOpt(ctx, newOpt(tags))
+func (s *Oauth2Service) listAllByTags(ctx context.Context, tags []string) ([]*Oauth2Credential, error) {
+	return s.listAllByOpt(ctx, newOpt(tags))
 }
 
-// ListAllByTags fetches all oauth2 credentials filtered by opt in Kong.
+// listAllByTags fetches all oauth2 credentials filtered by opt in Kong.
 // This method can take a while if there
 // a lot of oauth2 credentials present.
-func (s *Oauth2Service) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Oauth2Credential, error) {
+func (s *Oauth2Service) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*Oauth2Credential, error) {
 	return s.listAllByEndpointAndOpt(ctx, "/oauth2", opt)
 }
 

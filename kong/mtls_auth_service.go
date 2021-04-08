@@ -19,8 +19,6 @@ type AbstractMTLSAuthService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*MTLSAuth, *ListOpt, error)
 	// ListAll fetches all MTLS credentials in Kong.
 	ListAll(ctx context.Context) ([]*MTLSAuth, error)
-	// ListAllByTags fetches all MTLS credentials filtered by tags in Kong.
-	ListAllByTags(ctx context.Context, tags []string) ([]*MTLSAuth, error)
 	// ListForConsumer fetches a list of mtls credentials
 	// in Kong associated with a specific consumer.
 	ListForConsumer(ctx context.Context, consumerUsernameOrID *string, opt *ListOpt) ([]*MTLSAuth, *ListOpt, error)
@@ -107,20 +105,20 @@ func (s *MTLSAuthService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of MTLS credentials present.
 func (s *MTLSAuthService) ListAll(ctx context.Context) ([]*MTLSAuth, error) {
-	return s.ListAllByTags(ctx, nil)
+	return s.listAllByTags(ctx, nil)
 }
 
-// ListAllByTags fetches all MTLS credentials filtered by tags in Kong.
+// listAllByTags fetches all MTLS credentials filtered by tags in Kong.
 // This method can take a while if there
 // a lot of MTLS credentials present.
-func (s *MTLSAuthService) ListAllByTags(ctx context.Context, tags []string) ([]*MTLSAuth, error) {
-	return s.ListAllByOpt(ctx, newOpt(tags))
+func (s *MTLSAuthService) listAllByTags(ctx context.Context, tags []string) ([]*MTLSAuth, error) {
+	return s.listAllByOpt(ctx, newOpt(tags))
 }
 
-// ListAllByTags fetches all MTLS credentials filtered by opt in Kong.
+// listAllByTags fetches all MTLS credentials filtered by opt in Kong.
 // This method can take a while if there
 // a lot of MTLS credentials present.
-func (s *MTLSAuthService) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*MTLSAuth, error) {
+func (s *MTLSAuthService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*MTLSAuth, error) {
 	return s.listAllByEndpointAndOpt(ctx, "/mtls-auths", opt)
 }
 

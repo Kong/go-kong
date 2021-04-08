@@ -23,10 +23,6 @@ type AbstractSNIService interface {
 	ListForCertificate(ctx context.Context, certificateID *string, opt *ListOpt) ([]*SNI, *ListOpt, error)
 	// ListAll fetches all SNIs in Kong.
 	ListAll(ctx context.Context) ([]*SNI, error)
-	// ListAllByOpt fetches all SNIs filtered by opt in Kong.
-	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*SNI, error)
-	// ListAllByTags fetches all SNIs filtered by tags in Kong.
-	ListAllByTags(ctx context.Context, tags []string) ([]*SNI, error)
 }
 
 // SNIService handles SNIs in Kong.
@@ -138,20 +134,20 @@ func (s *SNIService) ListForCertificate(ctx context.Context,
 // This method can take a while if there
 // a lot of SNIs present.
 func (s *SNIService) ListAll(ctx context.Context) ([]*SNI, error) {
-	return s.ListAllByTags(ctx, nil)
+	return s.listAllByTags(ctx, nil)
 }
 
-// ListAllByTags fetches all SNIs filtered by tags in Kong.
+// listAllByTags fetches all SNIs filtered by tags in Kong.
 // This method can take a while if there
 // a lot of SNIs present.
-func (s *SNIService) ListAllByTags(ctx context.Context, tags []string) ([]*SNI, error) {
-	return s.ListAllByOpt(ctx, newOpt(tags))
+func (s *SNIService) listAllByTags(ctx context.Context, tags []string) ([]*SNI, error) {
+	return s.listAllByOpt(ctx, newOpt(tags))
 }
 
-// ListAllByOpt fetches all SNIs filtered by opt in Kong.
+// listAllByOpt fetches all SNIs filtered by opt in Kong.
 // This method can take a while if there
 // a lot of SNIs present.
-func (s *SNIService) ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*SNI, error) {
+func (s *SNIService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*SNI, error) {
 	return s.listAllByEndpointAndOpt(ctx, "/snis", opt)
 }
 

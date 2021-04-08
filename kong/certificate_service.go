@@ -21,10 +21,6 @@ type AbstractCertificateService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Certificate, *ListOpt, error)
 	// ListAll fetches all Certificates in Kong.
 	ListAll(ctx context.Context) ([]*Certificate, error)
-	// ListAllByOpt fetches all Certificates filtered by opt in Kong.
-	ListAllByOpt(ctx context.Context, opt *ListOpt) ([]*Certificate, error)
-	// ListAllByTags fetches all Certificates filtered by tags in Kong.
-	ListAllByTags(ctx context.Context, tags []string) ([]*Certificate, error)
 }
 
 // CertificateService handles Certificates in Kong.
@@ -131,21 +127,21 @@ func (s *CertificateService) List(ctx context.Context,
 // a lot of Certificates present.
 func (s *CertificateService) ListAll(ctx context.Context) ([]*Certificate,
 	error) {
-	return s.ListAllByTags(ctx, nil)
+	return s.listAllByTags(ctx, nil)
 }
 
 // ListAll fetches all Certificates filtered by tags in Kong.
 // This method can take a while if there
 // a lot of Certificates present.
-func (s *CertificateService) ListAllByTags(ctx context.Context,
+func (s *CertificateService) listAllByTags(ctx context.Context,
 	tags []string) ([]*Certificate, error) {
-	return s.ListAllByOpt(ctx, newOpt(tags))
+	return s.listAllByOpt(ctx, newOpt(tags))
 }
 
 // ListAll fetches all Certificates filtered by opt in Kong.
 // This method can take a while if there
 // a lot of Certificates present.
-func (s *CertificateService) ListAllByOpt(ctx context.Context,
+func (s *CertificateService) listAllByOpt(ctx context.Context,
 	opt *ListOpt) ([]*Certificate, error) {
 	return s.listAllByEndpointAndOpt(ctx, "/certificates", opt)
 }
