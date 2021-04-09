@@ -16,6 +16,6 @@ jobs:
       - name: Setup golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.25.0
+          version: v1.28.3
       - name: Verify Codegen
         run: make verify-codegen
