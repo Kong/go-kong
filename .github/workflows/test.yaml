@@ -3,21 +3,6 @@ name: CI Test
 on: [push, pull_request]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup go
-        uses: actions/setup-go@v2
-        with:
-          go-version: '^1.16'
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Setup golangci-lint
-        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.25.0
-      - name: Run golangci-lint
-        run: make lint
-      - name: Verify Codegen
-        run: make verify-codegen
   test:
     strategy:
       matrix:
@@ -141,4 +126,6 @@ jobs:
       - name: Run tests with Coverage
         run: make coverage
       - name: Upload Code Coverage
-        run: "bash <(curl -s https://codecov.io/bash)"
+        uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: true
