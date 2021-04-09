@@ -15,5 +15,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup golangci-lint
         uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.25.0
       - name: Verify Codegen
         run: make verify-codegen
