@@ -110,11 +110,13 @@ func (s *Svcservice) Update(ctx context.Context,
 		return nil, errors.New("cannot update a nil service")
 	}
 
+	endpoint := ""
 	if isEmptyString(service.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		endpoint = fmt.Sprintf("/services/%v", *service.Name)
+	} else {
+		endpoint = fmt.Sprintf("/services/%v", *service.ID)
 	}
 
-	endpoint := fmt.Sprintf("/services/%v", *service.ID)
 	req, err := s.client.NewRequest("PATCH", endpoint, nil, service)
 	if err != nil {
 		return nil, err
