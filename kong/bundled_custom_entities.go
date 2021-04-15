@@ -1,7 +1,7 @@
 package kong
 
 import (
-	"github.com/HieuQB/go-kong/kong/custom"
+	"github.com/kong/go-kong/kong/custom"
 )
 
 var defaultCustomEntities = []custom.EntityCRUDDefinition{

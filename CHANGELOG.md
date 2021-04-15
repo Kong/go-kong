@@ -27,24 +27,24 @@
 ### Added
 
 - Added support for Developer entities. Thanks to @ChristianJacquot!
-  [#27](https://github.com/HieuQB/go-kong/pull/27)
+  [#27](https://github.com/kong/go-kong/pull/27)
 - Added support for Developer Role entities. Thanks to @mmorel-35!
-  [#30](https://github.com/HieuQB/go-kong/pull/27)
+  [#30](https://github.com/kong/go-kong/pull/27)
 - RBAC roles now support pagination and listing all entities. Thanks to
   @mmorel-35!
-  [#30](https://github.com/HieuQB/go-kong/pull/27)
+  [#30](https://github.com/kong/go-kong/pull/27)
 - Tests can now require the Portal. Added helpers to enable the Portal and
   related settings.
-  [#30](https://github.com/HieuQB/go-kong/pull/27)
+  [#30](https://github.com/kong/go-kong/pull/27)
 - Clients now use interfaces. Other libraries that use go-kong can define mock
   types that implement these interfaces for unit tests that do not require an
   actual Kong instance.
-  [#24](https://github.com/HieuQB/go-kong/pull/27)
+  [#24](https://github.com/kong/go-kong/pull/27)
 
 ### Fixed
 
 - RBAC roles now properly include their `negative` field in requests to Kong.
-  [#32](https://github.com/HieuQB/go-kong/pull/27)
+  [#32](https://github.com/kong/go-kong/pull/27)
 
 ## [v0.16.0] - 2021/03/03
 
@@ -77,7 +77,7 @@
 ### Summary
 
 This release renames the package from `github.com/hbagdi/go-kong` to
-`github.com/HieuQB/go-kong`.
+`github.com/kong/go-kong`.
 
 ## [v0.12.0] - 2020/07/30
 
@@ -316,24 +316,24 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
-[v0.17.0]: https://github.com/HieuQB/go-kong/compare/v0.16.0...v0.17.0
-[v0.16.0]: https://github.com/HieuQB/go-kong/compare/v0.15.0...v0.16.0
-[v0.15.0]: https://github.com/HieuQB/go-kong/compare/v0.14.0...v0.15.0
-[v0.14.0]: https://github.com/HieuQB/go-kong/compare/v0.13.0...v0.14.0
-[v0.13.0]: https://github.com/HieuQB/go-kong/compare/v0.12.0...v0.13.0
-[v0.12.0]: https://github.com/HieuQB/go-kong/compare/v0.11.0...v0.12.0
-[v0.11.0]: https://github.com/HieuQB/go-kong/compare/v0.10.0...v0.11.0
-[v0.10.0]: https://github.com/HieuQB/go-kong/compare/v0.9.0...v0.10.0
-[v0.9.0]: https://github.com/HieuQB/go-kong/compare/v0.8.0...v0.9.0
-[v0.8.0]: https://github.com/HieuQB/go-kong/compare/v0.7.0...v0.8.0
-[v0.7.0]: https://github.com/HieuQB/go-kong/compare/v0.6.2...v0.7.0
-[v0.6.2]: https://github.com/HieuQB/go-kong/compare/v0.6.1...v0.6.2
-[v0.6.1]: https://github.com/HieuQB/go-kong/compare/v0.6.0...v0.6.1
-[v0.6.0]: https://github.com/HieuQB/go-kong/compare/v0.5.1...v0.6.0
-[v0.5.1]: https://github.com/HieuQB/go-kong/compare/v0.5.0...v0.5.1
-[v0.5.0]: https://github.com/HieuQB/go-kong/compare/v0.4.1...v0.5.0
-[v0.4.1]: https://github.com/HieuQB/go-kong/compare/v0.4.0...v0.4.1
-[v0.4.0]: https://github.com/HieuQB/go-kong/compare/0.3.0...v0.4.0
-[0.3.0]: https://github.com/HieuQB/go-kong/compare/0.2.0...0.3.0
-[0.2.0]: https://github.com/HieuQB/go-kong/compare/0.1.0...0.2.0
-[0.1.0]: https://github.com/HieuQB/go-kong/compare/87666c7fe73477d1874d35d690301241cd23059f...0.1.0
+[v0.17.0]: https://github.com/kong/go-kong/compare/v0.16.0...v0.17.0
+[v0.16.0]: https://github.com/kong/go-kong/compare/v0.15.0...v0.16.0
+[v0.15.0]: https://github.com/kong/go-kong/compare/v0.14.0...v0.15.0
+[v0.14.0]: https://github.com/kong/go-kong/compare/v0.13.0...v0.14.0
+[v0.13.0]: https://github.com/kong/go-kong/compare/v0.12.0...v0.13.0
+[v0.12.0]: https://github.com/kong/go-kong/compare/v0.11.0...v0.12.0
+[v0.11.0]: https://github.com/kong/go-kong/compare/v0.10.0...v0.11.0
+[v0.10.0]: https://github.com/kong/go-kong/compare/v0.9.0...v0.10.0
+[v0.9.0]: https://github.com/kong/go-kong/compare/v0.8.0...v0.9.0
+[v0.8.0]: https://github.com/kong/go-kong/compare/v0.7.0...v0.8.0
+[v0.7.0]: https://github.com/kong/go-kong/compare/v0.6.2...v0.7.0
+[v0.6.2]: https://github.com/kong/go-kong/compare/v0.6.1...v0.6.2
+[v0.6.1]: https://github.com/kong/go-kong/compare/v0.6.0...v0.6.1
+[v0.6.0]: https://github.com/kong/go-kong/compare/v0.5.1...v0.6.0
+[v0.5.1]: https://github.com/kong/go-kong/compare/v0.5.0...v0.5.1
+[v0.5.0]: https://github.com/kong/go-kong/compare/v0.4.1...v0.5.0
+[v0.4.1]: https://github.com/kong/go-kong/compare/v0.4.0...v0.4.1
+[v0.4.0]: https://github.com/kong/go-kong/compare/0.3.0...v0.4.0
+[0.3.0]: https://github.com/kong/go-kong/compare/0.2.0...0.3.0
+[0.2.0]: https://github.com/kong/go-kong/compare/0.1.0...0.2.0
+[0.1.0]: https://github.com/kong/go-kong/compare/87666c7fe73477d1874d35d690301241cd23059f...0.1.0
