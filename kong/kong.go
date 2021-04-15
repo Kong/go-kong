@@ -11,7 +11,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/kong/go-kong/kong/custom"
+	"github.com/HieuQB/go-kong/kong/custom"
 )
 
 const defaultBaseURL = "http://localhost:8001"

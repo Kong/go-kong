@@ -1,4 +1,4 @@
-module github.com/kong/go-kong
+module github.com/HieuQB/go-kong
 
 go 1.16
 
