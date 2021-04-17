@@ -49,5 +49,6 @@ jobs:
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v1
         with:
-          flags: ${{ matrix.kong_version }}
+          name: codecov-${{ matrix.kong_version }}
+          flags: ${{ matrix.kong_version }},integration,community
           fail_ci_if_error: true
