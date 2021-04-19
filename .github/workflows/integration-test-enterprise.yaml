@@ -3,7 +3,7 @@ name: 'Integration Test : Enterprise'
 on: [push, pull_request]
 
 jobs:
-  test-enterprise:
+  test:
     continue-on-error: true
     strategy:
       matrix:
