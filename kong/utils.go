@@ -77,13 +77,14 @@ func (t headerRoundTripper) RoundTrip(req *http.Request) (*http.Response, error)
 // RoundTripperWithHTTPHeaders returns a client which injects headers
 // before sending any request.
 func HTTPClientWithHeaders(client *http.Client,
-	headers http.Header) http.Client {
-	var res http.Client
+	headers http.Header) *http.Client {
+	var res *http.Client
 	if client == nil {
 		defaultTransport := http.DefaultTransport.(*http.Transport)
+		res = &http.Client{}
 		res.Transport = defaultTransport
 	} else {
-		res = *client
+		res = client
 	}
 	res.Transport = headerRoundTripper{
 		headers: headers,
