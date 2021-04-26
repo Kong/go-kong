@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	versionParts = 4
+	versionParts   = 4
+	kong140Version = semver.MustParse("1.4.0")
 )
 
 // String returns pointer to s.
@@ -121,21 +122,16 @@ func cleanSemVer(v string) (semver.Version, error) {
 }
 
 func getKong(root map[string]interface{}) (*Kong, error) {
-
-	semVer, err := cleanSemVer(root["version"].(string))
+	version := root["version"].(string)
+	semVer, err := cleanSemVer(version)
 	if err != nil {
 		return nil, err
 	}
-
-	kong140Version := semver.MustParse("1.4.0")
-
 	kong := new(Kong)
-
 	kong.Version = semVer.String()
-	kong.Enterprise = strings.Contains(root["version"].(string), "enterprise")
+	kong.Enterprise = strings.Contains(version, "enterprise")
 	kong.Database = root["configuration"].(map[string]interface{})["database"].(string)
 	kong.Credentials.minVersion = kong140Version.String()
 	kong.Credentials.hasTagSupport = semVer.GTE(kong140Version)
-
 	return kong, nil
 }
