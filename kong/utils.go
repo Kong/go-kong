@@ -62,16 +62,27 @@ type headerRoundTripper struct {
 
 // RoundTrip satisfies the RoundTripper interface.
 func (t headerRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	req = requestWithHeaders(req, t.headers)
+	return t.rt.RoundTrip(req)
+}
+
+func requestWithHeaders(req *http.Request, headers http.Header) *http.Request {
+	if req == nil {
+		return nil
+	}
+	// fast-path
+	if len(headers) == 0 {
+		return req
+	}
 	newRequest := new(http.Request)
 	*newRequest = *req
-	newRequest.Header = make(http.Header, len(req.Header))
-	for k, s := range req.Header {
-		newRequest.Header[k] = append([]string(nil), s...)
+	newRequest.Header = req.Header.Clone()
+	for k, values := range headers {
+		for _, v := range values {
+			newRequest.Header.Add(k, v)
+		}
 	}
-	for k, v := range t.headers {
-		newRequest.Header[k] = v
-	}
-	return t.rt.RoundTrip(newRequest)
+	return newRequest
 }
 
 // RoundTripperWithHTTPHeaders returns a client which injects headers
