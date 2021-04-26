@@ -86,7 +86,7 @@ func TestFixVersion(t *testing.T) {
 	}
 }
 
-func Test_Kong(t *testing.T) {
+func Test_getKong(t *testing.T) {
 
 	kongWithoutCredentialsSupport := new(Kong)
 	kongWithoutCredentialsSupport.Credentials.minVersion = "1.4.0"
