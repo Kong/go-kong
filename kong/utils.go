@@ -10,6 +10,10 @@ import (
 	"github.com/blang/semver/v4"
 )
 
+var (
+	versionParts = 4
+)
+
 // String returns pointer to s.
 func String(s string) *string {
 	return &s
@@ -102,7 +106,7 @@ func cleanSemVer(v string) (semver.Version, error) {
 	// fix bad version formats like 0.13.0preview1
 	re := regexp.MustCompile(`(\d+\.\d+)(?:[\.-](\d+))?(?:\-?(.+)$|$)`)
 	m := re.FindStringSubmatch(v)
-	if len(m) != 4 {
+	if len(m) != versionParts {
 		return semver.Version{}, fmt.Errorf("Unknown Kong version : '%v'", v)
 	}
 	if m[2] == "" {
