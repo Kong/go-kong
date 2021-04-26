@@ -105,7 +105,7 @@ func NewClient(baseURL *string, workspace string, client *http.Client) (*Client,
 	}
 	kong.workspace = workspace
 	if kong.hasWorkspace() {
-		url.Path = path.Join(url.Path, workspace)
+		url.Path = path.Join(url.Path, kong.workspace)
 	}
 
 	kong.baseURL = url.String()
