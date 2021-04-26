@@ -199,9 +199,9 @@ func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
 			},
 			rt: defaultTransport,
 		}
-		return NewClient(baseURL, c)
+		return NewClient(baseURL, "", c)
 	}
-	return NewClient(baseURL, client)
+	return NewClient(baseURL, "", client)
 }
 
 type TestWorkspace struct {

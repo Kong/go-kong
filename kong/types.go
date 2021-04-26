@@ -5,6 +5,16 @@ import (
 	"strings"
 )
 
+type Kong struct {
+	Version     string
+	Enterprise  bool
+	Database    string
+	Credentials struct {
+		hasTagSupport bool
+		minVersion    string
+	}
+}
+
 // Service represents a Service in Kong.
 // Read https://getkong.org/docs/0.13.x/admin-api/#Service-object
 // +k8s:deepcopy-gen=true

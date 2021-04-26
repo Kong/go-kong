@@ -2,8 +2,12 @@ package kong
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
+
+	"github.com/blang/semver/v4"
 )
 
 // String returns pointer to s.
@@ -90,4 +94,44 @@ func HTTPClientWithHeaders(client *http.Client,
 		rt:      client.Transport,
 	}
 	return res
+}
+
+func cleanSemVer(v string) (semver.Version, error) {
+	// fix enterprise edition semver adding patch number
+	// fix enterprise edition version with dash
+	// fix bad version formats like 0.13.0preview1
+	re := regexp.MustCompile(`(\d+\.\d+)(?:[\.-](\d+))?(?:\-?(.+)$|$)`)
+	m := re.FindStringSubmatch(v)
+	if len(m) != 4 {
+		return semver.Version{}, fmt.Errorf("Unknown Kong version : '%v'", v)
+	}
+	if m[2] == "" {
+		m[2] = "0"
+	}
+	if m[3] != "" {
+		m[3] = "-" + strings.Replace(m[3], "enterprise-edition", "enterprise", 1)
+		m[3] = strings.Replace(m[3], ".", "", -1)
+	}
+	v = fmt.Sprintf("%s.%s%s", m[1], m[2], m[3])
+	return semver.Make(v)
+}
+
+func getKong(root map[string]interface{}) (*Kong, error) {
+
+	semVer, err := cleanSemVer(root["version"].(string))
+	if err != nil {
+		return nil, err
+	}
+
+	kong140Version := semver.MustParse("1.4.0")
+
+	kong := new(Kong)
+
+	kong.Version = semVer.String()
+	kong.Enterprise = strings.Contains(root["version"].(string), "enterprise")
+	kong.Database = root["configuration"].(map[string]interface{})["database"].(string)
+	kong.Credentials.minVersion = kong140Version.String()
+	kong.Credentials.hasTagSupport = semVer.GTE(kong140Version)
+
+	return kong, nil
 }

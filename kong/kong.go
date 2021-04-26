@@ -8,6 +8,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"path"
 
 	"github.com/pkg/errors"
 
@@ -31,6 +32,7 @@ var (
 type Client struct {
 	client                  *http.Client
 	baseURL                 string
+	workspace               string
 	common                  service
 	Consumers               AbstractConsumerService
 	Developers              AbstractDeveloperService
@@ -85,7 +87,7 @@ type Status struct {
 }
 
 // NewClient returns a Client which talks to Admin API of Kong
-func NewClient(baseURL *string, client *http.Client) (*Client, error) {
+func NewClient(baseURL *string, workspace string, client *http.Client) (*Client, error) {
 	if client == nil {
 		client = http.DefaultClient
 	}
@@ -101,6 +103,11 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "parsing URL")
 	}
+	kong.workspace = workspace
+	if kong.hasWorkspace() {
+		url.Path = path.Join(url.Path, workspace)
+	}
+
 	kong.baseURL = url.String()
 
 	kong.common.client = kong
@@ -145,6 +152,10 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	}
 	kong.logger = os.Stderr
 	return kong, nil
+}
+
+func (c *Client) hasWorkspace() bool {
+	return len(c.workspace) > 0
 }
 
 // Do executes a HTTP request and returns a response
@@ -264,9 +275,13 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 }
 
 // Root returns the response of GET request on root of
-// Admin API (GET /).
+// Admin API (GET / by default or GET /kong when the client has workspace defined)
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
-	req, err := c.NewRequest("GET", "/", nil, nil)
+	queryPath := "/"
+	if c.hasWorkspace() {
+		queryPath = queryPath + "kong"
+	}
+	req, err := c.NewRequest("GET", queryPath, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -277,4 +292,12 @@ func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 		return nil, err
 	}
 	return root, nil
+}
+
+func (c *Client) Kong(ctx context.Context) (*Kong, error) {
+	root, err := c.Root(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return getKong(root)
 }
