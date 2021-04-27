@@ -10,7 +10,7 @@ import (
 func TestKeyAuthCreate(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -51,7 +51,7 @@ func TestKeyAuthCreate(T *testing.T) {
 func TestKeyAuthCreateWithID(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -84,7 +84,7 @@ func TestKeyAuthCreateWithID(T *testing.T) {
 func TestKeyAuthGet(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -134,7 +134,7 @@ func TestKeyAuthGet(T *testing.T) {
 func TestKeyAuthUpdate(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -176,7 +176,7 @@ func TestKeyAuthUpdate(T *testing.T) {
 func TestKeyAuthDelete(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -214,7 +214,7 @@ func TestKeyAuthDelete(T *testing.T) {
 func TestKeyAuthListMethods(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -305,7 +305,7 @@ func TestKeyAuthCreateWithTTL(T *testing.T) {
 	runWhenKong(T, ">=1.4.0")
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 

@@ -10,7 +10,7 @@ import (
 func TestJWTCreate(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -54,7 +54,7 @@ func TestJWTCreate(T *testing.T) {
 func TestJWTCreateWithID(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -89,7 +89,7 @@ func TestJWTCreateWithID(T *testing.T) {
 func TestJWTGet(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -136,7 +136,7 @@ func TestJWTGet(T *testing.T) {
 func TestJWTUpdate(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -177,7 +177,7 @@ func TestJWTUpdate(T *testing.T) {
 func TestJWTDelete(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -213,7 +213,7 @@ func TestJWTDelete(T *testing.T) {
 func TestJWTListMethods(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 

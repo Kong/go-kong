@@ -12,7 +12,7 @@ func TestRBACUserService(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -45,7 +45,7 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -95,7 +95,7 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 func TestUserRoles(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 
 	assert.Nil(err)
 	assert.NotNil(client)

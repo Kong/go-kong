@@ -12,7 +12,7 @@ import (
 func TestWorkspaceService(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -63,7 +63,7 @@ func TestWorkspaceService(T *testing.T) {
 func TestWorkspaceServiceList(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -101,7 +101,7 @@ func TestWorkspaceServiceList(T *testing.T) {
 func TestWorkspaceServiceListAll(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -135,7 +135,7 @@ func TestWorkspaceService_Entities(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0 <=2.0.5", requiredFeatures{})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 

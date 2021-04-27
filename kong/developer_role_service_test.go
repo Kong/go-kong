@@ -11,7 +11,7 @@ func TestDeveloperRoleService(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -61,7 +61,7 @@ func TestDeveloperRoleServiceList(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -99,7 +99,7 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, nil)
+	client, err := NewTestClient(nil, "", nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
