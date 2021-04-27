@@ -60,7 +60,7 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 	url, err := url.Parse(defaultBaseURL)
 	assert.Nil(err)
 	url.Path = path.Join(url.Path, *createdWorkspace.Name)
-	workspaceClient, err := NewTestClient(String(url.String()), nil)
+	workspaceClient, err := NewTestClient(String(url.String()), "", nil)
 	assert.Nil(err)
 	assert.NotNil(workspaceClient)
 
