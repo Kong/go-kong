@@ -78,24 +78,29 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+var currentVersion semver.Version
+
 // runWhenKong skips the current test if the version of Kong doesn't
 // fall in the semverRange.
 // This helper function can be used in tests to write version specific
 // tests for Kong.
 func runWhenKong(t *testing.T, semverRange string) {
-	client, err := NewTestClient(nil, nil)
-	if err != nil {
-		t.Error(err)
-	}
-	res, err := client.Kong(defaultCtx)
-	if err != nil {
-		t.Error(err)
+	if currentVersion.Major == 0 {
+		client, err := NewTestClient(nil, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		res, err := client.Kong(defaultCtx)
+		if err != nil {
+			t.Error(err)
+		}
+		currentVersion = res.Version
 	}
 	r, err := semver.ParseRange(semverRange)
 	if err != nil {
 		t.Error(err)
 	}
-	if !r(res.Version) {
+	if !r(currentVersion) {
 		t.Skip()
 	}
 
