@@ -127,7 +127,7 @@ func runWhenEnterprise(t *testing.T, semverRange string, required requiredFeatur
 		t.Skip()
 	}
 
-	if required.rbac && res.RBAC != "on" {
+	if required.rbac && res.RBAC {
 		t.Log("RBAC not enabled on test Kong instance, skipping")
 		t.Skip()
 	}

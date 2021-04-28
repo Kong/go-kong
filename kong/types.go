@@ -9,8 +9,8 @@ import (
 type Kong struct {
 	Enterprise  bool
 	Portal      bool
+	RBAC        bool
 	Database    string
-	RBAC        string
 	Version     semver.Version
 	Credentials struct {
 		hasTagSupport bool
