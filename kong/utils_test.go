@@ -107,12 +107,16 @@ func Test_getKong(t *testing.T) {
 				"version": "0.33-1-enterprise-edition",
 				"configuration": map[string]interface{}{
 					"database": "off",
+					"portal":   true,
+					"rbac":     "on",
 				},
 			},
 			expected: &Kong{
 				Version:     semver.MustParse("0.33.1-enterprise"),
 				Enterprise:  true,
 				Database:    "off",
+				Portal:      true,
+				RBAC:        "on",
 				Credentials: kongWithoutCredentialsSupport.Credentials,
 			},
 		},
@@ -121,12 +125,16 @@ func Test_getKong(t *testing.T) {
 				"version": "2.3.2.0",
 				"configuration": map[string]interface{}{
 					"database": "cassandra",
+					"portal":   false,
+					"rbac":     "off",
 				},
 			},
 			expected: &Kong{
 				Version:     semver.MustParse("2.3.2-0"),
 				Enterprise:  false,
 				Database:    "cassandra",
+				Portal:      false,
+				RBAC:        "off",
 				Credentials: kongWithCredentialsSupport.Credentials,
 			},
 		},

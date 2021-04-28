@@ -7,9 +7,11 @@ import (
 )
 
 type Kong struct {
-	Version     semver.Version
 	Enterprise  bool
+	Portal      bool
 	Database    string
+	RBAC        string
+	Version     semver.Version
 	Credentials struct {
 		hasTagSupport bool
 		minVersion    string

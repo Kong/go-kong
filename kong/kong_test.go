@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"regexp"
-	"strings"
 	"testing"
 
 	"github.com/blang/semver/v4"
@@ -80,49 +78,24 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-var currentVersion semver.Version
-var r = regexp.MustCompile(`^[0-9]+\.[0-9]+`)
-
-func cleanVersionString(version string) string {
-	res := r.FindString(version)
-	if res == "" {
-		panic("unexpected version of kong")
-	}
-	res += ".0"
-	if strings.Contains(version, "enterprise") {
-		res += "-enterprise"
-	}
-	return res
-}
-
 // runWhenKong skips the current test if the version of Kong doesn't
 // fall in the semverRange.
 // This helper function can be used in tests to write version specific
 // tests for Kong.
 func runWhenKong(t *testing.T, semverRange string) {
-	if currentVersion.Major == 0 {
-		client, err := NewTestClient(nil, nil)
-		if err != nil {
-			t.Error(err)
-		}
-		res, err := client.Root(defaultCtx)
-		if err != nil {
-			t.Error(err)
-		}
-		v := res["version"].(string)
-
-		currentVersion, err = semver.Parse(cleanVersionString(v))
-
-		if err != nil {
-			t.Error(err)
-		}
+	client, err := NewTestClient(nil, nil)
+	if err != nil {
+		t.Error(err)
 	}
-
+	res, err := client.Kong(defaultCtx)
+	if err != nil {
+		t.Error(err)
+	}
 	r, err := semver.ParseRange(semverRange)
 	if err != nil {
 		t.Error(err)
 	}
-	if !r(currentVersion) {
+	if !r(res.Version) {
 		t.Skip()
 	}
 
@@ -144,27 +117,22 @@ func runWhenEnterprise(t *testing.T, semverRange string, required requiredFeatur
 	if err != nil {
 		t.Error(err)
 	}
-	res, err := client.Root(defaultCtx)
+	res, err := client.Kong(defaultCtx)
 	if err != nil {
 		t.Error(err)
 	}
-	v := res["version"].(string)
 
-	if !strings.Contains(v, "enterprise-edition") {
+	if !res.Enterprise {
 		t.Log("non-Enterprise test Kong instance, skipping")
 		t.Skip()
 	}
 
-	r := res["configuration"].(map[string]interface{})["rbac"].(string)
-
-	if required.rbac && r != "on" {
+	if required.rbac && res.RBAC != "on" {
 		t.Log("RBAC not enabled on test Kong instance, skipping")
 		t.Skip()
 	}
 
-	p := res["configuration"].(map[string]interface{})["portal"]
-
-	if required.portal && p != true {
+	if required.portal && res.Portal != true {
 		t.Log("Portal not enabled on test Kong instance, skipping")
 		t.Skip()
 	}

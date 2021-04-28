@@ -123,6 +123,7 @@ func cleanSemVer(v string) (semver.Version, error) {
 
 func getKong(root map[string]interface{}) (*Kong, error) {
 	version := root["version"].(string)
+	configuration := root["configuration"].(map[string]interface{})
 	semVer, err := cleanSemVer(version)
 	if err != nil {
 		return nil, err
@@ -130,7 +131,9 @@ func getKong(root map[string]interface{}) (*Kong, error) {
 	kong := new(Kong)
 	kong.Version = semVer
 	kong.Enterprise = strings.Contains(version, "enterprise")
-	kong.Database = root["configuration"].(map[string]interface{})["database"].(string)
+	kong.Database = configuration["database"].(string)
+	kong.Portal = configuration["portal"].(bool)
+	kong.RBAC = configuration["rbac"].(string)
 	kong.Credentials.minVersion = kong140Version.String()
 	kong.Credentials.hasTagSupport = semVer.GTE(kong140Version)
 	return kong, nil
