@@ -7,13 +7,19 @@ sudo apt-get update
 sudo apt-get install openssl libpcre3 procps perl wget zlibc
 
 function setup_kong(){
-  SWITCH="1.3.100"
+  SWITCH="1.3.000"
+  SWITCH2="2.0.000"
 
-  URL="https://kong.bintray.com/kong-deb/kong-${KONG_VERSION}.xenial.all.deb"
+  URL="https://download.konghq.com/gateway-1.x-ubuntu-xenial/pool/all/k/kong/kong_${KONG_VERSION}_all.deb"
 
   if [[ "$KONG_VERSION" > "$SWITCH" ]];
   then
-  URL="https://kong.bintray.com/kong-deb/kong-${KONG_VERSION}.xenial.amd64.deb"
+  URL="https://download.konghq.com/gateway-1.x-ubuntu-xenial/pool/all/k/kong/kong_${KONG_VERSION}_amd64.deb"
+  fi
+
+  if [[ "$KONG_VERSION" > "$SWITCH2" ]];
+  then
+  URL="https://download.konghq.com/gateway-2.x-ubuntu-xenial/pool/all/k/kong/kong_${KONG_VERSION}_amd64.deb"
   fi
 
   /usr/bin/curl -sL $URL -o kong.deb
@@ -21,7 +27,21 @@ function setup_kong(){
 
 function setup_kong_enterprise(){
   KONG_VERSION="${KONG_VERSION#enterprise-}"
-  URL="https://kong.bintray.com/kong-enterprise-edition-deb/dists/kong-enterprise-edition-${KONG_VERSION}.xenial.all.deb"
+  SWITCH="1.5.0.100"
+  SWITCH2="2.0.0.000"
+
+  URL="https://download.konghq.com/private/gateway-1.x-ubuntu-xenial/pool/all/k/kong-enterprise-edition/kong-enterprise-edition_${KONG_VERSION}_all.deb"
+
+  if [[ "$KONG_VERSION" > "$SWITCH" ]];
+  then
+  URL="https://download.konghq.com/gateway-1.x-ubuntu-xenial/pool/all/k/kong-enterprise-edition/kong-enterprise-edition_${KONG_VERSION}_all.deb"
+  fi
+
+  if [[ "$KONG_VERSION" > "$SWITCH2" ]];
+  then
+  URL="https://download.konghq.com/gateway-2.x-ubuntu-xenial/pool/all/k/kong-enterprise-edition/kong-enterprise-edition_${KONG_VERSION}_all.deb"
+  fi
+
   RESPONSE_CODE=$(/usr/bin/curl -sL \
     -w "%{http_code}" \
     -u $KONG_ENTERPRISE_REPO_USERNAME:$KONG_ENTERPRISE_REPO_PASSSWORD \
