@@ -132,7 +132,7 @@ func runWhenEnterprise(t *testing.T, semverRange string, required requiredFeatur
 		t.Skip()
 	}
 
-	if required.portal && res.Portal != true {
+	if required.portal && !res.Portal {
 		t.Log("Portal not enabled on test Kong instance, skipping")
 		t.Skip()
 	}
