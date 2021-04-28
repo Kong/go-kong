@@ -2,11 +2,12 @@ package kong
 
 import (
 	"encoding/json"
+	"github.com/blang/semver/v4"
 	"strings"
 )
 
 type Kong struct {
-	Version     string
+	Version     semver.Version
 	Enterprise  bool
 	Database    string
 	Credentials struct {

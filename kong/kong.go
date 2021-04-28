@@ -8,7 +8,6 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
-	"path"
 
 	"github.com/pkg/errors"
 
@@ -87,7 +86,7 @@ type Status struct {
 }
 
 // NewClient returns a Client which talks to Admin API of Kong
-func NewClient(baseURL *string, workspace string, client *http.Client) (*Client, error) {
+func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	if client == nil {
 		client = http.DefaultClient
 	}
@@ -102,10 +101,6 @@ func NewClient(baseURL *string, workspace string, client *http.Client) (*Client,
 	url, err := url.ParseRequestURI(rootURL)
 	if err != nil {
 		return nil, errors.Wrap(err, "parsing URL")
-	}
-	kong.workspace = workspace
-	if kong.hasWorkspace() {
-		url.Path = path.Join(url.Path, kong.workspace)
 	}
 
 	kong.baseURL = url.String()
@@ -154,7 +149,11 @@ func NewClient(baseURL *string, workspace string, client *http.Client) (*Client,
 	return kong, nil
 }
 
-func (c *Client) hasWorkspace() bool {
+func (c *Client) SetWorkspace(workspace string) {
+	c.workspace = workspace
+}
+
+func (c *Client) HasWorkspace() bool {
 	return len(c.workspace) > 0
 }
 
@@ -278,7 +277,7 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 // Admin API (GET / by default or GET /kong when the client has workspace defined)
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 	queryPath := "/"
-	if c.hasWorkspace() {
+	if c.HasWorkspace() {
 		queryPath = queryPath + "kong"
 	}
 	req, err := c.NewRequest("GET", queryPath, nil, nil)

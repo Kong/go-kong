@@ -10,7 +10,7 @@ import (
 func TestOauth2CredentialCreate(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -51,7 +51,7 @@ func TestOauth2CredentialCreate(T *testing.T) {
 func TestOauth2CredentialCreateWithID(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -88,7 +88,7 @@ func TestOauth2CredentialCreateWithID(T *testing.T) {
 func TestOauth2CredentialGet(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -141,7 +141,7 @@ func TestOauth2CredentialUpdate(T *testing.T) {
 	runWhenKong(T, "<=2.0.5")
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -187,7 +187,7 @@ func TestOauth2CredentialUpdate(T *testing.T) {
 func TestOauth2CredentialDelete(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -228,7 +228,7 @@ func TestOauth2CredentialDelete(T *testing.T) {
 func TestOauth2CredentialListMethods(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 

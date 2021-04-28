@@ -12,7 +12,7 @@ func TestRBACUserService(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -45,7 +45,7 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -60,7 +60,7 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 	url, err := url.Parse(defaultBaseURL)
 	assert.Nil(err)
 	url.Path = path.Join(url.Path, *createdWorkspace.Name)
-	workspaceClient, err := NewTestClient(String(url.String()), "", nil)
+	workspaceClient, err := NewTestClient(String(url.String()), nil)
 	assert.Nil(err)
 	assert.NotNil(workspaceClient)
 
@@ -95,7 +95,7 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 func TestUserRoles(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 
 	assert.Nil(err)
 	assert.NotNil(client)

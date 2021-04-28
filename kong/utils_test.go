@@ -1,6 +1,7 @@
 package kong
 
 import (
+	"github.com/blang/semver/v4"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -109,7 +110,7 @@ func Test_getKong(t *testing.T) {
 				},
 			},
 			expected: &Kong{
-				Version:     "0.33.1-enterprise",
+				Version:     semver.MustParse("0.33.1-enterprise"),
 				Enterprise:  true,
 				Database:    "off",
 				Credentials: kongWithoutCredentialsSupport.Credentials,
@@ -123,7 +124,7 @@ func Test_getKong(t *testing.T) {
 				},
 			},
 			expected: &Kong{
-				Version:     "2.3.2-0",
+				Version:     semver.MustParse("2.3.2-0"),
 				Enterprise:  false,
 				Database:    "cassandra",
 				Credentials: kongWithCredentialsSupport.Credentials,

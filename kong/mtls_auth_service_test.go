@@ -12,7 +12,7 @@ import (
 func TestMTLSCreate(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -78,7 +78,7 @@ func TestMTLSCreate(T *testing.T) {
 func TestMTLSCreateWithID(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -111,7 +111,7 @@ func TestMTLSCreateWithID(T *testing.T) {
 func TestMTLSGet(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -153,7 +153,7 @@ func TestMTLSGet(T *testing.T) {
 func TestMTLSUpdate(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -192,7 +192,7 @@ func TestMTLSUpdate(T *testing.T) {
 func TestMTLSDelete(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -228,7 +228,7 @@ func TestMTLSDelete(T *testing.T) {
 func TestMTLSListMethods(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 

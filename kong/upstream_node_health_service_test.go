@@ -9,7 +9,7 @@ import (
 func TestUpstreamNodeHealthService(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 

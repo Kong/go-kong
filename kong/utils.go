@@ -128,7 +128,7 @@ func getKong(root map[string]interface{}) (*Kong, error) {
 		return nil, err
 	}
 	kong := new(Kong)
-	kong.Version = semVer.String()
+	kong.Version = semVer
 	kong.Enterprise = strings.Contains(version, "enterprise")
 	kong.Database = root["configuration"].(map[string]interface{})["database"].(string)
 	kong.Credentials.minVersion = kong140Version.String()

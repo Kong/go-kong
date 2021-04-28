@@ -22,7 +22,7 @@ func TestIsNotFoundErrE2E(T *testing.T) {
 
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -35,7 +35,7 @@ func TestIsNotFoundErrE2E(T *testing.T) {
 func TestAPIError_Code(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 

@@ -17,7 +17,7 @@ import (
 func TestNewTestClient(t *testing.T) {
 	assert := assert.New(t)
 
-	client, err := NewTestClient(String("foo/bar"), "", nil)
+	client, err := NewTestClient(String("foo/bar"), nil)
 	assert.Nil(client)
 	assert.NotNil(err)
 }
@@ -25,7 +25,7 @@ func TestNewTestClient(t *testing.T) {
 func TestKongStatus(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -37,7 +37,7 @@ func TestKongStatus(T *testing.T) {
 func TestRoot(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -50,7 +50,7 @@ func TestRoot(T *testing.T) {
 func TestDo(T *testing.T) {
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -101,7 +101,7 @@ func cleanVersionString(version string) string {
 // tests for Kong.
 func runWhenKong(t *testing.T, semverRange string) {
 	if currentVersion.Major == 0 {
-		client, err := NewTestClient(nil, "", nil)
+		client, err := NewTestClient(nil, nil)
 		if err != nil {
 			t.Error(err)
 		}
@@ -140,7 +140,7 @@ type requiredFeatures struct {
 // RBAC and RBAC is not enabled on Kong the test
 // will be skipped
 func runWhenEnterprise(t *testing.T, semverRange string, required requiredFeatures) {
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -177,7 +177,7 @@ func TestRunWhenEnterprise(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -188,7 +188,7 @@ func TestRunWhenEnterprise(T *testing.T) {
 	assert.Contains(v, "enterprise")
 }
 
-func NewTestClient(baseURL *string, workspace string, client *http.Client) (*Client, error) {
+func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
 	if value, exists := os.LookupEnv("KONG_ADMIN_TOKEN"); exists {
 		c := &http.Client{}
 		defaultTransport := http.DefaultTransport.(*http.Transport)
@@ -199,9 +199,9 @@ func NewTestClient(baseURL *string, workspace string, client *http.Client) (*Cli
 			},
 			rt: defaultTransport,
 		}
-		return NewClient(baseURL, workspace, c)
+		return NewClient(baseURL, c)
 	}
-	return NewClient(baseURL, workspace, client)
+	return NewClient(baseURL, client)
 }
 
 type TestWorkspace struct {
@@ -245,7 +245,7 @@ func TestTestWorkspace(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 

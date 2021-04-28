@@ -11,7 +11,7 @@ func TestDevelopersService(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
@@ -79,7 +79,7 @@ func TestDeveloperListEndpoint(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)
 
-	client, err := NewTestClient(nil, "", nil)
+	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
 
