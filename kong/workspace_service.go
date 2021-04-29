@@ -1,11 +1,11 @@
 package kong
 
 import (
-	"net/http"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 )
 
 // AbstractWorkspaceService handles Workspaces in Kong.
@@ -43,7 +43,6 @@ type AbstractWorkspaceService interface {
 
 // WorkspaceService handles Workspaces in Kong.
 type WorkspaceService service
-
 
 // Exists checks the exitence of the Workspace in Kong.
 func (s *WorkspaceService) Exists(ctx context.Context,
