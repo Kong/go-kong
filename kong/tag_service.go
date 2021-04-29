@@ -20,10 +20,14 @@ func (s *TagService) Exists(ctx context.Context) (*bool, error) {
 	if err != nil {
 		return nil, err
 	}
+	var status = false
 	resp, err := s.client.Do(ctx, req, nil)
 	if err != nil {
+		if IsNotFoundErr(err) {
+			return &status, nil
+		}
 		return nil, err
 	}
-	var status = resp.StatusCode == http.StatusOK
+	status = resp.StatusCode == http.StatusOK
 	return &status, nil
 }
