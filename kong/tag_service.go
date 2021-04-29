@@ -7,14 +7,14 @@ import (
 
 // AbstractTagService handles Tags in Kong.
 type AbstractTagService interface {
-	// Check if the tags exists
+	//Exists checks if the tags exists
 	Exists(ctx context.Context) (*bool, error)
 }
 
 // TagService handles Tags in Kong.
 type TagService service
 
-// Exists check exitence of the Tags in Kong.
+// Exists checks exitence of the Tags in Kong.
 func (s *TagService) Exists(ctx context.Context) (*bool, error) {
 	req, err := s.client.NewRequest("HEAD", "/tags", nil, nil)
 	if err != nil {

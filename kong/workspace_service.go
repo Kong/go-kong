@@ -1,6 +1,7 @@
 package kong
 
 import (
+	"net/http"
 	"context"
 	"encoding/json"
 	"errors"
@@ -9,6 +10,8 @@ import (
 
 // AbstractWorkspaceService handles Workspaces in Kong.
 type AbstractWorkspaceService interface {
+	// Exists checks the exitence of a Workspace in Kong.
+	Exists(ctx context.Context, nameOrID *string) (*bool, error)
 	// Create creates a Workspace in Kong.
 	Create(ctx context.Context, workspace *Workspace) (*Workspace, error)
 	// Get fetches a Workspace in Kong.
@@ -40,6 +43,31 @@ type AbstractWorkspaceService interface {
 
 // WorkspaceService handles Workspaces in Kong.
 type WorkspaceService service
+
+
+// Exists checks the exitence of the Workspace in Kong.
+func (s *WorkspaceService) Exists(ctx context.Context,
+	nameOrID *string) (*bool, error) {
+	if isEmptyString(nameOrID) {
+		return nil, errors.New("nameOrID cannot be nil for Get operation")
+	}
+
+	endpoint := fmt.Sprintf("/workspaces/%v", *nameOrID)
+	req, err := s.client.NewRequest("HEAD", endpoint, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	var status = false
+	resp, err := s.client.Do(ctx, req, nil)
+	if err != nil {
+		if IsNotFoundErr(err) {
+			return &status, nil
+		}
+		return nil, err
+	}
+	status = resp.StatusCode == http.StatusOK
+	return &status, nil
+}
 
 // Create creates a Workspace in Kong.
 func (s *WorkspaceService) Create(ctx context.Context,
