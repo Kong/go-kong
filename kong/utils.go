@@ -13,6 +13,7 @@ import (
 var (
 	versionParts   = 4
 	kong140Version = semver.MustParse("1.4.0")
+	kong232Version = semver.MustParse("2.3.2-0")
 )
 
 // String returns pointer to s.
@@ -140,13 +141,19 @@ func getKong(root map[string]interface{}) (*Kong, error) {
 	if err != nil {
 		return nil, err
 	}
+	credentialsHasTagSupport := semVer.GTE(kong140Version)
 	kong := new(Kong)
 	kong.Version = semVer
 	kong.Enterprise = strings.Contains(version, "enterprise")
 	kong.Database = configuration["database"].(string)
 	kong.Portal = configuration["portal"].(bool)
 	kong.RBAC = configuration["rbac"].(string) == "on"
-	kong.Credentials.minVersion = kong140Version.String()
-	kong.Credentials.hasTagSupport = semVer.GTE(kong140Version)
+	kong.KeyAuth.HasTagSupport = credentialsHasTagSupport
+	kong.BasicAuth.HasTagSupport = credentialsHasTagSupport
+	kong.HMACAuth.HasTagSupport = credentialsHasTagSupport
+	kong.JWTAuth.HasTagSupport = credentialsHasTagSupport
+	kong.Oauth2Credential.HasTagSupport = credentialsHasTagSupport
+	kong.ACLGroup.HasTagSupport = credentialsHasTagSupport
+	kong.MTLSAuth.HasTagSupport = semVer.GTE(kong232Version)
 	return kong, nil
 }
