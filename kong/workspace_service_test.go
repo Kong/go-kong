@@ -34,7 +34,7 @@ func TestWorkspaceService(T *testing.T) {
 
 	exists, err = client.Workspaces.Exists(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
-	assert.True(*exists)
+	assert.True(exists)
 
 	workspace.Comment = String("new comment")
 	workspace, err = client.Workspaces.Update(defaultCtx, workspace)

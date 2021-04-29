@@ -16,7 +16,7 @@ func TestTagExists(T *testing.T) {
 
 	exists, err := client.Tags.Exists(defaultCtx)
 	assert.Nil(err)
-	assert.True(*exists)
+	assert.True(exists)
 }
 
 func TestTagDoesNotExists(T *testing.T) {
@@ -29,5 +29,5 @@ func TestTagDoesNotExists(T *testing.T) {
 
 	exists, err := client.Tags.Exists(defaultCtx)
 	assert.Nil(err)
-	assert.False(*exists)
+	assert.False(exists)
 }
