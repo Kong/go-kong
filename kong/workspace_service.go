@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 )
 
 // AbstractWorkspaceService handles Workspaces in Kong.
@@ -52,20 +51,7 @@ func (s *WorkspaceService) Exists(ctx context.Context,
 	}
 
 	endpoint := fmt.Sprintf("/workspaces/%v", *nameOrID)
-	req, err := s.client.NewRequest("HEAD", endpoint, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-	var status = false
-	resp, err := s.client.Do(ctx, req, nil)
-	if err != nil {
-		if IsNotFoundErr(err) {
-			return &status, nil
-		}
-		return nil, err
-	}
-	status = resp.StatusCode == http.StatusOK
-	return &status, nil
+	return s.client.exists(ctx, endpoint)
 }
 
 // Create creates a Workspace in Kong.
