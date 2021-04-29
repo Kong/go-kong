@@ -155,11 +155,8 @@ func (s *PluginService) Validate(ctx context.Context, plugin *Plugin) (bool, err
 	resp, err := s.client.Do(ctx, req, nil)
 	if err != nil {
 		return false, err
-	} else if resp.StatusCode == http.StatusCreated {
-		return true, nil
-	} else {
-		return false, nil
 	}
+	return resp.StatusCode == http.StatusCreated, nil
 }
 
 // listByPath fetches a list of Plugins in Kong
