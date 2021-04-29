@@ -109,6 +109,9 @@ func TestPluginListEndpoint(T *testing.T) {
 
 	// create fixturs
 	for i := 0; i < len(plugins); i++ {
+		schema, err := client.Plugins.GetSchema(defaultCtx, plugins[i].Name)
+		assert.Nil(err)
+		assert.NotNil(schema)
 		plugin, err := client.Plugins.Create(defaultCtx, plugins[i])
 		assert.Nil(err)
 		assert.NotNil(plugin)
@@ -235,6 +238,9 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 
 	// create fixturs
 	for i := 0; i < len(plugins); i++ {
+		schema, err := client.Plugins.GetSchema(defaultCtx, plugins[i].Name)
+		assert.Nil(err)
+		assert.NotNil(schema)
 		plugin, err := client.Plugins.Create(defaultCtx, plugins[i])
 		assert.Nil(err)
 		assert.NotNil(plugin)
