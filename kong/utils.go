@@ -145,8 +145,18 @@ func getKong(root map[string]interface{}) (*Kong, error) {
 	kong.Version = semVer
 	kong.Enterprise = strings.Contains(version, "enterprise")
 	kong.Database = configuration["database"].(string)
-	kong.Portal = configuration["portal"].(bool)
-	kong.RBAC = configuration["rbac"].(string) == "on"
+	portal, ok := configuration["portal"]
+	if ok && portal != nil {
+		kong.Portal = portal
+	}else{
+		kong.Portal = false
+	}
+	rbac, ok := configuration["rbac"]
+	if ok && rbac != nil {
+		kong.RBAC = rbac == "on"
+	}else{
+		kong.RBAC = false
+	}
 	kong.TagSupport.OtherCredentials = semVer.GTE(kong140Version)
 	kong.TagSupport.MTLSAuth = semVer.GTE(kong232Version)
 	return kong, nil
