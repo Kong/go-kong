@@ -10,9 +10,9 @@ type Kong struct {
 	Enterprise bool
 	Portal     bool
 	RBAC       bool
+	TagSupport tagSupport
 	Database   string
 	Version    semver.Version
-	TagSupport tagSupport
 }
 
 type tagSupport struct {
