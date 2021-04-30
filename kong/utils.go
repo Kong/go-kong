@@ -147,13 +147,13 @@ func getKong(root map[string]interface{}) (*Kong, error) {
 	kong.Database = configuration["database"].(string)
 	portal, ok := configuration["portal"]
 	if ok && portal != nil {
-		kong.Portal = portal
+		kong.Portal = portal.(bool)
 	}else{
 		kong.Portal = false
 	}
 	rbac, ok := configuration["rbac"]
 	if ok && rbac != nil {
-		kong.RBAC = rbac == "on"
+		kong.RBAC = rbac.(string) == "on"
 	}else{
 		kong.RBAC = false
 	}
