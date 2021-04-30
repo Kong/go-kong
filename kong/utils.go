@@ -148,13 +148,13 @@ func getKong(root map[string]interface{}) (*Kong, error) {
 	portal, ok := configuration["portal"]
 	if ok && portal != nil {
 		kong.Portal = portal.(bool)
-	}else{
+	} else {
 		kong.Portal = false
 	}
 	rbac, ok := configuration["rbac"]
 	if ok && rbac != nil {
 		kong.RBAC = rbac.(string) == "on"
-	}else{
+	} else {
 		kong.RBAC = false
 	}
 	kong.TagSupport.OtherCredentials = semVer.GTE(kong140Version)
