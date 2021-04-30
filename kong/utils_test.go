@@ -92,22 +92,12 @@ func TestFixVersion(t *testing.T) {
 func Test_getKong(t *testing.T) {
 
 	kongWithoutCredentialsSupport := new(Kong)
-	kongWithoutCredentialsSupport.KeyAuth.HasTagSupport = false
-	kongWithoutCredentialsSupport.BasicAuth.HasTagSupport = false
-	kongWithoutCredentialsSupport.HMACAuth.HasTagSupport = false
-	kongWithoutCredentialsSupport.JWTAuth.HasTagSupport = false
-	kongWithoutCredentialsSupport.Oauth2Credential.HasTagSupport = false
-	kongWithoutCredentialsSupport.ACLGroup.HasTagSupport = false
-	kongWithoutCredentialsSupport.MTLSAuth.HasTagSupport = false
+	kongWithoutCredentialsSupport.TagSupport.OtherCredentials = false
+	kongWithoutCredentialsSupport.TagSupport.MTLSAuth = false
 
 	kongWithCredentialsSupport := new(Kong)
-	kongWithCredentialsSupport.KeyAuth.HasTagSupport = true
-	kongWithCredentialsSupport.BasicAuth.HasTagSupport = true
-	kongWithCredentialsSupport.HMACAuth.HasTagSupport = true
-	kongWithCredentialsSupport.JWTAuth.HasTagSupport = true
-	kongWithCredentialsSupport.Oauth2Credential.HasTagSupport = true
-	kongWithCredentialsSupport.ACLGroup.HasTagSupport = true
-	kongWithCredentialsSupport.MTLSAuth.HasTagSupport = true
+	kongWithCredentialsSupport.TagSupport.OtherCredentials = true
+	kongWithCredentialsSupport.TagSupport.MTLSAuth = true
 
 	tests := []struct {
 		name     string
@@ -124,18 +114,12 @@ func Test_getKong(t *testing.T) {
 				},
 			},
 			expected: &Kong{
-				Version:          semver.MustParse("0.33.1-enterprise"),
-				Enterprise:       true,
-				Database:         "off",
-				Portal:           true,
-				RBAC:             true,
-				KeyAuth:          kongWithoutCredentialsSupport.KeyAuth,
-				BasicAuth:        kongWithoutCredentialsSupport.BasicAuth,
-				HMACAuth:         kongWithoutCredentialsSupport.HMACAuth,
-				JWTAuth:          kongWithoutCredentialsSupport.JWTAuth,
-				Oauth2Credential: kongWithoutCredentialsSupport.Oauth2Credential,
-				ACLGroup:         kongWithoutCredentialsSupport.ACLGroup,
-				MTLSAuth:         kongWithoutCredentialsSupport.MTLSAuth,
+				Version:    semver.MustParse("0.33.1-enterprise"),
+				Enterprise: true,
+				Database:   "off",
+				Portal:     true,
+				RBAC:       true,
+				TagSupport: kongWithoutCredentialsSupport.TagSupport,
 			},
 		},
 		{
@@ -148,18 +132,12 @@ func Test_getKong(t *testing.T) {
 				},
 			},
 			expected: &Kong{
-				Version:          semver.MustParse("2.3.3-0"),
-				Enterprise:       false,
-				Database:         "cassandra",
-				Portal:           false,
-				RBAC:             false,
-				KeyAuth:          kongWithCredentialsSupport.KeyAuth,
-				BasicAuth:        kongWithCredentialsSupport.BasicAuth,
-				HMACAuth:         kongWithCredentialsSupport.HMACAuth,
-				JWTAuth:          kongWithCredentialsSupport.JWTAuth,
-				Oauth2Credential: kongWithCredentialsSupport.Oauth2Credential,
-				ACLGroup:         kongWithCredentialsSupport.ACLGroup,
-				MTLSAuth:         kongWithCredentialsSupport.MTLSAuth,
+				Version:    semver.MustParse("2.3.3-0"),
+				Enterprise: false,
+				Database:   "cassandra",
+				Portal:     false,
+				RBAC:       false,
+				TagSupport: kongWithCredentialsSupport.TagSupport,
 			},
 		},
 	}

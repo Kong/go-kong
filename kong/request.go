@@ -29,13 +29,8 @@ func (c *Client) NewRequest(method, endpoint string, qs interface{},
 		}
 	}
 
-	url := c.baseURL
-	if c.HasWorkspace() {
-		url = url + "/" + c.workspace
-	}
-
 	//Create a new request
-	req, err := http.NewRequest(method, url+endpoint,
+	req, err := http.NewRequest(method, c.baseURL+endpoint,
 		bytes.NewBuffer(buf))
 	if err != nil {
 		return nil, err

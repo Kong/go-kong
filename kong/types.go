@@ -7,22 +7,17 @@ import (
 )
 
 type Kong struct {
-	Enterprise       bool
-	Portal           bool
-	RBAC             bool
-	Database         string
-	Version          semver.Version
-	KeyAuth          tagSupport
-	BasicAuth        tagSupport
-	HMACAuth         tagSupport
-	JWTAuth          tagSupport
-	Oauth2Credential tagSupport
-	ACLGroup         tagSupport
-	MTLSAuth         tagSupport
+	Enterprise bool
+	Portal     bool
+	RBAC       bool
+	Database   string
+	Version    semver.Version
+	TagSupport tagSupport
 }
 
 type tagSupport struct {
-	HasTagSupport bool
+	MTLSAuth         bool
+	OtherCredentials bool
 }
 
 // Service represents a Service in Kong.

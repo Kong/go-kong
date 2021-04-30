@@ -31,7 +31,6 @@ var (
 type Client struct {
 	client                  *http.Client
 	baseURL                 string
-	workspace               string
 	common                  service
 	Consumers               AbstractConsumerService
 	Developers              AbstractDeveloperService
@@ -147,14 +146,6 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	}
 	kong.logger = os.Stderr
 	return kong, nil
-}
-
-func (c *Client) SetWorkspace(workspace string) {
-	c.workspace = workspace
-}
-
-func (c *Client) HasWorkspace() bool {
-	return len(c.workspace) > 0
 }
 
 // Do executes a HTTP request and returns a response
@@ -276,21 +267,28 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 // Root returns the response of GET request on root of
 // Admin API (GET / by default or GET /kong when the client has workspace defined)
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
-	queryPath := "/"
-	if c.HasWorkspace() {
-		queryPath = queryPath + "kong"
+	result, err := c.getMap(ctx, "/kong")
+	if err != nil {
+		if IsNotFoundErr(err) {
+			return c.getMap(ctx, "/")
+		}
+		return nil, err
 	}
+	return result, nil
+}
+
+func (c *Client) getMap(ctx context.Context, queryPath string) (map[string]interface{}, error) {
 	req, err := c.NewRequest("GET", queryPath, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var root map[string]interface{}
-	_, err = c.Do(ctx, req, &root)
+	var result map[string]interface{}
+	_, err = c.Do(ctx, req, &result)
 	if err != nil {
 		return nil, err
 	}
-	return root, nil
+	return result, nil
 }
 
 func (c *Client) Kong(ctx context.Context) (*Kong, error) {
