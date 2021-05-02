@@ -1,6 +1,8 @@
 package kong
 
 import (
+	"net/http"
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -51,4 +53,76 @@ func TestStringSlice(t *testing.T) {
 	assert.Equal(2, len(arrp))
 	assert.Equal("foo", *arrp[0])
 	assert.Equal("bar", *arrp[1])
+}
+
+func Test_requestWithHeaders(t *testing.T) {
+	type args struct {
+		req     *http.Request
+		headers http.Header
+	}
+	tests := []struct {
+		name string
+		args args
+		want *http.Request
+	}{
+		{
+			name: "returns request as is if no headers are set",
+			args: args{
+				req: &http.Request{
+					Method: "GET",
+					Header: http.Header{
+						"foo": []string{"bar", "baz"},
+					},
+				},
+				headers: http.Header{},
+			},
+			want: &http.Request{
+				Method: "GET",
+				Header: http.Header{
+					"foo": []string{"bar", "baz"},
+				},
+			},
+		},
+		{
+			name: "returns request with headers added",
+			args: args{
+				req: &http.Request{
+					Method: "GET",
+					Header: http.Header{
+						"foo": []string{"bar", "baz"},
+					},
+				},
+				headers: http.Header{
+					"password": []string{"my-secret-key"},
+					"key-with": []string{"multiple", "values"},
+				},
+			},
+			want: &http.Request{
+				Method: "GET",
+				Header: http.Header{
+					"foo":      []string{"bar", "baz"},
+					"Password": []string{"my-secret-key"},
+					"Key-With": []string{"multiple", "values"},
+				},
+			},
+		},
+		{
+			name: "returns nil when input request is nil",
+			args: args{
+				req: nil,
+				headers: http.Header{
+					"password": []string{"my-secret-key"},
+					"key-with": []string{"multiple", "values"},
+				},
+			},
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := requestWithHeaders(tt.args.req, tt.args.headers); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("requestWithHeaders() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
