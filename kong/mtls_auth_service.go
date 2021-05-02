@@ -105,21 +105,7 @@ func (s *MTLSAuthService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of MTLS credentials present.
 func (s *MTLSAuthService) ListAll(ctx context.Context) ([]*MTLSAuth, error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// listAllByTags fetches all MTLS credentials filtered by tags in Kong.
-// This method can take a while if there
-// a lot of MTLS credentials present.
-func (s *MTLSAuthService) listAllByTags(ctx context.Context, tags []string) ([]*MTLSAuth, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// listAllByTags fetches all MTLS credentials filtered by opt in Kong.
-// This method can take a while if there
-// a lot of MTLS credentials present.
-func (s *MTLSAuthService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*MTLSAuth, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/mtls-auths", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/mtls-auths", NewOpt(nil))
 }
 
 // ListForConsumer fetches a list of mtls credentials

@@ -165,7 +165,7 @@ func (s *DeveloperService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of Developers present.
 func (s *DeveloperService) ListAll(ctx context.Context) ([]*Developer, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/developers", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/developers", NewOpt(nil))
 }
 
 func (s *DeveloperService) listByEndpointAndOpt(ctx context.Context,

@@ -94,22 +94,10 @@ func (s *TargetService) List(ctx context.Context,
 // ListAll fetches all Targets in Kong for an upstream.
 func (s *TargetService) ListAll(ctx context.Context,
 	upstreamNameOrID *string) ([]*Target, error) {
-	return s.listAllByTags(ctx, upstreamNameOrID, nil)
-}
-
-// ListAll fetches all Targets filtered by tags in Kong for an upstream.
-func (s *TargetService) listAllByTags(ctx context.Context,
-	upstreamNameOrID *string, tags []string) ([]*Target, error) {
-	return s.listAllByOpt(ctx, upstreamNameOrID, newOpt(tags))
-}
-
-// ListAll fetches all Targets filtered by opt in Kong for an upstream.
-func (s *TargetService) listAllByOpt(ctx context.Context,
-	upstreamNameOrID *string, opt *ListOpt) ([]*Target, error) {
-	if isEmptyString(upstreamNameOrID) {
-		return nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
-	}
-	return s.listAllByEndpointAndOpt(ctx, "/upstreams/"+*upstreamNameOrID+"/targets", opt)
+		if isEmptyString(upstreamNameOrID) {
+			return nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
+		}
+		return s.listAllByEndpointAndOpt(ctx, "/upstreams/"+*upstreamNameOrID+"/targets", NewOpt(nil))
 }
 
 // MarkHealthy marks target belonging to upstreamNameOrID as healthy in

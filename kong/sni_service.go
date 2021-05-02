@@ -134,21 +134,7 @@ func (s *SNIService) ListForCertificate(ctx context.Context,
 // This method can take a while if there
 // a lot of SNIs present.
 func (s *SNIService) ListAll(ctx context.Context) ([]*SNI, error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// listAllByTags fetches all SNIs filtered by tags in Kong.
-// This method can take a while if there
-// a lot of SNIs present.
-func (s *SNIService) listAllByTags(ctx context.Context, tags []string) ([]*SNI, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// listAllByOpt fetches all SNIs filtered by opt in Kong.
-// This method can take a while if there
-// a lot of SNIs present.
-func (s *SNIService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*SNI, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/snis", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/snis", NewOpt(nil))
 }
 
 func (s *SNIService) listByEndpointAndOpt(ctx context.Context,

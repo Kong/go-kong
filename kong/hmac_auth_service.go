@@ -105,21 +105,7 @@ func (s *HMACAuthService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of hmac-auth credentials present.
 func (s *HMACAuthService) ListAll(ctx context.Context) ([]*HMACAuth, error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// listAllByTags fetches all hmac-auth credentials filtered by tags in Kong.
-// This method can take a while if there
-// a lot of hmac-auth credentials present.
-func (s *HMACAuthService) listAllByTags(ctx context.Context, tags []string) ([]*HMACAuth, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// listAllByOpt fetches all hmac-auth credentials in Kong.
-// This method can take a while if there
-// a lot of hmac-auth credentials present.
-func (s *HMACAuthService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*HMACAuth, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/hmac-auths", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/hmac-auths", NewOpt(nil))
 }
 
 // ListForConsumer fetches a list of hmac-auth credentials

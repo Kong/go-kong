@@ -106,22 +106,7 @@ func (s *BasicAuthService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of basic-auth credentials present.
 func (s *BasicAuthService) ListAll(ctx context.Context) ([]*BasicAuth, error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// listAllByTags fetches all basic-auth credentials filtered by tags in Kong.
-// This method can take a while if there
-// a lot of basic-auth credentials present.
-func (s *BasicAuthService) listAllByTags(ctx context.Context, tags []string) ([]*BasicAuth, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// listAllByTags fetches all basic-auth credentials filtered by opt in Kong.
-// This method can take a while if there
-// a lot of basic-auth credentials present.
-// opt can be used to control pagination and tags.
-func (s *BasicAuthService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*BasicAuth, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/basic-auths", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/basic-auths", NewOpt(nil))
 }
 
 // ListForConsumer fetches a list of basic-auth credentials

@@ -107,21 +107,7 @@ func (s *Oauth2Service) List(ctx context.Context,
 // This method can take a while if there
 // a lot of oauth2 credentials present.
 func (s *Oauth2Service) ListAll(ctx context.Context) ([]*Oauth2Credential, error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// listAllByTags fetches all oauth2 credentials filtered by tags in Kong.
-// This method can take a while if there
-// a lot of oauth2 credentials present.
-func (s *Oauth2Service) listAllByTags(ctx context.Context, tags []string) ([]*Oauth2Credential, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// listAllByTags fetches all oauth2 credentials filtered by opt in Kong.
-// This method can take a while if there
-// a lot of oauth2 credentials present.
-func (s *Oauth2Service) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*Oauth2Credential, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/oauth2", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/oauth2", NewOpt(nil))
 }
 
 // ListForConsumer fetches a list of oauth2 credentials

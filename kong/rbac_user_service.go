@@ -139,7 +139,7 @@ func (s *RBACUserService) List(ctx context.Context,
 
 // ListAll fetches all users in Kong.
 func (s *RBACUserService) ListAll(ctx context.Context) ([]*RBACUser, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/rbac/users/", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/rbac/users/", NewOpt(nil))
 }
 
 // AddRoles adds a comma separated list of roles to a User.

@@ -127,23 +127,7 @@ func (s *CertificateService) List(ctx context.Context,
 // a lot of Certificates present.
 func (s *CertificateService) ListAll(ctx context.Context) ([]*Certificate,
 	error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// ListAll fetches all Certificates filtered by tags in Kong.
-// This method can take a while if there
-// a lot of Certificates present.
-func (s *CertificateService) listAllByTags(ctx context.Context,
-	tags []string) ([]*Certificate, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// ListAll fetches all Certificates filtered by opt in Kong.
-// This method can take a while if there
-// a lot of Certificates present.
-func (s *CertificateService) listAllByOpt(ctx context.Context,
-	opt *ListOpt) ([]*Certificate, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/certificates", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/certificates", NewOpt(nil))
 }
 
 func (s *CertificateService) listByEndpointAndOpt(ctx context.Context,

@@ -138,7 +138,7 @@ func (s *RBACEndpointPermissionService) Delete(ctx context.Context,
 // ListAllForRole fetches a list of all RBACEndpointPermissions in Kong for a given role.
 func (s *RBACEndpointPermissionService) ListAllForRole(ctx context.Context,
 	roleNameOrID *string) ([]*RBACEndpointPermission, error) {
-	return s.listAllByEndpointAndOpt(ctx, fmt.Sprintf("/rbac/roles/%v/endpoints", *roleNameOrID), newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, fmt.Sprintf("/rbac/roles/%v/endpoints", *roleNameOrID), NewOpt(nil))
 }
 
 func (s *RBACEndpointPermissionService) listAllByEndpointAndOpt(ctx context.Context,

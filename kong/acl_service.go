@@ -105,21 +105,7 @@ func (s *ACLService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of ACLGroup associations are present.
 func (s *ACLService) ListAll(ctx context.Context) ([]*ACLGroup, error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// listAllByTags fetches all ACL group associations filtered by tags in Kong.
-// This method can take a while if there
-// a lot of ACLGroup associations are present.
-func (s *ACLService) listAllByTags(ctx context.Context, tags []string) ([]*ACLGroup, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// listAllByOpt fetches all ACL group associations filtered by opt in Kong.
-// This method can take a while if there
-// a lot of ACLGroup associations are present.
-func (s *ACLService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*ACLGroup, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/acls", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/acls", NewOpt(nil))
 }
 
 // ListForConsumer fetches a list of ACL groups

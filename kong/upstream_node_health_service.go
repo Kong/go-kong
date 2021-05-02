@@ -35,27 +35,11 @@ func (s *UpstreamNodeHealthService) List(ctx context.Context,
 // a lot of Upstream Node Healths present.
 func (s *UpstreamNodeHealthService) ListAll(ctx context.Context,
 	upstreamNameOrID *string) ([]*UpstreamNodeHealth, error) {
-	return s.listAllByTags(ctx, upstreamNameOrID, nil)
-}
-
-// ListAll fetches all Upstream Node Healths filtered by tags in Kong.
-// This method can take a while if there are
-// a lot of Upstream Node Healths present.
-func (s *UpstreamNodeHealthService) listAllByTags(ctx context.Context,
-	upstreamNameOrID *string, tags []string) ([]*UpstreamNodeHealth, error) {
-	return s.listAllByOpt(ctx, upstreamNameOrID, newOpt(tags))
-}
-
-// ListAll fetches all Upstream Node Healths filtered by opt in Kong.
-// This method can take a while if there are
-// a lot of Upstream Node Healths present.
-func (s *UpstreamNodeHealthService) listAllByOpt(ctx context.Context,
-	upstreamNameOrID *string, opt *ListOpt) ([]*UpstreamNodeHealth, error) {
-	if isEmptyString(upstreamNameOrID) {
-		return nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
-	}
-	endpoint := fmt.Sprintf("/upstreams/%v/health", *upstreamNameOrID)
-	return s.listAllByEndpointAndOpt(ctx, endpoint, opt)
+		if isEmptyString(upstreamNameOrID) {
+			return nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
+		}
+		endpoint := fmt.Sprintf("/upstreams/%v/health", *upstreamNameOrID)
+		return s.listAllByEndpointAndOpt(ctx, endpoint, NewOpt(nil))
 }
 
 func (s *UpstreamNodeHealthService) listByEndpointAndOpt(ctx context.Context,

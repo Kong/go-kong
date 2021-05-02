@@ -127,7 +127,7 @@ func (s *DeveloperRoleService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of Developer Roles present.
 func (s *DeveloperRoleService) ListAll(ctx context.Context) ([]*DeveloperRole, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/developers/roles/", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/developers/roles/", NewOpt(nil))
 }
 
 func (s *DeveloperRoleService) listByEndpointAndOpt(ctx context.Context,

@@ -127,21 +127,7 @@ func (s *UpstreamService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of Upstreams present.
 func (s *UpstreamService) ListAll(ctx context.Context) ([]*Upstream, error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// listAllByTags fetches all Upstreams filtered by tags in Kong.
-// This method can take a while if there
-// a lot of Upstreams present.
-func (s *UpstreamService) listAllByTags(ctx context.Context, tags []string) ([]*Upstream, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// listAllByOpt fetches all Upstreams filtered by opt in Kong.
-// This method can take a while if there
-// a lot of Upstreams present.
-func (s *UpstreamService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*Upstream, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/upstreams", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/upstreams", NewOpt(nil))
 }
 
 func (s *UpstreamService) listByEndpointAndOpt(ctx context.Context,

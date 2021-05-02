@@ -130,7 +130,7 @@ func (s *RBACRoleService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of Roles present.
 func (s *RBACRoleService) ListAll(ctx context.Context) ([]*RBACRole, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/rbac/roles/", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/rbac/roles/", NewOpt(nil))
 }
 
 func (s *RBACRoleService) listByEndpointAndOpt(ctx context.Context,

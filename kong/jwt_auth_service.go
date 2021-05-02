@@ -105,21 +105,7 @@ func (s *JWTAuthService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of JWT credentials present.
 func (s *JWTAuthService) ListAll(ctx context.Context) ([]*JWTAuth, error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// listAllByTags fetches all JWT credentials filtered by tags in Kong.
-// This method can take a while if there
-// a lot of JWT credentials present.
-func (s *JWTAuthService) listAllByTags(ctx context.Context, tags []string) ([]*JWTAuth, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// listAllByOpt fetches all JWT credentials filtered by opt in Kong.
-// This method can take a while if there
-// a lot of JWT credentials present.
-func (s *JWTAuthService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*JWTAuth, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/jwts", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/jwts", NewOpt(nil))
 }
 
 // ListForConsumer fetches a list of jwt credentials

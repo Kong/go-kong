@@ -144,7 +144,7 @@ func (s *WorkspaceService) List(ctx context.Context,
 
 // ListAll fetches all workspaces in Kong.
 func (s *WorkspaceService) ListAll(ctx context.Context) ([]*Workspace, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/workspaces/", newOpt(nil))
+	return s.listAllByEndpointAndOpt(ctx, "/workspaces/", NewOpt(nil))
 }
 
 // AddEntities adds entity ids given as a a comma delimited string

@@ -163,21 +163,7 @@ func (s *ConsumerService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of Consumers present.
 func (s *ConsumerService) ListAll(ctx context.Context) ([]*Consumer, error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// ListAll fetches all Consumers filtered by tags in Kong.
-// This method can take a while if there
-// a lot of Consumers present.
-func (s *ConsumerService) listAllByTags(ctx context.Context, tags []string) ([]*Consumer, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// ListAll fetches all Consumers filtered by opt in Kong.
-// This method can take a while if there
-// a lot of Consumers present.
-func (s *ConsumerService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*Consumer, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/consumers", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/consumers", NewOpt(nil))
 }
 
 func (s *ConsumerService) listByEndpointAndOpt(ctx context.Context,

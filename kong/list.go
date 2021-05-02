@@ -29,8 +29,8 @@ type qs struct {
 	Tags   string `url:"tags,omitempty"`
 }
 
-//Instantiate a ListOpt with the default page size an a deduplicted list of tags when present
-func newOpt(tags []string) *ListOpt {
+//NewOpt instantiate a ListOpt with the default page size an a deduplicted list of tags when present
+func NewOpt(tags []string) *ListOpt {
 	opt := new(ListOpt)
 	opt.Size = pageSize
 	opt.Tags = StringSlice(deduplicate(tags)...)

@@ -150,21 +150,7 @@ func (s *RouteService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of Routes present.
 func (s *RouteService) ListAll(ctx context.Context) ([]*Route, error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// listAllByTags fetches all Routes filtered by tags in Kong.
-// This method can take a while if there
-// a lot of Routes present.
-func (s *RouteService) listAllByTags(ctx context.Context, tags []string) ([]*Route, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// listAllByOpt fetches all Routes filtered by opt in Kong.
-// This method can take a while if there
-// a lot of Routes present.
-func (s *RouteService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*Route, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/routes", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/routes", NewOpt(nil))
 }
 
 // ListForService fetches a list of Routes in Kong associated with a service.

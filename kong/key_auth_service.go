@@ -104,21 +104,7 @@ func (s *KeyAuthService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of key-auth credentials present.
 func (s *KeyAuthService) ListAll(ctx context.Context) ([]*KeyAuth, error) {
-	return s.listAllByTags(ctx, nil)
-}
-
-// listAllByTags fetches all key-auth credentials filtered by tags in Kong.
-// This method can take a while if there
-// a lot of key-auth credentials present.
-func (s *KeyAuthService) listAllByTags(ctx context.Context, tags []string) ([]*KeyAuth, error) {
-	return s.listAllByOpt(ctx, newOpt(tags))
-}
-
-// listAllByTags fetches all key-auth credentials filtered by tags in Kong.
-// This method can take a while if there
-// a lot of key-auth credentials present.
-func (s *KeyAuthService) listAllByOpt(ctx context.Context, opt *ListOpt) ([]*KeyAuth, error) {
-	return s.listAllByEndpointAndOpt(ctx, "/key-auths", opt)
+	return s.listAllByEndpointAndOpt(ctx, "/key-auths", NewOpt(nil))
 }
 
 // ListForConsumer fetches a list of key-auth credentials
