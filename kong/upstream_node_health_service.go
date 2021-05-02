@@ -35,11 +35,11 @@ func (s *UpstreamNodeHealthService) List(ctx context.Context,
 // a lot of Upstream Node Healths present.
 func (s *UpstreamNodeHealthService) ListAll(ctx context.Context,
 	upstreamNameOrID *string) ([]*UpstreamNodeHealth, error) {
-		if isEmptyString(upstreamNameOrID) {
-			return nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
-		}
-		endpoint := fmt.Sprintf("/upstreams/%v/health", *upstreamNameOrID)
-		return s.listAllByEndpointAndOpt(ctx, endpoint, NewOpt(nil))
+	if isEmptyString(upstreamNameOrID) {
+		return nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
+	}
+	endpoint := fmt.Sprintf("/upstreams/%v/health", *upstreamNameOrID)
+	return s.listAllByEndpointAndOpt(ctx, endpoint, NewOpt(nil))
 }
 
 func (s *UpstreamNodeHealthService) listByEndpointAndOpt(ctx context.Context,
