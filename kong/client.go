@@ -51,15 +51,15 @@ type Client struct {
 	RBACEndpointPermissions AbstractRBACEndpointPermissionService
 	RBACEntityPermissions   AbstractRBACEntityPermissionService
 
-	credentials abstractCredentialService
-	KeyAuths    AbstractKeyAuthService
-	BasicAuths  AbstractBasicAuthService
-	HMACAuths   AbstractHMACAuthService
-	JWTAuths    AbstractJWTAuthService
-	MTLSAuths   AbstractMTLSAuthService
-	ACLs        AbstractACLService
-
+	credentials       abstractCredentialService
+	KeyAuths          AbstractKeyAuthService
+	BasicAuths        AbstractBasicAuthService
+	HMACAuths         AbstractHMACAuthService
+	JWTAuths          AbstractJWTAuthService
+	MTLSAuths         AbstractMTLSAuthService
+	ACLs              AbstractACLService
 	Oauth2Credentials AbstractOauth2Service
+	Tags              AbstractTagService
 
 	logger         io.Writer
 	debug          bool
@@ -132,6 +132,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.ACLs = (*ACLService)(&kong.common)
 
 	kong.Oauth2Credentials = (*Oauth2Service)(&kong.common)
+	kong.Tags = (*TagService)(&kong.common)
 
 	kong.CustomEntities = (*CustomEntityService)(&kong.common)
 	kong.Registry = custom.NewDefaultRegistry()
