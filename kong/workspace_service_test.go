@@ -32,7 +32,7 @@ func TestWorkspaceService(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(workspace)
 
-	exists, err = client.Workspaces.Exists(defaultCtx, createdWorkspace.ID)
+	exists, err := client.Workspaces.Exists(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
 	assert.True(exists)
 
