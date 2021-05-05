@@ -1,0 +1,51 @@
+name: 'Integration Test : Enterprise'
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    continue-on-error: true
+    strategy:
+      matrix:
+        kong_version:
+        - 'enterprise-1.5.0.11'
+        - 'enterprise-2.1.4.6'
+        - 'enterprise-2.2.1.3'
+        - 'enterprise-2.3.3.2'
+    env:
+      KONG_VERSION: ${{ matrix.kong_version }}
+      KONG_ENTERPRISE_REPO_USERNAME: ${{ secrets.KONG_ENTERPRISE_REPO_USERNAME }}
+      KONG_ENTERPRISE_REPO_PASSSWORD: ${{ secrets.KONG_ENTERPRISE_REPO_PASSSWORD }}
+      KONG_LICENSE_DATA: ${{ secrets.KONG_LICENSE_DATA }}
+      KONG_ANONYMOUS_REPORTS: "off"
+      KONG_ADMIN_TOKEN: kong
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:11.6-alpine
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.16'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Postgres
+        run: |
+          psql -c 'create database kong;' -U postgres -h 127.0.0.1 -p 5432
+          psql -c 'create user kong;' -U postgres -h 127.0.0.1 -p 5432
+          psql -c 'GRANT ALL PRIVILEGES ON DATABASE "kong" to kong;' -U postgres -h 127.0.0.1 -p 5432
+      - name: Setup Kong
+        run: make setup-kong
+      - name: Run tests
+        run: make test-coverage-enterprise
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v1
+        with:
+          name: codecov-${{ matrix.kong_version }}
+          flags: ${{ matrix.kong_version }},integration,enterprise
+          fail_ci_if_error: true
