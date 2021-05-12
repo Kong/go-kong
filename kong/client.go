@@ -267,18 +267,7 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 // Root returns the response of GET request on root of
 // Admin API (GET / by default or GET /kong when the client has workspace defined)
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
-	result, err := c.getMap(ctx, "/kong")
-	if err != nil {
-		if IsNotFoundErr(err) {
-			return c.getMap(ctx, "/")
-		}
-		return nil, err
-	}
-	return result, nil
-}
-
-func (c *Client) getMap(ctx context.Context, queryPath string) (map[string]interface{}, error) {
-	req, err := c.NewRequest("GET", queryPath, nil, nil)
+	req, err := c.NewRequest("GET", "/", nil, nil)
 	if err != nil {
 		return nil, err
 	}
