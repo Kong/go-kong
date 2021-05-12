@@ -265,7 +265,7 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 }
 
 // Root returns the response of GET request on root of
-// Admin API (GET / by default or GET /kong when the client has workspace defined)
+// Admin API (GET /).
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 	req, err := c.NewRequest("GET", "/", nil, nil)
 	if err != nil {
