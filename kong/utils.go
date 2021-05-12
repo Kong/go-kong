@@ -135,29 +135,3 @@ func ParseSemanticVersion(v string) (semver.Version, error) {
 func versionFromInfo(info map[string]interface{}) string {
 	return info["version"].(string)
 }
-
-func getKong(info map[string]interface{}) (*Kong, error) {
-	version := versionFromInfo(info)
-	configuration := info["configuration"].(map[string]interface{})
-	semVer, err := ParseSemanticVersion(version)
-	if err != nil {
-		return nil, err
-	}
-	kong := new(Kong)
-	kong.Version = semVer
-	kong.Enterprise = strings.Contains(version, "enterprise")
-	kong.Database = configuration["database"].(string)
-	portal, ok := configuration["portal"]
-	if ok && portal != nil {
-		kong.Portal = portal.(bool)
-	} else {
-		kong.Portal = false
-	}
-	rbac, ok := configuration["rbac"]
-	if ok && rbac != nil {
-		kong.RBAC = rbac.(string) == "on"
-	} else {
-		kong.RBAC = false
-	}
-	return kong, nil
-}

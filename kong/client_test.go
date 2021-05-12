@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/blang/semver/v4"
@@ -90,11 +91,12 @@ func runWhenKong(t *testing.T, semverRange string) {
 		if err != nil {
 			t.Error(err)
 		}
-		res, err := client.Kong(defaultCtx)
+		info, err := client.Root(defaultCtx)
 		if err != nil {
 			t.Error(err)
 		}
-		currentVersion = res.Version
+		version := versionFromInfo(info)
+		currentVersion, err = ParseSemanticVersion(version)
 	}
 	r, err := semver.ParseRange(semverRange)
 	if err != nil {
@@ -122,22 +124,24 @@ func runWhenEnterprise(t *testing.T, semverRange string, required requiredFeatur
 	if err != nil {
 		t.Error(err)
 	}
-	res, err := client.Kong(defaultCtx)
+	info, err := client.Root(defaultCtx)
 	if err != nil {
 		t.Error(err)
 	}
+	version := versionFromInfo(info)
 
-	if !res.Enterprise {
+	if !strings.Contains(version, "enterprise") {
 		t.Log("non-Enterprise test Kong instance, skipping")
 		t.Skip()
 	}
+	configuration := info["configuration"].(map[string]interface{})
 
-	if required.rbac && !res.RBAC {
+	if required.rbac && configuration["rbac"].(string) != "on" {
 		t.Log("RBAC not enabled on test Kong instance, skipping")
 		t.Skip()
 	}
 
-	if required.portal && !res.Portal {
+	if required.portal && !configuration["portal"].(bool) {
 		t.Log("Portal not enabled on test Kong instance, skipping")
 		t.Skip()
 	}

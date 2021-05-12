@@ -2,17 +2,8 @@ package kong
 
 import (
 	"encoding/json"
-	"github.com/blang/semver/v4"
 	"strings"
 )
-
-type Kong struct {
-	Enterprise bool
-	Portal     bool
-	RBAC       bool
-	Database   string
-	Version    semver.Version
-}
 
 // Service represents a Service in Kong.
 // Read https://getkong.org/docs/0.13.x/admin-api/#Service-object

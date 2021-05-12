@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/blang/semver/v4"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -86,58 +85,6 @@ func TestFixVersion(t *testing.T) {
 		if err == nil {
 			t.Errorf("expecting error converting %s, getting no errors", inputVersion)
 		}
-	}
-}
-
-func Test_getKong(t *testing.T) {
-
-	tests := []struct {
-		name     string
-		root     map[string]interface{}
-		expected *Kong
-	}{
-		{
-			root: map[string]interface{}{
-				"version": "0.33-1-enterprise-edition",
-				"configuration": map[string]interface{}{
-					"database": "off",
-					"portal":   true,
-					"rbac":     "on",
-				},
-			},
-			expected: &Kong{
-				Version:    semver.MustParse("0.33.1-enterprise"),
-				Enterprise: true,
-				Database:   "off",
-				Portal:     true,
-				RBAC:       true,
-			},
-		},
-		{
-			root: map[string]interface{}{
-				"version": "2.3.3.0",
-				"configuration": map[string]interface{}{
-					"database": "cassandra",
-					"portal":   false,
-					"rbac":     "off",
-				},
-			},
-			expected: &Kong{
-				Version:    semver.MustParse("2.3.3-0"),
-				Enterprise: false,
-				Database:   "cassandra",
-				Portal:     false,
-				RBAC:       false,
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result, _ := getKong(tt.root)
-			if !reflect.DeepEqual(result, tt.expected) {
-				t.Errorf("Expected %v, but is %v", tt.expected, result)
-			}
-		})
 	}
 }
 

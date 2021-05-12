@@ -290,11 +290,3 @@ func (c *Client) getMap(ctx context.Context, queryPath string) (map[string]inter
 	}
 	return result, nil
 }
-
-func (c *Client) Kong(ctx context.Context) (*Kong, error) {
-	root, err := c.Root(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return getKong(root)
-}
