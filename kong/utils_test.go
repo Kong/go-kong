@@ -69,7 +69,7 @@ func TestFixVersion(t *testing.T) {
 		"1.3.0.0-enterprise-lite":         "1.3.0-0-enterprise-lite",
 	}
 	for inputVersion, expectedVersion := range validVersions {
-		v, err := cleanSemVer(inputVersion)
+		v, err := ParseSemanticVersion(inputVersion)
 		if err != nil {
 			t.Errorf("error converting %s: %v", inputVersion, err)
 		} else if v.String() != expectedVersion {
@@ -82,7 +82,7 @@ func TestFixVersion(t *testing.T) {
 		"0-1-1",
 	}
 	for _, inputVersion := range invalidVersions {
-		_, err := cleanSemVer(inputVersion)
+		_, err := ParseSemanticVersion(inputVersion)
 		if err == nil {
 			t.Errorf("expecting error converting %s, getting no errors", inputVersion)
 		}
@@ -90,14 +90,6 @@ func TestFixVersion(t *testing.T) {
 }
 
 func Test_getKong(t *testing.T) {
-
-	kongWithoutCredentialsSupport := new(Kong)
-	kongWithoutCredentialsSupport.TagSupport.OtherCredentials = false
-	kongWithoutCredentialsSupport.TagSupport.MTLSAuth = false
-
-	kongWithCredentialsSupport := new(Kong)
-	kongWithCredentialsSupport.TagSupport.OtherCredentials = true
-	kongWithCredentialsSupport.TagSupport.MTLSAuth = true
 
 	tests := []struct {
 		name     string
@@ -119,7 +111,6 @@ func Test_getKong(t *testing.T) {
 				Database:   "off",
 				Portal:     true,
 				RBAC:       true,
-				TagSupport: kongWithoutCredentialsSupport.TagSupport,
 			},
 		},
 		{
@@ -137,7 +128,6 @@ func Test_getKong(t *testing.T) {
 				Database:   "cassandra",
 				Portal:     false,
 				RBAC:       false,
-				TagSupport: kongWithCredentialsSupport.TagSupport,
 			},
 		},
 	}

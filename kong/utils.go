@@ -11,9 +11,7 @@ import (
 )
 
 var (
-	versionParts   = 4
-	kong140Version = semver.MustParse("1.4.0")
-	kong232Version = semver.MustParse("2.3.2-0")
+	versionParts = 4
 )
 
 // String returns pointer to s.
@@ -114,7 +112,7 @@ func HTTPClientWithHeaders(client *http.Client,
 	return res
 }
 
-func cleanSemVer(v string) (semver.Version, error) {
+func ParseSemanticVersion(v string) (semver.Version, error) {
 	// fix enterprise edition semver adding patch number
 	// fix enterprise edition version with dash
 	// fix bad version formats like 0.13.0preview1
@@ -134,10 +132,14 @@ func cleanSemVer(v string) (semver.Version, error) {
 	return semver.Make(v)
 }
 
-func getKong(root map[string]interface{}) (*Kong, error) {
-	version := root["version"].(string)
-	configuration := root["configuration"].(map[string]interface{})
-	semVer, err := cleanSemVer(version)
+func versionFromInfo(info map[string]interface{}) string {
+	return info["version"].(string)
+}
+
+func getKong(info map[string]interface{}) (*Kong, error) {
+	version := versionFromInfo(info)
+	configuration := info["configuration"].(map[string]interface{})
+	semVer, err := ParseSemanticVersion(version)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +159,5 @@ func getKong(root map[string]interface{}) (*Kong, error) {
 	} else {
 		kong.RBAC = false
 	}
-	kong.TagSupport.OtherCredentials = semVer.GTE(kong140Version)
-	kong.TagSupport.MTLSAuth = semVer.GTE(kong232Version)
 	return kong, nil
 }

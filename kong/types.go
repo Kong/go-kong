@@ -10,14 +10,8 @@ type Kong struct {
 	Enterprise bool
 	Portal     bool
 	RBAC       bool
-	TagSupport tagSupport
 	Database   string
 	Version    semver.Version
-}
-
-type tagSupport struct {
-	MTLSAuth         bool
-	OtherCredentials bool
 }
 
 // Service represents a Service in Kong.
