@@ -10,7 +10,7 @@ import (
 	"github.com/blang/semver/v4"
 )
 
-var (
+const (
 	versionParts = 4
 )
 
@@ -112,10 +112,11 @@ func HTTPClientWithHeaders(client *http.Client,
 	return res
 }
 
+//ParseSemanticVersion
+// fix enterprise edition semver adding patch number
+// fix enterprise edition version with dash
+// fix bad version formats like 0.13.0preview1
 func ParseSemanticVersion(v string) (semver.Version, error) {
-	// fix enterprise edition semver adding patch number
-	// fix enterprise edition version with dash
-	// fix bad version formats like 0.13.0preview1
 	re := regexp.MustCompile(`(\d+\.\d+)(?:[\.-](\d+))?(?:\-?(.+)$|$)`)
 	m := re.FindStringSubmatch(v)
 	if len(m) != versionParts {
@@ -132,6 +133,8 @@ func ParseSemanticVersion(v string) (semver.Version, error) {
 	return semver.Make(v)
 }
 
-func versionFromInfo(info map[string]interface{}) string {
+//VersionFromInfo retrieves the version from the response of root
+// or /kong endpoints
+func VersionFromInfo(info map[string]interface{}) string {
 	return info["version"].(string)
 }

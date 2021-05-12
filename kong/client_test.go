@@ -95,7 +95,7 @@ func runWhenKong(t *testing.T, semverRange string) {
 		if err != nil {
 			t.Error(err)
 		}
-		version := versionFromInfo(info)
+		version := VersionFromInfo(info)
 		currentVersion, err = ParseSemanticVersion(version)
 		if err != nil {
 			t.Error(err)
@@ -131,7 +131,7 @@ func runWhenEnterprise(t *testing.T, semverRange string, required requiredFeatur
 	if err != nil {
 		t.Error(err)
 	}
-	version := versionFromInfo(info)
+	version := VersionFromInfo(info)
 
 	if !strings.Contains(version, "enterprise") {
 		t.Log("non-Enterprise test Kong instance, skipping")

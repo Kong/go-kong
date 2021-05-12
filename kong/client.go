@@ -101,7 +101,6 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "parsing URL")
 	}
-
 	kong.baseURL = url.String()
 
 	kong.common.client = kong
