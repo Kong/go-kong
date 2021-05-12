@@ -134,5 +134,10 @@ func ParseSemanticVersion(v string) (semver.Version, error) {
 // VersionFromInfo retrieves the version from the response of root
 // or /kong endpoints
 func VersionFromInfo(info map[string]interface{}) string {
-	return info["version"].(string)
+	version, ok := info["version"]
+	if !ok {
+		return ""
+	}
+	return version.(string)
+
 }
