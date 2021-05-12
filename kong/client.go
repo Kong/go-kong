@@ -272,10 +272,10 @@ func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	var result map[string]interface{}
-	_, err = c.Do(ctx, req, &result)
+	var root map[string]interface{}
+	_, err = c.Do(ctx, req, &root)
 	if err != nil {
 		return nil, err
 	}
-	return result, nil
+	return root, nil
 }

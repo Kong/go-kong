@@ -97,6 +97,9 @@ func runWhenKong(t *testing.T, semverRange string) {
 		}
 		version := versionFromInfo(info)
 		currentVersion, err = ParseSemanticVersion(version)
+		if err != nil {
+			t.Error(err)
+		}
 	}
 	r, err := semver.ParseRange(semverRange)
 	if err != nil {
