@@ -158,5 +158,4 @@ func Test_requestWithHeaders(t *testing.T) {
 			}
 		})
 	}
-
 }

@@ -112,7 +112,7 @@ func HTTPClientWithHeaders(client *http.Client,
 	return res
 }
 
-//ParseSemanticVersion
+//ParseSemanticVersion creates a semantic version from a string
 // fix enterprise edition semver adding patch number
 // fix enterprise edition version with dash
 // fix bad version formats like 0.13.0preview1
