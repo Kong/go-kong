@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"regexp"
 	"strings"
 	"testing"
 
@@ -81,19 +80,6 @@ func TestMain(m *testing.M) {
 }
 
 var currentVersion semver.Version
-var r = regexp.MustCompile(`^[0-9]+\.[0-9]+`)
-
-func cleanVersionString(version string) string {
-	res := r.FindString(version)
-	if res == "" {
-		panic("unexpected version of kong")
-	}
-	res += ".0"
-	if strings.Contains(version, "enterprise") {
-		res += "-enterprise"
-	}
-	return res
-}
 
 // runWhenKong skips the current test if the version of Kong doesn't
 // fall in the semverRange.
@@ -105,19 +91,16 @@ func runWhenKong(t *testing.T, semverRange string) {
 		if err != nil {
 			t.Error(err)
 		}
-		res, err := client.Root(defaultCtx)
+		info, err := client.Root(defaultCtx)
 		if err != nil {
 			t.Error(err)
 		}
-		v := res["version"].(string)
-
-		currentVersion, err = semver.Parse(cleanVersionString(v))
-
+		version := VersionFromInfo(info)
+		currentVersion, err = ParseSemanticVersion(version)
 		if err != nil {
 			t.Error(err)
 		}
 	}
-
 	r, err := semver.ParseRange(semverRange)
 	if err != nil {
 		t.Error(err)
@@ -144,27 +127,24 @@ func runWhenEnterprise(t *testing.T, semverRange string, required requiredFeatur
 	if err != nil {
 		t.Error(err)
 	}
-	res, err := client.Root(defaultCtx)
+	info, err := client.Root(defaultCtx)
 	if err != nil {
 		t.Error(err)
 	}
-	v := res["version"].(string)
+	version := VersionFromInfo(info)
 
-	if !strings.Contains(v, "enterprise-edition") {
+	if !strings.Contains(version, "enterprise") {
 		t.Log("non-Enterprise test Kong instance, skipping")
 		t.Skip()
 	}
+	configuration := info["configuration"].(map[string]interface{})
 
-	r := res["configuration"].(map[string]interface{})["rbac"].(string)
-
-	if required.rbac && r != "on" {
+	if required.rbac && configuration["rbac"].(string) != "on" {
 		t.Log("RBAC not enabled on test Kong instance, skipping")
 		t.Skip()
 	}
 
-	p := res["configuration"].(map[string]interface{})["portal"]
-
-	if required.portal && p != true {
+	if required.portal && !configuration["portal"].(bool) {
 		t.Log("Portal not enabled on test Kong instance, skipping")
 		t.Skip()
 	}
