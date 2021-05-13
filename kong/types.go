@@ -40,25 +40,26 @@ type CIDRPort struct {
 // Read https://getkong.org/docs/0.13.x/admin-api/#Route-object
 // +k8s:deepcopy-gen=true
 type Route struct {
-	CreatedAt               *int64              `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	Hosts                   []*string           `json:"hosts,omitempty" yaml:"hosts,omitempty"`
-	Headers                 map[string][]string `json:"headers,omitempty" yaml:"headers,omitempty"`
-	ID                      *string             `json:"id,omitempty" yaml:"id,omitempty"`
-	Name                    *string             `json:"name,omitempty" yaml:"name,omitempty"`
-	Methods                 []*string           `json:"methods,omitempty" yaml:"methods,omitempty"`
-	Paths                   []*string           `json:"paths,omitempty" yaml:"paths,omitempty"`
-	PathHandling            *string             `json:"path_handling,omitempty" yaml:"path_handling,omitempty"`
-	PreserveHost            *bool               `json:"preserve_host,omitempty" yaml:"preserve_host,omitempty"`
-	Protocols               []*string           `json:"protocols,omitempty" yaml:"protocols,omitempty"`
-	RegexPriority           *int64              `json:"regex_priority,omitempty" yaml:"regex_priority,omitempty"`
-	Service                 *Service            `json:"service,omitempty" yaml:"service,omitempty"`
-	StripPath               *bool               `json:"strip_path,omitempty" yaml:"strip_path,omitempty"`
-	UpdatedAt               *int64              `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	SNIs                    []*string           `json:"snis,omitempty" yaml:"snis,omitempty"`
-	Sources                 []*CIDRPort         `json:"sources,omitempty" yaml:"sources,omitempty"`
-	Destinations            []*CIDRPort         `json:"destinations,omitempty" yaml:"destinations,omitempty"`
-	Tags                    []*string           `json:"tags,omitempty" yaml:"tags,omitempty"`
-	HTTPSRedirectStatusCode *int64              `json:"https_redirect_status_code,omitempty" yaml:"https_redirect_status_code,omitempty"`
+	CreatedAt     *int64              `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Hosts         []*string           `json:"hosts,omitempty" yaml:"hosts,omitempty"`
+	Headers       map[string][]string `json:"headers,omitempty" yaml:"headers,omitempty"`
+	ID            *string             `json:"id,omitempty" yaml:"id,omitempty"`
+	Name          *string             `json:"name,omitempty" yaml:"name,omitempty"`
+	Methods       []*string           `json:"methods,omitempty" yaml:"methods,omitempty"`
+	Paths         []*string           `json:"paths,omitempty" yaml:"paths,omitempty"`
+	PathHandling  *string             `json:"path_handling,omitempty" yaml:"path_handling,omitempty"`
+	PreserveHost  *bool               `json:"preserve_host,omitempty" yaml:"preserve_host,omitempty"`
+	Protocols     []*string           `json:"protocols,omitempty" yaml:"protocols,omitempty"`
+	RegexPriority *int64              `json:"regex_priority,omitempty" yaml:"regex_priority,omitempty"`
+	Service       *Service            `json:"service,omitempty" yaml:"service,omitempty"`
+	StripPath     *bool               `json:"strip_path,omitempty" yaml:"strip_path,omitempty"`
+	UpdatedAt     *int64              `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	SNIs          []*string           `json:"snis,omitempty" yaml:"snis,omitempty"`
+	Sources       []*CIDRPort         `json:"sources,omitempty" yaml:"sources,omitempty"`
+	Destinations  []*CIDRPort         `json:"destinations,omitempty" yaml:"destinations,omitempty"`
+	Tags          []*string           `json:"tags,omitempty" yaml:"tags,omitempty"`
+
+	HTTPSRedirectStatusCode *int64 `json:"https_redirect_status_code,omitempty" yaml:"https_redirect_status_code,omitempty"`
 
 	// Kong buffers requests and responses by default. Buffering is not always
 	// desired, for instance if large payloads are being proxied using HTTP 1.1
