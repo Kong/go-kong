@@ -280,18 +280,27 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 	return &s, nil
 }
 
-// Root returns the response of GET request on root of
-// Admin API (GET /).
+// Root returns the response of GET request on root of Admin API (GET /).
+// !!! This method must be used without workspace in the client's baseURL
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
-	req, err := c.NewRequest("GET", "/", nil, nil)
-	if err != nil {
-		return nil, err
-	}
+	return c.informations(ctx, "/")
+}
 
-	var root map[string]interface{}
-	_, err = c.Do(ctx, req, &root)
+// Kong returns the response of GET /kong of Admin API.
+// !!! This method must be used with a workspace in the client's baseURL
+func (c *Client) Kong(ctx context.Context) (map[string]interface{}, error) {
+	return c.informations(ctx, "/kong")
+}
+
+func (c *Client) informations(ctx context.Context, endpoint string) (map[string]interface{}, error) {
+	req, err := c.NewRequest("GET", endpoint, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	return root, nil
+	var informations map[string]interface{}
+	_, err = c.Do(ctx, req, &informations)
+	if err != nil {
+		return nil, err
+	}
+	return informations, nil
 }
