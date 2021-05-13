@@ -15,3 +15,6 @@ linters:
   - gomnd
   - maligned
   - errcheck
+linters-settings:
+  lll:
+    line-length: 150
