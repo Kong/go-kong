@@ -36,7 +36,7 @@ func TestServicesService(T *testing.T) {
 	assert.NotNil(service)
 	assert.Equal("bar", *service.Name)
 	assert.Equal("newUpstream", *service.Host)
-	assert.Equal(42, *service.Port)
+	assert.Equal(int64(42), *service.Port)
 
 	route, err := client.Routes.CreateInService(defaultCtx, service.ID, &Route{
 		Paths: StringSlice("/route"),
