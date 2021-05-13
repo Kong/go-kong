@@ -11,7 +11,7 @@ import (
 type Service struct {
 	ClientCertificate *Certificate `json:"client_certificate,omitempty" yaml:"client_certificate,omitempty"`
 	ConnectTimeout    *int64       `json:"connect_timeout,omitempty" yaml:"connect_timeout,omitempty"`
-	CreatedAt         *int64       `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt         *float64     `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Host              *string      `json:"host,omitempty" yaml:"host,omitempty"`
 	ID                *string      `json:"id,omitempty" yaml:"id,omitempty"`
 	Name              *string      `json:"name,omitempty" yaml:"name,omitempty"`
@@ -20,7 +20,7 @@ type Service struct {
 	Protocol          *string      `json:"protocol,omitempty" yaml:"protocol,omitempty"`
 	ReadTimeout       *int64       `json:"read_timeout,omitempty" yaml:"read_timeout,omitempty"`
 	Retries           *int64       `json:"retries,omitempty" yaml:"retries,omitempty"`
-	UpdatedAt         *int64       `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt         *float64     `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 	URL               *string      `json:"url,omitempty" yaml:"url,omitempty"`
 	WriteTimeout      *int64       `json:"write_timeout,omitempty" yaml:"write_timeout,omitempty"`
 	Tags              []*string    `json:"tags,omitempty" yaml:"tags,omitempty"`
@@ -40,7 +40,7 @@ type CIDRPort struct {
 // Read https://getkong.org/docs/0.13.x/admin-api/#Route-object
 // +k8s:deepcopy-gen=true
 type Route struct {
-	CreatedAt               *int64              `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt               *float64            `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Hosts                   []*string           `json:"hosts,omitempty" yaml:"hosts,omitempty"`
 	Headers                 map[string][]string `json:"headers,omitempty" yaml:"headers,omitempty"`
 	ID                      *string             `json:"id,omitempty" yaml:"id,omitempty"`
@@ -53,7 +53,7 @@ type Route struct {
 	RegexPriority           *int64              `json:"regex_priority,omitempty" yaml:"regex_priority,omitempty"`
 	Service                 *Service            `json:"service,omitempty" yaml:"service,omitempty"`
 	StripPath               *bool               `json:"strip_path,omitempty" yaml:"strip_path,omitempty"`
-	UpdatedAt               *int64              `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt               *float64            `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 	SNIs                    []*string           `json:"snis,omitempty" yaml:"snis,omitempty"`
 	Sources                 []*CIDRPort         `json:"sources,omitempty" yaml:"sources,omitempty"`
 	Destinations            []*CIDRPort         `json:"destinations,omitempty" yaml:"destinations,omitempty"`
@@ -82,7 +82,7 @@ type Consumer struct {
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	CustomID  *string   `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
 	Username  *string   `json:"username,omitempty" yaml:"username,omitempty"`
-	CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *float64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Tags      []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
@@ -93,7 +93,7 @@ type Certificate struct {
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Cert      *string   `json:"cert,omitempty" yaml:"cert,omitempty"`
 	Key       *string   `json:"key,omitempty" yaml:"key,omitempty"`
-	CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *float64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	SNIs      []*string `json:"snis,omitempty" yaml:"snis,omitempty"`
 	Tags      []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
@@ -104,7 +104,7 @@ type Certificate struct {
 type SNI struct {
 	ID          *string      `json:"id,omitempty" yaml:"id,omitempty"`
 	Name        *string      `json:"name,omitempty" yaml:"name,omitempty"`
-	CreatedAt   *int64       `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt   *float64     `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Certificate *Certificate `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 	Tags        []*string    `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
@@ -192,7 +192,7 @@ type HealthData struct {
 // +k8s:deepcopy-gen=true
 type UpstreamNodeHealth struct {
 	ID        *string     `json:"id,omitempty" yaml:"id,omitempty"`
-	CreatedAt *int64      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *float64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Data      *HealthData `json:"data,omitempty" yaml:"data,omitempty"`
 	Health    *string     `json:"health,omitempty" yaml:"data,omitempty"`
 	Target    *string     `json:"target,omitempty" yaml:"target,omitempty"`
@@ -211,7 +211,7 @@ type Upstream struct {
 	Algorithm          *string      `json:"algorithm,omitempty" yaml:"algorithm,omitempty"`
 	Slots              *int64       `json:"slots,omitempty" yaml:"slots,omitempty"`
 	Healthchecks       *Healthcheck `json:"healthchecks,omitempty" yaml:"healthchecks,omitempty"`
-	CreatedAt          *int64       `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt          *float64     `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	HashOn             *string      `json:"hash_on,omitempty" yaml:"hash_on,omitempty"`
 	HashFallback       *string      `json:"hash_fallback,omitempty" yaml:"hash_fallback,omitempty"`
 	HashOnHeader       *string      `json:"hash_on_header,omitempty" yaml:"hash_on_header,omitempty"`
@@ -224,7 +224,7 @@ type Upstream struct {
 // Target represents a Target in Kong.
 // +k8s:deepcopy-gen=true
 type Target struct {
-	CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *float64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Target    *string   `json:"target,omitempty" yaml:"target,omitempty"`
 	Upstream  *Upstream `json:"upstream,omitempty" yaml:"upstream,omitempty"`
@@ -258,7 +258,7 @@ func (in Configuration) DeepCopy() Configuration {
 // Read https://getkong.org/docs/0.13.x/admin-api/#Plugin-object
 // +k8s:deepcopy-gen=true
 type Plugin struct {
-	CreatedAt *int64        `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *float64      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string       `json:"id,omitempty" yaml:"id,omitempty"`
 	Name      *string       `json:"name,omitempty" yaml:"name,omitempty"`
 	Route     *Route        `json:"route,omitempty" yaml:"route,omitempty"`
@@ -275,7 +275,7 @@ type Plugin struct {
 
 // Workspace represents a Workspace in Kong.
 type Workspace struct {
-	CreatedAt *int64                 `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *float64               `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string                `json:"id,omitempty" yaml:"id,omitempty"`
 	Name      *string                `json:"name,omitempty" yaml:"name,omitempty"`
 	Comment   *string                `json:"comment,omitempty" yaml:"comment,omitempty"`
@@ -286,27 +286,27 @@ type Workspace struct {
 // Admin represents an Admin in Kong.
 // +k8s:deepcopy-gen=true
 type Admin struct {
-	CreatedAt        *int64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	ID               *string `json:"id,omitempty" yaml:"id,omitempty"`
-	Email            *string `json:"email,omitempty" yaml:"email,omitempty"`
-	Username         *string `json:"username,omitempty" yaml:"username,omitempty"`
-	Password         *string `json:"password,omitempty" yaml:"password,omitempty"`
-	CustomID         *string `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
-	RBACTokenEnabled *bool   `json:"rbac_token_enabled,omitempty" yaml:"rbac_token_enabled,omitempty"`
-	Status           *int64  `json:"status,omitempty" yaml:"status,omitempty"`
-	Token            *string `json:"token,omitempty" yaml:"token,omitempty"`
+	CreatedAt        *float64 `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID               *string  `json:"id,omitempty" yaml:"id,omitempty"`
+	Email            *string  `json:"email,omitempty" yaml:"email,omitempty"`
+	Username         *string  `json:"username,omitempty" yaml:"username,omitempty"`
+	Password         *string  `json:"password,omitempty" yaml:"password,omitempty"`
+	CustomID         *string  `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
+	RBACTokenEnabled *bool    `json:"rbac_token_enabled,omitempty" yaml:"rbac_token_enabled,omitempty"`
+	Status           *int64   `json:"status,omitempty" yaml:"status,omitempty"`
+	Token            *string  `json:"token,omitempty" yaml:"token,omitempty"`
 }
 
 // RBACUser represents an RBAC user in Kong Enterprise
 // +k8s:deepcopy-gen=true
 type RBACUser struct {
-	CreatedAt      *int64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	Comment        *string `json:"comment,omitempty" yaml:"comment,omitempty"`
-	ID             *string `json:"id,omitempty" yaml:"id,omitempty"`
-	Name           *string `json:"name,omitempty" yaml:"name,omitempty"`
-	Enabled        *bool   `json:"enabled,omitempty" yaml:"enabled,omitempty"`
-	UserToken      *string `json:"user_token,omitempty" yaml:"user_token,omitempty"`
-	UserTokenIdent *string `json:"user_token_ident,omitempty" yaml:"user_token_ident,omitempty"`
+	CreatedAt      *float64 `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Comment        *string  `json:"comment,omitempty" yaml:"comment,omitempty"`
+	ID             *string  `json:"id,omitempty" yaml:"id,omitempty"`
+	Name           *string  `json:"name,omitempty" yaml:"name,omitempty"`
+	Enabled        *bool    `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	UserToken      *string  `json:"user_token,omitempty" yaml:"user_token,omitempty"`
+	UserTokenIdent *string  `json:"user_token_ident,omitempty" yaml:"user_token_ident,omitempty"`
 }
 
 // Workspace Entity represents a WorkspaceEntity in Kong
@@ -323,11 +323,11 @@ type WorkspaceEntity struct {
 // RBACRole represents an RBAC Role in Kong.
 // +k8s:deepcopy-gen=true
 type RBACRole struct {
-	CreatedAt *int64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	ID        *string `json:"id,omitempty" yaml:"id,omitempty"`
-	Name      *string `json:"name,omitempty" yaml:"name,omitempty"`
-	Comment   *string `json:"comment,omitempty" yaml:"comment,omitempty"`
-	IsDefault *bool   `json:"is_default,omitempty" yaml:"is_default,omitempty"`
+	CreatedAt *float64 `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID        *string  `json:"id,omitempty" yaml:"id,omitempty"`
+	Name      *string  `json:"name,omitempty" yaml:"name,omitempty"`
+	Comment   *string  `json:"comment,omitempty" yaml:"comment,omitempty"`
+	IsDefault *bool    `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 }
 
 // RBACEndpointPermission represents an RBAC Endpoint Permission in Kong Enterprise
@@ -335,7 +335,7 @@ type RBACRole struct {
 // Note: this type implements a custom JSON marshaler. Review the associated MarshalJSON()
 // function if it does not marshal as expected.
 type RBACEndpointPermission struct {
-	CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *float64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Workspace *string   `json:"workspace,omitempty" yaml:"workspace,omitempty"`
 	Endpoint  *string   `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
 	Actions   []*string `json:"actions,omitempty" yaml:"actions,omitempty"`
@@ -347,7 +347,7 @@ type RBACEndpointPermission struct {
 // MarshalJSON marshals an endpoint permission into a suitable form for the Kong admin API
 func (e *RBACEndpointPermission) MarshalJSON() ([]byte, error) {
 	type ep struct {
-		CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+		CreatedAt *float64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 		Workspace *string   `json:"workspace,omitempty" yaml:"workspace,omitempty"`
 		Endpoint  *string   `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
 		Actions   *string   `json:"actions,omitempty" yaml:"actions,omitempty"`
@@ -374,7 +374,7 @@ func (e *RBACEndpointPermission) MarshalJSON() ([]byte, error) {
 // Note: this type implements a custom JSON marshaler. Review the associated MarshalJSON()
 // function if it does not marshal as expected.
 type RBACEntityPermission struct {
-	CreatedAt  *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt  *float64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	EntityID   *string   `json:"entity_id,omitempty" yaml:"entity_id,omitempty"`
 	EntityType *string   `json:"entity_type,omitempty" yaml:"entity_type,omitempty"`
 	Actions    []*string `json:"actions,omitempty" yaml:"actions,omitempty"`
@@ -386,7 +386,7 @@ type RBACEntityPermission struct {
 // MarshalJSON marshals an endpoint permission into a suitable form for the Kong admin API
 func (e *RBACEntityPermission) MarshalJSON() ([]byte, error) {
 	type ep struct {
-		CreatedAt  *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+		CreatedAt  *float64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 		EntityID   *string   `json:"entity_id,omitempty" yaml:"entity_id,omitempty"`
 		EntityType *string   `json:"entity_type,omitempty" yaml:"entity_type,omitempty"`
 		Actions    *string   `json:"actions,omitempty" yaml:"actions,omitempty"`
@@ -417,12 +417,12 @@ type RBACPermissionsList struct {
 // Developer represents a Developer in Kong.
 // +k8s:deepcopy-gen=true
 type Developer struct {
-	CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *float64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Status    *int64    `json:"status,omitempty" yaml:"status,omitempty"`
 	Email     *string   `json:"email,omitempty" yaml:"email,omitempty"`
 	CustomID  *string   `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
-	UpdatedAt *int64    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt *float64  `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 	Roles     []*string `json:"roles,omitempty" yaml:"roles,omitempty"`
 	RbacUser  *RBACUser `json:"rbac_user,omitempty" yaml:"rbac_user,omitempty"`
 	Meta      *string   `json:"meta,omitempty" yaml:"meta,omitempty"`
@@ -432,8 +432,8 @@ type Developer struct {
 // DeveloperRole represents a Developer Role in Kong.
 // +k8s:deepcopy-gen=true
 type DeveloperRole struct {
-	Comment   *string `json:"comment,omitempty" yaml:"comment,omitempty"`
-	CreatedAt *int64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	ID        *string `json:"id,omitempty" yaml:"id,omitempty"`
-	Name      *string `json:"name,omitempty" yaml:"name,omitempty"`
+	Comment   *string  `json:"comment,omitempty" yaml:"comment,omitempty"`
+	CreatedAt *float64 `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID        *string  `json:"id,omitempty" yaml:"id,omitempty"`
+	Name      *string  `json:"name,omitempty" yaml:"name,omitempty"`
 }
