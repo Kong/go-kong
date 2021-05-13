@@ -30,7 +30,7 @@ func (in *ACLGroup) DeepCopyInto(out *ACLGroup) {
 	}
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -72,7 +72,7 @@ func (in *ActiveHealthcheck) DeepCopyInto(out *ActiveHealthcheck) {
 	*out = *in
 	if in.Concurrency != nil {
 		in, out := &in.Concurrency, &out.Concurrency
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Healthy != nil {
@@ -102,7 +102,7 @@ func (in *ActiveHealthcheck) DeepCopyInto(out *ActiveHealthcheck) {
 	}
 	if in.Timeout != nil {
 		in, out := &in.Timeout, &out.Timeout
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Unhealthy != nil {
@@ -128,7 +128,7 @@ func (in *Admin) DeepCopyInto(out *Admin) {
 	*out = *in
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -163,7 +163,7 @@ func (in *Admin) DeepCopyInto(out *Admin) {
 	}
 	if in.Status != nil {
 		in, out := &in.Status, &out.Status
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Token != nil {
@@ -194,7 +194,7 @@ func (in *BasicAuth) DeepCopyInto(out *BasicAuth) {
 	}
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -288,7 +288,7 @@ func (in *CIDRPort) DeepCopyInto(out *CIDRPort) {
 	}
 	if in.Port != nil {
 		in, out := &in.Port, &out.Port
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	return
@@ -414,7 +414,7 @@ func (in *Developer) DeepCopyInto(out *Developer) {
 	*out = *in
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -424,7 +424,7 @@ func (in *Developer) DeepCopyInto(out *Developer) {
 	}
 	if in.Status != nil {
 		in, out := &in.Status, &out.Status
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Email != nil {
@@ -439,7 +439,7 @@ func (in *Developer) DeepCopyInto(out *Developer) {
 	}
 	if in.UpdatedAt != nil {
 		in, out := &in.UpdatedAt, &out.UpdatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Roles != nil {
@@ -491,7 +491,7 @@ func (in *DeveloperRole) DeepCopyInto(out *DeveloperRole) {
 	}
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -527,7 +527,7 @@ func (in *HMACAuth) DeepCopyInto(out *HMACAuth) {
 	}
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -579,12 +579,12 @@ func (in *HealthData) DeepCopyInto(out *HealthData) {
 	}
 	if in.Port != nil {
 		in, out := &in.Port, &out.Port
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.NodeWeight != nil {
 		in, out := &in.NodeWeight, &out.NodeWeight
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Weight != nil {
@@ -626,7 +626,7 @@ func (in *HealthDataAddress) DeepCopyInto(out *HealthDataAddress) {
 	*out = *in
 	if in.Port != nil {
 		in, out := &in.Port, &out.Port
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.IP != nil {
@@ -641,7 +641,7 @@ func (in *HealthDataAddress) DeepCopyInto(out *HealthDataAddress) {
 	}
 	if in.Weight != nil {
 		in, out := &in.Weight, &out.Weight
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	return
@@ -662,17 +662,17 @@ func (in *HealthDataWeight) DeepCopyInto(out *HealthDataWeight) {
 	*out = *in
 	if in.Total != nil {
 		in, out := &in.Total, &out.Total
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Available != nil {
 		in, out := &in.Available, &out.Available
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Unavailable != nil {
 		in, out := &in.Unavailable, &out.Unavailable
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	return
@@ -703,7 +703,7 @@ func (in *Healthcheck) DeepCopyInto(out *Healthcheck) {
 	}
 	if in.Threshold != nil {
 		in, out := &in.Threshold, &out.Threshold
-		*out = new(float64)
+		*out = new(int64)
 		**out = **in
 	}
 	return
@@ -724,17 +724,17 @@ func (in *Healthy) DeepCopyInto(out *Healthy) {
 	*out = *in
 	if in.HTTPStatuses != nil {
 		in, out := &in.HTTPStatuses, &out.HTTPStatuses
-		*out = make([]int, len(*in))
+		*out = make([]int64, len(*in))
 		copy(*out, *in)
 	}
 	if in.Interval != nil {
 		in, out := &in.Interval, &out.Interval
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Successes != nil {
 		in, out := &in.Successes, &out.Successes
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	return
@@ -760,7 +760,7 @@ func (in *JWTAuth) DeepCopyInto(out *JWTAuth) {
 	}
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -822,7 +822,7 @@ func (in *KeyAuth) DeepCopyInto(out *KeyAuth) {
 	}
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -837,7 +837,7 @@ func (in *KeyAuth) DeepCopyInto(out *KeyAuth) {
 	}
 	if in.TTL != nil {
 		in, out := &in.TTL, &out.TTL
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Tags != nil {
@@ -874,7 +874,7 @@ func (in *MTLSAuth) DeepCopyInto(out *MTLSAuth) {
 	}
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -926,7 +926,7 @@ func (in *Oauth2Credential) DeepCopyInto(out *Oauth2Credential) {
 	}
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -1020,7 +1020,7 @@ func (in *Plugin) DeepCopyInto(out *Plugin) {
 	*out = *in
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -1099,7 +1099,7 @@ func (in *RBACEndpointPermission) DeepCopyInto(out *RBACEndpointPermission) {
 	*out = *in
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Workspace != nil {
@@ -1156,7 +1156,7 @@ func (in *RBACEntityPermission) DeepCopyInto(out *RBACEntityPermission) {
 	*out = *in
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.EntityID != nil {
@@ -1213,7 +1213,7 @@ func (in *RBACRole) DeepCopyInto(out *RBACRole) {
 	*out = *in
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -1254,7 +1254,7 @@ func (in *RBACUser) DeepCopyInto(out *RBACUser) {
 	*out = *in
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Comment != nil {
@@ -1305,7 +1305,7 @@ func (in *Route) DeepCopyInto(out *Route) {
 	*out = *in
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Hosts != nil {
@@ -1389,7 +1389,7 @@ func (in *Route) DeepCopyInto(out *Route) {
 	}
 	if in.RegexPriority != nil {
 		in, out := &in.RegexPriority, &out.RegexPriority
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Service != nil {
@@ -1404,7 +1404,7 @@ func (in *Route) DeepCopyInto(out *Route) {
 	}
 	if in.UpdatedAt != nil {
 		in, out := &in.UpdatedAt, &out.UpdatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.SNIs != nil {
@@ -1453,7 +1453,7 @@ func (in *Route) DeepCopyInto(out *Route) {
 	}
 	if in.HTTPSRedirectStatusCode != nil {
 		in, out := &in.HTTPSRedirectStatusCode, &out.HTTPSRedirectStatusCode
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.RequestBuffering != nil {
@@ -1536,12 +1536,12 @@ func (in *Service) DeepCopyInto(out *Service) {
 	}
 	if in.ConnectTimeout != nil {
 		in, out := &in.ConnectTimeout, &out.ConnectTimeout
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Host != nil {
@@ -1566,7 +1566,7 @@ func (in *Service) DeepCopyInto(out *Service) {
 	}
 	if in.Port != nil {
 		in, out := &in.Port, &out.Port
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Protocol != nil {
@@ -1576,17 +1576,17 @@ func (in *Service) DeepCopyInto(out *Service) {
 	}
 	if in.ReadTimeout != nil {
 		in, out := &in.ReadTimeout, &out.ReadTimeout
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Retries != nil {
 		in, out := &in.Retries, &out.Retries
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.UpdatedAt != nil {
 		in, out := &in.UpdatedAt, &out.UpdatedAt
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.URL != nil {
@@ -1596,7 +1596,7 @@ func (in *Service) DeepCopyInto(out *Service) {
 	}
 	if in.WriteTimeout != nil {
 		in, out := &in.WriteTimeout, &out.WriteTimeout
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Tags != nil {
@@ -1617,7 +1617,7 @@ func (in *Service) DeepCopyInto(out *Service) {
 	}
 	if in.TLSVerifyDepth != nil {
 		in, out := &in.TLSVerifyDepth, &out.TLSVerifyDepth
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.CACertificates != nil {
@@ -1649,7 +1649,7 @@ func (in *Target) DeepCopyInto(out *Target) {
 	*out = *in
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(float64)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.ID != nil {
@@ -1669,7 +1669,7 @@ func (in *Target) DeepCopyInto(out *Target) {
 	}
 	if in.Weight != nil {
 		in, out := &in.Weight, &out.Weight
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Tags != nil {
@@ -1701,27 +1701,27 @@ func (in *Unhealthy) DeepCopyInto(out *Unhealthy) {
 	*out = *in
 	if in.HTTPFailures != nil {
 		in, out := &in.HTTPFailures, &out.HTTPFailures
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.HTTPStatuses != nil {
 		in, out := &in.HTTPStatuses, &out.HTTPStatuses
-		*out = make([]int, len(*in))
+		*out = make([]int64, len(*in))
 		copy(*out, *in)
 	}
 	if in.TCPFailures != nil {
 		in, out := &in.TCPFailures, &out.TCPFailures
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Timeouts != nil {
 		in, out := &in.Timeouts, &out.Timeouts
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Interval != nil {
 		in, out := &in.Interval, &out.Interval
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	return
@@ -1767,7 +1767,7 @@ func (in *Upstream) DeepCopyInto(out *Upstream) {
 	}
 	if in.Slots != nil {
 		in, out := &in.Slots, &out.Slots
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Healthchecks != nil {
@@ -1844,7 +1844,7 @@ func (in *UpstreamNodeHealth) DeepCopyInto(out *UpstreamNodeHealth) {
 	}
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
-		*out = new(float64)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Data != nil {
@@ -1869,7 +1869,7 @@ func (in *UpstreamNodeHealth) DeepCopyInto(out *UpstreamNodeHealth) {
 	}
 	if in.Weight != nil {
 		in, out := &in.Weight, &out.Weight
-		*out = new(int)
+		*out = new(int64)
 		**out = **in
 	}
 	if in.Tags != nil {

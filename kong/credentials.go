@@ -8,10 +8,10 @@ type id interface {
 // +k8s:deepcopy-gen=true
 type KeyAuth struct {
 	Consumer  *Consumer `json:"consumer,omitempty" yaml:"consumer,omitempty"`
-	CreatedAt *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Key       *string   `json:"key,omitempty" yaml:"key,omitempty"`
-	TTL       *int      `json:"ttl,omitempty" yaml:"ttl,omitempty"`
+	TTL       *int64    `json:"ttl,omitempty" yaml:"ttl,omitempty"`
 	Tags      []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
@@ -23,7 +23,7 @@ func (c KeyAuth) id() *string {
 // +k8s:deepcopy-gen=true
 type BasicAuth struct {
 	Consumer  *Consumer `json:"consumer,omitempty" yaml:"consumer,omitempty"`
-	CreatedAt *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Username  *string   `json:"username,omitempty" yaml:"username,omitempty"`
 	Password  *string   `json:"password,omitempty" yaml:"password,omitempty"`
@@ -38,7 +38,7 @@ func (c BasicAuth) id() *string {
 // +k8s:deepcopy-gen=true
 type HMACAuth struct {
 	Consumer  *Consumer `json:"consumer,omitempty" yaml:"consumer,omitempty"`
-	CreatedAt *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Username  *string   `json:"username,omitempty" yaml:"username,omitempty"`
 	Secret    *string   `json:"secret,omitempty" yaml:"secret,omitempty"`
@@ -53,7 +53,7 @@ func (c HMACAuth) id() *string {
 // +k8s:deepcopy-gen=true
 type Oauth2Credential struct {
 	Consumer     *Consumer `json:"consumer,omitempty" yaml:"consumer,omitempty"`
-	CreatedAt    *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt    *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID           *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Name         *string   `json:"name,omitempty" yaml:"name,omitempty"`
 	ClientID     *string   `json:"client_id,omitempty" yaml:"client_id,omitempty"`
@@ -70,7 +70,7 @@ func (c Oauth2Credential) id() *string {
 // +k8s:deepcopy-gen=true
 type JWTAuth struct {
 	Consumer     *Consumer `json:"consumer,omitempty" yaml:"consumer,omitempty"`
-	CreatedAt    *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt    *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID           *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Algorithm    *string   `json:"algorithm,omitempty" yaml:"algorithm,omitempty"`
 	Key          *string   `json:"key,omitempty" yaml:"key,omitempty"`
@@ -87,7 +87,7 @@ func (c JWTAuth) id() *string {
 // +k8s:deepcopy-gen=true
 type MTLSAuth struct {
 	Consumer      *Consumer      `json:"consumer,omitempty" yaml:"consumer,omitempty"`
-	CreatedAt     *int           `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt     *int64         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID            *string        `json:"id,omitempty" yaml:"id,omitempty"`
 	SubjectName   *string        `json:"subject_name,omitempty" yaml:"subject_name,omitempty"`
 	CACertificate *CACertificate `json:"ca_certificate,omitempty" yaml:"ca_certificate,omitempty"`
@@ -102,7 +102,7 @@ func (c MTLSAuth) id() *string {
 // +k8s:deepcopy-gen=true
 type ACLGroup struct {
 	Consumer  *Consumer `json:"consumer,omitempty" yaml:"consumer,omitempty"`
-	CreatedAt *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Group     *string   `json:"group,omitempty" yaml:"group,omitempty"`
 	Tags      []*string `json:"tags,omitempty" yaml:"tags,omitempty"`

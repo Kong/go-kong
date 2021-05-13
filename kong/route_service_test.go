@@ -24,7 +24,7 @@ func TestRoutesRoute(T *testing.T) {
 	service := &Service{
 		Name: String("foo2"),
 		Host: String("upstream"),
-		Port: Int(42),
+		Port: Int64(42),
 		Path: String("/path"),
 	}
 
@@ -67,7 +67,7 @@ func TestRoutesRoute(T *testing.T) {
 		Destinations: []*CIDRPort{
 			{
 				IP:   String("10.0.0.0/8"),
-				Port: Int(80),
+				Port: Int64(80),
 			},
 		},
 		Service: service,
@@ -129,7 +129,7 @@ func TestCreateInRoute(T *testing.T) {
 	service := &Service{
 		Name: String("foo"),
 		Host: String("upstream"),
-		Port: Int(42),
+		Port: Int64(42),
 		Path: String("/path"),
 	}
 
@@ -165,7 +165,7 @@ func TestRouteListEndpoint(T *testing.T) {
 	service := &Service{
 		Name: String("foo"),
 		Host: String("upstream"),
-		Port: Int(42),
+		Port: Int64(42),
 		Path: String("/path"),
 	}
 

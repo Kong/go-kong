@@ -29,6 +29,11 @@ func Int(i int) *int {
 	return &i
 }
 
+// Int64 returns a pointer to i.
+func Int64(i int64) *int64 {
+	return &i
+}
+
 func isEmptyString(s *string) bool {
 	return s == nil || strings.TrimSpace(*s) == ""
 }

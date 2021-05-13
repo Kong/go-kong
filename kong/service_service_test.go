@@ -17,7 +17,7 @@ func TestServicesService(T *testing.T) {
 	service := &Service{
 		Name: String("foo"),
 		Host: String("upstream"),
-		Port: Int(42),
+		Port: Int64(42),
 		Path: String("/path"),
 	}
 

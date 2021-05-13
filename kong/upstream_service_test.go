@@ -86,7 +86,7 @@ func TestUpstreamWithActiveUnHealthyInterval(T *testing.T) {
 		Healthchecks: &Healthcheck{
 			Active: &ActiveHealthcheck{
 				Unhealthy: &Unhealthy{
-					Interval: Int(5),
+					Interval: Int64(5),
 				},
 			},
 		},
@@ -113,7 +113,7 @@ func TestUpstreamWithPassiveUnHealthyInterval(T *testing.T) {
 		Healthchecks: &Healthcheck{
 			Passive: &PassiveHealthcheck{
 				Unhealthy: &Unhealthy{
-					Interval: Int(5),
+					Interval: Int64(5),
 				},
 			},
 		},
@@ -136,8 +136,8 @@ func TestUpstreamWithPassiveHealthy(T *testing.T) {
 			Passive: &PassiveHealthcheck{
 				Type: String("http"),
 				Healthy: &Healthy{
-					HTTPStatuses: []int{200, 201},
-					Successes:    Int(3),
+					HTTPStatuses: []int64{200, 201},
+					Successes:    Int64(3),
 				},
 			},
 		},

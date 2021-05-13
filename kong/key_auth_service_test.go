@@ -310,7 +310,7 @@ func TestKeyAuthCreateWithTTL(T *testing.T) {
 	assert.NotNil(client)
 
 	keyAuth := &KeyAuth{
-		TTL: Int(10),
+		TTL: Int64(10),
 		Key: String("my-apikey"),
 	}
 
