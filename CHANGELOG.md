@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.19.0](#v0190---20210514)
 - [v0.18.0](#v0180---20210505)
 - [v0.17.0](#v0170---20210405)
 - [v0.16.0](#v0160---20210303)
@@ -22,6 +23,12 @@
 - [0.3.0](#030---20181219)
 - [0.2.0](#020---20181219)
 - [0.1.0](#010---20181201)
+
+## [v0.19.0] - 2021/05/05
+
+### Added
+
+- Client now allows reading the version of Kong. [#48](https://github.com/Kong/go-kong/pull/48)
 
 ## [v0.18.0] - 2021/05/05
 
@@ -335,6 +342,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.19.0]: https://github.com/Kong/go-kong/compare/v0.18.0...v0.19.0
 [v0.18.0]: https://github.com/Kong/go-kong/compare/v0.17.0...v0.18.0
 [v0.17.0]: https://github.com/Kong/go-kong/compare/v0.16.0...v0.17.0
 [v0.16.0]: https://github.com/Kong/go-kong/compare/v0.15.0...v0.16.0
