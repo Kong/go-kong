@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// AbstractInformationService handles Plugins in Kong.
+// AbstractInformationService handles Kong's informations.
 type AbstractInformationService interface {
 	// Version returns the Kong version
 	Version(ctx context.Context) (string, error)
