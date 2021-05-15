@@ -83,7 +83,7 @@ func (s *InformationService) IsRBACEnabled(ctx context.Context) (bool, error) {
 	return "on" == rbac.(string), nil
 }
 
-// IsPortalEnabledSZ check if the portal is enabled
+// IsPortalEnabled check if the portal is enabled
 func (s *InformationService) IsPortalEnabled(ctx context.Context) (bool, error) {
 	informations, err := s.client.Root(ctx)
 	if err != nil {
