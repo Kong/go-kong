@@ -66,7 +66,7 @@ func (s *InformationService) IsInMemory(ctx context.Context) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return "off" == database || "" == database, nil
+	return "off" == database, nil
 }
 
 // IsRBACEnabled check if RBAC are enabled
