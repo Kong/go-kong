@@ -165,10 +165,15 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	return kong, nil
 }
 
-// WithWorkspace defines a workspace for the client
+// WithWorkspace return the client with a defined workspace
 func (c *Client) WithWorkspace(workspace string) *Client {
-	c.workspace = workspace
+	c.SetWorkspace(workspace)
 	return c
+}
+
+// SetWorkspace defines a workspace for the client
+func (c *Client) SetWorkspace(workspace string) {
+	c.workspace = workspace
 }
 
 //ClearWorkspace clear the workspace
