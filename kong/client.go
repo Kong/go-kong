@@ -173,11 +173,10 @@ func (c *Client) WithWorkspace(workspace string) *Client {
 
 // baseURL build the base URL from the rootURL and the workspace
 func (c *Client) baseURL() string {
-	var baseURL = c.rootURL
 	if c.hasWorkspace() {
-		baseURL = baseURL + "/" + c.workspace
+		return c.rootURL + "/" + c.workspace
 	}
-	return baseURL
+	return c.rootURL
 }
 
 func (c *Client) hasWorkspace() bool {
