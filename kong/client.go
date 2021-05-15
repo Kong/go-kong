@@ -172,16 +172,12 @@ func (c *Client) WithWorkspace(workspace string) *Client {
 }
 
 // baseURL build the base URL from the rootURL and the workspace
-func (c *Client) baseURL() (string, error) {
+func (c *Client) baseURL() string {
 	var baseURL = c.rootURL
 	if c.hasWorkspace() {
 		baseURL = baseURL + "/" + c.workspace
 	}
-	url, err := url.ParseRequestURI(baseURL)
-	if err != nil {
-		return "", errors.Wrap(err, "parsing URL")
-	}
-	return url.String(), nil
+	return baseURL
 }
 
 func (c *Client) hasWorkspace() bool {
