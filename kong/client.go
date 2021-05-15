@@ -37,7 +37,8 @@ var (
 // Kong cluster
 type Client struct {
 	client                  *http.Client
-	baseURL                 string
+	rootURL                 string
+	workspace               string
 	common                  service
 	Consumers               AbstractConsumerService
 	Developers              AbstractDeveloperService
@@ -117,7 +118,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "parsing URL")
 	}
-	kong.baseURL = url.String()
+	kong.rootURL = url.String()
 
 	kong.common.client = kong
 	kong.Consumers = (*ConsumerService)(&kong.common)
@@ -162,6 +163,29 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	}
 	kong.logger = os.Stderr
 	return kong, nil
+}
+
+// WithWorkspace defines a workspace for the client
+func (c *Client) WithWorkspace(workspace string) *Client {
+	c.workspace = workspace
+	return c
+}
+
+// baseURL build the base URL from the rootURL and the workspace
+func (c *Client) baseURL() (string, error) {
+	var baseURL = c.rootURL
+	if c.hasWorkspace() {
+		baseURL = baseURL + "/" + c.workspace
+	}
+	url, err := url.ParseRequestURI(baseURL)
+	if err != nil {
+		return "", errors.Wrap(err, "parsing URL")
+	}
+	return url.String(), nil
+}
+
+func (c *Client) hasWorkspace() bool {
+	return len(c.workspace) > 0
 }
 
 // Do executes a HTTP request and returns a response
@@ -280,19 +304,12 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 	return &s, nil
 }
 
-// Root returns the response of GET request on root of Admin API (GET /).
-// !!! This method must be used without workspace in the client's baseURL
+// Root returns the response of GET request on root of Admin API (GET / or /kong with a workspace).
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
-	return c.informations(ctx, "/")
-}
-
-// Kong returns the response of GET /kong of Admin API.
-// !!! This method must be used with a workspace in the client's baseURL
-func (c *Client) Kong(ctx context.Context) (map[string]interface{}, error) {
-	return c.informations(ctx, "/kong")
-}
-
-func (c *Client) informations(ctx context.Context, endpoint string) (map[string]interface{}, error) {
+	endpoint := "/"
+	if c.hasWorkspace() {
+		endpoint = "/kong"
+	}
 	req, err := c.NewRequest("GET", endpoint, nil, nil)
 	if err != nil {
 		return nil, err

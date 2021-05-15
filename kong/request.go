@@ -29,8 +29,13 @@ func (c *Client) NewRequest(method, endpoint string, qs interface{},
 		}
 	}
 
+	baseURL, err := c.baseURL()
+	if err != nil {
+		return nil, err
+	}
+
 	//Create a new request
-	req, err := http.NewRequest(method, c.baseURL+endpoint,
+	req, err := http.NewRequest(method, baseURL+endpoint,
 		bytes.NewBuffer(buf))
 	if err != nil {
 		return nil, err
