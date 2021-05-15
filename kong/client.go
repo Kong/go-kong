@@ -171,6 +171,11 @@ func (c *Client) WithWorkspace(workspace string) *Client {
 	return c
 }
 
+//ClearWorkspace clear the workspace
+func (c *Client) ClearWorkspace() {
+	c.workspace = ""
+}
+
 // baseURL build the base URL from the rootURL and the workspace
 func (c *Client) baseURL() string {
 	if c.hasWorkspace() {
