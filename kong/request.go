@@ -9,13 +9,9 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-// NewRequest creates a request based on the inputs.
-// endpoint should be relative to the baseURL specified during
-// client creation.
-// body is always marshaled into JSON.
-func (c *Client) NewRequest(method, endpoint string, qs interface{},
+//NewRequestRaw builds creates a request based on the inputs.
+func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs interface{},
 	body interface{}) (*http.Request, error) {
-
 	if endpoint == "" {
 		return nil, errors.New("endpoint can't be nil")
 	}
@@ -30,8 +26,7 @@ func (c *Client) NewRequest(method, endpoint string, qs interface{},
 	}
 
 	//Create a new request
-	req, err := http.NewRequest(method, c.baseURL()+endpoint,
-		bytes.NewBuffer(buf))
+	req, err := http.NewRequest(method, baseURL+endpoint, bytes.NewBuffer(buf))
 	if err != nil {
 		return nil, err
 	}
@@ -50,4 +45,13 @@ func (c *Client) NewRequest(method, endpoint string, qs interface{},
 		req.URL.RawQuery = values.Encode()
 	}
 	return req, nil
+}
+
+// NewRequest creates a request based on the inputs.
+// endpoint should be relative to the baseURL specified during
+// client creation.
+// body is always marshaled into JSON.
+func (c *Client) NewRequest(method, endpoint string, qs interface{},
+	body interface{}) (*http.Request, error) {
+	return c.NewRequestRaw(method, c.baseURL(c.GetWorkspace()), endpoint, qs, body)
 }

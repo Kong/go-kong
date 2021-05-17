@@ -9,6 +9,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/pkg/errors"
@@ -37,8 +38,9 @@ var (
 // Kong cluster
 type Client struct {
 	client                  *http.Client
-	rootURL                 string
-	workspace               string
+	defaultRootURL          string
+	workspace               string       // Do not access directly. Use Get/SetWorkspace().
+	workspaceLock           sync.RWMutex // Synchronizes access to workspace.
 	common                  service
 	Consumers               AbstractConsumerService
 	Developers              AbstractDeveloperService
@@ -118,7 +120,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "parsing URL")
 	}
-	kong.rootURL = url.String()
+	kong.defaultRootURL = url.String()
 
 	kong.common.client = kong
 	kong.Consumers = (*ConsumerService)(&kong.common)
@@ -165,32 +167,26 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	return kong, nil
 }
 
-// WithWorkspace return the client with a defined workspace
-func (c *Client) WithWorkspace(workspace string) *Client {
-	c.SetWorkspace(workspace)
-	return c
-}
-
 // SetWorkspace defines a workspace for the client
 func (c *Client) SetWorkspace(workspace string) {
+	c.workspaceLock.Lock()
+	defer c.workspaceLock.Unlock()
 	c.workspace = workspace
 }
 
-//ClearWorkspace clear the workspace
-func (c *Client) ClearWorkspace() {
-	c.workspace = ""
+//GetWorkspace return the workspace
+func (c *Client) GetWorkspace() string {
+	c.workspaceLock.RLock()
+	defer c.workspaceLock.RUnlock()
+	return c.workspace
 }
 
 // baseURL build the base URL from the rootURL and the workspace
-func (c *Client) baseURL() string {
-	if c.hasWorkspace() {
-		return c.rootURL + "/" + c.workspace
+func (c *Client) baseURL(workspace string) string {
+	if len(workspace) > 0 {
+		return c.defaultRootURL + "/" + workspace
 	}
-	return c.rootURL
-}
-
-func (c *Client) hasWorkspace() bool {
-	return len(c.workspace) > 0
+	return c.defaultRootURL
 }
 
 // Do executes a HTTP request and returns a response
@@ -312,17 +308,17 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 // Root returns the response of GET request on root of Admin API (GET / or /kong with a workspace).
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 	endpoint := "/"
-	if c.hasWorkspace() {
+	if len(c.GetWorkspace()) > 0 {
 		endpoint = "/kong"
 	}
 	req, err := c.NewRequest("GET", endpoint, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	var informations map[string]interface{}
-	_, err = c.Do(ctx, req, &informations)
+	var info map[string]interface{}
+	_, err = c.Do(ctx, req, &info)
 	if err != nil {
 		return nil, err
 	}
-	return informations, nil
+	return info, nil
 }
