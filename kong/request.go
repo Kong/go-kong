@@ -53,5 +53,5 @@ func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs inter
 // body is always marshaled into JSON.
 func (c *Client) NewRequest(method, endpoint string, qs interface{},
 	body interface{}) (*http.Request, error) {
-	return c.NewRequestRaw(method, c.baseURL(c.GetWorkspace()), endpoint, qs, body)
+	return c.NewRequestRaw(method, c.baseURL(c.Workspace()), endpoint, qs, body)
 }
