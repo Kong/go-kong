@@ -175,8 +175,8 @@ func (c *Client) SetWorkspace(workspace string) {
 	c.workspace = workspace
 }
 
-//GetWorkspace return the workspace
-func (c *Client) GetWorkspace() string {
+//Workspace return the workspace
+func (c *Client) Workspace() string {
 	c.workspaceLock.RLock()
 	defer c.workspaceLock.RUnlock()
 	return c.workspace
@@ -309,7 +309,7 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 // Root returns the response of GET request on root of Admin API (GET / or /kong with a workspace).
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 	endpoint := "/"
-	if len(c.GetWorkspace()) > 0 {
+	if len(c.Workspace()) > 0 {
 		endpoint = "/kong"
 	}
 	req, err := c.NewRequest("GET", endpoint, nil, nil)
