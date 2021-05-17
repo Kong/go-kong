@@ -167,7 +167,8 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	return kong, nil
 }
 
-// SetWorkspace defines a workspace for the client
+// SetWorkspace sets the Kong Enteprise workspace in the client.
+// Calling this function with an empty string resets the workspace to default workspace.
 func (c *Client) SetWorkspace(workspace string) {
 	c.workspaceLock.Lock()
 	defer c.workspaceLock.Unlock()
