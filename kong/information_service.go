@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// AbstractInformationService handles Kong's informations.
+// AbstractInformationService handles Kong's information.
 type AbstractInformationService interface {
 	// Version returns the Kong version
 	Version(ctx context.Context) (string, error)
@@ -22,16 +22,16 @@ type AbstractInformationService interface {
 	IsPortalEnabled(ctx context.Context) (bool, error)
 }
 
-// InformationService handles Kong's informations.
+// InformationService handles Kong's information.
 type InformationService service
 
 // Version returns the Kong version
 func (s *InformationService) Version(ctx context.Context) (string, error) {
-	informations, err := s.client.Root(ctx)
+	information, err := s.client.Root(ctx)
 	if err != nil {
 		return "", err
 	}
-	return VersionFromInfo(informations), nil
+	return VersionFromInfo(information), nil
 
 }
 
@@ -47,11 +47,11 @@ func (s *InformationService) IsEnterprise(ctx context.Context) (bool, error) {
 
 // Database retrieves the database used by Kong
 func (s *InformationService) Database(ctx context.Context) (string, error) {
-	informations, err := s.client.Root(ctx)
+	information, err := s.client.Root(ctx)
 	if err != nil {
 		return "", err
 	}
-	configuration := configurationFromInfo(informations)
+	configuration := configurationFromInfo(information)
 	database, ok := configuration["database"]
 	if !ok {
 		return "", errors.New("database could not be parsed from kong configuration")
@@ -71,11 +71,11 @@ func (s *InformationService) IsInMemory(ctx context.Context) (bool, error) {
 
 // IsRBACEnabled check if RBAC are enabled
 func (s *InformationService) IsRBACEnabled(ctx context.Context) (bool, error) {
-	informations, err := s.client.Root(ctx)
+	information, err := s.client.Root(ctx)
 	if err != nil {
 		return false, err
 	}
-	configuration := configurationFromInfo(informations)
+	configuration := configurationFromInfo(information)
 	rbac, ok := configuration["rbac"]
 	if !ok {
 		return false, errors.New("rbac could not be parsed from kong configuration")
@@ -85,11 +85,11 @@ func (s *InformationService) IsRBACEnabled(ctx context.Context) (bool, error) {
 
 // IsPortalEnabled check if the portal is enabled
 func (s *InformationService) IsPortalEnabled(ctx context.Context) (bool, error) {
-	informations, err := s.client.Root(ctx)
+	information, err := s.client.Root(ctx)
 	if err != nil {
 		return false, err
 	}
-	configuration := configurationFromInfo(informations)
+	configuration := configurationFromInfo(information)
 	portal, ok := configuration["portal"]
 	if !ok {
 		return false, errors.New("portal could not be parsed from kong configuration")
