@@ -39,7 +39,7 @@ var (
 type Client struct {
 	client                  *http.Client
 	defaultRootURL          string
-	workspace               string       // Do not access directly. Use Get/SetWorkspace().
+	workspace               string       // Do not access directly. Use Workspace()/SetWorkspace().
 	workspaceLock           sync.RWMutex // Synchronizes access to workspace.
 	common                  service
 	Consumers               AbstractConsumerService
