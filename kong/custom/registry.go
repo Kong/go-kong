@@ -1,6 +1,6 @@
 package custom
 
-import "errors"
+import "fmt"
 
 // Registry is a store of EntityCRUD objects
 type Registry interface {
@@ -37,7 +37,7 @@ func NewDefaultRegistry() Registry {
 // of Type is already registered.
 func (r *defaultRegistry) Register(typ Type, def EntityCRUD) error {
 	if _, ok := r.store[typ]; ok {
-		return errors.New("type already registered")
+		return fmt.Errorf("type already registered")
 	}
 	r.store[typ] = def
 	return nil
@@ -56,7 +56,7 @@ func (r *defaultRegistry) Lookup(typ Type) EntityCRUD {
 // before this call.
 func (r *defaultRegistry) Unregister(typ Type) error {
 	if _, ok := r.store[typ]; !ok {
-		return errors.New("type not registered")
+		return fmt.Errorf("type not registered")
 	}
 	delete(r.store, typ)
 	return nil

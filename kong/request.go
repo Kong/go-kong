@@ -3,7 +3,7 @@ package kong
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/google/go-querystring/query"
@@ -17,7 +17,7 @@ func (c *Client) NewRequest(method, endpoint string, qs interface{},
 	body interface{}) (*http.Request, error) {
 
 	if endpoint == "" {
-		return nil, errors.New("endpoint can't be nil")
+		return nil, fmt.Errorf("endpoint can't be nil")
 	}
 	//body to be sent in JSON
 	var buf []byte

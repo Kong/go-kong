@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -49,7 +48,7 @@ func (s *AdminService) Invite(ctx context.Context,
 	admin *Admin) (*Admin, error) {
 
 	if admin == nil {
-		return nil, errors.New("cannot create a nil admin")
+		return nil, fmt.Errorf("cannot create a nil admin")
 	}
 
 	endpoint := "/admins"
@@ -81,7 +80,7 @@ func (s *AdminService) Get(ctx context.Context,
 	nameOrID *string) (*Admin, error) {
 
 	if isEmptyString(nameOrID) {
-		return nil, errors.New("nameOrID cannot be nil for Get operation")
+		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/admins/%v", *nameOrID)
@@ -105,7 +104,7 @@ func (s *AdminService) GenerateRegisterURL(ctx context.Context,
 	nameOrID *string) (*Admin, error) {
 
 	if isEmptyString(nameOrID) {
-		return nil, errors.New("nameOrID cannot be nil for Get operation")
+		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/admins/%v?generate_register_url=true", *nameOrID)
@@ -128,11 +127,11 @@ func (s *AdminService) Update(ctx context.Context,
 	admin *Admin) (*Admin, error) {
 
 	if admin == nil {
-		return nil, errors.New("cannot update a nil Admin")
+		return nil, fmt.Errorf("cannot update a nil Admin")
 	}
 
 	if isEmptyString(admin.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/admins/%v", *admin.ID)
@@ -154,7 +153,7 @@ func (s *AdminService) Delete(ctx context.Context,
 	AdminOrID *string) error {
 
 	if isEmptyString(AdminOrID) {
-		return errors.New("AdminOrID cannot be nil for Delete operation")
+		return fmt.Errorf("AdminOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/admins/%v", *AdminOrID)
@@ -197,17 +196,17 @@ func (s *AdminService) RegisterCredentials(ctx context.Context,
 	admin *Admin) error {
 
 	if admin == nil {
-		return errors.New("cannot register credentials for a nil Admin")
+		return fmt.Errorf("cannot register credentials for a nil Admin")
 	}
 
 	if isEmptyString(admin.Username) {
-		return errors.New("Username cannot be nil for a registration operation")
+		return fmt.Errorf("Username cannot be nil for a registration operation")
 	}
 	if isEmptyString(admin.Email) {
-		return errors.New("Email cannot be nil for a registration operation")
+		return fmt.Errorf("Email cannot be nil for a registration operation")
 	}
 	if isEmptyString(admin.Password) {
-		return errors.New("Password cannot be nil for a registration operation")
+		return fmt.Errorf("Password cannot be nil for a registration operation")
 	}
 
 	req, err := s.client.NewRequest("POST", "/admins/register", nil, admin)
@@ -328,7 +327,7 @@ func (s *AdminService) GetConsumer(ctx context.Context,
 	emailOrID *string) (*Consumer, error) {
 
 	if isEmptyString(emailOrID) {
-		return nil, errors.New("emailOrID cannot be nil for GetConsumer operation")
+		return nil, fmt.Errorf("emailOrID cannot be nil for GetConsumer operation")
 	}
 
 	endpoint := fmt.Sprintf("/admins/%v/consumer", *emailOrID)

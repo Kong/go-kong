@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -31,7 +30,7 @@ func (s *RBACRoleService) Create(ctx context.Context,
 	role *RBACRole) (*RBACRole, error) {
 
 	if role == nil {
-		return nil, errors.New("cannot create a nil role")
+		return nil, fmt.Errorf("cannot create a nil role")
 	}
 
 	endpoint := "/rbac/roles"
@@ -59,7 +58,7 @@ func (s *RBACRoleService) Get(ctx context.Context,
 	nameOrID *string) (*RBACRole, error) {
 
 	if isEmptyString(nameOrID) {
-		return nil, errors.New("nameOrID cannot be nil for Get operation")
+		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/rbac/roles/%v", *nameOrID)
@@ -81,11 +80,11 @@ func (s *RBACRoleService) Update(ctx context.Context,
 	role *RBACRole) (*RBACRole, error) {
 
 	if role == nil {
-		return nil, errors.New("cannot update a nil Role")
+		return nil, fmt.Errorf("cannot update a nil Role")
 	}
 
 	if isEmptyString(role.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/rbac/roles/%v", *role.ID)
@@ -107,7 +106,7 @@ func (s *RBACRoleService) Delete(ctx context.Context,
 	RoleOrID *string) error {
 
 	if isEmptyString(RoleOrID) {
-		return errors.New("RoleOrID cannot be nil for Delete operation")
+		return fmt.Errorf("RoleOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/rbac/roles/%v", *RoleOrID)

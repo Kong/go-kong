@@ -3,6 +3,7 @@ package kong
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -10,8 +11,6 @@ import (
 	"net/url"
 	"os"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/kong/go-kong/kong/custom"
 )
@@ -115,7 +114,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	}
 	url, err := url.ParseRequestURI(rootURL)
 	if err != nil {
-		return nil, errors.Wrap(err, "parsing URL")
+		return nil, fmt.Errorf("parsing URL: %w", err)
 	}
 	kong.baseURL = url.String()
 
@@ -169,7 +168,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request,
 	v interface{}) (*Response, error) {
 	var err error
 	if req == nil {
-		return nil, errors.New("request cannot be nil")
+		return nil, fmt.Errorf("request cannot be nil")
 	}
 	if ctx == nil {
 		ctx = defaultCtx
@@ -185,7 +184,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request,
 	//Make the request
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, errors.Wrap(err, "making HTTP request")
+		return nil, fmt.Errorf("making HTTP request: %w", err)
 	}
 
 	// log the response

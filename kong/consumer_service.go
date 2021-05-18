@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -61,7 +60,7 @@ func (s *ConsumerService) Get(ctx context.Context,
 	usernameOrID *string) (*Consumer, error) {
 
 	if isEmptyString(usernameOrID) {
-		return nil, errors.New("usernameOrID cannot be nil for Get operation")
+		return nil, fmt.Errorf("usernameOrID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/consumers/%v", *usernameOrID)
@@ -83,7 +82,7 @@ func (s *ConsumerService) GetByCustomID(ctx context.Context,
 	customID *string) (*Consumer, error) {
 
 	if isEmptyString(customID) {
-		return nil, errors.New("customID cannot be nil for Get operation")
+		return nil, fmt.Errorf("customID cannot be nil for Get operation")
 	}
 
 	type QS struct {
@@ -117,7 +116,7 @@ func (s *ConsumerService) Update(ctx context.Context,
 	consumer *Consumer) (*Consumer, error) {
 
 	if isEmptyString(consumer.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/consumers/%v", *consumer.ID)
@@ -139,7 +138,7 @@ func (s *ConsumerService) Delete(ctx context.Context,
 	usernameOrID *string) error {
 
 	if isEmptyString(usernameOrID) {
-		return errors.New("usernameOrID cannot be nil for Delete operation")
+		return fmt.Errorf("usernameOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/consumers/%v", *usernameOrID)
