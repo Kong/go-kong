@@ -16,23 +16,22 @@ type Info struct {
 }
 
 // IsEnterprise check if Kong is enterprise edition
-func (s *Info) IsEnterprise(ctx context.Context) bool {
+func (s *Info) IsEnterprise() bool {
 	return strings.Contains(s.Version, "enterprise")
-
 }
 
 // IsInMemory check if Kong is in memory
-func (s *Info) IsInMemory(ctx context.Context) bool {
+func (s *Info) IsInMemory() bool {
 	return "off" == s.Configuration.Database
 }
 
 // IsRBACEnabled check if RBAC are enabled
-func (s *Info) IsRBACEnabled(ctx context.Context) bool {
+func (s *Info) IsRBACEnabled() bool {
 	return "on" == s.Configuration.RBAC
 }
 
 // IsPortalEnabled check if the portal is enabled
-func (s *Info) IsPortalEnabled(ctx context.Context) bool {
+func (s *Info) IsPortalEnabled() bool {
 	return s.Configuration.Portal
 }
 
