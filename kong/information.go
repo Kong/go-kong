@@ -41,7 +41,6 @@ func (c *Client) Info(ctx context.Context) (*Info, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	bytes, err := json.Marshal(information)
 	if err != nil {
 		return nil, err
