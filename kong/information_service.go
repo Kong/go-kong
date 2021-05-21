@@ -14,8 +14,8 @@ type AbstractInfoService interface {
 type InfoService service
 
 // IsInMemory check if Kong is in memory
-func (s *Info) IsInMemory() bool {
-	return "off" == s.Configuration.Database
+func (r *RuntimeConfiguration) IsInMemory() bool {
+	return "off" == r.Database
 }
 
 // IsRBACEnabled check if RBAC are enabled
