@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -58,7 +57,7 @@ func (s *UpstreamService) Get(ctx context.Context,
 	upstreamNameOrID *string) (*Upstream, error) {
 
 	if isEmptyString(upstreamNameOrID) {
-		return nil, errors.New("upstreamNameOrID cannot" +
+		return nil, fmt.Errorf("upstreamNameOrID cannot" +
 			" be nil for Get operation")
 	}
 
@@ -81,7 +80,7 @@ func (s *UpstreamService) Update(ctx context.Context,
 	upstream *Upstream) (*Upstream, error) {
 
 	if isEmptyString(upstream.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/upstreams/%v", *upstream.ID)
@@ -103,7 +102,7 @@ func (s *UpstreamService) Delete(ctx context.Context,
 	upstreamNameOrID *string) error {
 
 	if isEmptyString(upstreamNameOrID) {
-		return errors.New("upstreamNameOrID cannot be nil for Delete operation")
+		return fmt.Errorf("upstreamNameOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/upstreams/%v", *upstreamNameOrID)

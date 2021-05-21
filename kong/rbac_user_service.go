@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -41,7 +40,7 @@ func (s *RBACUserService) Create(ctx context.Context,
 	user *RBACUser) (*RBACUser, error) {
 
 	if user == nil {
-		return nil, errors.New("cannot create a nil user")
+		return nil, fmt.Errorf("cannot create a nil user")
 	}
 
 	endpoint := "/rbac/users"
@@ -69,7 +68,7 @@ func (s *RBACUserService) Get(ctx context.Context,
 	nameOrID *string) (*RBACUser, error) {
 
 	if isEmptyString(nameOrID) {
-		return nil, errors.New("nameOrID cannot be nil for Get operation")
+		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/rbac/users/%v", *nameOrID)
@@ -91,11 +90,11 @@ func (s *RBACUserService) Update(ctx context.Context,
 	user *RBACUser) (*RBACUser, error) {
 
 	if user == nil {
-		return nil, errors.New("cannot update a nil User")
+		return nil, fmt.Errorf("cannot update a nil User")
 	}
 
 	if isEmptyString(user.ID) && isEmptyString(user.Name) {
-		return nil, errors.New("ID and Name cannot both be nil for Update operation")
+		return nil, fmt.Errorf("ID and Name cannot both be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/rbac/users/%v", *user.ID)
@@ -117,7 +116,7 @@ func (s *RBACUserService) Delete(ctx context.Context,
 	userOrID *string) error {
 
 	if isEmptyString(userOrID) {
-		return errors.New("UserOrID cannot be nil for Delete operation")
+		return fmt.Errorf("UserOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/rbac/users/%v", *userOrID)

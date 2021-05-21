@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -41,7 +40,7 @@ type PluginService service
 func (s *PluginService) GetSchema(ctx context.Context,
 	pluginName *string) (map[string]interface{}, error) {
 	if isEmptyString(pluginName) {
-		return nil, errors.New("pluginName cannot be empty")
+		return nil, fmt.Errorf("pluginName cannot be empty")
 	}
 	endpoint := fmt.Sprintf("/plugins/schema/%v", *pluginName)
 	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
@@ -88,7 +87,7 @@ func (s *PluginService) Get(ctx context.Context,
 	usernameOrID *string) (*Plugin, error) {
 
 	if isEmptyString(usernameOrID) {
-		return nil, errors.New("usernameOrID cannot be nil for Get operation")
+		return nil, fmt.Errorf("usernameOrID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/plugins/%v", *usernameOrID)
@@ -110,7 +109,7 @@ func (s *PluginService) Update(ctx context.Context,
 	plugin *Plugin) (*Plugin, error) {
 
 	if isEmptyString(plugin.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/plugins/%v", *plugin.ID)
@@ -132,7 +131,7 @@ func (s *PluginService) Delete(ctx context.Context,
 	usernameOrID *string) error {
 
 	if isEmptyString(usernameOrID) {
-		return errors.New("usernameOrID cannot be nil for Delete operation")
+		return fmt.Errorf("usernameOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/plugins/%v", *usernameOrID)
@@ -224,7 +223,7 @@ func (s *PluginService) ListAll(ctx context.Context) ([]*Plugin, error) {
 func (s *PluginService) ListAllForConsumer(ctx context.Context,
 	consumerIDorName *string) ([]*Plugin, error) {
 	if isEmptyString(consumerIDorName) {
-		return nil, errors.New("consumerIDorName cannot be nil")
+		return nil, fmt.Errorf("consumerIDorName cannot be nil")
 	}
 	return s.listAllByPath(ctx, "/consumers/"+*consumerIDorName+"/plugins")
 }
@@ -233,7 +232,7 @@ func (s *PluginService) ListAllForConsumer(ctx context.Context,
 func (s *PluginService) ListAllForService(ctx context.Context,
 	serviceIDorName *string) ([]*Plugin, error) {
 	if isEmptyString(serviceIDorName) {
-		return nil, errors.New("serviceIDorName cannot be nil")
+		return nil, fmt.Errorf("serviceIDorName cannot be nil")
 	}
 	return s.listAllByPath(ctx, "/services/"+*serviceIDorName+"/plugins")
 }
@@ -242,7 +241,7 @@ func (s *PluginService) ListAllForService(ctx context.Context,
 func (s *PluginService) ListAllForRoute(ctx context.Context,
 	routeID *string) ([]*Plugin, error) {
 	if isEmptyString(routeID) {
-		return nil, errors.New("routeID cannot be nil")
+		return nil, fmt.Errorf("routeID cannot be nil")
 	}
 	return s.listAllByPath(ctx, "/routes/"+*routeID+"/plugins")
 }

@@ -1,7 +1,7 @@
 package custom
 
 import (
-	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -53,7 +53,7 @@ func render(template string, entity Entity) (string, error) {
 		if v := entity.GetRelation(m[1]); v != "" {
 			result = strings.Replace(result, m[0], v, 1)
 		} else {
-			return "", errors.New("cannot substitute '" + m[1] +
+			return "", fmt.Errorf("cannot substitute '" + m[1] +
 				"' in URL: " + template)
 		}
 	}
@@ -67,11 +67,11 @@ func (e EntityCRUDDefinition) renderWithPK(entity Entity) (string, error) {
 	}
 	p, ok := entity.Object()[e.PrimaryKey]
 	if !ok {
-		return "", errors.New("primary key not found in entity")
+		return "", fmt.Errorf("primary key not found in entity")
 	}
 	key, ok := p.(string)
 	if !ok {
-		return "", errors.New("primary key can't be converted to string")
+		return "", fmt.Errorf("primary key can't be converted to string")
 	}
 	return endpoint + "/" + key, nil
 }

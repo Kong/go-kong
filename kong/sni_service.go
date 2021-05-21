@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -59,7 +58,7 @@ func (s *SNIService) Get(ctx context.Context,
 	usernameOrID *string) (*SNI, error) {
 
 	if isEmptyString(usernameOrID) {
-		return nil, errors.New(
+		return nil, fmt.Errorf(
 			"usernameOrID cannot be nil for Get operation")
 	}
 
@@ -81,7 +80,7 @@ func (s *SNIService) Get(ctx context.Context,
 func (s *SNIService) Update(ctx context.Context, sni *SNI) (*SNI, error) {
 
 	if isEmptyString(sni.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/snis/%v", *sni.ID)
@@ -102,7 +101,7 @@ func (s *SNIService) Update(ctx context.Context, sni *SNI) (*SNI, error) {
 func (s *SNIService) Delete(ctx context.Context, usernameOrID *string) error {
 
 	if isEmptyString(usernameOrID) {
-		return errors.New("usernameOrID cannot be nil for Delete operation")
+		return fmt.Errorf("usernameOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/snis/%v", *usernameOrID)
