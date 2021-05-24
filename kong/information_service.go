@@ -23,9 +23,9 @@ func (r *RuntimeConfiguration) IsRBACEnabled() bool {
 	return "on" == r.RBAC
 }
 
-// Convert convert a object to another through json marshalling
+// convert convert an object to another through json marshalling
 // unmarshalling
-func Convert(from, to interface{}) error {
+func convert(from, to interface{}) error {
 	bytes, err := json.Marshal(from)
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ func (s *InfoService) Get(ctx context.Context) (*Info, error) {
 		return nil, err
 	}
 	var info Info
-	err = Convert(information, &info)
+	err = convert(information, &info)
 	if err != nil {
 		return nil, err
 	}
