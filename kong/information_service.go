@@ -7,7 +7,7 @@ import (
 
 // AbstractInfoService handles Kong's Information.
 type AbstractInfoService interface {
-	// Get retrieves the information concerning Kong
+	// Get retrieves the general runtime information about the Kong gateway.
 	Get(ctx context.Context) (*Info, error)
 }
 
