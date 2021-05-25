@@ -7,6 +7,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestInfoService(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	info, err := client.Info.Get(defaultCtx)
+	assert.Nil(err)
+	assert.NotNil(info)
+	assert.NotNil(info.Version)
+	assert.NotNil(info.Configuration)
+	assert.NotNil(info.Configuration.Database)
+}
+
 func TestConvert(T *testing.T) {
 	assert := assert.New(T)
 	information := map[string]interface{}{
