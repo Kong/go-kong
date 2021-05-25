@@ -44,4 +44,6 @@ func TestConvert(T *testing.T) {
 	err := convert(information, &actual)
 	assert.NoError(err)
 	assert.True(reflect.DeepEqual(expected, &actual))
+	assert.False(actual.Configuration.IsInMemory())
+	assert.True(actual.Configuration.IsRBACEnabled())
 }
