@@ -40,8 +40,7 @@ func (s *InfoService) Get(ctx context.Context) (*Info, error) {
 		return nil, err
 	}
 	var info Info
-	err = convert(information, &info)
-	if err != nil {
+	if err := convert(information, &info); err != nil {
 		return nil, err
 	}
 	return &info, nil
