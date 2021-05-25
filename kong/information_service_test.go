@@ -27,6 +27,6 @@ func TestConvert(T *testing.T) {
 	}
 	var actual Info
 	err := convert(information, &actual)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.True(reflect.DeepEqual(expected, &actual))
 }
