@@ -183,7 +183,7 @@ func (c *Client) Workspace() string {
 }
 
 // baseURL build the base URL from the rootURL and the workspace
-func (c *Client) baseURL(workspace string) string {
+func (c *Client) workspacedBaseURL(workspace string) string {
 	if len(workspace) > 0 {
 		return c.defaultRootURL + "/" + workspace
 	}
@@ -313,7 +313,7 @@ func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 	if len(ws) > 0 {
 		endpoint = "/kong"
 	}
-	req, err := c.NewRequestRaw("GET", c.baseURL(ws), endpoint, nil, nil)
+	req, err := c.NewRequestRaw("GET", c.workspacedBaseURL(ws), endpoint, nil, nil)
 	if err != nil {
 		return nil, err
 	}
