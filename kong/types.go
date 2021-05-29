@@ -310,7 +310,7 @@ type RBACUser struct {
 	UserTokenIdent *string `json:"user_token_ident,omitempty" yaml:"user_token_ident,omitempty"`
 }
 
-// Workspace Entity represents a WorkspaceEntity in Kong
+// WorkspaceEntity represents a WorkspaceEntity in Kong
 // +k8s:deepcopy-gen=true
 type WorkspaceEntity struct {
 	EntityID         *string `json:"entity_id,omitempty" yaml:"entity_id,omitempty"`
@@ -409,7 +409,7 @@ func (e *RBACEntityPermission) MarshalJSON() ([]byte, error) {
 	})
 }
 
-// PermissionsList is a list of permissions, both endpoint and entity, associated with a Role.
+// RBACPermissionsList is a list of permissions, both endpoint and entity, associated with a Role.
 type RBACPermissionsList struct {
 	Endpoints map[string]interface{} `json:"endpoints,omitempty" yaml:"endpoints,omitempty"`
 	Entities  map[string]interface{} `json:"entities,omitempty" yaml:"entities,omitempty"`
