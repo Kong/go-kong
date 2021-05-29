@@ -123,6 +123,7 @@ func TestUpstreamWithPassiveUnHealthyInterval(T *testing.T) {
 	assert.NotNil(err)
 	assert.Nil(createdUpstream)
 }
+
 func TestUpstreamWithPassiveHealthy(T *testing.T) {
 	assert := assert.New(T)
 
