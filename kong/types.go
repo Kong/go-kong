@@ -440,14 +440,12 @@ type DeveloperRole struct {
 }
 
 // Info represents the information concerning Kong.
-// +k8s:deepcopy-gen=true
 type Info struct {
 	Version       string                `json:"version,omitempty" yaml:"version,omitempty"`
 	Configuration *RuntimeConfiguration `json:"configuration,omitempty" yaml:"configuration,omitempty"`
 }
 
 // RuntimeConfiguration represents the runtime configuration of Kong.
-// +k8s:deepcopy-gen=true
 type RuntimeConfiguration struct {
 	Database string `json:"database,omitempty" yaml:"database,omitempty"`
 	Portal   bool   `json:"portal,omitempty" yaml:"portal,omitempty"`
