@@ -2,6 +2,7 @@ package kong
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -437,4 +438,119 @@ type DeveloperRole struct {
 	CreatedAt *int    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string `json:"id,omitempty" yaml:"id,omitempty"`
 	Name      *string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (s1 *Service) FriendlyName() string {
+	if s1.Name != nil {
+		return *s1.Name
+	}
+	return *s1.ID
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (r *Route) FriendlyName() string {
+	if r.Name != nil {
+		return *r.Name
+	}
+	if r.ID != nil {
+		return *r.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (u *Upstream) FriendlyName() string {
+	if u.Name != nil {
+		return *u.Name
+	}
+	if u.ID != nil {
+		return *u.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (t *Target) FriendlyName() string {
+	if t.Target != nil {
+		return *t.Target
+	}
+	if t.ID != nil {
+		return *t.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (c *Certificate) FriendlyName() string {
+	if c.ID != nil {
+		return *c.ID
+	}
+	if c.Cert != nil {
+		return *c.Cert
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (s *SNI) FriendlyName() string {
+	if s.Name != nil {
+		return *s.Name
+	}
+	if s.ID != nil {
+		return *s.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (p *Plugin) FriendlyName() string {
+	if p.Name != nil {
+		return *p.Name
+	}
+	if p.ID != nil {
+		return *p.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (c *Consumer) FriendlyName() string {
+	if c.Username != nil {
+		return *c.Username
+	}
+	if c.ID != nil {
+		return *c.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (c *CACertificate) FriendlyName() string {
+	if c.ID != nil {
+		return *c.ID
+	}
+	if c.Cert != nil {
+		return *c.Cert
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (r *RBACRole) FriendlyName() string {
+	if r.Name != nil {
+		return *r.Name
+	}
+	if r.ID != nil {
+		return *r.ID
+	}
+	return ""
+}
+
+// FriendlyName returns a composite Name base on Role , workspace, and endpoint
+func (e *RBACEndpointPermission) FriendlyName() string {
+	if e.Role != nil && e.Workspace != nil && e.Endpoint != nil {
+		return fmt.Sprintf("%s-%s-%s", e.Role.FriendlyName(), *e.Workspace, *e.Endpoint)
+	}
+	return ""
 }
