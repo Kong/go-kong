@@ -57,6 +57,7 @@ func TestDeveloperRoleService(T *testing.T) {
 
 	assert.NoError(testWs.Reset())
 }
+
 func TestDeveloperRoleServiceList(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)

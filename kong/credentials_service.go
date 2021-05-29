@@ -25,17 +25,15 @@ type abstractCredentialService interface {
 // credentialService handles credentials in Kong.
 type credentialService service
 
-var (
-	credPath = map[string]string{
-		"key-auth":   "key-auth",
-		"basic-auth": "basic-auth",
-		"hmac-auth":  "hmac-auth",
-		"jwt-auth":   "jwt",
-		"acl":        "acls",
-		"oauth2":     "oauth2",
-		"mtls-auth":  "mtls-auth",
-	}
-)
+var credPath = map[string]string{
+	"key-auth":   "key-auth",
+	"basic-auth": "basic-auth",
+	"hmac-auth":  "hmac-auth",
+	"jwt-auth":   "jwt",
+	"acl":        "acls",
+	"oauth2":     "oauth2",
+	"mtls-auth":  "mtls-auth",
+}
 
 // Create creates a credential in Kong of type credType.
 // If an ID is specified in the credential, it will be used to

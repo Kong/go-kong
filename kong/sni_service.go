@@ -32,7 +32,6 @@ type SNIService service
 // create a sni in Kong, otherwise an ID
 // is auto-generated.
 func (s *SNIService) Create(ctx context.Context, sni *SNI) (*SNI, error) {
-
 	queryPath := "/snis"
 	method := "POST"
 	if sni.ID != nil {
@@ -40,7 +39,6 @@ func (s *SNIService) Create(ctx context.Context, sni *SNI) (*SNI, error) {
 		method = "PUT"
 	}
 	req, err := s.client.NewRequest(method, queryPath, nil, sni)
-
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +76,6 @@ func (s *SNIService) Get(ctx context.Context,
 
 // Update updates a SNI in Kong
 func (s *SNIService) Update(ctx context.Context, sni *SNI) (*SNI, error) {
-
 	if isEmptyString(sni.ID) {
 		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
@@ -99,7 +96,6 @@ func (s *SNIService) Update(ctx context.Context, sni *SNI) (*SNI, error) {
 
 // Delete deletes a SNI in Kong
 func (s *SNIService) Delete(ctx context.Context, usernameOrID *string) error {
-
 	if isEmptyString(usernameOrID) {
 		return fmt.Errorf("usernameOrID cannot be nil for Delete operation")
 	}

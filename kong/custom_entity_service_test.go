@@ -69,10 +69,14 @@ func TestCustomEntityService(T *testing.T) {
 	assert.Nil(err)
 	assert.Equal(2, len(keyAuths))
 
-	expectedKeys := []string{e1.Object()["key"].(string),
-		e2.Object()["key"].(string)}
-	actualKeys := []string{keyAuths[0].Object()["key"].(string),
-		keyAuths[1].Object()["key"].(string)}
+	expectedKeys := []string{
+		e1.Object()["key"].(string),
+		e2.Object()["key"].(string),
+	}
+	actualKeys := []string{
+		keyAuths[0].Object()["key"].(string),
+		keyAuths[1].Object()["key"].(string),
+	}
 	sort.Strings(expectedKeys)
 	sort.Strings(actualKeys)
 	assert.Equal(expectedKeys, actualKeys)

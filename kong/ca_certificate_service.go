@@ -39,7 +39,6 @@ func (s *CACertificateService) Create(ctx context.Context,
 		method = "PUT"
 	}
 	req, err := s.client.NewRequest(method, queryPath, nil, certificate)
-
 	if err != nil {
 		return nil, err
 	}

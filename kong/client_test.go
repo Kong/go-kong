@@ -108,7 +108,6 @@ func runWhenKong(t *testing.T, semverRange string) {
 	if !r(currentVersion) {
 		t.Skip()
 	}
-
 }
 
 type requiredFeatures struct {
@@ -150,7 +149,6 @@ func runWhenEnterprise(t *testing.T, semverRange string, required requiredFeatur
 	}
 
 	runWhenKong(t, semverRange)
-
 }
 
 func TestRunWhenEnterprise(T *testing.T) {

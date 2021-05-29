@@ -42,7 +42,6 @@ func (s *ConsumerService) Create(ctx context.Context,
 		method = "PUT"
 	}
 	req, err := s.client.NewRequest(method, queryPath, nil, consumer)
-
 	if err != nil {
 		return nil, err
 	}

@@ -43,6 +43,7 @@ func StringSlice(elements ...string) []*string {
 	}
 	return res
 }
+
 func stringArrayToString(arr []*string) string {
 	if arr == nil {
 		return "nil"
@@ -118,7 +119,7 @@ func ParseSemanticVersion(v string) (semver.Version, error) {
 	re := regexp.MustCompile(`(\d+\.\d+)(?:[\.-](\d+))?(?:\-?(.+)$|$)`)
 	m := re.FindStringSubmatch(v)
 	if len(m) != versionParts {
-		return semver.Version{}, fmt.Errorf("Unknown Kong version : '%v'", v)
+		return semver.Version{}, fmt.Errorf("unknown Kong version : '%v'", v)
 	}
 	if m[2] == "" {
 		m[2] = "0"
@@ -139,5 +140,4 @@ func VersionFromInfo(info map[string]interface{}) string {
 		return ""
 	}
 	return version.(string)
-
 }
