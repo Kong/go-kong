@@ -93,7 +93,7 @@ func requestWithHeaders(req *http.Request, headers http.Header) *http.Request {
 	return newRequest
 }
 
-// RoundTripperWithHTTPHeaders returns a client which injects headers
+// HTTPClientWithHeaders returns a client which injects headers
 // before sending any request.
 func HTTPClientWithHeaders(client *http.Client,
 	headers http.Header) *http.Client {
