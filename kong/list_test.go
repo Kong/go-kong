@@ -6,7 +6,6 @@ import (
 )
 
 func TestConstructQueryString(t *testing.T) {
-
 }
 
 func Test_constructQueryString(t *testing.T) {
@@ -42,8 +41,10 @@ func Test_constructQueryString(t *testing.T) {
 		},
 		{
 			"Multiple AND tags",
-			args{opt: &ListOpt{Tags: StringSlice("tag1", "tag2", "tag3"),
-				MatchAllTags: true}},
+			args{opt: &ListOpt{
+				Tags:         StringSlice("tag1", "tag2", "tag3"),
+				MatchAllTags: true,
+			}},
 			qs{Tags: "tag1,tag2,tag3"},
 		},
 	}

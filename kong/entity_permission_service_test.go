@@ -75,7 +75,6 @@ func TestRBACEntityPermissionservice(T *testing.T) {
 	assert.Nil(err)
 	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
-
 }
 
 func TestRBACEntityPermissionserviceList(T *testing.T) {

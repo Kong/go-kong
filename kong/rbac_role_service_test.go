@@ -51,6 +51,7 @@ func TestRBACRoleService(T *testing.T) {
 	err = client.RBACRoles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 }
+
 func TestRBACRoleServiceList(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)

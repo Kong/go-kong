@@ -8,7 +8,6 @@ import (
 )
 
 func TestIsNotFoundErr(T *testing.T) {
-
 	assert := assert.New(T)
 	var e error = NewAPIError(404, "")
 	assert.True(IsNotFoundErr(e))
@@ -19,7 +18,6 @@ func TestIsNotFoundErr(T *testing.T) {
 }
 
 func TestIsNotFoundErrE2E(T *testing.T) {
-
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
