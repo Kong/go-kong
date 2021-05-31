@@ -441,11 +441,14 @@ type DeveloperRole struct {
 }
 
 // FriendlyName returns the endpoint key name or ID.
-func (s1 *Service) FriendlyName() string {
-	if s1.Name != nil {
-		return *s1.Name
+func (s *Service) FriendlyName() string {
+	if s.Name != nil {
+		return *s.Name
 	}
-	return *s1.ID
+	if s.ID != nil {
+		return *s.ID
+	}
+	return ""
 }
 
 // FriendlyName returns the endpoint key name or ID.
