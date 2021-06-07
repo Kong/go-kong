@@ -10,6 +10,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/kong/go-kong/kong/custom"
@@ -36,7 +37,9 @@ var (
 // Kong cluster
 type Client struct {
 	client                  *http.Client
-	baseURL                 string
+	defaultRootURL          string
+	workspace               string       // Do not access directly. Use Workspace()/SetWorkspace().
+	workspaceLock           sync.RWMutex // Synchronizes access to workspace.
 	common                  service
 	Consumers               AbstractConsumerService
 	Developers              AbstractDeveloperService
@@ -116,7 +119,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parsing URL: %w", err)
 	}
-	kong.baseURL = url.String()
+	kong.defaultRootURL = url.String()
 
 	kong.common.client = kong
 	kong.Consumers = (*ConsumerService)(&kong.common)
@@ -161,6 +164,29 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	}
 	kong.logger = os.Stderr
 	return kong, nil
+}
+
+// SetWorkspace sets the Kong Enteprise workspace in the client.
+// Calling this function with an empty string resets the workspace to default workspace.
+func (c *Client) SetWorkspace(workspace string) {
+	c.workspaceLock.Lock()
+	defer c.workspaceLock.Unlock()
+	c.workspace = workspace
+}
+
+//Workspace return the workspace
+func (c *Client) Workspace() string {
+	c.workspaceLock.RLock()
+	defer c.workspaceLock.RUnlock()
+	return c.workspace
+}
+
+// baseURL build the base URL from the rootURL and the workspace
+func (c *Client) workspacedBaseURL(workspace string) string {
+	if len(workspace) > 0 {
+		return c.defaultRootURL + "/" + workspace
+	}
+	return c.defaultRootURL
 }
 
 // Do executes a HTTP request and returns a response
@@ -279,18 +305,21 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 	return &s, nil
 }
 
-// Root returns the response of GET request on root of
-// Admin API (GET /).
+// Root returns the response of GET request on root of Admin API (GET / or /kong with a workspace).
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
-	req, err := c.NewRequest("GET", "/", nil, nil)
+	endpoint := "/"
+	ws := c.Workspace()
+	if len(ws) > 0 {
+		endpoint = "/kong"
+	}
+	req, err := c.NewRequestRaw("GET", c.workspacedBaseURL(ws), endpoint, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-
-	var root map[string]interface{}
-	_, err = c.Do(ctx, req, &root)
+	var info map[string]interface{}
+	_, err = c.Do(ctx, req, &info)
 	if err != nil {
 		return nil, err
 	}
-	return root, nil
+	return info, nil
 }
