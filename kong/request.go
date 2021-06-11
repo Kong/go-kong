@@ -9,13 +9,13 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-//NewRequestRaw creates a request based on the inputs.
+// NewRequestRaw creates a request based on the inputs.
 func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs interface{},
 	body interface{}) (*http.Request, error) {
 	if endpoint == "" {
 		return nil, fmt.Errorf("endpoint can't be nil")
 	}
-	//body to be sent in JSON
+	// body to be sent in JSON
 	var buf []byte
 	if body != nil {
 		var err error
@@ -25,7 +25,7 @@ func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs inter
 		}
 	}
 
-	//Create a new request
+	// Create a new request
 	req, err := http.NewRequest(method, baseURL+endpoint, bytes.NewBuffer(buf))
 	if err != nil {
 		return nil, err

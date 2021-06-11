@@ -68,7 +68,6 @@ func (s *WorkspaceService) Create(ctx context.Context,
 		method = "PUT"
 	}
 	req, err := s.client.NewRequest(method, endpoint, nil, workspace)
-
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +174,6 @@ func (s *WorkspaceService) List(ctx context.Context,
 
 // ListAll fetches all workspaces in Kong.
 func (s *WorkspaceService) ListAll(ctx context.Context) ([]*Workspace, error) {
-
 	var workspaces, data []*Workspace
 	var err error
 	opt := &ListOpt{Size: pageSize}
@@ -210,7 +208,6 @@ func (s *WorkspaceService) AddEntities(ctx context.Context,
 	entities.Entities = entityIds
 
 	req, err := s.client.NewRequest("POST", endpoint, nil, entities)
-
 	if err != nil {
 		return nil, err
 	}
@@ -242,7 +239,6 @@ func (s *WorkspaceService) DeleteEntities(ctx context.Context,
 	entities.Entities = entityIds
 
 	req, err := s.client.NewRequest("DELETE", endpoint, nil, entities)
-
 	if err != nil {
 		return err
 	}

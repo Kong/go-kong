@@ -37,7 +37,6 @@ func (s *RBACEntityPermissionService) Create(ctx context.Context,
 	method := "POST"
 	entity := fmt.Sprintf("/rbac/roles/%v/entities", *ep.Role.ID)
 	req, err := s.client.NewRequest(method, entity, nil, ep)
-
 	if err != nil {
 		return nil, err
 	}

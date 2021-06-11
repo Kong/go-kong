@@ -42,7 +42,6 @@ func (s *DeveloperService) Create(ctx context.Context,
 	queryPath := "/developers"
 	method := "POST"
 	req, err := s.client.NewRequest(method, queryPath, nil, developer)
-
 	if err != nil {
 		return nil, err
 	}

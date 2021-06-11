@@ -155,6 +155,7 @@ func TestCreateInRoute(T *testing.T) {
 	assert.Nil(client.Routes.Delete(defaultCtx, createdRoute.ID))
 	assert.Nil(client.Services.Delete(defaultCtx, createdService.ID))
 }
+
 func TestRouteListEndpoint(T *testing.T) {
 	assert := assert.New(T)
 

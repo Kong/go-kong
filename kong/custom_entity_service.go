@@ -45,7 +45,6 @@ func (s *CustomEntityService) Get(ctx context.Context,
 	}
 
 	req, err := s.client.NewRequest("GET", queryPath, nil, nil)
-
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +90,6 @@ func (s *CustomEntityService) Create(ctx context.Context,
 		o = make(map[string]interface{})
 	}
 	req, err := s.client.NewRequest(method, queryPath, nil, o)
-
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +124,6 @@ func (s *CustomEntityService) Update(ctx context.Context,
 		o = make(map[string]interface{})
 	}
 	req, err := s.client.NewRequest("PATCH", queryPath, nil, o)
-
 	if err != nil {
 		return nil, err
 	}
