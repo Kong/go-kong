@@ -172,7 +172,7 @@ func (c *Client) SetWorkspace(workspace string) {
 	c.workspace = workspace
 }
 
-//Workspace return the workspace
+// Workspace return the workspace
 func (c *Client) Workspace() string {
 	c.workspaceLock.RLock()
 	defer c.workspaceLock.RUnlock()

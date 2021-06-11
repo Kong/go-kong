@@ -9,7 +9,7 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-//NewRequestRaw creates a request based on the inputs.
+// NewRequestRaw creates a request based on the inputs.
 func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs interface{},
 	body interface{}) (*http.Request, error) {
 	if endpoint == "" {
