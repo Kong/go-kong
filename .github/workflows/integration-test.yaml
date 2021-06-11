@@ -43,7 +43,7 @@ jobs:
       - name: Run tests
         run: make test-coverage
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@v1.5.0
+        uses: codecov/codecov-action@v1.5.2
         with:
           name: codecov-${{ matrix.kong_version }}
           flags: ${{ matrix.kong_version }},integration,community
