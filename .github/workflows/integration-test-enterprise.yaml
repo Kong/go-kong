@@ -34,6 +34,12 @@ jobs:
           go-version: '^1.16'
       - name: Checkout repository
         uses: actions/checkout@v2.3.4
+      - uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
       - name: Setup Postgres
         run: |
           psql -c 'create database kong;' -U postgres -h 127.0.0.1 -p 5432
