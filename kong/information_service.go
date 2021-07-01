@@ -15,12 +15,12 @@ type InfoService service
 
 // IsInMemory check if Kong is in memory
 func (r *RuntimeConfiguration) IsInMemory() bool {
-	return "off" == r.Database
+	return r.Database == "off"
 }
 
 // IsRBACEnabled check if RBAC are enabled
 func (r *RuntimeConfiguration) IsRBACEnabled() bool {
-	return "on" == r.RBAC
+	return r.RBAC == "on"
 }
 
 // convert convert an object to another through json marshalling
