@@ -39,7 +39,6 @@ func (s *UpstreamService) Create(ctx context.Context,
 		method = "PUT"
 	}
 	req, err := s.client.NewRequest(method, queryPath, nil, upstream)
-
 	if err != nil {
 		return nil, err
 	}

@@ -38,7 +38,6 @@ func (s *RBACEndpointPermissionService) Create(ctx context.Context,
 	method := "POST"
 	endpoint := fmt.Sprintf("/rbac/roles/%v/endpoints", *ep.Role.ID)
 	req, err := s.client.NewRequest(method, endpoint, nil, ep)
-
 	if err != nil {
 		return nil, err
 	}

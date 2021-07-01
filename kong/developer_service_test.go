@@ -17,9 +17,11 @@ func TestDevelopersService(T *testing.T) {
 
 	testWs, err := NewTestWorkspace(client, "default")
 	assert.Nil(err)
-	assert.NoError(testWs.UpdateConfig(map[string]interface{}{"portal_auth": "basic-auth",
+	assert.NoError(testWs.UpdateConfig(map[string]interface{}{
+		"portal_auth":         "basic-auth",
 		"portal_session_conf": map[string]interface{}{"secret": "garbage"},
-		"portal":              true}))
+		"portal":              true,
+	}))
 
 	developer := &Developer{
 		Meta:     String("{\"full_name\": \"Foo BAR\"}"),
@@ -85,9 +87,11 @@ func TestDeveloperListEndpoint(T *testing.T) {
 
 	testWs, err := NewTestWorkspace(client, "default")
 	assert.Nil(err)
-	assert.NoError(testWs.UpdateConfig(map[string]interface{}{"portal_auth": "basic-auth",
+	assert.NoError(testWs.UpdateConfig(map[string]interface{}{
+		"portal_auth":         "basic-auth",
 		"portal_session_conf": map[string]interface{}{"secret": "garbage"},
-		"portal":              true}))
+		"portal":              true,
+	}))
 
 	// fixtures
 	developers := []*Developer{

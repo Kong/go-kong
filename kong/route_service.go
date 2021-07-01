@@ -123,7 +123,6 @@ func (s *RouteService) Update(ctx context.Context,
 
 // Delete deletes a Route in Kong
 func (s *RouteService) Delete(ctx context.Context, nameOrID *string) error {
-
 	if isEmptyString(nameOrID) {
 		return fmt.Errorf("nameOrID cannot be nil for Delete operation")
 	}

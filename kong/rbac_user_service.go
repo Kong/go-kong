@@ -50,7 +50,6 @@ func (s *RBACUserService) Create(ctx context.Context,
 		method = "PUT"
 	}
 	req, err := s.client.NewRequest(method, endpoint, nil, user)
-
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +156,6 @@ func (s *RBACUserService) List(ctx context.Context,
 
 // ListAll fetches all users in Kong.
 func (s *RBACUserService) ListAll(ctx context.Context) ([]*RBACUser, error) {
-
 	var users, data []*RBACUser
 	var err error
 	opt := &ListOpt{Size: pageSize}

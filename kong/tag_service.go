@@ -6,7 +6,7 @@ import (
 
 // AbstractTagService handles Tags in Kong.
 type AbstractTagService interface {
-	//Exists checks if the tags exists
+	// Exists checks if the tags exists
 	Exists(ctx context.Context) (bool, error)
 }
 

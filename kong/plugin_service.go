@@ -29,14 +29,14 @@ type AbstractPluginService interface {
 	ListAllForRoute(ctx context.Context, routeID *string) ([]*Plugin, error)
 	// Validate validates a Plugin against its schema
 	Validate(ctx context.Context, plugin *Plugin) (bool, error)
-	//GetSchema retrieves the schema of a plugin
+	// GetSchema retrieves the schema of a plugin
 	GetSchema(ctx context.Context, pluginName *string) (map[string]interface{}, error)
 }
 
 // PluginService handles Plugins in Kong.
 type PluginService service
 
-//GetSchema retrieves the schema of a plugin
+// GetSchema retrieves the schema of a plugin
 func (s *PluginService) GetSchema(ctx context.Context,
 	pluginName *string) (map[string]interface{}, error) {
 	if isEmptyString(pluginName) {
@@ -69,7 +69,6 @@ func (s *PluginService) Create(ctx context.Context,
 		method = "PUT"
 	}
 	req, err := s.client.NewRequest(method, queryPath, nil, plugin)
-
 	if err != nil {
 		return nil, err
 	}

@@ -129,7 +129,6 @@ func (s *Svcservice) Update(ctx context.Context,
 
 // Delete deletes an Service in Kong
 func (s *Svcservice) Delete(ctx context.Context, nameOrID *string) error {
-
 	if isEmptyString(nameOrID) {
 		return fmt.Errorf("nameOrID cannot be nil for Delete operation")
 	}

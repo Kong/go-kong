@@ -311,7 +311,7 @@ type RBACUser struct {
 	UserTokenIdent *string `json:"user_token_ident,omitempty" yaml:"user_token_ident,omitempty"`
 }
 
-// Workspace Entity represents a WorkspaceEntity in Kong
+// WorkspaceEntity represents a WorkspaceEntity in Kong
 // +k8s:deepcopy-gen=true
 type WorkspaceEntity struct {
 	EntityID         *string `json:"entity_id,omitempty" yaml:"entity_id,omitempty"`
@@ -410,7 +410,7 @@ func (e *RBACEntityPermission) MarshalJSON() ([]byte, error) {
 	})
 }
 
-// PermissionsList is a list of permissions, both endpoint and entity, associated with a Role.
+// RBACPermissionsList is a list of permissions, both endpoint and entity, associated with a Role.
 type RBACPermissionsList struct {
 	Endpoints map[string]interface{} `json:"endpoints,omitempty" yaml:"endpoints,omitempty"`
 	Entities  map[string]interface{} `json:"entities,omitempty" yaml:"entities,omitempty"`
@@ -439,6 +439,7 @@ type DeveloperRole struct {
 	ID        *string `json:"id,omitempty" yaml:"id,omitempty"`
 	Name      *string `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
 
 // FriendlyName returns the endpoint key name or ID.
 func (s *Service) FriendlyName() string {
@@ -556,4 +557,16 @@ func (e *RBACEndpointPermission) FriendlyName() string {
 		return fmt.Sprintf("%s-%s-%s", e.Role.FriendlyName(), *e.Workspace, *e.Endpoint)
 	}
 	return ""
+}
+// Info represents the information concerning Kong.
+type Info struct {
+	Version       string                `json:"version,omitempty" yaml:"version,omitempty"`
+	Configuration *RuntimeConfiguration `json:"configuration,omitempty" yaml:"configuration,omitempty"`
+}
+
+// RuntimeConfiguration represents the runtime configuration of Kong.
+type RuntimeConfiguration struct {
+	Database string `json:"database,omitempty" yaml:"database,omitempty"`
+	Portal   bool   `json:"portal,omitempty" yaml:"portal,omitempty"`
+	RBAC     string `json:"rbac,omitempty" yaml:"rbac,omitempty"`
 }
