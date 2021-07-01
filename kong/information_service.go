@@ -33,7 +33,7 @@ func convert(from, to interface{}) error {
 	return json.Unmarshal(bytes, to)
 }
 
-// Get retrieves the information concerning Kong
+// Get retrieves the high-level metadata of a Kong instance.
 func (s *InfoService) Get(ctx context.Context) (*Info, error) {
 	information, err := s.client.Root(ctx)
 	if err != nil {
