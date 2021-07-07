@@ -24,6 +24,24 @@
 - [0.2.0](#020---20181219)
 - [0.1.0](#010---20181201)
 
+## [v0.20.0] - 2021/07/07
+
+### Added
+
+- FriendlyName is now defined for entities based on deck types.
+  [#68](https://github.com/Kong/go-kong/pull/68)
+- Information Service is now present in the top of the Root endpoint for Kong.
+  [#65](https://github.com/Kong/go-kong/pull/65)
+- Client now properly handles Kong workspaces.
+  [#62](https://github.com/Kong/go-kong/pull/62)
+
+### Changed
+
+- Internally wrapped errors now use the standard Go library instead of a 3rd party
+  wrapping lib and consequently several string versions of errors have changed.
+  [#66](https://github.com/Kong/go-kong/pull/66)
+- Various improvements to repository CI: caching go modules, updating codegen, e.t.c.
+
 ## [v0.19.0] - 2021/05/05
 
 ### Added
