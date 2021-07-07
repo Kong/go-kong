@@ -30,9 +30,9 @@
 
 - FriendlyName is now defined for entities based on deck types.
   [#68](https://github.com/Kong/go-kong/pull/68)
-- Information Service is now present in the top of the Root endpoint for Kong.
+- Added Info service for interacting with information exposed by the admin API root endpoint.
   [#65](https://github.com/Kong/go-kong/pull/65)
-- Client now properly handles Kong workspaces.
+- Implemented client-level support for Kong workspaces.
   [#62](https://github.com/Kong/go-kong/pull/62)
 
 ### Changed
