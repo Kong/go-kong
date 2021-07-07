@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.20.0](#v0200---202100707)
 - [v0.19.0](#v0190---20210514)
 - [v0.18.0](#v0180---20210505)
 - [v0.17.0](#v0170---20210405)
@@ -23,6 +24,24 @@
 - [0.3.0](#030---20181219)
 - [0.2.0](#020---20181219)
 - [0.1.0](#010---20181201)
+
+## [v0.20.0] - 2021/07/07
+
+### Added
+
+- FriendlyName is now defined for entities based on deck types.
+  [#68](https://github.com/Kong/go-kong/pull/68)
+- Added Info service for interacting with information exposed by the admin API root endpoint.
+  [#65](https://github.com/Kong/go-kong/pull/65)
+- Implemented client-level support for Kong workspaces.
+  [#62](https://github.com/Kong/go-kong/pull/62)
+
+### Changed
+
+- Internally wrapped errors now use the standard Go library instead of a 3rd party
+  wrapping lib and consequently several string versions of errors have changed.
+  [#66](https://github.com/Kong/go-kong/pull/66)
+- Various improvements to repository CI: caching go modules, updating codegen, e.t.c.
 
 ## [v0.19.0] - 2021/05/05
 
@@ -342,6 +361,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.20.0]: https://github.com/Kong/go-kong/compare/v0.19.0...v0.20.0
 [v0.19.0]: https://github.com/Kong/go-kong/compare/v0.18.0...v0.19.0
 [v0.18.0]: https://github.com/Kong/go-kong/compare/v0.17.0...v0.18.0
 [v0.17.0]: https://github.com/Kong/go-kong/compare/v0.16.0...v0.17.0
