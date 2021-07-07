@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.20.0](#v0200---202100707)
 - [v0.19.0](#v0190---20210514)
 - [v0.18.0](#v0180---20210505)
 - [v0.17.0](#v0170---20210405)
@@ -360,6 +361,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.20.0]: https://github.com/Kong/go-kong/compare/v0.19.0...v0.20.0
 [v0.19.0]: https://github.com/Kong/go-kong/compare/v0.18.0...v0.19.0
 [v0.18.0]: https://github.com/Kong/go-kong/compare/v0.17.0...v0.18.0
 [v0.17.0]: https://github.com/Kong/go-kong/compare/v0.16.0...v0.17.0
