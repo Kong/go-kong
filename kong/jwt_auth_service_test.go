@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -58,7 +58,7 @@ func TestJWTCreateWithID(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	jwt := &JWTAuth{
 		ID:     String(uuid),
 		Key:    String("my-key"),
@@ -93,7 +93,7 @@ func TestJWTGet(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	jwt := &JWTAuth{
 		ID:  String(uuid),
 		Key: String("my-key"),
@@ -140,7 +140,7 @@ func TestJWTUpdate(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	jwt := &JWTAuth{
 		ID:  String(uuid),
 		Key: String("my-key"),
@@ -181,7 +181,7 @@ func TestJWTDelete(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	jwt := &JWTAuth{
 		ID:  String(uuid),
 		Key: String("my-key"),

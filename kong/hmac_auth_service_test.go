@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -58,7 +58,7 @@ func TestHMACAuthCreateWithID(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	hmacAuth := &HMACAuth{
 		ID:       String(uuid),
 		Username: String("my-username"),
@@ -93,7 +93,7 @@ func TestHMACAuthGet(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	hmacAuth := &HMACAuth{
 		ID:       String(uuid),
 		Username: String("my-username"),
@@ -141,7 +141,7 @@ func TestHMACAuthUpdate(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	hmacAuth := &HMACAuth{
 		ID:       String(uuid),
 		Username: String("my-username"),
@@ -185,7 +185,7 @@ func TestHMACAuthDelete(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	hmacAuth := &HMACAuth{
 		ID:       String(uuid),
 		Username: String("my-username"),

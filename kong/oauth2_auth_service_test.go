@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -55,7 +55,7 @@ func TestOauth2CredentialCreateWithID(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	oauth2Cred := &Oauth2Credential{
 		ID:           String(uuid),
 		Name:         String("name"),
@@ -92,7 +92,7 @@ func TestOauth2CredentialGet(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	oauth2Cred := &Oauth2Credential{
 		ID:           String(uuid),
 		Name:         String("name-foo"),
@@ -145,7 +145,7 @@ func TestOauth2CredentialUpdate(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	oauth2Cred := &Oauth2Credential{
 		ID:           String(uuid),
 		ClientID:     String("client-id"),
@@ -191,7 +191,7 @@ func TestOauth2CredentialDelete(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	oauth2Cred := &Oauth2Credential{
 		ID:           String(uuid),
 		ClientID:     String("my-client-id"),
