@@ -58,6 +58,7 @@ type Oauth2Credential struct {
 	Name         *string   `json:"name,omitempty" yaml:"name,omitempty"`
 	ClientID     *string   `json:"client_id,omitempty" yaml:"client_id,omitempty"`
 	ClientSecret *string   `json:"client_secret,omitempty" yaml:"client_secret,omitempty"`
+	HashSecret   *bool     `json:"hash_secret,omitempty" yaml:"hash_secret,omitempty"`
 	RedirectURIs []*string `json:"redirect_uris,omitempty" yaml:"redirect_uris,omitempty"`
 	Tags         []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
