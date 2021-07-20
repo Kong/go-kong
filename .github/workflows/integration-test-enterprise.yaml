@@ -50,7 +50,7 @@ jobs:
       - name: Run tests
         run: make test-coverage-enterprise
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@v1.5.2
+        uses: codecov/codecov-action@v2.0.1
         with:
           name: codecov-${{ matrix.kong_version }}
           flags: ${{ matrix.kong_version }},integration,enterprise
