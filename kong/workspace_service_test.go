@@ -5,7 +5,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -49,7 +49,7 @@ func TestWorkspaceService(T *testing.T) {
 	assert.Nil(err)
 
 	// ID can be specified
-	id := uuid.NewV4().String()
+	id := uuid.NewString()
 	workspace = &Workspace{
 		Name: String("teamB"),
 		ID:   String(id),
@@ -192,5 +192,4 @@ func TestWorkspaceService_Entities(T *testing.T) {
 	// Delete the workspace
 	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
-
 }

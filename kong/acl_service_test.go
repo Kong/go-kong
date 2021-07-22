@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -56,7 +56,7 @@ func TestACLGroupCreateWithID(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	acl := &ACLGroup{
 		ID:    String(uuid),
 		Group: String("my-group"),
@@ -88,7 +88,7 @@ func TestACLGroupGet(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	acl := &ACLGroup{
 		ID:    String(uuid),
 		Group: String("my-group"),
@@ -134,7 +134,7 @@ func TestACLGroupUpdate(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	acl := &ACLGroup{
 		ID:    String(uuid),
 		Group: String("my-group"),
@@ -173,7 +173,7 @@ func TestACLGroupDelete(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	acl := &ACLGroup{
 		ID:    String(uuid),
 		Group: String("my-group"),
