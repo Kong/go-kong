@@ -7,5 +7,5 @@ require (
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.3.0
 	github.com/stretchr/testify v1.7.0
-	k8s.io/code-generator v0.21.3
+	k8s.io/code-generator v0.22.0
 )
