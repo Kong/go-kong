@@ -1,6 +1,7 @@
 # Table of Contents
 
-- [v0.20.0](#v0200---202100707)
+- [v0.21.0](#v0200---20210826)
+- [v0.20.0](#v0200---20210707)
 - [v0.19.0](#v0190---20210514)
 - [v0.18.0](#v0180---20210505)
 - [v0.17.0](#v0170---20210405)
@@ -24,6 +25,18 @@
 - [0.3.0](#030---20181219)
 - [0.2.0](#020---20181219)
 - [0.1.0](#010---20181201)
+
+## [v0.21.0] - 2021/08/26
+
+### Added
+
+- oauth2 entities support `hash_secret`.
+  [#74](https://github.com/Kong/go-kong/pull/74)
+
+### Fixed
+
+- Plugin validation checks against the correct status code.
+  [#81](https://github.com/Kong/go-kong/pull/81)
 
 ## [v0.20.0] - 2021/07/07
 
@@ -361,6 +374,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.20.0]: https://github.com/Kong/go-kong/compare/v0.20.0...v0.21.0
 [v0.20.0]: https://github.com/Kong/go-kong/compare/v0.19.0...v0.20.0
 [v0.19.0]: https://github.com/Kong/go-kong/compare/v0.18.0...v0.19.0
 [v0.18.0]: https://github.com/Kong/go-kong/compare/v0.17.0...v0.18.0
