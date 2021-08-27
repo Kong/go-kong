@@ -60,6 +60,49 @@ func TestTargetsUpstream(T *testing.T) {
 	assert.Nil(err)
 }
 
+func TestTargetsUpdate(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	// create a upstream
+	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
+		Name: String("vhost.com"),
+	})
+	assert.Nil(err)
+	assert.NotNil(fixtureUpstream)
+	assert.NotNil(fixtureUpstream.ID)
+
+	targetID := "0fa49cd2-ee93-492a-bedf-b80778d539ae"
+	createdTarget, err := client.Targets.Create(defaultCtx,
+		fixtureUpstream.ID, &Target{
+			ID:     &targetID,
+			Target: String("10.0.0.1:80"),
+		})
+	assert.Nil(err)
+	assert.NotNil(createdTarget)
+	assert.Equal(targetID, *createdTarget.ID)
+
+	err = client.Targets.Delete(defaultCtx, fixtureUpstream.ID,
+		createdTarget.ID)
+	assert.Nil(err)
+
+	createdTarget, err = client.Targets.Create(defaultCtx,
+		fixtureUpstream.ID, &Target{
+			ID:     &targetID,
+			Target: String("10.0.0.2:80"),
+		})
+	assert.Nil(err)
+	assert.NotNil(createdTarget)
+	assert.Equal(targetID, *createdTarget.ID)
+	assert.Equal("10.0.0.2:80", *createdTarget.Target)
+
+	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
+	assert.Nil(err)
+}
+
 func TestTargetWithTags(T *testing.T) {
 	runWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
