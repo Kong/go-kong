@@ -310,7 +310,7 @@ func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 	ws := c.Workspace()
 	fmt.Printf("what is my ws " + ws)
 	if len(ws) > 0 {
-		endpoint = "/workspaces"
+		endpoint = "workspaces/"
 	}
 	fmt.Printf("what is what " + c.workspacedBaseURL(ws) + " endpint " + endpoint)
 	//req, err := c.NewRequestRaw("GET", c.workspacedBaseURL(ws), endpoint, nil, nil)
