@@ -308,9 +308,11 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 	endpoint := "/"
 	ws := c.Workspace()
+	fmt.Printf("what is my ws " + ws)
 	if len(ws) > 0 {
 		endpoint = "/kong"
 	}
+	fmt.Printf("what is what " + c.workspacedBaseURL(ws) + " endpint " + endpoint)
 	req, err := c.NewRequestRaw("GET", c.workspacedBaseURL(ws), endpoint, nil, nil)
 	if err != nil {
 		return nil, err
