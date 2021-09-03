@@ -15,7 +15,7 @@ func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs inter
 	if endpoint == "" {
 		return nil, fmt.Errorf("endpoint can't be nil")
 	}
-	
+
 	// body to be sent in JSON
 	var buf []byte
 	if body != nil {
@@ -27,6 +27,7 @@ func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs inter
 	}
 
 	// Create a new request
+	fmt.Printf("<<< " + baseURL + endpoint + ">>")
 	req, err := http.NewRequest(method, baseURL+endpoint, bytes.NewBuffer(buf))
 	if err != nil {
 		return nil, err
