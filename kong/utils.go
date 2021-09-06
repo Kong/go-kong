@@ -33,7 +33,7 @@ func isEmptyString(s *string) bool {
 	return s == nil || strings.TrimSpace(*s) == ""
 }
 
-//Deduplicates a list a strings
+// Deduplicates a list a strings
 func deduplicate(stringSlice []string) []string {
 	existing := map[string]struct{}{}
 	result := []string{}
