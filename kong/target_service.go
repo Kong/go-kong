@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -38,7 +37,7 @@ type TargetService service
 func (s *TargetService) Create(ctx context.Context,
 	upstreamNameOrID *string, target *Target) (*Target, error) {
 	if isEmptyString(upstreamNameOrID) {
-		return nil, errors.New("upstreamNameOrID can not be nil")
+		return nil, fmt.Errorf("upstreamNameOrID can not be nil")
 	}
 	queryPath := "/upstreams/" + *upstreamNameOrID + "/targets"
 	method := "POST"
@@ -47,7 +46,6 @@ func (s *TargetService) Create(ctx context.Context,
 	// 	method = "PUT"
 	// }
 	req, err := s.client.NewRequest(method, queryPath, nil, target)
-
 	if err != nil {
 		return nil, err
 	}
@@ -64,10 +62,10 @@ func (s *TargetService) Create(ctx context.Context,
 func (s *TargetService) Delete(ctx context.Context,
 	upstreamNameOrID *string, targetOrID *string) error {
 	if isEmptyString(upstreamNameOrID) {
-		return errors.New("upstreamNameOrID cannot be nil for Get operation")
+		return fmt.Errorf("upstreamNameOrID cannot be nil for Get operation")
 	}
 	if isEmptyString(targetOrID) {
-		return errors.New("targetOrID cannot be nil for Delete operation")
+		return fmt.Errorf("targetOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/upstreams/%v/targets/%v",
@@ -86,7 +84,8 @@ func (s *TargetService) Delete(ctx context.Context,
 func (s *TargetService) List(ctx context.Context,
 	upstreamNameOrID *string, opt *ListOpt) ([]*Target, *ListOpt, error) {
 	if isEmptyString(upstreamNameOrID) {
-		return nil, nil, errors.New("upstreamNameOrID cannot be nil for Get operation")
+		return nil, nil, fmt.Errorf(
+			"upstreamNameOrID cannot be nil for Get operation")
 	}
 	return s.listByEndpointAndOpt(ctx, "/upstreams/"+*upstreamNameOrID+"/targets", opt)
 }
@@ -105,14 +104,14 @@ func (s *TargetService) ListAll(ctx context.Context,
 func (s *TargetService) MarkHealthy(ctx context.Context,
 	upstreamNameOrID *string, target *Target) error {
 	if target == nil {
-		return errors.New("cannot set health status for a nil target")
+		return fmt.Errorf("cannot set health status for a nil target")
 	}
 	if isEmptyString(target.ID) && isEmptyString(target.Target) {
-		return errors.New("need at least one of target or ID to" +
+		return fmt.Errorf("need at least one of target or ID to" +
 			" set health status")
 	}
 	if isEmptyString(upstreamNameOrID) {
-		return errors.New("upstreamNameOrID cannot be nil " +
+		return fmt.Errorf("upstreamNameOrID cannot be nil " +
 			"for updating health check")
 	}
 
@@ -137,14 +136,14 @@ func (s *TargetService) MarkHealthy(ctx context.Context,
 func (s *TargetService) MarkUnhealthy(ctx context.Context,
 	upstreamNameOrID *string, target *Target) error {
 	if target == nil {
-		return errors.New("cannot set health status for a nil target")
+		return fmt.Errorf("cannot set health status for a nil target")
 	}
 	if isEmptyString(target.ID) && isEmptyString(target.Target) {
-		return errors.New("need at least one of target or ID to" +
+		return fmt.Errorf("need at least one of target or ID to" +
 			" set health status")
 	}
 	if isEmptyString(upstreamNameOrID) {
-		return errors.New("upstreamNameOrID cannot be nil " +
+		return fmt.Errorf("upstreamNameOrID cannot be nil " +
 			"for updating health check")
 	}
 

@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -41,7 +41,7 @@ func TestDeveloperRoleService(T *testing.T) {
 	assert.Nil(err)
 
 	// ID can be specified
-	id := uuid.NewV4().String()
+	id := uuid.NewString()
 	role = &DeveloperRole{
 		Name: String("teamB"),
 		ID:   String(id),
@@ -57,6 +57,7 @@ func TestDeveloperRoleService(T *testing.T) {
 
 	assert.NoError(testWs.Reset())
 }
+
 func TestDeveloperRoleServiceList(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
 	assert := assert.New(T)

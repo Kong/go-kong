@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -43,7 +42,6 @@ func (s *DeveloperService) Create(ctx context.Context,
 	queryPath := "/developers"
 	method := "POST"
 	req, err := s.client.NewRequest(method, queryPath, nil, developer)
-
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +59,7 @@ func (s *DeveloperService) Get(ctx context.Context,
 	emailOrID *string) (*Developer, error) {
 
 	if isEmptyString(emailOrID) {
-		return nil, errors.New("emailOrID cannot be nil for Get operation")
+		return nil, fmt.Errorf("emailOrID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/developers/%v", *emailOrID)
@@ -83,7 +81,7 @@ func (s *DeveloperService) GetByCustomID(ctx context.Context,
 	customID *string) (*Developer, error) {
 
 	if isEmptyString(customID) {
-		return nil, errors.New("customID cannot be nil for Get operation")
+		return nil, fmt.Errorf("customID cannot be nil for Get operation")
 	}
 
 	type QS struct {
@@ -117,7 +115,7 @@ func (s *DeveloperService) Update(ctx context.Context,
 	developer *Developer) (*Developer, error) {
 
 	if isEmptyString(developer.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/developers/%v", *developer.ID)
@@ -141,7 +139,7 @@ func (s *DeveloperService) Delete(ctx context.Context,
 	emailOrID *string) error {
 
 	if isEmptyString(emailOrID) {
-		return errors.New("emailOrID cannot be nil for Delete operation")
+		return fmt.Errorf("emailOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/developers/%v", *emailOrID)

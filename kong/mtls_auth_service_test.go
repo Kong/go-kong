@@ -5,7 +5,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -82,7 +82,7 @@ func TestMTLSCreateWithID(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	mtls := &MTLSAuth{
 		ID:          String(uuid),
 		SubjectName: String("test@example.com"),
@@ -115,7 +115,7 @@ func TestMTLSGet(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	mtls := &MTLSAuth{
 		ID:          String(uuid),
 		SubjectName: String("test@example.com"),
@@ -157,7 +157,7 @@ func TestMTLSUpdate(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	mtls := &MTLSAuth{
 		ID:          String(uuid),
 		SubjectName: String("test@example.com"),
@@ -196,7 +196,7 @@ func TestMTLSDelete(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	mtls := &MTLSAuth{
 		ID:          String(uuid),
 		SubjectName: String("test@example.com"),

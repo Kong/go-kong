@@ -2,8 +2,16 @@ package kong
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
+
+	"github.com/blang/semver/v4"
+)
+
+const (
+	versionParts = 4
 )
 
 // String returns pointer to s.
@@ -50,6 +58,7 @@ func StringSlice(elements ...string) []*string {
 	}
 	return res
 }
+
 func stringArrayToString(arr []*string) string {
 	if arr == nil {
 		return "nil"
@@ -100,7 +109,7 @@ func requestWithHeaders(req *http.Request, headers http.Header) *http.Request {
 	return newRequest
 }
 
-// RoundTripperWithHTTPHeaders returns a client which injects headers
+// HTTPClientWithHeaders returns a client which injects headers
 // before sending any request.
 func HTTPClientWithHeaders(client *http.Client,
 	headers http.Header) *http.Client {
@@ -117,4 +126,33 @@ func HTTPClientWithHeaders(client *http.Client,
 		rt:      client.Transport,
 	}
 	return res
+}
+
+// ParseSemanticVersion creates a semantic version from the version
+// returned by Kong.
+func ParseSemanticVersion(v string) (semver.Version, error) {
+	re := regexp.MustCompile(`(\d+\.\d+)(?:[\.-](\d+))?(?:\-?(.+)$|$)`)
+	m := re.FindStringSubmatch(v)
+	if len(m) != versionParts {
+		return semver.Version{}, fmt.Errorf("unknown Kong version : '%v'", v)
+	}
+	if m[2] == "" {
+		m[2] = "0"
+	}
+	if m[3] != "" {
+		m[3] = "-" + strings.Replace(m[3], "enterprise-edition", "enterprise", 1)
+		m[3] = strings.Replace(m[3], ".", "", -1)
+	}
+	v = fmt.Sprintf("%s.%s%s", m[1], m[2], m[3])
+	return semver.Make(v)
+}
+
+// VersionFromInfo retrieves the version from the response of root
+// or /kong endpoints
+func VersionFromInfo(info map[string]interface{}) string {
+	version, ok := info["version"]
+	if !ok {
+		return ""
+	}
+	return version.(string)
 }

@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,9 +17,11 @@ func TestDevelopersService(T *testing.T) {
 
 	testWs, err := NewTestWorkspace(client, "default")
 	assert.Nil(err)
-	assert.NoError(testWs.UpdateConfig(map[string]interface{}{"portal_auth": "basic-auth",
+	assert.NoError(testWs.UpdateConfig(map[string]interface{}{
+		"portal_auth":         "basic-auth",
 		"portal_session_conf": map[string]interface{}{"secret": "garbage"},
-		"portal":              true}))
+		"portal":              true,
+	}))
 
 	developer := &Developer{
 		Meta:     String("{\"full_name\": \"Foo BAR\"}"),
@@ -56,7 +58,7 @@ func TestDevelopersService(T *testing.T) {
 	assert.Nil(err)
 
 	// ID can be specified
-	id := uuid.NewV4().String()
+	id := uuid.NewString()
 	developer = &Developer{
 		Meta:     String("{\"full_name\": \"Foo BAR\"}"),
 		Email:    String("foo.bar@example.com"),
@@ -85,9 +87,11 @@ func TestDeveloperListEndpoint(T *testing.T) {
 
 	testWs, err := NewTestWorkspace(client, "default")
 	assert.Nil(err)
-	assert.NoError(testWs.UpdateConfig(map[string]interface{}{"portal_auth": "basic-auth",
+	assert.NoError(testWs.UpdateConfig(map[string]interface{}{
+		"portal_auth":         "basic-auth",
 		"portal_session_conf": map[string]interface{}{"secret": "garbage"},
-		"portal":              true}))
+		"portal":              true,
+	}))
 
 	// fixtures
 	developers := []*Developer{

@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -132,7 +132,7 @@ func TestCACertificatesService(T *testing.T) {
 	assert.Nil(err)
 
 	// ID can be specified
-	id := uuid.NewV4().String()
+	id := uuid.NewString()
 	certificate = &CACertificate{
 		Cert: String(caCert3),
 		ID:   String(id),

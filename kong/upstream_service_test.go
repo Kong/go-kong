@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,7 +36,7 @@ func TestUpstreamsService(T *testing.T) {
 	assert.Nil(err)
 
 	// ID can be specified
-	id := uuid.NewV4().String()
+	id := uuid.NewString()
 	upstream = &Upstream{
 		Name: String("key-auth"),
 		ID:   String(id),
@@ -123,6 +123,7 @@ func TestUpstreamWithPassiveUnHealthyInterval(T *testing.T) {
 	assert.NotNil(err)
 	assert.Nil(createdUpstream)
 }
+
 func TestUpstreamWithPassiveHealthy(T *testing.T) {
 	assert := assert.New(T)
 

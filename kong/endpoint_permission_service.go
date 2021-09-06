@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -30,16 +29,15 @@ func (s *RBACEndpointPermissionService) Create(ctx context.Context,
 	ep *RBACEndpointPermission) (*RBACEndpointPermission, error) {
 
 	if ep == nil {
-		return nil, errors.New("cannot create a nil endpointpermission")
+		return nil, fmt.Errorf("cannot create a nil endpointpermission")
 	}
 	if ep.Role == nil || ep.Role.ID == nil {
-		return nil, errors.New("cannot create endpoint permission with role or role id undefined")
+		return nil, fmt.Errorf("cannot create endpoint permission with role or role id undefined")
 	}
 
 	method := "POST"
 	endpoint := fmt.Sprintf("/rbac/roles/%v/endpoints", *ep.Role.ID)
 	req, err := s.client.NewRequest(method, endpoint, nil, ep)
-
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +56,7 @@ func (s *RBACEndpointPermissionService) Get(ctx context.Context,
 	roleNameOrID *string, workspaceNameOrID *string, endpointName *string) (*RBACEndpointPermission, error) {
 
 	if isEmptyString(endpointName) {
-		return nil, errors.New("endpointName cannot be nil for Get operation")
+		return nil, fmt.Errorf("endpointName cannot be nil for Get operation")
 	}
 	if *endpointName == "*" {
 		endpointName = String("/" + *endpointName)
@@ -82,17 +80,17 @@ func (s *RBACEndpointPermissionService) Update(ctx context.Context,
 	ep *RBACEndpointPermission) (*RBACEndpointPermission, error) {
 
 	if ep == nil {
-		return nil, errors.New("cannot update a nil EndpointPermission")
+		return nil, fmt.Errorf("cannot update a nil EndpointPermission")
 	}
 	if ep.Workspace == nil {
-		return nil, errors.New("cannot update an EndpointPermission with workspace as nil")
+		return nil, fmt.Errorf("cannot update an EndpointPermission with workspace as nil")
 	}
 	if ep.Role == nil || ep.Role.ID == nil {
-		return nil, errors.New("cannot create endpoint permission with role or role id undefined")
+		return nil, fmt.Errorf("cannot create endpoint permission with role or role id undefined")
 	}
 
 	if isEmptyString(ep.Endpoint) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/rbac/roles/%v/endpoints/%v/%v",
@@ -115,13 +113,13 @@ func (s *RBACEndpointPermissionService) Delete(ctx context.Context,
 	roleNameOrID *string, workspaceNameOrID *string, endpoint *string) error {
 
 	if endpoint == nil {
-		return errors.New("cannot update a nil EndpointPermission")
+		return fmt.Errorf("cannot update a nil EndpointPermission")
 	}
 	if workspaceNameOrID == nil {
-		return errors.New("cannot update an EndpointPermission with workspace as nil")
+		return fmt.Errorf("cannot update an EndpointPermission with workspace as nil")
 	}
 	if roleNameOrID == nil {
-		return errors.New("cannot update an EndpointPermission with role as nil")
+		return fmt.Errorf("cannot update an EndpointPermission with role as nil")
 	}
 
 	reqEndpoint := fmt.Sprintf("/rbac/roles/%v/endpoints/%v/%v",

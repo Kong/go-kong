@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,7 +37,7 @@ func TestRBACRoleService(T *testing.T) {
 	assert.Nil(err)
 
 	// ID can be specified
-	id := uuid.NewV4().String()
+	id := uuid.NewString()
 	role = &RBACRole{
 		Name: String("teamB"),
 		ID:   String(id),
@@ -51,6 +51,7 @@ func TestRBACRoleService(T *testing.T) {
 	err = client.RBACRoles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 }
+
 func TestRBACRoleServiceList(T *testing.T) {
 	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)

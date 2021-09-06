@@ -166,5 +166,4 @@ func TestUserRoles(T *testing.T) {
 	assert.Nil(err)
 	err = client.RBACRoles.Delete(defaultCtx, createdRoleB.ID)
 	assert.Nil(err)
-
 }

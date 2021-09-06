@@ -3,12 +3,13 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
 // AbstractWorkspaceService handles Workspaces in Kong.
 type AbstractWorkspaceService interface {
+	// Exists checks the exitence of a Workspace in Kong.
+	Exists(ctx context.Context, nameOrID *string) (bool, error)
 	// Create creates a Workspace in Kong.
 	Create(ctx context.Context, workspace *Workspace) (*Workspace, error)
 	// Get fetches a Workspace in Kong.
@@ -41,12 +42,23 @@ type AbstractWorkspaceService interface {
 // WorkspaceService handles Workspaces in Kong.
 type WorkspaceService service
 
+// Exists checks the exitence of the Workspace in Kong.
+func (s *WorkspaceService) Exists(ctx context.Context,
+	nameOrID *string) (bool, error) {
+	if isEmptyString(nameOrID) {
+		return false, fmt.Errorf("nameOrID cannot be nil for Get operation")
+	}
+
+	endpoint := fmt.Sprintf("/workspaces/%v", *nameOrID)
+	return s.client.exists(ctx, endpoint)
+}
+
 // Create creates a Workspace in Kong.
 func (s *WorkspaceService) Create(ctx context.Context,
 	workspace *Workspace) (*Workspace, error) {
 
 	if workspace == nil {
-		return nil, errors.New("cannot create a nil workspace")
+		return nil, fmt.Errorf("cannot create a nil workspace")
 	}
 
 	endpoint := "/workspaces"
@@ -56,7 +68,6 @@ func (s *WorkspaceService) Create(ctx context.Context,
 		method = "PUT"
 	}
 	req, err := s.client.NewRequest(method, endpoint, nil, workspace)
-
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +85,7 @@ func (s *WorkspaceService) Get(ctx context.Context,
 	nameOrID *string) (*Workspace, error) {
 
 	if isEmptyString(nameOrID) {
-		return nil, errors.New("nameOrID cannot be nil for Get operation")
+		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/workspaces/%v", *nameOrID)
@@ -97,11 +108,11 @@ func (s *WorkspaceService) Update(ctx context.Context,
 	workspace *Workspace) (*Workspace, error) {
 
 	if workspace == nil {
-		return nil, errors.New("cannot update a nil Workspace")
+		return nil, fmt.Errorf("cannot update a nil Workspace")
 	}
 
 	if isEmptyString(workspace.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/workspaces/%v", *workspace.ID)
@@ -123,7 +134,7 @@ func (s *WorkspaceService) Delete(ctx context.Context,
 	WorkspaceOrID *string) error {
 
 	if isEmptyString(WorkspaceOrID) {
-		return errors.New("WorkspaceOrID cannot be nil for Delete operation")
+		return fmt.Errorf("WorkspaceOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/workspaces/%v", *WorkspaceOrID)
@@ -156,7 +167,7 @@ func (s *WorkspaceService) AddEntities(ctx context.Context,
 	workspaceNameOrID *string, entityIds *string) (*[]map[string]interface{}, error) {
 
 	if entityIds == nil {
-		return nil, errors.New("entityIds cannot be nil")
+		return nil, fmt.Errorf("entityIds cannot be nil")
 	}
 
 	endpoint := fmt.Sprintf("/workspaces/%v/entities", *workspaceNameOrID)
@@ -166,7 +177,6 @@ func (s *WorkspaceService) AddEntities(ctx context.Context,
 	entities.Entities = entityIds
 
 	req, err := s.client.NewRequest("POST", endpoint, nil, entities)
-
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +198,7 @@ func (s *WorkspaceService) DeleteEntities(ctx context.Context,
 	workspaceNameOrID *string, entityIds *string) error {
 
 	if entityIds == nil {
-		return errors.New("entityIds cannot be nil")
+		return fmt.Errorf("entityIds cannot be nil")
 	}
 
 	endpoint := fmt.Sprintf("/workspaces/%v/entities", *workspaceNameOrID)
@@ -198,7 +208,6 @@ func (s *WorkspaceService) DeleteEntities(ctx context.Context,
 	entities.Entities = entityIds
 
 	req, err := s.client.NewRequest("DELETE", endpoint, nil, entities)
-
 	if err != nil {
 		return err
 	}

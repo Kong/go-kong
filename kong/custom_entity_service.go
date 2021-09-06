@@ -3,7 +3,7 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	"fmt"
 
 	"github.com/kong/go-kong/kong/custom"
 )
@@ -35,7 +35,7 @@ func (s *CustomEntityService) Get(ctx context.Context,
 	entity custom.Entity) (custom.Entity, error) {
 	def := s.client.Lookup(entity.Type())
 	if def == nil {
-		return nil, errors.New("entity '" + string(entity.Type()) +
+		return nil, fmt.Errorf("entity '" + string(entity.Type()) +
 			"' not registered")
 	}
 
@@ -45,7 +45,6 @@ func (s *CustomEntityService) Get(ctx context.Context,
 	}
 
 	req, err := s.client.NewRequest("GET", queryPath, nil, nil)
-
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +64,7 @@ func (s *CustomEntityService) Create(ctx context.Context,
 	entity custom.Entity) (custom.Entity, error) {
 	def := s.client.Lookup(entity.Type())
 	if def == nil {
-		return nil, errors.New("entity '" + string(entity.Type()) +
+		return nil, fmt.Errorf("entity '" + string(entity.Type()) +
 			"' not registered")
 	}
 
@@ -91,7 +90,6 @@ func (s *CustomEntityService) Create(ctx context.Context,
 		o = make(map[string]interface{})
 	}
 	req, err := s.client.NewRequest(method, queryPath, nil, o)
-
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +108,7 @@ func (s *CustomEntityService) Update(ctx context.Context,
 	entity custom.Entity) (custom.Entity, error) {
 	def := s.client.Lookup(entity.Type())
 	if def == nil {
-		return nil, errors.New("entity '" + string(entity.Type()) +
+		return nil, fmt.Errorf("entity '" + string(entity.Type()) +
 			"' not registered")
 	}
 
@@ -126,7 +124,6 @@ func (s *CustomEntityService) Update(ctx context.Context,
 		o = make(map[string]interface{})
 	}
 	req, err := s.client.NewRequest("PATCH", queryPath, nil, o)
-
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +142,7 @@ func (s *CustomEntityService) Delete(ctx context.Context,
 	entity custom.Entity) error {
 	def := s.client.Lookup(entity.Type())
 	if def == nil {
-		return errors.New("entity '" + string(entity.Type()) +
+		return fmt.Errorf("entity '" + string(entity.Type()) +
 			"' not registered")
 	}
 
@@ -168,7 +165,7 @@ func (s *CustomEntityService) List(ctx context.Context, opt *ListOpt,
 	entity custom.Entity) ([]custom.Entity, *ListOpt, error) {
 	def := s.client.Lookup(entity.Type())
 	if def == nil {
-		return nil, nil, errors.New("entity '" + string(entity.Type()) +
+		return nil, nil, fmt.Errorf("entity '" + string(entity.Type()) +
 			"' not registered")
 	}
 

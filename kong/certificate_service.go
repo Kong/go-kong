@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -40,7 +39,6 @@ func (s *CertificateService) Create(ctx context.Context,
 		method = "PUT"
 	}
 	req, err := s.client.NewRequest(method, queryPath, nil, certificate)
-
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +56,7 @@ func (s *CertificateService) Get(ctx context.Context,
 	usernameOrID *string) (*Certificate, error) {
 
 	if isEmptyString(usernameOrID) {
-		return nil, errors.New("usernameOrID cannot be nil for Get operation")
+		return nil, fmt.Errorf("usernameOrID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/certificates/%v", *usernameOrID)
@@ -80,7 +78,7 @@ func (s *CertificateService) Update(ctx context.Context,
 	certificate *Certificate) (*Certificate, error) {
 
 	if isEmptyString(certificate.ID) {
-		return nil, errors.New("ID cannot be nil for Update op           eration")
+		return nil, fmt.Errorf("ID cannot be nil for Update op           eration")
 	}
 
 	endpoint := fmt.Sprintf("/certificates/%v", *certificate.ID)
@@ -102,7 +100,7 @@ func (s *CertificateService) Delete(ctx context.Context,
 	usernameOrID *string) error {
 
 	if isEmptyString(usernameOrID) {
-		return errors.New("usernameOrID cannot be nil for Delete operation")
+		return fmt.Errorf("usernameOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/certificates/%v", *usernameOrID)

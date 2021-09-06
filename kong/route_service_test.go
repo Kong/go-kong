@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -58,7 +58,7 @@ func TestRoutesRoute(T *testing.T) {
 	assert.Nil(err)
 
 	// ID can be specified
-	id := uuid.NewV4().String()
+	id := uuid.NewString()
 	route = &Route{
 		ID:        String(id),
 		Name:      String("new-route"),
@@ -155,6 +155,7 @@ func TestCreateInRoute(T *testing.T) {
 	assert.Nil(client.Routes.Delete(defaultCtx, createdRoute.ID))
 	assert.Nil(client.Services.Delete(defaultCtx, createdService.ID))
 }
+
 func TestRouteListEndpoint(T *testing.T) {
 	assert := assert.New(T)
 

@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"reflect"
 )
@@ -26,17 +25,15 @@ type abstractCredentialService interface {
 // credentialService handles credentials in Kong.
 type credentialService service
 
-var (
-	credPath = map[string]string{
-		"key-auth":   "key-auth",
-		"basic-auth": "basic-auth",
-		"hmac-auth":  "hmac-auth",
-		"jwt-auth":   "jwt",
-		"acl":        "acls",
-		"oauth2":     "oauth2",
-		"mtls-auth":  "mtls-auth",
-	}
-)
+var credPath = map[string]string{
+	"key-auth":   "key-auth",
+	"basic-auth": "basic-auth",
+	"hmac-auth":  "hmac-auth",
+	"jwt-auth":   "jwt",
+	"acl":        "acls",
+	"oauth2":     "oauth2",
+	"mtls-auth":  "mtls-auth",
+}
 
 // Create creates a credential in Kong of type credType.
 // If an ID is specified in the credential, it will be used to
@@ -47,7 +44,7 @@ func (s *credentialService) Create(ctx context.Context, credType string,
 	credential interface{}) (json.RawMessage, error) {
 
 	if isEmptyString(consumerUsernameOrID) {
-		return nil, errors.New("consumerUsernameOrID cannot be nil")
+		return nil, fmt.Errorf("consumerUsernameOrID cannot be nil")
 	}
 
 	subPath, ok := credPath[credType]
@@ -87,10 +84,10 @@ func (s *credentialService) Get(ctx context.Context, credType string,
 	credIdentifier *string) (json.RawMessage, error) {
 
 	if isEmptyString(credIdentifier) {
-		return nil, errors.New("credIdentifier cannot be nil for Get operation")
+		return nil, fmt.Errorf("credIdentifier cannot be nil for Get operation")
 	}
 	if isEmptyString(consumerUsernameOrID) {
-		return nil, errors.New("consumerUsernameOrID cannot be nil")
+		return nil, fmt.Errorf("consumerUsernameOrID cannot be nil")
 	}
 
 	subPath, ok := credPath[credType]
@@ -118,7 +115,7 @@ func (s *credentialService) Update(ctx context.Context, credType string,
 	credential interface{}) (json.RawMessage, error) {
 
 	if isEmptyString(consumerUsernameOrID) {
-		return nil, errors.New("consumerUsernameOrID cannot be nil")
+		return nil, fmt.Errorf("consumerUsernameOrID cannot be nil")
 	}
 
 	subPath, ok := credPath[credType]
@@ -140,7 +137,7 @@ func (s *credentialService) Update(ctx context.Context, credType string,
 		}
 	}
 	if credID == "" {
-		return nil, errors.New("cannot update a credential without an ID")
+		return nil, fmt.Errorf("cannot update a credential without an ID")
 	}
 
 	endpoint = endpoint + credID
@@ -163,7 +160,7 @@ func (s *credentialService) Delete(ctx context.Context, credType string,
 	consumerUsernameOrID, credIdentifier *string) error {
 
 	if isEmptyString(credIdentifier) {
-		return errors.New("credIdentifier cannot be nil for Delete operation")
+		return fmt.Errorf("credIdentifier cannot be nil for Delete operation")
 	}
 
 	subPath, ok := credPath[credType]

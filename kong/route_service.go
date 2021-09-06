@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -38,7 +37,7 @@ func (s *RouteService) Create(ctx context.Context,
 	route *Route) (*Route, error) {
 
 	if route == nil {
-		return nil, errors.New("cannot create a nil route")
+		return nil, fmt.Errorf("cannot create a nil route")
 	}
 
 	endpoint := "/routes"
@@ -64,10 +63,10 @@ func (s *RouteService) Create(ctx context.Context,
 func (s *RouteService) CreateInService(ctx context.Context,
 	serviceID *string, route *Route) (*Route, error) {
 	if isEmptyString(serviceID) {
-		return nil, errors.New("serviceID cannot be nil for creating a route")
+		return nil, fmt.Errorf("serviceID cannot be nil for creating a route")
 	}
 	if route == nil {
-		return nil, errors.New("cannot create a nil route")
+		return nil, fmt.Errorf("cannot create a nil route")
 	}
 	r := *route
 	r.Service = &Service{ID: serviceID}
@@ -79,7 +78,7 @@ func (s *RouteService) Get(ctx context.Context,
 	nameOrID *string) (*Route, error) {
 
 	if isEmptyString(nameOrID) {
-		return nil, errors.New("nameOrID cannot be nil for Get operation")
+		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/routes/%v", *nameOrID)
@@ -101,11 +100,11 @@ func (s *RouteService) Update(ctx context.Context,
 	route *Route) (*Route, error) {
 
 	if route == nil {
-		return nil, errors.New("cannot update a nil route")
+		return nil, fmt.Errorf("cannot update a nil route")
 	}
 
 	if isEmptyString(route.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/routes/%v", *route.ID)
@@ -124,9 +123,8 @@ func (s *RouteService) Update(ctx context.Context,
 
 // Delete deletes a Route in Kong
 func (s *RouteService) Delete(ctx context.Context, nameOrID *string) error {
-
 	if isEmptyString(nameOrID) {
-		return errors.New("nameOrID cannot be nil for Delete operation")
+		return fmt.Errorf("nameOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/routes/%v", *nameOrID)

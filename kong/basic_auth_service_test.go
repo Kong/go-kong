@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -66,7 +66,7 @@ func TestBasicAuthCreateWithID(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	basicAuth := &BasicAuth{
 		ID:       String(uuid),
 		Username: String("my-username"),
@@ -102,7 +102,7 @@ func TestBasicAuthGet(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	basicAuth := &BasicAuth{
 		ID:       String(uuid),
 		Username: String("my-username"),
@@ -152,7 +152,7 @@ func TestBasicAuthUpdate(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	basicAuth := &BasicAuth{
 		ID:       String(uuid),
 		Username: String("my-username"),
@@ -197,7 +197,7 @@ func TestBasicAuthDelete(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	basicAuth := &BasicAuth{
 		ID:       String(uuid),
 		Username: String("my-username"),

@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -29,16 +28,15 @@ func (s *RBACEntityPermissionService) Create(ctx context.Context,
 	ep *RBACEntityPermission) (*RBACEntityPermission, error) {
 
 	if ep == nil {
-		return nil, errors.New("cannot create a nil entitypermission")
+		return nil, fmt.Errorf("cannot create a nil entitypermission")
 	}
 	if ep.Role == nil || ep.Role.ID == nil {
-		return nil, errors.New("cannot create entity permission with role or role id undefined")
+		return nil, fmt.Errorf("cannot create entity permission with role or role id undefined")
 	}
 
 	method := "POST"
 	entity := fmt.Sprintf("/rbac/roles/%v/entities", *ep.Role.ID)
 	req, err := s.client.NewRequest(method, entity, nil, ep)
-
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +55,7 @@ func (s *RBACEntityPermissionService) Get(ctx context.Context,
 	roleNameOrID *string, entityName *string) (*RBACEntityPermission, error) {
 
 	if isEmptyString(entityName) {
-		return nil, errors.New("entityName cannot be nil for Get operation")
+		return nil, fmt.Errorf("entityName cannot be nil for Get operation")
 	}
 
 	entity := fmt.Sprintf("/rbac/roles/%v/entities/%v", *roleNameOrID, *entityName)
@@ -79,15 +77,15 @@ func (s *RBACEntityPermissionService) Update(ctx context.Context,
 	ep *RBACEntityPermission) (*RBACEntityPermission, error) {
 
 	if ep == nil {
-		return nil, errors.New("cannot update a nil EntityPermission")
+		return nil, fmt.Errorf("cannot update a nil EntityPermission")
 	}
 
 	if ep.Role == nil || ep.Role.ID == nil {
-		return nil, errors.New("cannot create entity permission with role or role id undefined")
+		return nil, fmt.Errorf("cannot create entity permission with role or role id undefined")
 	}
 
 	if isEmptyString(ep.EntityID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	entity := fmt.Sprintf("/rbac/roles/%v/entities/%v",
@@ -110,10 +108,10 @@ func (s *RBACEntityPermissionService) Delete(ctx context.Context,
 	roleNameOrID *string, entityID *string) error {
 
 	if roleNameOrID == nil {
-		return errors.New("cannot update an EntityPermission with role as nil")
+		return fmt.Errorf("cannot update an EntityPermission with role as nil")
 	}
 	if entityID == nil {
-		return errors.New("cannot update an EntityPermission with entity ID as nil")
+		return fmt.Errorf("cannot update an EntityPermission with entity ID as nil")
 	}
 
 	endpoint := fmt.Sprintf("/rbac/roles/%v/entities/%v",

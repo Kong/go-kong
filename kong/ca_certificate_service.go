@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -40,7 +39,6 @@ func (s *CACertificateService) Create(ctx context.Context,
 		method = "PUT"
 	}
 	req, err := s.client.NewRequest(method, queryPath, nil, certificate)
-
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +56,7 @@ func (s *CACertificateService) Get(ctx context.Context,
 	ID *string) (*CACertificate, error) {
 
 	if isEmptyString(ID) {
-		return nil, errors.New("ID cannot be nil for Get operation")
+		return nil, fmt.Errorf("ID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/ca_certificates/%v", *ID)
@@ -80,7 +78,7 @@ func (s *CACertificateService) Update(ctx context.Context,
 	certificate *CACertificate) (*CACertificate, error) {
 
 	if isEmptyString(certificate.ID) {
-		return nil, errors.New("ID cannot be nil for Update op           eration")
+		return nil, fmt.Errorf("ID cannot be nil for Update op           eration")
 	}
 
 	endpoint := fmt.Sprintf("/ca_certificates/%v", *certificate.ID)
@@ -102,7 +100,7 @@ func (s *CACertificateService) Delete(ctx context.Context,
 	ID *string) error {
 
 	if isEmptyString(ID) {
-		return errors.New("ID cannot be nil for Delete operation")
+		return fmt.Errorf("ID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/ca_certificates/%v", *ID)

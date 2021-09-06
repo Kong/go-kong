@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -36,7 +35,7 @@ func (s *Svcservice) Create(ctx context.Context,
 	service *Service) (*Service, error) {
 
 	if service == nil {
-		return nil, errors.New("cannot create a nil service")
+		return nil, fmt.Errorf("cannot create a nil service")
 	}
 
 	endpoint := "/services"
@@ -63,7 +62,7 @@ func (s *Svcservice) Get(ctx context.Context,
 	nameOrID *string) (*Service, error) {
 
 	if isEmptyString(nameOrID) {
-		return nil, errors.New("nameOrID cannot be nil for Get operation")
+		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/services/%v", *nameOrID)
@@ -85,7 +84,7 @@ func (s *Svcservice) GetForRoute(ctx context.Context,
 	routeID *string) (*Service, error) {
 
 	if isEmptyString(routeID) {
-		return nil, errors.New("routeID cannot be nil for Get operation")
+		return nil, fmt.Errorf("routeID cannot be nil for Get operation")
 	}
 
 	endpoint := fmt.Sprintf("/routes/%v/service", *routeID)
@@ -107,11 +106,11 @@ func (s *Svcservice) Update(ctx context.Context,
 	service *Service) (*Service, error) {
 
 	if service == nil {
-		return nil, errors.New("cannot update a nil service")
+		return nil, fmt.Errorf("cannot update a nil service")
 	}
 
 	if isEmptyString(service.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/services/%v", *service.ID)
@@ -130,9 +129,8 @@ func (s *Svcservice) Update(ctx context.Context,
 
 // Delete deletes an Service in Kong
 func (s *Svcservice) Delete(ctx context.Context, nameOrID *string) error {
-
 	if isEmptyString(nameOrID) {
-		return errors.New("nameOrID cannot be nil for Delete operation")
+		return fmt.Errorf("nameOrID cannot be nil for Delete operation")
 	}
 
 	endpoint := fmt.Sprintf("/services/%v", *nameOrID)

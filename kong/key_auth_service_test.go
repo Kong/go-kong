@@ -3,7 +3,7 @@ package kong
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -55,7 +55,7 @@ func TestKeyAuthCreateWithID(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	keyAuth := &KeyAuth{
 		ID:  String(uuid),
 		Key: String("my-apikey"),
@@ -88,7 +88,7 @@ func TestKeyAuthGet(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	keyAuth := &KeyAuth{
 		ID:  String(uuid),
 		Key: String("my-apikey"),
@@ -138,7 +138,7 @@ func TestKeyAuthUpdate(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	keyAuth := &KeyAuth{
 		ID:  String(uuid),
 		Key: String("my-apikey"),
@@ -180,7 +180,7 @@ func TestKeyAuthDelete(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	uuid := uuid.NewV4().String()
+	uuid := uuid.NewString()
 	keyAuth := &KeyAuth{
 		ID:  String(uuid),
 		Key: String("my-apikey"),

@@ -1,25 +1,23 @@
 package kong
 
 import (
-	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIsNotFoundErr(T *testing.T) {
-
 	assert := assert.New(T)
 	var e error = NewAPIError(404, "")
 	assert.True(IsNotFoundErr(e))
 	assert.False(IsNotFoundErr(nil))
 
-	err := errors.New("not a 404")
+	err := fmt.Errorf("not a 404")
 	assert.False(IsNotFoundErr(err))
 }
 
 func TestIsNotFoundErrE2E(T *testing.T) {
-
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

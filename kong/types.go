@@ -2,6 +2,7 @@ package kong
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -310,7 +311,7 @@ type RBACUser struct {
 	UserTokenIdent *string `json:"user_token_ident,omitempty" yaml:"user_token_ident,omitempty"`
 }
 
-// Workspace Entity represents a WorkspaceEntity in Kong
+// WorkspaceEntity represents a WorkspaceEntity in Kong
 // +k8s:deepcopy-gen=true
 type WorkspaceEntity struct {
 	EntityID         *string `json:"entity_id,omitempty" yaml:"entity_id,omitempty"`
@@ -409,7 +410,7 @@ func (e *RBACEntityPermission) MarshalJSON() ([]byte, error) {
 	})
 }
 
-// PermissionsList is a list of permissions, both endpoint and entity, associated with a Role.
+// RBACPermissionsList is a list of permissions, both endpoint and entity, associated with a Role.
 type RBACPermissionsList struct {
 	Endpoints map[string]interface{} `json:"endpoints,omitempty" yaml:"endpoints,omitempty"`
 	Entities  map[string]interface{} `json:"entities,omitempty" yaml:"entities,omitempty"`
@@ -437,4 +438,135 @@ type DeveloperRole struct {
 	CreatedAt *int    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string `json:"id,omitempty" yaml:"id,omitempty"`
 	Name      *string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// Info represents the information concerning Kong.
+type Info struct {
+	Version       string                `json:"version,omitempty" yaml:"version,omitempty"`
+	Configuration *RuntimeConfiguration `json:"configuration,omitempty" yaml:"configuration,omitempty"`
+}
+
+// RuntimeConfiguration represents the runtime configuration of Kong.
+type RuntimeConfiguration struct {
+	Database string `json:"database,omitempty" yaml:"database,omitempty"`
+	Portal   bool   `json:"portal,omitempty" yaml:"portal,omitempty"`
+	RBAC     string `json:"rbac,omitempty" yaml:"rbac,omitempty"`
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (s *Service) FriendlyName() string {
+	if s.Name != nil {
+		return *s.Name
+	}
+	if s.ID != nil {
+		return *s.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (r *Route) FriendlyName() string {
+	if r.Name != nil {
+		return *r.Name
+	}
+	if r.ID != nil {
+		return *r.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (u *Upstream) FriendlyName() string {
+	if u.Name != nil {
+		return *u.Name
+	}
+	if u.ID != nil {
+		return *u.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (t *Target) FriendlyName() string {
+	if t.Target != nil {
+		return *t.Target
+	}
+	if t.ID != nil {
+		return *t.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (c *Certificate) FriendlyName() string {
+	if c.ID != nil {
+		return *c.ID
+	}
+	if c.Cert != nil {
+		return *c.Cert
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (s *SNI) FriendlyName() string {
+	if s.Name != nil {
+		return *s.Name
+	}
+	if s.ID != nil {
+		return *s.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (p *Plugin) FriendlyName() string {
+	if p.Name != nil {
+		return *p.Name
+	}
+	if p.ID != nil {
+		return *p.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (c *Consumer) FriendlyName() string {
+	if c.Username != nil {
+		return *c.Username
+	}
+	if c.ID != nil {
+		return *c.ID
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (c *CACertificate) FriendlyName() string {
+	if c.ID != nil {
+		return *c.ID
+	}
+	if c.Cert != nil {
+		return *c.Cert
+	}
+	return ""
+}
+
+// FriendlyName returns the endpoint key name or ID.
+func (r *RBACRole) FriendlyName() string {
+	if r.Name != nil {
+		return *r.Name
+	}
+	if r.ID != nil {
+		return *r.ID
+	}
+	return ""
+}
+
+// FriendlyName returns a composite Name base on Role , workspace, and endpoint
+func (e *RBACEndpointPermission) FriendlyName() string {
+	if e.Role != nil && e.Workspace != nil && e.Endpoint != nil {
+		return fmt.Sprintf("%s-%s-%s", e.Role.FriendlyName(), *e.Workspace, *e.Endpoint)
+	}
+	return ""
 }
