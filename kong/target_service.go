@@ -3,6 +3,7 @@ package kong
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
