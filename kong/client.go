@@ -171,6 +171,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 func (c *Client) SetWorkspace(workspace string) {
 	c.workspaceLock.Lock()
 	defer c.workspaceLock.Unlock()
+	fmt.Printf("workspace is set %s", workspace)
 	c.workspace = workspace
 }
 
