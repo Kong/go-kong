@@ -26,7 +26,7 @@ func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs inter
 	}
 
 	// Create a new request
-	endpoint = "/team-a/kong"
+	//endpoint = "/team-a/kong"
 	url := baseURL + endpoint
 	fmt.Printf("baseURL is " + baseURL + ">>>" + "<< endpoint <<" + endpoint)
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(buf))
