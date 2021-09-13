@@ -26,8 +26,9 @@ func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs inter
 	}
 
 	// Create a new request
-	fmt.Printf("<< " + baseURL + endpoint + ">>>")
-	req, err := http.NewRequest(method, baseURL+endpoint, bytes.NewBuffer(buf))
+	url := baseURL + endpoint
+	fmt.Printf("URL is " + url + ">>>")
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(buf))
 	if err != nil {
 		return nil, err
 	}
