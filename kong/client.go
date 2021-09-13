@@ -309,7 +309,8 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 // Root returns the response of GET request on root of Admin API (GET / or /kong with a workspace).
 func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 	endpoint := "/"
-	ws := c.Workspace()
+	//ws := c.Workspace()
+	ws := "team-a"
 	fmt.Printf(" what is ws <%s>", ws)
 	if len(ws) > 0 {
 		endpoint = "/kong"
