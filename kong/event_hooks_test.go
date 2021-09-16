@@ -26,7 +26,7 @@ func TestEventHook(t *testing.T) {
 		Event:   &consumers,
 	}
 
-	createdWebHook, err := client.EventHook.AddWebhook(defaultCtx, cfg)
+	createdWebHook, err := client.EventHooks.AddWebhook(defaultCtx, cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -49,14 +49,14 @@ func TestCustomWebHook(t *testing.T) {
 			"body":        nil,
 			"body_format": nil,
 			"headers": {
-				"content-type": "application/json"
+				"content-type": "application/json",
 			},
 			"method": "POST",
 			"payload": {
 				"text": "just a text data",
 			},
 			"payload_format": true,
-			"secret":         null,
+			"secret":         nil,
 			"ssl_verify":     false,
 		},
 		Handler: &webhook_custom,
@@ -64,7 +64,7 @@ func TestCustomWebHook(t *testing.T) {
 		Event:   &admins,
 	}
 
-	createdCustomWebHook, err := client.EventHook.AddWebhook(defaultCtx, cfg)
+	createdCustomWebHook, err := client.EventHooks.AddWebhook(defaultCtx, cfg)
 	if err != nil {
 		panic(err)
 	}
