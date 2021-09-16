@@ -285,6 +285,18 @@ type Workspace struct {
 	Meta      map[string]interface{} `json:"meta,omitempty" yaml:"meta,omitempty"`
 }
 
+// EventHooks represents an event hooks in Kong.
+type EventHooks struct {
+	CreatedAt *int                   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID        *string                `json:"id,omitempty" yaml:"id,omitempty"`
+	Config    map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty"`
+	Handler   *string                `json:"handler,omitempty" yaml:"handler,omitempty"`
+	Source    *string                `json:"source,omitempty" yaml:"source,omitempty"`
+	Event     *string                `json:"event,omitempty" yaml:"event,omitempty"`
+	On_change *bool                  `json:"on_change,omitempty" yaml:"on_change,omitempty"`
+	Snooze    *int                   `json:"snooze,omitempty" yaml:"snooze,omitempty"`
+}
+
 // Admin represents an Admin in Kong.
 // +k8s:deepcopy-gen=true
 type Admin struct {
