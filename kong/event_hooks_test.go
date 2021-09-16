@@ -17,7 +17,7 @@ func TestEventHook(t *testing.T) {
 	consumers := "consumers"
 	cfg := &EventHooks{
 		Config: map[string]interface{}{
-			"url":        "https://webhook.site/a1b2c3-d4e5-g6h7-i8j9-k1l2m3n4o5p6",
+			"url":        "https://webhook.site/ec707ef0-ab91-4693-8dd2-114471ff6f90",
 			"ssl_verify": false,
 			"secret":     " ",
 		},
@@ -40,12 +40,12 @@ func TestCustomWebHook(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, client)
 
-	webhook_custom := "webhook-custom"
+	webhookCustom := "webhook-custom"
 	crud := "crud"
 	admins := "admins"
 	cfg := &EventHooks{
 		Config: map[string]interface{}{
-			"url":            "https://webhook.site/a1b2c3-d4e5-g6h7-i8j9-k1l2m3n4o5p6",
+			"url":            "https://webhook.site/ec707ef0-ab91-4693-8dd2-114471ff6f90",
 			"body":           nil,
 			"body_format":    nil,
 			"method":         "POST",
@@ -53,7 +53,7 @@ func TestCustomWebHook(t *testing.T) {
 			"secret":         nil,
 			"ssl_verify":     false,
 		},
-		Handler: &webhook_custom,
+		Handler: &webhookCustom,
 		Source:  &crud,
 		Event:   &admins,
 	}

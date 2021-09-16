@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// AbstractEventHooks handles event hooks in Kong
+// AbstractEventHooksService handles event hooks in Kong
 type AbstractEventHooksService interface {
 	AddWebhook(ctx context.Context, eventHooks *EventHooks) (*EventHooks, error)
 

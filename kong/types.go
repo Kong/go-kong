@@ -293,7 +293,7 @@ type EventHooks struct {
 	Handler   *string                `json:"handler,omitempty" yaml:"handler,omitempty"`
 	Source    *string                `json:"source,omitempty" yaml:"source,omitempty"`
 	Event     *string                `json:"event,omitempty" yaml:"event,omitempty"`
-	On_change *bool                  `json:"on_change,omitempty" yaml:"on_change,omitempty"`
+	OnChange *bool                  `json:"on_change,omitempty" yaml:"on_change,omitempty"`
 	Snooze    *int                   `json:"snooze,omitempty" yaml:"snooze,omitempty"`
 }
 
