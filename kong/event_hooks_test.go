@@ -45,16 +45,10 @@ func TestCustomWebHook(t *testing.T) {
 	admins := "admins"
 	cfg := &EventHooks{
 		Config: map[string]interface{}{
-			"url":         "https://webhook.site/a1b2c3-d4e5-g6h7-i8j9-k1l2m3n4o5p6",
-			"body":        nil,
-			"body_format": nil,
-			"headers": {
-				"content-type": "application/json",
-			},
-			"method": "POST",
-			"payload": {
-				"text": "just a text data",
-			},
+			"url":            "https://webhook.site/a1b2c3-d4e5-g6h7-i8j9-k1l2m3n4o5p6",
+			"body":           nil,
+			"body_format":    nil,
+			"method":         "POST",
 			"payload_format": true,
 			"secret":         nil,
 			"ssl_verify":     false,
