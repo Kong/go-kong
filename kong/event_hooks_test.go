@@ -1,7 +1,6 @@
 package kong
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,24 +36,28 @@ func TestEventHook(t *testing.T) {
 }
 
 func TestCustomWebHook(t *testing.T) {
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(t, err)
+	assert.NotNil(t, client)
+
 	webhook_custom := "webhook-custom"
 	crud := "crud"
 	admins := "admins"
 	cfg := &EventHooks{
 		Config: map[string]interface{}{
-			"url":        "https://webhook.site/a1b2c3-d4e5-g6h7-i8j9-k1l2m3n4o5p6",
-			"body":       nil,
+			"url":         "https://webhook.site/a1b2c3-d4e5-g6h7-i8j9-k1l2m3n4o5p6",
+			"body":        nil,
 			"body_format": nil,
-			"headers":{
-				"content-type": "application/json",
+			"headers": {
+				"content-type": "application/json"
 			},
 			"method": "POST",
-        "payload": {
-            "text": "Admin account `` d; email address set to ``"
-        },
-        "payload_format": true,
-        "secret": null,
-        "ssl_verify": false,
+			"payload": {
+				"text": "just a text data",
+			},
+			"payload_format": true,
+			"secret":         null,
+			"ssl_verify":     false,
 		},
 		Handler: &webhook_custom,
 		Source:  &crud,
