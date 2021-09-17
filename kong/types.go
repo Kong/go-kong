@@ -286,6 +286,7 @@ type Workspace struct {
 }
 
 // EventHooks represents an event hooks in Kong Enterprise.
+// EventHooks references https://docs.konghq.com/enterprise/2.5.x/admin-api/event-hooks/reference/
 type EventHooks struct {
 	CreatedAt *int                   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string                `json:"id,omitempty" yaml:"id,omitempty"`
@@ -295,12 +296,6 @@ type EventHooks struct {
 	Event     *string                `json:"event,omitempty" yaml:"event,omitempty"`
 	OnChange  *bool                  `json:"on_change,omitempty" yaml:"on_change,omitempty"`
 	Snooze    *int                   `json:"snooze,omitempty" yaml:"snooze,omitempty"`
-}
-
-// IngressEventHooks represents the event hooks within kong ingress
-type IngressEventHooks struct {
-	Methods    *string    `json:"methods,omitempty" yaml:"methods,omitempty"`
-	Eventhooks EventHooks `json:"eventhooks,omitempty" yaml:"eventhooks,omitempty"`
 }
 
 // Admin represents an Admin in Kong.
