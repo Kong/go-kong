@@ -285,7 +285,7 @@ type Workspace struct {
 	Meta      map[string]interface{} `json:"meta,omitempty" yaml:"meta,omitempty"`
 }
 
-// EventHooks represents an event hooks in Kong.
+// EventHooks represents an event hooks in Kong Enterprise.
 type EventHooks struct {
 	CreatedAt *int                   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string                `json:"id,omitempty" yaml:"id,omitempty"`
@@ -293,8 +293,14 @@ type EventHooks struct {
 	Handler   *string                `json:"handler,omitempty" yaml:"handler,omitempty"`
 	Source    *string                `json:"source,omitempty" yaml:"source,omitempty"`
 	Event     *string                `json:"event,omitempty" yaml:"event,omitempty"`
-	OnChange *bool                  `json:"on_change,omitempty" yaml:"on_change,omitempty"`
+	OnChange  *bool                  `json:"on_change,omitempty" yaml:"on_change,omitempty"`
 	Snooze    *int                   `json:"snooze,omitempty" yaml:"snooze,omitempty"`
+}
+
+// IngressEventHooks represents kongIngress
+type IngressEventHooks struct {
+	Methods    *string      `json:"methods,omitempty" yaml:"methods,omitempty"`
+	Eventhooks []EventHooks `json:"eventhooks,omitempty" yaml:"eventhooks,omitempty"`
 }
 
 // Admin represents an Admin in Kong.
