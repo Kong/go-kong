@@ -297,7 +297,7 @@ type EventHooks struct {
 	Snooze    *int                   `json:"snooze,omitempty" yaml:"snooze,omitempty"`
 }
 
-// IngressEventHooks represents kongIngress
+// IngressEventHooks represents the event hooks within kong ingress
 type IngressEventHooks struct {
 	Methods    *string      `json:"methods,omitempty" yaml:"methods,omitempty"`
 	Eventhooks []EventHooks `json:"eventhooks,omitempty" yaml:"eventhooks,omitempty"`
