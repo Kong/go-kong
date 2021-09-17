@@ -299,8 +299,8 @@ type EventHooks struct {
 
 // IngressEventHooks represents the event hooks within kong ingress
 type IngressEventHooks struct {
-	Methods    *string      `json:"methods,omitempty" yaml:"methods,omitempty"`
-	Eventhooks []EventHooks `json:"eventhooks,omitempty" yaml:"eventhooks,omitempty"`
+	Methods    *string    `json:"methods,omitempty" yaml:"methods,omitempty"`
+	Eventhooks EventHooks `json:"eventhooks,omitempty" yaml:"eventhooks,omitempty"`
 }
 
 // Admin represents an Admin in Kong.
