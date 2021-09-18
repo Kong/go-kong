@@ -286,7 +286,8 @@ type Workspace struct {
 }
 
 // EventHooks represents an event hooks in Kong Enterprise.
-// EventHooks references https://docs.konghq.com/enterprise/2.5.x/admin-api/event-hooks/reference/
+// Read https://docs.konghq.com/enterprise/2.5.x/admin-api/event-hooks/reference/
+// +k8s:deepcopy-gen=true
 type EventHooks struct {
 	CreatedAt *int    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID        *string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -298,6 +299,8 @@ type EventHooks struct {
 	Snooze    *int    `json:"snooze,omitempty" yaml:"snooze,omitempty"`
 }
 
+// Config represents event-hooks configuration
+// +k8s:deepcopy-gen=true
 type Config struct {
 	URL       *string  `json:"url,omitempty" yaml:"url,omitempty"`
 	Functions []string `json:"functions,omitempty" yaml:"functions,omitempty"`
