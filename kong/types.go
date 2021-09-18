@@ -288,14 +288,20 @@ type Workspace struct {
 // EventHooks represents an event hooks in Kong Enterprise.
 // EventHooks references https://docs.konghq.com/enterprise/2.5.x/admin-api/event-hooks/reference/
 type EventHooks struct {
-	CreatedAt *int                   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	ID        *string                `json:"id,omitempty" yaml:"id,omitempty"`
-	Config    map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty"`
-	Handler   *string                `json:"handler,omitempty" yaml:"handler,omitempty"`
-	Source    *string                `json:"source,omitempty" yaml:"source,omitempty"`
-	Event     *string                `json:"event,omitempty" yaml:"event,omitempty"`
-	OnChange  *bool                  `json:"on_change,omitempty" yaml:"on_change,omitempty"`
-	Snooze    *int                   `json:"snooze,omitempty" yaml:"snooze,omitempty"`
+	CreatedAt *int    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID        *string `json:"id,omitempty" yaml:"id,omitempty"`
+	Config    *Config `json:"config,omitempty" yaml:"config,omitempty"`
+	Handler   *string `json:"handler,omitempty" yaml:"handler,omitempty"`
+	Source    *string `json:"source,omitempty" yaml:"source,omitempty"`
+	Event     *string `json:"event,omitempty" yaml:"event,omitempty"`
+	OnChange  *bool   `json:"on_change,omitempty" yaml:"on_change,omitempty"`
+	Snooze    *int    `json:"snooze,omitempty" yaml:"snooze,omitempty"`
+}
+
+type Config struct {
+	URL       *string  `json:"url,omitempty" yaml:"url,omitempty"`
+	Functions []string `json:"functions,omitempty" yaml:"functions,omitempty"`
+	Method    *string  `json:"method,omitempty" yaml:"method,omitempty"`
 }
 
 // Admin represents an Admin in Kong.
