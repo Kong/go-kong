@@ -12,27 +12,24 @@ func TestEventHook(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, client)
 
+	url := "https://webhook.site/ec707ef0-ab91-4693-8dd2-114471ff6f90"
+	config := Config{
+		URL: &url,
+	}
+
 	webhook := "webhook"
 	crud := "crud"
 	consumers := "consumers"
 	cfg := &EventHooks{
-		Config: map[string]interface{}{
-			"url":        "https://webhook.site/ec707ef0-ab91-4693-8dd2-114471ff6f90",
-			"ssl_verify": false,
-			"secret":     " ",
-		},
+		Config:  &config,
 		Handler: &webhook,
 		Source:  &crud,
 		Event:   &consumers,
 	}
 
 	createdWebHook, err := client.EventHooks.AddWebhook(defaultCtx, cfg)
-	if err != nil {
-		panic(err)
-	}
-	if createdWebHook == nil {
-		panic(err)
-	}
+	assert.Nil(t, err)
+	assert.NotNil(t, createdWebHook)
 }
 
 func TestCustomWebHook(t *testing.T) {
@@ -40,29 +37,24 @@ func TestCustomWebHook(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, client)
 
+	url := "https://webhook.site/ec707ef0-ab91-4693-8dd2-114471ff6f90"
+	method := "POST"
+	config := Config{
+		URL:    &url,
+		Method: &method,
+	}
+
 	webhookCustom := "webhook-custom"
 	crud := "crud"
 	admins := "admins"
 	cfg := &EventHooks{
-		Config: map[string]interface{}{
-			"url":            "https://webhook.site/ec707ef0-ab91-4693-8dd2-114471ff6f90",
-			"body":           nil,
-			"body_format":    nil,
-			"method":         "POST",
-			"payload_format": true,
-			"secret":         nil,
-			"ssl_verify":     false,
-		},
+		Config:  &config,
 		Handler: &webhookCustom,
 		Source:  &crud,
 		Event:   &admins,
 	}
 
 	createdCustomWebHook, err := client.EventHooks.AddWebhook(defaultCtx, cfg)
-	if err != nil {
-		panic(err)
-	}
-	if createdCustomWebHook == nil {
-		panic(err)
-	}
+	assert.Nil(t, err)
+	assert.NotNil(t, createdCustomWebHook)
 }
