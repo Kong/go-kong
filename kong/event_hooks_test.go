@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//https://docs.konghq.com/enterprise/2.5.x/admin-api/event-hooks/reference/#test-an-event-hook
+// https://docs.konghq.com/enterprise/2.5.x/admin-api/event-hooks/reference/#test-an-event-hook
 func TestEventHook(t *testing.T) {
 	client, err := NewTestClient(nil, nil)
 	assert.Nil(t, err)
