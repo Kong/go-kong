@@ -49,7 +49,7 @@ func (s *WorkspaceService) Exists(ctx context.Context,
 		return false, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
 
-	endpoint := fmt.Sprintf("/%v/workspaces/%v", *nameOrID, *nameOrID)
+	endpoint := fmt.Sprintf("/workspaces/%v", *nameOrID)
 	return s.client.exists(ctx, endpoint)
 }
 
