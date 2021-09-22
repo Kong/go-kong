@@ -10,6 +10,8 @@ import (
 type AbstractWorkspaceService interface {
 	// Exists checks the exitence of a Workspace in Kong.
 	Exists(ctx context.Context, nameOrID *string) (bool, error)
+	// ExistsByName checks the exitence of a Workspace using name only in Kong.
+	ExistsByName(ctx context.Context, name *string) (bool, error)
 	// Create creates a Workspace in Kong.
 	Create(ctx context.Context, workspace *Workspace) (*Workspace, error)
 	// Get fetches a Workspace in Kong.
