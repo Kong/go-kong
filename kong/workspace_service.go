@@ -53,6 +53,17 @@ func (s *WorkspaceService) Exists(ctx context.Context,
 	return s.client.exists(ctx, endpoint)
 }
 
+// Exists checks the exitence of the Workspace using its name in Kong.
+func (s *WorkspaceService) ExistsByName(ctx context.Context,
+	name *string) (bool, error) {
+	if isEmptyString(name) {
+		return false, fmt.Errorf("nameOrID cannot be nil for Get operation")
+	}
+
+	endpoint := fmt.Sprintf("/%v/workspaces/%v", *name, *name)
+	return s.client.exists(ctx, endpoint)
+}
+
 // Create creates a Workspace in Kong.
 func (s *WorkspaceService) Create(ctx context.Context,
 	workspace *Workspace) (*Workspace, error) {
