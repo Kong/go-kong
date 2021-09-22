@@ -55,7 +55,7 @@ func (s *WorkspaceService) Exists(ctx context.Context,
 	return s.client.exists(ctx, endpoint)
 }
 
-// Exists checks the exitence of the Workspace using its name in Kong.
+// ExistsByName checks the exitence of the Workspace using its name in Kong.
 func (s *WorkspaceService) ExistsByName(ctx context.Context,
 	name *string) (bool, error) {
 	if isEmptyString(name) {
