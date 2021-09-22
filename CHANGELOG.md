@@ -1,6 +1,7 @@
 # Table of Contents
 
-- [v0.21.0](#v0200---20210826)
+- [v0.22.0](#v0220---20210922)
+- [v0.21.0](#v0210---20210826)
 - [v0.20.0](#v0200---20210707)
 - [v0.19.0](#v0190---20210514)
 - [v0.18.0](#v0180---20210505)
@@ -25,6 +26,26 @@
 - [0.3.0](#030---20181219)
 - [0.2.0](#020---20181219)
 - [0.1.0](#010---20181201)
+
+## [v0.22.0] - 2021/09/22
+
+### Added
+
+- Test that target updates work as expected.
+  [#85](https://github.com/Kong/go-kong/pull/85)
+- Workspace service supports new `ExistsByName()` API. This is similar to
+  `Exists()`, but it only accepts names, not IDs. This function can check if a
+  workspace exists even if the RBAC user has access to that namespace only.
+  `Exists()` requires access to the default namespace.
+  [#90](https://github.com/Kong/go-kong/pull/90)
+
+### Fixed
+
+- The generic `exists()` client functions uses GETs instead of HEADs. Kong
+  <=2.6 respond to HEAD requests with 200s as long as the endpoint has a valid
+  form. They do not check if entities actually exist, and `exists()` would
+  return true for entities that don't exist because of this.
+  [#90](https://github.com/Kong/go-kong/pull/90)
 
 ## [v0.21.0] - 2021/08/26
 
@@ -374,6 +395,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.22.0]: https://github.com/Kong/go-kong/compare/v0.21.0...v0.22.0
 [v0.21.0]: https://github.com/Kong/go-kong/compare/v0.20.0...v0.21.0
 [v0.20.0]: https://github.com/Kong/go-kong/compare/v0.19.0...v0.20.0
 [v0.19.0]: https://github.com/Kong/go-kong/compare/v0.18.0...v0.19.0
