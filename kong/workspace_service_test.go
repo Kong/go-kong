@@ -1,3 +1,4 @@
+//go:build enterprise
 // +build enterprise
 
 package kong
@@ -35,6 +36,20 @@ func TestWorkspaceService(T *testing.T) {
 	exists, err := client.Workspaces.Exists(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
 	assert.True(exists)
+
+	exists, err = client.Workspaces.ExistsByName(defaultCtx, createdWorkspace.Name)
+	assert.Nil(err)
+	assert.True(exists)
+
+	fakeID := *createdWorkspace.ID + "garbage"
+	exists, err = client.Workspaces.Exists(defaultCtx, &fakeID)
+	assert.Nil(err)
+	assert.False(exists)
+
+	fakeName := *createdWorkspace.Name + "garbage"
+	exists, err = client.Workspaces.ExistsByName(defaultCtx, &fakeName)
+	assert.Nil(err)
+	assert.False(exists)
 
 	workspace.Comment = String("new comment")
 	workspace, err = client.Workspaces.Update(defaultCtx, workspace)
