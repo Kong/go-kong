@@ -36,6 +36,11 @@ func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs inter
 		req.Header.Add("Content-Type", "application/json")
 	}
 
+	// add key auth
+	if c.auth.keyAuth != nil {
+		req.Header.Add(c.auth.keyAuth.key, c.auth.keyAuth.value)
+	}
+
 	// add query string if any
 	if qs != nil {
 		values, err := query.Values(qs)

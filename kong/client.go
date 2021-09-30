@@ -73,6 +73,8 @@ type Client struct {
 	debug          bool
 	CustomEntities AbstractCustomEntityService
 
+	auth auth
+
 	custom.Registry
 }
 
@@ -187,6 +189,11 @@ func (c *Client) workspacedBaseURL(workspace string) string {
 		return c.defaultRootURL + "/" + workspace
 	}
 	return c.defaultRootURL
+}
+
+//SetKeyAuth set key auth in the client
+func (c *Client) SetKeyAuth(key, value string) {
+	c.auth.keyAuth = &keyAuthOption{key: key, value: value}
 }
 
 // Do executes a HTTP request and returns a response
