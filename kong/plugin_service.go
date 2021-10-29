@@ -28,7 +28,7 @@ type AbstractPluginService interface {
 	// ListAllForRoute fetches all Plugins in Kong enabled for a service.
 	ListAllForRoute(ctx context.Context, routeID *string) ([]*Plugin, error)
 	// Validate validates a Plugin against its schema
-	Validate(ctx context.Context, plugin *Plugin) (bool, error)
+	Validate(ctx context.Context, plugin *Plugin) (bool, string, error)
 	// GetSchema retrieves the schema of a plugin
 	GetSchema(ctx context.Context, pluginName *string) (map[string]interface{}, error)
 }
@@ -144,17 +144,28 @@ func (s *PluginService) Delete(ctx context.Context,
 }
 
 // Validate validates a Plugin against its schema
-func (s *PluginService) Validate(ctx context.Context, plugin *Plugin) (bool, error) {
+func (s *PluginService) Validate(ctx context.Context, plugin *Plugin) (bool, string, error) {
 	endpoint := "/schemas/plugins/validate"
 	req, err := s.client.NewRequest("POST", endpoint, nil, &plugin)
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 	resp, err := s.client.Do(ctx, req, nil)
 	if err != nil {
-		return false, err
+		// Arguably Kong should return a 422 Unprocessable Entity for a well-formed
+		// HTTP request with a mangled plugin, but it doesn't, it returns a 400.
+		// Hopefully (usually) we get a 400 because of a mangled plugin rather than
+		// a mangled request, but we can't easily tell as messageFromBody masks errors
+		if resp.StatusCode == http.StatusBadRequest {
+			apiError, ok := err.(*APIError)
+			if !ok {
+				return false, "", err
+			}
+			return false, apiError.message, nil
+		}
+		return false, "", err
 	}
-	return resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK, nil
+	return resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK, "", nil
 }
 
 // listByPath fetches a list of Plugins in Kong
