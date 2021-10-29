@@ -7,6 +7,37 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestPluginsServiceValidation(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	goodPlugin := &Plugin{
+		Name: String("key-auth"),
+		Config: Configuration{
+			"anonymous": "true",
+		},
+	}
+
+	badPlugin := &Plugin{
+		Name: String("key-auth"),
+		Config: Configuration{
+			"garbage": true,
+		},
+	}
+
+	valid, _, err := client.Plugins.Validate(defaultCtx, goodPlugin)
+	assert.True(valid)
+	assert.Nil(err)
+
+	valid, msg, err := client.Plugins.Validate(defaultCtx, badPlugin)
+	assert.False(valid)
+	assert.Nil(err)
+	assert.Equal("schema violation (config.garbage: unknown field)", msg)
+}
+
 func TestPluginsService(T *testing.T) {
 	assert := assert.New(T)
 
