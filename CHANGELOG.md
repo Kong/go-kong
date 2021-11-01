@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.23.0](#v0230---20211101)
 - [v0.22.0](#v0220---20210922)
 - [v0.21.0](#v0210---20210826)
 - [v0.20.0](#v0200---20210707)
@@ -26,6 +27,17 @@
 - [0.3.0](#030---20181219)
 - [0.2.0](#020---20181219)
 - [0.1.0](#010---20181201)
+
+## [v0.23.0] - 2021/09/22
+
+### Breaking changes
+
+- The plugin service `Validate()` API's return signature is now `bool, string,
+  err` rather than `bool, err`. The additional string value contains the
+  validation failure reason if validation successfully determined that the
+  proposed configuration was not valid. The err value is now only set if
+  `Validate()` could not successfully retrieve validation information because
+  of a timeout/DNS lookup failure/etc.
 
 ## [v0.22.0] - 2021/09/22
 
@@ -395,6 +407,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.23.0]: https://github.com/Kong/go-kong/compare/v0.22.0...v0.23.0
 [v0.22.0]: https://github.com/Kong/go-kong/compare/v0.21.0...v0.22.0
 [v0.21.0]: https://github.com/Kong/go-kong/compare/v0.20.0...v0.21.0
 [v0.20.0]: https://github.com/Kong/go-kong/compare/v0.19.0...v0.20.0
