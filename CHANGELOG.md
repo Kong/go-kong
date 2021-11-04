@@ -1,34 +1,36 @@
 # Table of Contents
 
-- [v0.23.0](#v0230---20211101)
-- [v0.22.0](#v0220---20210922)
-- [v0.21.0](#v0210---20210826)
-- [v0.20.0](#v0200---20210707)
-- [v0.19.0](#v0190---20210514)
-- [v0.18.0](#v0180---20210505)
-- [v0.17.0](#v0170---20210405)
-- [v0.16.0](#v0160---20210303)
-- [v0.15.0](#v0150---20210122)
-- [v0.14.0](#v0140---20210112)
-- [v0.13.0](#v0130---20200804)
-- [v0.12.0](#v0120---20200730)
-- [v0.11.0](#v0110---20200117)
-- [v0.10.0](#v0100---20191027)
-- [v0.9.0](#v090---20190824)
-- [v0.8.0](#v080---20190821)
-- [v0.7.0](#v070---20190813)
-- [v0.6.2](#v062---20190809)
-- [v0.6.1](#v061---20190809)
-- [v0.6.0](#v060---20190809)
-- [v0.5.1](#v051---20190805)
-- [v0.5.0](#v050---20190607)
-- [v0.4.1](#v041---20190411)
-- [v0.4.0](#v040---20190406)
-- [0.3.0](#030---20181219)
-- [0.2.0](#020---20181219)
-- [0.1.0](#010---20181201)
+- [v0.23.0](#v0230)
+- [v0.22.0](#v0220)
+- [v0.21.0](#v0210)
+- [v0.20.0](#v0200)
+- [v0.19.0](#v0190)
+- [v0.18.0](#v0180)
+- [v0.17.0](#v0170)
+- [v0.16.0](#v0160)
+- [v0.15.0](#v0150)
+- [v0.14.0](#v0140)
+- [v0.13.0](#v0130)
+- [v0.12.0](#v0120)
+- [v0.11.0](#v0110)
+- [v0.10.0](#v0100)
+- [v0.9.0](#v090)
+- [v0.8.0](#v080)
+- [v0.7.0](#v070)
+- [v0.6.2](#v062)
+- [v0.6.1](#v061)
+- [v0.6.0](#v060)
+- [v0.5.1](#v051)
+- [v0.5.0](#v050)
+- [v0.4.1](#v041)
+- [v0.4.0](#v040)
+- [0.3.0](#030)
+- [0.2.0](#020)
+- [0.1.0](#010)
 
-## [v0.23.0] - 2021/09/22
+## [v0.23.0]
+
+> Release date: 2021/09/22
 
 ### Breaking changes
 
@@ -39,7 +41,9 @@
   `Validate()` could not successfully retrieve validation information because
   of a timeout/DNS lookup failure/etc.
 
-## [v0.22.0] - 2021/09/22
+## [v0.22.0]
+
+> Release date: 2021/09/22
 
 ### Added
 
@@ -59,7 +63,9 @@
   return true for entities that don't exist because of this.
   [#90](https://github.com/Kong/go-kong/pull/90)
 
-## [v0.21.0] - 2021/08/26
+## [v0.21.0]
+
+> Release date: 2021/08/26
 
 ### Added
 
@@ -71,7 +77,9 @@
 - Plugin validation checks against the correct status code.
   [#81](https://github.com/Kong/go-kong/pull/81)
 
-## [v0.20.0] - 2021/07/07
+## [v0.20.0]
+
+> Release date: 2021/07/07
 
 ### Added
 
@@ -89,13 +97,17 @@
   [#66](https://github.com/Kong/go-kong/pull/66)
 - Various improvements to repository CI: caching go modules, updating codegen, e.t.c.
 
-## [v0.19.0] - 2021/05/05
+## [v0.19.0]
+
+> Release date: 2021/05/05
 
 ### Added
 
 - Client now allows reading the version of Kong. [#48](https://github.com/Kong/go-kong/pull/48)
 
-## [v0.18.0] - 2021/05/05
+## [v0.18.0]
+
+> Release date: 2021/05/05
 
 ### Added
 
@@ -113,7 +125,9 @@
 - CI no longer uses Bintray repositories. [#55](https://github.com/Kong/go-kong/pull/55)
 - Dropped testing against older versions of Kong. [#58](https://github.com/Kong/go-kong/pull/58)
 
-## [v0.17.0] - 2021/04/05
+## [v0.17.0]
+
+> Release date: 2021/04/05
 
 ### Added
 
@@ -137,19 +151,25 @@
 - RBAC roles now properly include their `negative` field in requests to Kong.
   [#32](https://github.com/Kong/go-kong/pull/27)
 
-## [v0.16.0] - 2021/03/03
+## [v0.16.0]
+
+> Release date: 2021/03/03
 
 ### Added
 
 - `Service` now includes `URL`.
 
-## [v0.15.0] - 2021/01/22
+## [v0.15.0]
+
+> Release date: 2021/01/22
 
 ### Added
 
 - `Route` now includes `RequestBuffering` and `ResponseBuffering`.
 
-## [v0.14.0] - 2021/01/12
+## [v0.14.0]
+
+> Release date: 2021/01/12
 
 ### Breaking changes
 
@@ -163,14 +183,18 @@
 - Support for RBAC permissions
 - DeepCopy annotations for enterprise entities
 
-## [v0.13.0] - 2020/08/04
+## [v0.13.0]
+
+> Release date: 2020/08/04
 
 ### Summary
 
 This release renames the package from `github.com/hbagdi/go-kong` to
 `github.com/kong/go-kong`.
 
-## [v0.12.0] - 2020/07/30
+## [v0.12.0]
+
+> Release date: 2020/07/30
 
 ### Summary
 
@@ -200,7 +224,9 @@ a number of enterprise entities.
 - Changed the branch name from `master` to `main`
 - Introduced linters to improve code health
 
-## [v0.11.0] - 2020/01/17
+## [v0.11.0]
+
+> Release date: 2020/01/17
 
 ### Summary
 
@@ -211,7 +237,9 @@ a number of enterprise entities.
 - `Threshold` field has been added to Upstream struct.
 - `PathHandling` field has been added to Route struct.
 
-## [v0.10.0] - 2019/10/27
+## [v0.10.0]
+
+> Release date: 2019/10/27
 
 ### Summary
 
@@ -228,7 +256,9 @@ a number of enterprise entities.
   - `ACLGroup`
   - `JWTAuth`
 
-## [v0.9.0] - 2019/08/24
+## [v0.9.0]
+
+> Release date: 2019/08/24
 
 ### Breaking changes
 
@@ -246,7 +276,9 @@ a number of enterprise entities.
 - New method `GetByCustomID` has been introduced to fetch Consumers by
   `custom_id`.
 
-## [v0.8.0] - 2019/08/21
+## [v0.8.0]
+
+> Release date: 2019/08/21
 
 ### Added
 
@@ -254,7 +286,9 @@ a number of enterprise entities.
   which can be used to create Oauth2 credentials in Kong for some
   Oauth2 flows.
 
-## [v0.7.0] - 2019/08/13
+## [v0.7.0]
+
+> Release date: 2019/08/13
 
 ### Summary
 
@@ -270,19 +304,25 @@ authentication credentials in Kong.
   - `jwt`
   - `acl`
 
-## [v0.6.2] - 2019/08/09
+## [v0.6.2]
+
+> Release date: 2019/08/09
 
 ### Fix
 
 - Add missing omitempty tag to ClientCertificate field
 
-## [v0.6.1] - 2019/08/09
+## [v0.6.1]
+
+> Release date: 2019/08/09
 
 ### Fix
 
 - Fix a typo in Service struct definition for YAML tag
 
-## [v0.6.0] - 2019/08/09
+## [v0.6.0]
+
+> Release date: 2019/08/09
 
 ### Summary
 
@@ -306,14 +346,18 @@ authentication credentials in Kong.
 - `Algorithm` field has been added to Upstream struct.
   [#9](https://github.com/hbagdi/go-kong/pull/9)
 
-## [v0.5.1] - 2019/08/05
+## [v0.5.1]
+
+> Release date: 2019/08/05
 
 ### Fix
 
 - Add missing healthchecks.active.unhealthy.interval field to Upstream
   [#6](https://github.com/hbagdi/go-kong/issues/6)
 
-## [v0.5.0] - 2019/06/07
+## [v0.5.0]
+
+> Release date: 2019/06/07
 
 ### Summary
 
@@ -331,13 +375,17 @@ authentication credentials in Kong.
   This was always POST previously.
   [#3](https://github.com/hbagdi/go-kong/pull/3)
 
-## [v0.4.1] - 2019/04/11
+## [v0.4.1]
+
+> Release date: 2019/04/11
 
 ### Fix
 
 - Add `omitempty` property to Upstream fields for Kong 1.0 compatibility
 
-## [v0.4.0] - 2019/04/06
+## [v0.4.0]
+
+> Release date: 2019/04/06
 
 ### Summary
 
@@ -361,7 +409,9 @@ authentication credentials in Kong.
 - `TargetService` has two new methods `MarkHealthy()` and `MarkUnhealthy()`
   to change the health of a target.
 
-## [0.3.0] - 2018/12/19
+## [0.3.0]
+
+> Release date: 2018/12/19
 
 ### Summary
 
@@ -378,7 +428,9 @@ authentication credentials in Kong.
   on these before upgrading.
 - `Plugin` struct has dropped the `API` field.
 
-## [0.2.0] - 2018/12/19
+## [0.2.0]
+
+> Release date: 2018/12/19
 
 ### Summary
 
@@ -397,7 +449,9 @@ authentication credentials in Kong.
 - `RunOn` property has been added to `Plugin`.
 - New properties are added to `Route` for L4 proxy support.
 
-## [0.1.0] - 2018/12/01
+## [0.1.0]
+
+> Release date: 2018/12/01
 
 ### Summary
 
