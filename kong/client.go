@@ -191,9 +191,9 @@ func (c *Client) workspacedBaseURL(workspace string) string {
 	return c.defaultRootURL
 }
 
-// Do executes a HTTP request and returns a response
-func (c *Client) Do(ctx context.Context, req *http.Request,
-	v interface{}) (*Response, error) {
+// DoRAW executes an HTTP request and returns an http.Response
+// the caller is responsible for closing the response body.
+func (c *Client) DoRAW(ctx context.Context, req *http.Request) (*http.Response, error) {
 	var err error
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
@@ -215,6 +215,17 @@ func (c *Client) Do(ctx context.Context, req *http.Request,
 		return nil, fmt.Errorf("making HTTP request: %w", err)
 	}
 
+	return resp, err
+}
+
+// Do executes an HTTP request and returns a kong.Response
+func (c *Client) Do(ctx context.Context, req *http.Request,
+	v interface{}) (*Response, error) {
+	resp, err := c.DoRAW(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
 	// log the response
 	err = c.logResponse(resp)
 	if err != nil {
@@ -227,13 +238,6 @@ func (c *Client) Do(ctx context.Context, req *http.Request,
 	if err = hasError(resp); err != nil {
 		return response, err
 	}
-	// Call Close on exit
-	defer func() {
-		e := resp.Body.Close()
-		if e != nil {
-			err = e
-		}
-	}()
 
 	// response
 	if v != nil {
