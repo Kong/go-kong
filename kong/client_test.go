@@ -46,6 +46,19 @@ func TestRoot(T *testing.T) {
 	assert.NotNil(root["version"])
 }
 
+func TestRootJSON(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.NoError(err)
+	assert.NotNil(client)
+
+	root, err := client.RootJSON(defaultCtx)
+	assert.Nil(err)
+	assert.NotEmpty(root)
+	assert.Contains(string(root), `"version"`)
+}
+
 func TestDo(T *testing.T) {
 	assert := assert.New(T)
 

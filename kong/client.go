@@ -328,3 +328,31 @@ func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 	}
 	return info, nil
 }
+
+// RootJSON returns the response of GET request on the root of the Admin API
+// (GET / or /kong with a workspace) returning the raw JSON response data.
+func (c *Client) RootJSON(ctx context.Context) ([]byte, error) {
+	endpoint := "/"
+	ws := c.Workspace()
+	if len(ws) > 0 {
+		endpoint = "/kong"
+	}
+
+	req, err := c.NewRequestRaw("GET", c.workspacedBaseURL(ws), endpoint, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.DoRAW(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+}
