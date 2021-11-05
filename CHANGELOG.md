@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.23.0](#v0240)
 - [v0.23.0](#v0230)
 - [v0.22.0](#v0220)
 - [v0.21.0](#v0210)
@@ -27,6 +28,16 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.24.0]
+
+> Release date: 2021/11/05
+
+### Added
+
+- A `Listeners()` method was added to the Kong `Client` in order to retrieve
+  the `proxy_listeners` and `stream_listeners` from the root conveniently.
+  [#101](https://github.com/Kong/go-kong/pull/101)
 
 ## [v0.23.0]
 
@@ -461,6 +472,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.24.0]: https://github.com/Kong/go-kong/compare/v0.23.0...v0.24.0
 [v0.23.0]: https://github.com/Kong/go-kong/compare/v0.22.0...v0.23.0
 [v0.22.0]: https://github.com/Kong/go-kong/compare/v0.21.0...v0.22.0
 [v0.21.0]: https://github.com/Kong/go-kong/compare/v0.20.0...v0.21.0
