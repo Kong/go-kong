@@ -111,6 +111,8 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	var rootURL string
 	if baseURL != nil {
 		rootURL = *baseURL
+	} else if urlFromEnv := os.Getenv("KONG_ADMIN_URL"); urlFromEnv != "" {
+		rootURL = urlFromEnv
 	} else {
 		rootURL = defaultBaseURL
 	}
