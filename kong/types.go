@@ -116,32 +116,41 @@ type SNI struct {
 // +k8s:deepcopy-gen=true
 type Healthy struct {
 	HTTPStatuses []int `json:"http_statuses,omitempty" yaml:"http_statuses,omitempty"`
-	Interval     *int  `json:"interval,omitempty" yaml:"interval,omitempty"`
-	Successes    *int  `json:"successes,omitempty" yaml:"successes,omitempty"`
+	//+kubebuilder:validation:Minimum=0
+	Interval *int `json:"interval,omitempty" yaml:"interval,omitempty"`
+	//+kubebuilder:validation:Minimum=0
+	Successes *int `json:"successes,omitempty" yaml:"successes,omitempty"`
 }
 
 // Unhealthy configures thresholds and HTTP status codes
 // to mark targets unhealthy.
 // +k8s:deepcopy-gen=true
 type Unhealthy struct {
+	//+kubebuilder:validation:Minimum=0
 	HTTPFailures *int  `json:"http_failures,omitempty" yaml:"http_failures,omitempty"`
 	HTTPStatuses []int `json:"http_statuses,omitempty" yaml:"http_statuses,omitempty"`
-	TCPFailures  *int  `json:"tcp_failures,omitempty" yaml:"tcp_failures,omitempty"`
-	Timeouts     *int  `json:"timeouts,omitempty" yaml:"timeouts,omitempty"`
-	Interval     *int  `json:"interval,omitempty" yaml:"interval,omitempty"`
+	//+kubebuilder:validation:Minimum=0
+	TCPFailures *int `json:"tcp_failures,omitempty" yaml:"tcp_failures,omitempty"`
+	//+kubebuilder:validation:Minimum=0
+	Timeouts *int `json:"timeouts,omitempty" yaml:"timeouts,omitempty"`
+	//+kubebuilder:validation:Minimum=0
+	Interval *int `json:"interval,omitempty" yaml:"interval,omitempty"`
 }
 
 // ActiveHealthcheck configures active health check probing.
 // +k8s:deepcopy-gen=true
 type ActiveHealthcheck struct {
-	Concurrency            *int       `json:"concurrency,omitempty" yaml:"concurrency,omitempty"`
-	Healthy                *Healthy   `json:"healthy,omitempty" yaml:"healthy,omitempty"`
-	HTTPPath               *string    `json:"http_path,omitempty" yaml:"http_path,omitempty"`
-	HTTPSSni               *string    `json:"https_sni,omitempty" yaml:"https_sni,omitempty"`
-	HTTPSVerifyCertificate *bool      `json:"https_verify_certificate,omitempty" yaml:"https_verify_certificate,omitempty"`
-	Type                   *string    `json:"type,omitempty" yaml:"type,omitempty"`
-	Timeout                *int       `json:"timeout,omitempty" yaml:"timeout,omitempty"`
-	Unhealthy              *Unhealthy `json:"unhealthy,omitempty" yaml:"unhealthy,omitempty"`
+	//+kubebuilder:validation:Minimum=1
+	Concurrency *int     `json:"concurrency,omitempty" yaml:"concurrency,omitempty"`
+	Healthy     *Healthy `json:"healthy,omitempty" yaml:"healthy,omitempty"`
+	//+kubebuilder:validation:Pattern=^/.*$
+	HTTPPath               *string `json:"http_path,omitempty" yaml:"http_path,omitempty"`
+	HTTPSSni               *string `json:"https_sni,omitempty" yaml:"https_sni,omitempty"`
+	HTTPSVerifyCertificate *bool   `json:"https_verify_certificate,omitempty" yaml:"https_verify_certificate,omitempty"`
+	Type                   *string `json:"type,omitempty" yaml:"type,omitempty"`
+	//+kubebuilder:validation:Minimum=0
+	Timeout   *int       `json:"timeout,omitempty" yaml:"timeout,omitempty"`
+	Unhealthy *Unhealthy `json:"unhealthy,omitempty" yaml:"unhealthy,omitempty"`
 }
 
 // PassiveHealthcheck configures passive checks around
