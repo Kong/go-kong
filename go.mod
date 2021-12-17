@@ -8,5 +8,5 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/mitchellh/mapstructure v1.4.3
 	github.com/stretchr/testify v1.7.0
-	k8s.io/code-generator v0.22.4
+	k8s.io/code-generator v0.23.1
 )
