@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/blang/semver/v4"
+	"github.com/tidwall/gjson"
 )
 
 const (
@@ -140,4 +141,72 @@ func VersionFromInfo(info map[string]interface{}) string {
 		return ""
 	}
 	return version.(string)
+}
+
+func getDefaultProtocols(schema gjson.Result) []*string {
+	var res []*string
+	fields := schema.Get("fields")
+
+	for _, field := range fields.Array() {
+		for key, value := range field.Map() {
+			if key != "protocols" {
+				continue
+			}
+			d := value.Get("default")
+			if d.Exists() {
+				for _, v := range d.Array() {
+					res = append(res, String(v.String()))
+				}
+				return res
+			}
+		}
+	}
+	return res
+}
+
+func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
+	res := config.DeepCopy()
+	value := schema.Get("fields")
+
+	value.ForEach(func(key, value gjson.Result) bool {
+		// get the key name
+		ms := value.Map()
+		fname := ""
+		for k := range ms {
+			fname = k
+			break
+		}
+
+		if fname == "config" {
+			newConfig := fillConfigRecord(value.Get(fname), config)
+			res = newConfig
+			return true
+		}
+
+		// check if key is already set in the config
+		if _, ok := config[fname]; ok {
+			// yes, don't set it
+			return true
+		}
+		ftype := value.Get(fname + ".type")
+		if ftype.String() == "record" {
+			subConfig := config[fname]
+			if subConfig == nil {
+				subConfig = make(map[string]interface{})
+			}
+			newSubConfig := fillConfigRecord(value.Get(fname), subConfig.(map[string]interface{}))
+			res[fname] = map[string]interface{}(newSubConfig)
+			return true
+		}
+		value = value.Get(fname + ".default")
+		if value.Exists() {
+			res[fname] = value.Value()
+		} else {
+			// if no default exists, set an explicit nil
+			res[fname] = nil
+		}
+		return true
+	})
+
+	return res
 }

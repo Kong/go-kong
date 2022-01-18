@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/tidwall/gjson"
 )
 
 // AbstractPluginService handles Plugins in Kong.
@@ -29,14 +31,58 @@ type AbstractPluginService interface {
 	ListAllForRoute(ctx context.Context, routeID *string) ([]*Plugin, error)
 	// Validate validates a Plugin against its schema
 	Validate(ctx context.Context, plugin *Plugin) (bool, string, error)
-	// GetSchema retrieves the schema of a plugin
+	// GetSchema retrieves the config schema of a plugin
 	GetSchema(ctx context.Context, pluginName *string) (map[string]interface{}, error)
+	// GetFullSchema retrieves the full schema of a plugin
+	GetFullSchema(ctx context.Context, pluginName *string) (map[string]interface{}, error)
+	// FillDefaults ingests plugin's defaults from its schema
+	FillDefaults(ctx context.Context, plugin *Plugin, schema map[string]interface{}) (*Plugin, error)
 }
 
 // PluginService handles Plugins in Kong.
 type PluginService service
 
-// GetSchema retrieves the schema of a plugin
+// GetFullSchema retrieves the full schema of a plugin
+func (s *PluginService) GetFullSchema(ctx context.Context,
+	pluginName *string) (map[string]interface{}, error) {
+	if isEmptyString(pluginName) {
+		return nil, fmt.Errorf("pluginName cannot be empty")
+	}
+	endpoint := fmt.Sprintf("/schemas/plugins/%v", *pluginName)
+	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	var schema map[string]interface{}
+	_, err = s.client.Do(ctx, req, &schema)
+	if err != nil {
+		return nil, err
+	}
+	return schema, nil
+}
+
+// FillDefaults ingests plugin's defaults from its schema
+func (s *PluginService) FillDefaults(ctx context.Context,
+	plugin *Plugin, schema map[string]interface{}) (*Plugin, error) {
+	jsonb, err := json.Marshal(&schema)
+	if err != nil {
+		return nil, err
+	}
+	gjsonSchema := gjson.ParseBytes((jsonb))
+	if plugin.Config == nil {
+		plugin.Config = make(Configuration)
+	}
+	plugin.Config = fillConfigRecord(gjsonSchema, plugin.Config)
+	if plugin.Protocols == nil {
+		plugin.Protocols = getDefaultProtocols(gjsonSchema)
+	}
+	if plugin.Enabled == nil {
+		plugin.Enabled = Bool(true)
+	}
+	return plugin, nil
+}
+
+// GetSchema retrieves the config schema of a plugin
 func (s *PluginService) GetSchema(ctx context.Context,
 	pluginName *string) (map[string]interface{}, error) {
 	if isEmptyString(pluginName) {
