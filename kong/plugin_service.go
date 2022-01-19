@@ -32,6 +32,8 @@ type AbstractPluginService interface {
 	// Validate validates a Plugin against its schema
 	Validate(ctx context.Context, plugin *Plugin) (bool, string, error)
 	// GetSchema retrieves the config schema of a plugin
+	//
+	// Deprecated: Use GetFullSchema instead
 	GetSchema(ctx context.Context, pluginName *string) (map[string]interface{}, error)
 	// GetFullSchema retrieves the full schema of a plugin
 	GetFullSchema(ctx context.Context, pluginName *string) (map[string]interface{}, error)
@@ -83,6 +85,8 @@ func (s *PluginService) FillDefaults(ctx context.Context,
 }
 
 // GetSchema retrieves the config schema of a plugin
+//
+// Deprecated: Use GetPluginSchema instead
 func (s *PluginService) GetSchema(ctx context.Context,
 	pluginName *string) (map[string]interface{}, error) {
 	if isEmptyString(pluginName) {
