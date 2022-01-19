@@ -2,6 +2,7 @@ package kong
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -209,4 +210,24 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 	})
 
 	return res
+}
+
+// FillPluginsDefaults ingests plugin's defaults from its schema
+func FillPluginsDefaults(plugin *Plugin, schema map[string]interface{}) (*Plugin, error) {
+	jsonb, err := json.Marshal(&schema)
+	if err != nil {
+		return nil, err
+	}
+	gjsonSchema := gjson.ParseBytes((jsonb))
+	if plugin.Config == nil {
+		plugin.Config = make(Configuration)
+	}
+	plugin.Config = fillConfigRecord(gjsonSchema, plugin.Config)
+	if plugin.Protocols == nil {
+		plugin.Protocols = getDefaultProtocols(gjsonSchema)
+	}
+	if plugin.Enabled == nil {
+		plugin.Enabled = Bool(true)
+	}
+	return plugin, nil
 }

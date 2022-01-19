@@ -422,7 +422,7 @@ func TestFillPluginDefaults(T *testing.T) {
 			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, tc.plugin.Name)
 			assert.Nil(err)
 			assert.NotNil(fullSchema)
-			got, err := client.Plugins.FillDefaults(defaultCtx, tc.plugin, fullSchema)
+			got, err := FillPluginsDefaults(tc.plugin, fullSchema)
 			if err != nil {
 				t.Errorf(err.Error())
 			}

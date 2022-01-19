@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
-	"github.com/tidwall/gjson"
 )
 
 // AbstractPluginService handles Plugins in Kong.
@@ -37,8 +35,6 @@ type AbstractPluginService interface {
 	GetSchema(ctx context.Context, pluginName *string) (map[string]interface{}, error)
 	// GetFullSchema retrieves the full schema of a plugin
 	GetFullSchema(ctx context.Context, pluginName *string) (map[string]interface{}, error)
-	// FillDefaults ingests plugin's defaults from its schema
-	FillDefaults(ctx context.Context, plugin *Plugin, schema map[string]interface{}) (*Plugin, error)
 }
 
 // PluginService handles Plugins in Kong.
@@ -61,27 +57,6 @@ func (s *PluginService) GetFullSchema(ctx context.Context,
 		return nil, err
 	}
 	return schema, nil
-}
-
-// FillDefaults ingests plugin's defaults from its schema
-func (s *PluginService) FillDefaults(ctx context.Context,
-	plugin *Plugin, schema map[string]interface{}) (*Plugin, error) {
-	jsonb, err := json.Marshal(&schema)
-	if err != nil {
-		return nil, err
-	}
-	gjsonSchema := gjson.ParseBytes((jsonb))
-	if plugin.Config == nil {
-		plugin.Config = make(Configuration)
-	}
-	plugin.Config = fillConfigRecord(gjsonSchema, plugin.Config)
-	if plugin.Protocols == nil {
-		plugin.Protocols = getDefaultProtocols(gjsonSchema)
-	}
-	if plugin.Enabled == nil {
-		plugin.Enabled = Bool(true)
-	}
-	return plugin, nil
 }
 
 // GetSchema retrieves the config schema of a plugin
