@@ -134,7 +134,11 @@ func ParseSemanticVersion(v string) (semver.Version, error) {
 		m[2] = "0"
 	}
 	if m[3] != "" {
-		m[3] = "-" + strings.Replace(m[3], "enterprise-edition", "enterprise", 1)
+		if strings.Contains(m[3], "enterprise") {
+			m[3] = "+" + strings.Replace(m[3], "enterprise-edition", "enterprise", 1)
+		} else {
+			m[3] = "-" + m[3]
+		}
 		m[3] = strings.Replace(m[3], ".", "", -1)
 	}
 	v = fmt.Sprintf("%s.%s%s", m[1], m[2], m[3])
