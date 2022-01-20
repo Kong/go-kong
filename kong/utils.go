@@ -149,17 +149,13 @@ func getDefaultProtocols(schema gjson.Result) []*string {
 	fields := schema.Get("fields")
 
 	for _, field := range fields.Array() {
-		for key, value := range field.Map() {
-			if key != "protocols" {
-				continue
+		protocols := field.Map()["protocols"]
+		d := protocols.Get("default")
+		if d.Exists() {
+			for _, v := range d.Array() {
+				res = append(res, String(v.String()))
 			}
-			d := value.Get("default")
-			if d.Exists() {
-				for _, v := range d.Array() {
-					res = append(res, String(v.String()))
-				}
-				return res
-			}
+			return res
 		}
 	}
 	return res

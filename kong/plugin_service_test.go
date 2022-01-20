@@ -334,7 +334,7 @@ func TestFillPluginDefaults(T *testing.T) {
 		expected *Plugin
 	}{
 		{
-			name: "no_config_no_protocols",
+			name: "no config no protocols",
 			plugin: &Plugin{
 				Name: String("basic-auth"),
 			},
@@ -349,7 +349,7 @@ func TestFillPluginDefaults(T *testing.T) {
 			},
 		},
 		{
-			name: "partial_config_no_protocols",
+			name: "partial config no protocols",
 			plugin: &Plugin{
 				Name: String("basic-auth"),
 				Config: Configuration{
@@ -367,7 +367,7 @@ func TestFillPluginDefaults(T *testing.T) {
 			},
 		},
 		{
-			name: "nested_config_partial_protocols",
+			name: "nested config partial protocols",
 			plugin: &Plugin{
 				Name: String("request-transformer"),
 				Config: Configuration{
