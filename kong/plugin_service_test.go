@@ -328,115 +328,15 @@ func TestGetFullSchema(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
-	tests := []struct {
-		name        string
-		plugin      *string
-		expected    map[string]interface{}
-		expectedErr error
-	}{
-		{
-			name:   "ok",
-			plugin: String("key-auth"),
-			expected: map[string]interface{}{
-				"fields": []interface{}{
-					map[string]interface{}{
-						"consumer": map[string]interface{}{
-							"eq":        nil,
-							"reference": "consumers",
-							"type":      "foreign",
-						},
-					},
-					map[string]interface{}{
-						"protocols": map[string]interface{}{
-							"default": []interface{}{"grpc", "grpcs", "http", "https"},
-							"elements": map[string]interface{}{
-								"one_of": []interface{}{"grpc", "grpcs", "http", "https"},
-								"type":   "string",
-							},
-							"required": true,
-							"type":     "set",
-						},
-					},
-					map[string]interface{}{
-						"config": map[string]interface{}{
-							"fields": []interface{}{
-								map[string]interface{}{
-									"key_names": map[string]interface{}{
-										"default": []interface{}{"apikey"},
-										"elements": map[string]interface{}{
-											"type": "string",
-										},
-										"required": true,
-										"type":     "array",
-									},
-								},
-								map[string]interface{}{
-									"hide_credentials": map[string]interface{}{
-										"default":  false,
-										"required": true,
-										"type":     "boolean",
-									},
-								},
-								map[string]interface{}{
-									"anonymous": map[string]interface{}{
-										"type": "string",
-									},
-								},
-								map[string]interface{}{
-									"key_in_header": map[string]interface{}{
-										"default":  true,
-										"required": true,
-										"type":     "boolean",
-									},
-								},
-								map[string]interface{}{
-									"key_in_query": map[string]interface{}{
-										"default":  true,
-										"required": true,
-										"type":     "boolean",
-									},
-								},
-								map[string]interface{}{
-									"key_in_body": map[string]interface{}{
-										"default":  false,
-										"required": true,
-										"type":     "boolean",
-									},
-								},
-								map[string]interface{}{
-									"run_on_preflight": map[string]interface{}{
-										"default":  true,
-										"required": true,
-										"type":     "boolean",
-									},
-								},
-							},
-							"required": true,
-							"type":     "record",
-						},
-					},
-				},
-			},
-		},
-		{
-			name:        "bad",
-			plugin:      String("noexist"),
-			expected:    nil,
-			expectedErr: NewAPIError(404, "No plugin named 'noexist'"),
-		},
-	}
+	schema, err := client.Plugins.GetFullSchema(defaultCtx, String("key-auth"))
+	_, ok := schema["fields"]
+	assert.True(ok)
+	assert.Nil(err)
 
-	for _, tc := range tests {
-		T.Run(tc.name, func(t *testing.T) {
-			got, err := client.Plugins.GetFullSchema(defaultCtx, tc.plugin)
-			if diff := cmp.Diff(err, tc.expectedErr, cmp.AllowUnexported(APIError{})); diff != "" {
-				t.Errorf(diff)
-			}
-			if diff := cmp.Diff(got, tc.expected); diff != "" {
-				t.Errorf(diff)
-			}
-		})
-	}
+	schema, err = client.Plugins.GetFullSchema(defaultCtx, String("noexist"))
+	assert.Nil(schema)
+	assert.NotNil(err)
+	assert.True(IsNotFoundErr(err))
 }
 
 func TestFillPluginDefaults(T *testing.T) {
