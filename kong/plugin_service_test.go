@@ -3,6 +3,7 @@ package kong
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -318,6 +319,136 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	assert.Nil(client.Consumers.Delete(defaultCtx, createdConsumer.ID))
 	assert.Nil(client.Routes.Delete(defaultCtx, createdRoute.ID))
 	assert.Nil(client.Services.Delete(defaultCtx, createdService.ID))
+}
+
+func TestGetFullSchema(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	schema, err := client.Plugins.GetFullSchema(defaultCtx, String("key-auth"))
+	_, ok := schema["fields"]
+	assert.True(ok)
+	assert.Nil(err)
+
+	schema, err = client.Plugins.GetFullSchema(defaultCtx, String("noexist"))
+	assert.Nil(schema)
+	assert.NotNil(err)
+	assert.True(IsNotFoundErr(err))
+}
+
+func TestFillPluginDefaults(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "no config no protocols",
+			plugin: &Plugin{
+				Name: String("basic-auth"),
+			},
+			expected: &Plugin{
+				Name: String("basic-auth"),
+				Config: Configuration{
+					"anonymous":        nil,
+					"hide_credentials": false,
+				},
+				Protocols: []*string{String("grpc"), String("grpcs"), String("http"), String("https")},
+				Enabled:   Bool(true),
+			},
+		},
+		{
+			name: "partial config no protocols",
+			plugin: &Plugin{
+				Name: String("basic-auth"),
+				Config: Configuration{
+					"hide_credentials": true,
+				},
+			},
+			expected: &Plugin{
+				Name: String("basic-auth"),
+				Config: Configuration{
+					"anonymous":        nil,
+					"hide_credentials": true,
+				},
+				Protocols: []*string{String("grpc"), String("grpcs"), String("http"), String("https")},
+				Enabled:   Bool(true),
+			},
+		},
+		{
+			name: "nested config partial protocols",
+			plugin: &Plugin{
+				Name: String("request-transformer"),
+				Config: Configuration{
+					"add": map[string]interface{}{
+						"body":        []interface{}{},
+						"headers":     "x-new-header:value",
+						"querystring": []interface{}{},
+					},
+				},
+				Enabled:   Bool(false),
+				Protocols: []*string{String("grpc"), String("grpcs")},
+			},
+			expected: &Plugin{
+				Name: String("request-transformer"),
+				Config: Configuration{
+					"http_method": nil,
+					"add": map[string]interface{}{
+						"body":        []interface{}{},
+						"headers":     "x-new-header:value",
+						"querystring": []interface{}{},
+					},
+					"append": map[string]interface{}{
+						"body":        []interface{}{},
+						"headers":     []interface{}{},
+						"querystring": []interface{}{},
+					},
+					"remove": map[string]interface{}{
+						"body":        []interface{}{},
+						"headers":     []interface{}{},
+						"querystring": []interface{}{},
+					},
+					"rename": map[string]interface{}{
+						"body":        []interface{}{},
+						"headers":     []interface{}{},
+						"querystring": []interface{}{},
+					},
+					"replace": map[string]interface{}{
+						"body":        []interface{}{},
+						"headers":     []interface{}{},
+						"querystring": []interface{}{},
+						"uri":         nil,
+					},
+				},
+				Protocols: []*string{String("grpc"), String("grpcs")},
+				Enabled:   Bool(false),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, tc.plugin.Name)
+			assert.Nil(err)
+			assert.NotNil(fullSchema)
+			got, err := FillPluginsDefaults(tc.plugin, fullSchema)
+			if err != nil {
+				t.Errorf(err.Error())
+			}
+			if diff := cmp.Diff(got, tc.expected); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
 }
 
 func comparePlugins(expected, actual []*Plugin) bool {

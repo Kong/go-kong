@@ -29,14 +29,40 @@ type AbstractPluginService interface {
 	ListAllForRoute(ctx context.Context, routeID *string) ([]*Plugin, error)
 	// Validate validates a Plugin against its schema
 	Validate(ctx context.Context, plugin *Plugin) (bool, string, error)
-	// GetSchema retrieves the schema of a plugin
+	// GetSchema retrieves the config schema of a plugin.
+	//
+	// Deprecated: Use GetFullSchema instead.
 	GetSchema(ctx context.Context, pluginName *string) (map[string]interface{}, error)
+	// GetFullSchema retrieves the full schema of a plugin.
+	// This makes the use of `/schemas` endpoint in Kong.
+	GetFullSchema(ctx context.Context, pluginName *string) (map[string]interface{}, error)
 }
 
 // PluginService handles Plugins in Kong.
 type PluginService service
 
-// GetSchema retrieves the schema of a plugin
+// GetFullSchema retrieves the full schema of a plugin.
+func (s *PluginService) GetFullSchema(ctx context.Context,
+	pluginName *string) (map[string]interface{}, error) {
+	if isEmptyString(pluginName) {
+		return nil, fmt.Errorf("pluginName cannot be empty")
+	}
+	endpoint := fmt.Sprintf("/schemas/plugins/%v", *pluginName)
+	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	var schema map[string]interface{}
+	_, err = s.client.Do(ctx, req, &schema)
+	if err != nil {
+		return nil, err
+	}
+	return schema, nil
+}
+
+// GetSchema retrieves the config schema of a plugin
+//
+// Deprecated: Use GetPluginSchema instead
 func (s *PluginService) GetSchema(ctx context.Context,
 	pluginName *string) (map[string]interface{}, error) {
 	if isEmptyString(pluginName) {
