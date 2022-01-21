@@ -321,6 +321,86 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	assert.Nil(client.Services.Delete(defaultCtx, createdService.ID))
 }
 
+func TestGetFullSchema(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name        string
+		plugin      *string
+		expected    map[string]interface{}
+		expectedErr error
+	}{
+		{
+			name:   "ok",
+			plugin: String("basic-auth"),
+			expected: map[string]interface{}{
+				"fields": []interface{}{
+					map[string]interface{}{
+						"consumer": map[string]interface{}{
+							"eq":        nil,
+							"reference": "consumers",
+							"type":      "foreign",
+						},
+					},
+					map[string]interface{}{
+						"protocols": map[string]interface{}{
+							"default": []interface{}{"grpc", "grpcs", "http", "https"},
+							"elements": map[string]interface{}{
+								"one_of": []interface{}{"grpc", "grpcs", "http", "https"},
+								"type":   "string",
+							},
+							"required": true,
+							"type":     "set",
+						},
+					},
+					map[string]interface{}{
+						"config": map[string]interface{}{
+							"fields": []interface{}{
+								map[string]interface{}{
+									"anonymous": map[string]interface{}{
+										"type": "string",
+									},
+								},
+								map[string]interface{}{
+									"hide_credentials": map[string]interface{}{
+										"default":  false,
+										"required": true,
+										"type":     "boolean",
+									},
+								},
+							},
+							"required": true,
+							"type":     "record",
+						},
+					},
+				},
+			},
+		},
+		{
+			name:        "bad",
+			plugin:      String("noexist"),
+			expected:    nil,
+			expectedErr: NewAPIError(404, "No plugin named 'noexist'"),
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			got, err := client.Plugins.GetFullSchema(defaultCtx, tc.plugin)
+			if diff := cmp.Diff(err, tc.expectedErr, cmp.AllowUnexported(APIError{})); diff != "" {
+				t.Errorf(diff)
+			}
+			if diff := cmp.Diff(got, tc.expected); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
 func TestFillPluginDefaults(T *testing.T) {
 	assert := assert.New(T)
 
