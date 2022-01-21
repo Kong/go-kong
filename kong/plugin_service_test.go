@@ -336,40 +336,16 @@ func TestGetFullSchema(T *testing.T) {
 	}{
 		{
 			name:   "ok",
-			plugin: String("basic-auth"),
+			plugin: String("prometheus"),
 			expected: map[string]interface{}{
 				"fields": []interface{}{
-					map[string]interface{}{
-						"consumer": map[string]interface{}{
-							"eq":        nil,
-							"reference": "consumers",
-							"type":      "foreign",
-						},
-					},
-					map[string]interface{}{
-						"protocols": map[string]interface{}{
-							"default": []interface{}{"grpc", "grpcs", "http", "https"},
-							"elements": map[string]interface{}{
-								"one_of": []interface{}{"grpc", "grpcs", "http", "https"},
-								"type":   "string",
-							},
-							"required": true,
-							"type":     "set",
-						},
-					},
 					map[string]interface{}{
 						"config": map[string]interface{}{
 							"fields": []interface{}{
 								map[string]interface{}{
-									"anonymous": map[string]interface{}{
-										"type": "string",
-									},
-								},
-								map[string]interface{}{
-									"hide_credentials": map[string]interface{}{
-										"default":  false,
-										"required": true,
-										"type":     "boolean",
+									"per_consumer": map[string]interface{}{
+										"default": false,
+										"type":    "boolean",
 									},
 								},
 							},
