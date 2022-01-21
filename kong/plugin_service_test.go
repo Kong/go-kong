@@ -336,16 +336,78 @@ func TestGetFullSchema(T *testing.T) {
 	}{
 		{
 			name:   "ok",
-			plugin: String("prometheus"),
+			plugin: String("key-auth"),
 			expected: map[string]interface{}{
 				"fields": []interface{}{
+					map[string]interface{}{
+						"consumer": map[string]interface{}{
+							"eq":        nil,
+							"reference": "consumers",
+							"type":      "foreign",
+						},
+					},
+					map[string]interface{}{
+						"protocols": map[string]interface{}{
+							"default": []interface{}{"grpc", "grpcs", "http", "https"},
+							"elements": map[string]interface{}{
+								"one_of": []interface{}{"grpc", "grpcs", "http", "https"},
+								"type":   "string",
+							},
+							"required": true,
+							"type":     "set",
+						},
+					},
 					map[string]interface{}{
 						"config": map[string]interface{}{
 							"fields": []interface{}{
 								map[string]interface{}{
-									"per_consumer": map[string]interface{}{
-										"default": false,
-										"type":    "boolean",
+									"key_names": map[string]interface{}{
+										"default": []interface{}{"apikey"},
+										"elements": map[string]interface{}{
+											"type": "string",
+										},
+										"required": true,
+										"type":     "array",
+									},
+								},
+								map[string]interface{}{
+									"hide_credentials": map[string]interface{}{
+										"default":  false,
+										"required": true,
+										"type":     "boolean",
+									},
+								},
+								map[string]interface{}{
+									"anonymous": map[string]interface{}{
+										"type": "string",
+									},
+								},
+								map[string]interface{}{
+									"key_in_header": map[string]interface{}{
+										"default":  true,
+										"required": true,
+										"type":     "boolean",
+									},
+								},
+								map[string]interface{}{
+									"key_in_query": map[string]interface{}{
+										"default":  true,
+										"required": true,
+										"type":     "boolean",
+									},
+								},
+								map[string]interface{}{
+									"key_in_body": map[string]interface{}{
+										"default":  false,
+										"required": true,
+										"type":     "boolean",
+									},
+								},
+								map[string]interface{}{
+									"run_on_preflight": map[string]interface{}{
+										"default":  true,
+										"required": true,
+										"type":     "boolean",
 									},
 								},
 							},
