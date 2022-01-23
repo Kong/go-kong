@@ -437,14 +437,14 @@ func TestFillPluginDefaults(T *testing.T) {
 
 	for _, tc := range tests {
 		T.Run(tc.name, func(t *testing.T) {
-			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, tc.plugin.Name)
+			p := tc.plugin
+			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, p.Name)
 			assert.Nil(err)
 			assert.NotNil(fullSchema)
-			got, err := FillPluginsDefaults(tc.plugin, fullSchema)
-			if err != nil {
+			if err := FillPluginsDefaults(p, fullSchema); err != nil {
 				t.Errorf(err.Error())
 			}
-			if diff := cmp.Diff(got, tc.expected); diff != "" {
+			if diff := cmp.Diff(p, tc.expected); diff != "" {
 				t.Errorf(diff)
 			}
 		})

@@ -208,11 +208,12 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 	return res
 }
 
-// FillPluginsDefaults ingests plugin's defaults from its schema
-func FillPluginsDefaults(plugin *Plugin, schema map[string]interface{}) (*Plugin, error) {
+// FillPluginsDefaults ingests plugin's defaults from its schema.
+// Takes in a plugin struct and mutate it in place.
+func FillPluginsDefaults(plugin *Plugin, schema map[string]interface{}) error {
 	jsonb, err := json.Marshal(&schema)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	gjsonSchema := gjson.ParseBytes((jsonb))
 	if plugin.Config == nil {
@@ -225,5 +226,5 @@ func FillPluginsDefaults(plugin *Plugin, schema map[string]interface{}) (*Plugin
 	if plugin.Enabled == nil {
 		plugin.Enabled = Bool(true)
 	}
-	return plugin, nil
+	return nil
 }
