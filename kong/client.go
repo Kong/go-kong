@@ -198,10 +198,9 @@ func (c *Client) DoRAW(ctx context.Context, req *http.Request) (*http.Response, 
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
 	}
-	if ctx == nil {
-		ctx = defaultCtx
+	if ctx != nil {
+		req = req.WithContext(ctx)
 	}
-	req = req.WithContext(ctx)
 
 	// log the request
 	err = c.logRequest(req)

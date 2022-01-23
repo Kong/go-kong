@@ -2,10 +2,12 @@ linters:
   enable:
   - asciicheck
   - bodyclose
+  - contextcheck
   - depguard
   - dogsled
   - durationcheck
   - errcheck
+  - errname
   - exhaustive
   - exportloopref
   - gci

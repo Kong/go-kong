@@ -1,6 +1,7 @@
 package kong
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -30,10 +31,9 @@ func (e *APIError) Code() int {
 // IsNotFoundErr returns true if the error or it's cause is
 // a 404 response from Kong.
 func IsNotFoundErr(e error) bool {
-	switch e := e.(type) {
-	case *APIError:
-		return e.httpCode == http.StatusNotFound
-	default:
-		return false
+	var apiErr *APIError
+	if errors.As(e, &apiErr) {
+		return apiErr.httpCode == http.StatusNotFound
 	}
+	return false
 }
