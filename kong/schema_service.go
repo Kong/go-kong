@@ -11,7 +11,7 @@ type AbstractSchemaService interface {
 	Get(ctx context.Context, entity string) (map[string]interface{}, error)
 }
 
-// Schemaservice handles schemas in Kong.
+// SchemaService handles schemas in Kong.
 type SchemaService service
 
 // Get retrieves the full schema of kong entities.
