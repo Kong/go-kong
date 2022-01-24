@@ -3,6 +3,8 @@ package kong
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -284,4 +286,160 @@ func TestUpstreamsWithHostHeader(T *testing.T) {
 
 	err = client.Upstreams.Delete(defaultCtx, createdUpstream.ID)
 	assert.Nil(err)
+}
+
+func TestUpstreamGetFullSchema(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	schema, err := client.Upstreams.GetFullSchema(defaultCtx)
+	_, ok := schema["fields"]
+	assert.True(ok)
+	assert.Nil(err)
+}
+
+func TestFillUpstreamsDefaults(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		upstream *Upstream
+		expected *Upstream
+	}{
+		{
+			name: "name only",
+			upstream: &Upstream{
+				Name: String("upstream1"),
+			},
+			expected: &Upstream{
+				Name:      String("upstream1"),
+				Algorithm: String("round-robin"),
+				Slots:     Int(10000),
+				Healthchecks: &Healthcheck{
+					Active: &ActiveHealthcheck{
+						Concurrency: Int(10),
+						Healthy: &Healthy{
+							HTTPStatuses: []int{200, 302},
+							Interval:     Int(0),
+							Successes:    Int(0),
+						},
+						HTTPPath:               String("/"),
+						HTTPSVerifyCertificate: Bool(true),
+						Type:                   String("http"),
+						Timeout:                Int(1),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{
+								429, 404,
+								500, 501, 502, 503, 504, 505,
+							},
+							TCPFailures: Int(0),
+							Timeouts:    Int(0),
+							Interval:    Int(0),
+						},
+					},
+					Passive: &PassiveHealthcheck{
+						Healthy: &Healthy{
+							HTTPStatuses: []int{
+								200, 201, 202, 203, 204, 205, 206, 207, 208, 226,
+								300, 301, 302, 303, 304, 305, 306, 307, 308,
+							},
+							Successes: Int(0),
+						},
+						Type: String("http"),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{429, 500, 503},
+							TCPFailures:  Int(0),
+							Timeouts:     Int(0),
+						},
+					},
+				},
+				HashOn:           String("none"),
+				HashFallback:     String("none"),
+				HashOnCookiePath: String("/"),
+			},
+		},
+		{
+			name: "name algorithm hashon",
+			upstream: &Upstream{
+				Name:      String("upstream1"),
+				Algorithm: String("consistent-hashing"),
+				HashOn:    String("ip"),
+			},
+			expected: &Upstream{
+				Name:      String("upstream1"),
+				Algorithm: String("consistent-hashing"),
+				Slots:     Int(10000),
+				Healthchecks: &Healthcheck{
+					Active: &ActiveHealthcheck{
+						Concurrency: Int(10),
+						Healthy: &Healthy{
+							HTTPStatuses: []int{200, 302},
+							Interval:     Int(0),
+							Successes:    Int(0),
+						},
+						HTTPPath:               String("/"),
+						HTTPSVerifyCertificate: Bool(true),
+						Type:                   String("http"),
+						Timeout:                Int(1),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{
+								429, 404,
+								500, 501, 502, 503, 504, 505,
+							},
+							TCPFailures: Int(0),
+							Timeouts:    Int(0),
+							Interval:    Int(0),
+						},
+					},
+					Passive: &PassiveHealthcheck{
+						Healthy: &Healthy{
+							HTTPStatuses: []int{
+								200, 201, 202, 203, 204, 205, 206, 207, 208, 226,
+								300, 301, 302, 303, 304, 305, 306, 307, 308,
+							},
+							Successes: Int(0),
+						},
+						Type: String("http"),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{429, 500, 503},
+							TCPFailures:  Int(0),
+							Timeouts:     Int(0),
+						},
+					},
+				},
+				HashOn:           String("ip"),
+				HashFallback:     String("none"),
+				HashOnCookiePath: String("/"),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			u := tc.upstream
+			fullSchema, err := client.Upstreams.GetFullSchema(defaultCtx)
+			assert.Nil(err)
+			assert.NotNil(fullSchema)
+			if err = FillUpstreamsDefaults(u, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+			// Ignore fields to make tests pass despite small differences
+			// across EE releases.
+			opts := cmpopts.IgnoreFields(Healthcheck{}, "Threshold")
+			if diff := cmp.Diff(u, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
 }

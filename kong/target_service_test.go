@@ -3,6 +3,7 @@ package kong
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -283,4 +284,54 @@ func TestTargetMarkUnhealthy(T *testing.T) {
 		createdTarget.Upstream.ID, createdTarget))
 
 	assert.Nil(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
+}
+
+func TestTargetGetFullSchema(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	schema, err := client.Targets.GetFullSchema(defaultCtx)
+	_, ok := schema["fields"]
+	assert.True(ok)
+	assert.Nil(err)
+}
+
+func TestFillTargetDefaults(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		target   *Target
+		expected *Target
+	}{
+		{
+			name:   "empty",
+			target: &Target{},
+			expected: &Target{
+				Weight: Int(100),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			target := tc.target
+			fullSchema, err := client.Targets.GetFullSchema(defaultCtx)
+			assert.Nil(err)
+			assert.NotNil(fullSchema)
+			if err := FillTargetsDefaults(target, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+			if diff := cmp.Diff(target, tc.expected); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
 }

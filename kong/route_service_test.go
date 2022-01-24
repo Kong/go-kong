@@ -3,6 +3,8 @@ package kong
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -285,4 +287,106 @@ func TestRouteWithHeaders(T *testing.T) {
 
 	err = client.Routes.Delete(defaultCtx, createdRoute.ID)
 	assert.Nil(err)
+}
+
+func TestRouteGetFullSchema(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	schema, err := client.Routes.GetFullSchema(defaultCtx)
+	_, ok := schema["fields"]
+	assert.True(ok)
+	assert.Nil(err)
+}
+
+func TestFillRoutesDefaults(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		route    *Route
+		expected *Route
+	}{
+		{
+			name: "name paths",
+			route: &Route{
+				Name:  String("r1"),
+				Paths: []*string{String("/r1")},
+			},
+			expected: &Route{
+				Name:                    String("r1"),
+				Paths:                   []*string{String("/r1")},
+				PreserveHost:            Bool(false),
+				Protocols:               []*string{String("http"), String("https")},
+				RegexPriority:           Int(0),
+				StripPath:               Bool(true),
+				HTTPSRedirectStatusCode: Int(426),
+			},
+		},
+		{
+			name: "name paths protocols",
+			route: &Route{
+				Name:      String("r1"),
+				Paths:     []*string{String("/r1")},
+				Protocols: []*string{String("grpc")},
+			},
+			expected: &Route{
+				Name:                    String("r1"),
+				Paths:                   []*string{String("/r1")},
+				PreserveHost:            Bool(false),
+				Protocols:               []*string{String("grpc")},
+				RegexPriority:           Int(0),
+				StripPath:               Bool(true),
+				HTTPSRedirectStatusCode: Int(426),
+			},
+		},
+		// TODO: re-add once upstream patch has been merged.
+		// https://github.com/imdario/mergo/pull/203
+		// {
+		// 	name: "set opposite bools",
+		// 	route: &Route{
+		// 		Name:              String("r1"),
+		// 		Paths:             []*string{String("/r1")},
+		// 		Protocols:         []*string{String("grpc")},
+		// 		StripPath:         Bool(false),
+		// 		PreserveHost:      Bool(true),
+		// 	},
+		// 	expected: &Route{
+		// 		Name:                    String("r1"),
+		// 		Paths:                   []*string{String("/r1")},
+		// 		PreserveHost:            Bool(true),
+		// 		Protocols:               []*string{String("grpc")},
+		// 		RegexPriority:           Int(0),
+		// 		StripPath:               Bool(false),
+		// 		HTTPSRedirectStatusCode: Int(426),
+		// 	},
+		// },
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			r := tc.route
+			fullSchema, err := client.Routes.GetFullSchema(defaultCtx)
+			assert.Nil(err)
+			assert.NotNil(fullSchema)
+			if err = FillRoutesDefaults(r, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+			// Ignore fields to make tests pass despite small differences across releases.
+			opts := cmpopts.IgnoreFields(
+				Route{},
+				"RequestBuffering", "ResponseBuffering", "PathHandling",
+			)
+			if diff := cmp.Diff(r, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
 }

@@ -22,10 +22,26 @@ type AbstractTargetService interface {
 	// MarkUnhealthy marks target belonging to upstreamNameOrID as unhealthy in
 	// Kong's load balancer.
 	MarkUnhealthy(ctx context.Context, upstreamNameOrID *string, target *Target) error
+	// GetFullSchema retrieves the full schema of targets.
+	GetFullSchema(ctx context.Context) (map[string]interface{}, error)
 }
 
 // TargetService handles Targets in Kong.
 type TargetService service
+
+// GetFullSchema retrieves the full schema of targets.
+func (s *TargetService) GetFullSchema(ctx context.Context) (map[string]interface{}, error) {
+	req, err := s.client.NewRequest("GET", "/schemas/targets", nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	var schema map[string]interface{}
+	_, err = s.client.Do(ctx, req, &schema)
+	if err != nil {
+		return nil, err
+	}
+	return schema, nil
+}
 
 // TODO foreign key can be read directly from the embedded key itself
 // upstreamNameOrID need not be an explicit parameter.
