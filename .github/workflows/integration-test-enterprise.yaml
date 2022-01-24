@@ -11,7 +11,11 @@ jobs:
         - 'enterprise-1.5.0.11'
         - 'enterprise-2.1.4.6'
         - 'enterprise-2.2.1.3'
-        - 'enterprise-2.3.3.2'
+        - 'enterprise-2.3.3.4'
+        - 'enterprise-2.4.1.3'
+        - 'enterprise-2.5.1.2'
+        - 'enterprise-2.6.0.2'
+        - 'enterprise-2.7.0.0'
     env:
       KONG_VERSION: ${{ matrix.kong_version }}
       KONG_ENTERPRISE_REPO_USERNAME: ${{ secrets.KONG_ENTERPRISE_REPO_USERNAME }}
