@@ -24,26 +24,10 @@ type AbstractRouteService interface {
 	ListAll(ctx context.Context) ([]*Route, error)
 	// ListForService fetches a list of Routes in Kong associated with a service.
 	ListForService(ctx context.Context, serviceNameOrID *string, opt *ListOpt) ([]*Route, *ListOpt, error)
-	// GetFullSchema retrieves the full schema of routes.
-	GetFullSchema(ctx context.Context) (map[string]interface{}, error)
 }
 
 // RouteService handles routes in Kong.
 type RouteService service
-
-// GetFullSchema retrieves the full schema of routes.
-func (s *RouteService) GetFullSchema(ctx context.Context) (map[string]interface{}, error) {
-	req, err := s.client.NewRequest("GET", "/schemas/routes", nil, nil)
-	if err != nil {
-		return nil, err
-	}
-	var schema map[string]interface{}
-	_, err = s.client.Do(ctx, req, &schema)
-	if err != nil {
-		return nil, err
-	}
-	return schema, nil
-}
 
 // Create creates a Route in Kong
 // If an ID is specified, it will be used to

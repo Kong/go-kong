@@ -20,26 +20,10 @@ type AbstractUpstreamService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Upstream, *ListOpt, error)
 	// ListAll fetches all Upstreams in Kong.
 	ListAll(ctx context.Context) ([]*Upstream, error)
-	// GetFullSchema retrieves the full schema of upstreams.
-	GetFullSchema(ctx context.Context) (map[string]interface{}, error)
 }
 
 // UpstreamService handles Upstreams in Kong.
 type UpstreamService service
-
-// GetFullSchema retrieves the full schema of upstreams.
-func (s *UpstreamService) GetFullSchema(ctx context.Context) (map[string]interface{}, error) {
-	req, err := s.client.NewRequest("GET", "/schemas/upstreams", nil, nil)
-	if err != nil {
-		return nil, err
-	}
-	var schema map[string]interface{}
-	_, err = s.client.Do(ctx, req, &schema)
-	if err != nil {
-		return nil, err
-	}
-	return schema, nil
-}
 
 // Create creates a Upstream in Kong.
 // If an ID is specified, it will be used to

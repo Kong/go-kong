@@ -3,7 +3,6 @@ package kong
 import (
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -222,102 +221,4 @@ func TestServiceWithClientCert(T *testing.T) {
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
 	assert.Nil(err)
-}
-
-func TestServiceGetFullSchema(T *testing.T) {
-	assert := assert.New(T)
-
-	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
-	assert.NotNil(client)
-
-	schema, err := client.Services.GetFullSchema(defaultCtx)
-	_, ok := schema["fields"]
-	assert.True(ok)
-	assert.Nil(err)
-}
-
-func TestFillServiceDefaults(T *testing.T) {
-	assert := assert.New(T)
-
-	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
-	assert.NotNil(client)
-
-	tests := []struct {
-		name     string
-		service  *Service
-		expected *Service
-	}{
-		{
-			name: "name and host only",
-			service: &Service{
-				Name: String("svc1"),
-				Host: String("mockbin.org"),
-			},
-			expected: &Service{
-				Name:           String("svc1"),
-				Host:           String("mockbin.org"),
-				Port:           Int(80),
-				Protocol:       String("http"),
-				ConnectTimeout: Int(60000),
-				ReadTimeout:    Int(60000),
-				Retries:        Int(5),
-				WriteTimeout:   Int(60000),
-			},
-		},
-		{
-			name: "name host and port",
-			service: &Service{
-				Name: String("svc1"),
-				Host: String("mockbin.org"),
-				Port: Int(8080),
-			},
-			expected: &Service{
-				Name:           String("svc1"),
-				Host:           String("mockbin.org"),
-				Port:           Int(8080),
-				Protocol:       String("http"),
-				ConnectTimeout: Int(60000),
-				ReadTimeout:    Int(60000),
-				Retries:        Int(5),
-				WriteTimeout:   Int(60000),
-			},
-		},
-		{
-			name: "name host port and tags",
-			service: &Service{
-				Name: String("svc1"),
-				Host: String("mockbin.org"),
-				Port: Int(8080),
-				Tags: []*string{String("tag1"), String("tag2")},
-			},
-			expected: &Service{
-				Name:           String("svc1"),
-				Host:           String("mockbin.org"),
-				Port:           Int(8080),
-				Protocol:       String("http"),
-				ConnectTimeout: Int(60000),
-				ReadTimeout:    Int(60000),
-				Retries:        Int(5),
-				WriteTimeout:   Int(60000),
-				Tags:           []*string{String("tag1"), String("tag2")},
-			},
-		},
-	}
-
-	for _, tc := range tests {
-		T.Run(tc.name, func(t *testing.T) {
-			s := tc.service
-			fullSchema, err := client.Services.GetFullSchema(defaultCtx)
-			assert.Nil(err)
-			assert.NotNil(fullSchema)
-			if err := FillServicesDefaults(s, fullSchema); err != nil {
-				t.Errorf(err.Error())
-			}
-			if diff := cmp.Diff(s, tc.expected); diff != "" {
-				t.Errorf(diff)
-			}
-		})
-	}
 }

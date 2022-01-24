@@ -22,26 +22,10 @@ type AbstractSvcService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Service, *ListOpt, error)
 	// ListAll fetches all Services in Kong.
 	ListAll(ctx context.Context) ([]*Service, error)
-	// GetFullSchema retrieves the full schema of services.
-	GetFullSchema(ctx context.Context) (map[string]interface{}, error)
 }
 
 // Svcservice handles services in Kong.
 type Svcservice service
-
-// GetFullSchema retrieves the full schema of services.
-func (s *Svcservice) GetFullSchema(ctx context.Context) (map[string]interface{}, error) {
-	req, err := s.client.NewRequest("GET", "/schemas/services", nil, nil)
-	if err != nil {
-		return nil, err
-	}
-	var schema map[string]interface{}
-	_, err = s.client.Do(ctx, req, &schema)
-	if err != nil {
-		return nil, err
-	}
-	return schema, nil
-}
 
 // Create creates an Service in Kong
 // If an ID is specified, it will be used to
