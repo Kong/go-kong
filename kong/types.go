@@ -13,6 +13,7 @@ type Service struct {
 	ClientCertificate *Certificate `json:"client_certificate,omitempty" yaml:"client_certificate,omitempty"`
 	ConnectTimeout    *int         `json:"connect_timeout,omitempty" yaml:"connect_timeout,omitempty"`
 	CreatedAt         *int         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Enabled           *bool        `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 	Host              *string      `json:"host,omitempty" yaml:"host,omitempty"`
 	ID                *string      `json:"id,omitempty" yaml:"id,omitempty"`
 	Name              *string      `json:"name,omitempty" yaml:"name,omitempty"`
@@ -94,7 +95,9 @@ type Consumer struct {
 type Certificate struct {
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Cert      *string   `json:"cert,omitempty" yaml:"cert,omitempty"`
+	CertAlt   *string   `json:"cert_alt,omitempty" yaml:"cert_alt,omitempty"`
 	Key       *string   `json:"key,omitempty" yaml:"key,omitempty"`
+	KeyAlt    *string   `json:"key_alt,omitempty" yaml:"key_alt,omitempty"`
 	CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	SNIs      []*string `json:"snis,omitempty" yaml:"snis,omitempty"`
 	Tags      []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
