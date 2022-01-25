@@ -236,7 +236,7 @@ func TestFillRoutesDefaults(T *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "routes")
 			assert.Nil(err)
 			assert.NotNil(fullSchema)
-			if err = FillRoutesDefaults(r, fullSchema); err != nil {
+			if err = FillEntityDefaults(r, fullSchema); err != nil {
 				t.Errorf(err.Error())
 			}
 			// Ignore fields to make tests pass despite small differences across releases.
@@ -326,7 +326,7 @@ func TestFillServiceDefaults(T *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "services")
 			assert.Nil(err)
 			assert.NotNil(fullSchema)
-			if err := FillServicesDefaults(s, fullSchema); err != nil {
+			if err := FillEntityDefaults(s, fullSchema); err != nil {
 				t.Errorf(err.Error())
 			}
 			if diff := cmp.Diff(s, tc.expected); diff != "" {
@@ -363,7 +363,7 @@ func TestFillTargetDefaults(T *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "targets")
 			assert.Nil(err)
 			assert.NotNil(fullSchema)
-			if err := FillTargetsDefaults(target, fullSchema); err != nil {
+			if err := FillEntityDefaults(target, fullSchema); err != nil {
 				t.Errorf(err.Error())
 			}
 			if diff := cmp.Diff(target, tc.expected); diff != "" {
@@ -503,7 +503,7 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "upstreams")
 			assert.Nil(err)
 			assert.NotNil(fullSchema)
-			if err = FillUpstreamsDefaults(u, fullSchema); err != nil {
+			if err = FillEntityDefaults(u, fullSchema); err != nil {
 				t.Errorf(err.Error())
 			}
 			// Ignore fields to make tests pass despite small differences across releases.

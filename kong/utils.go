@@ -250,9 +250,9 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 // 	"hash_fallback": "none",
 //  ...
 // }
-func flattenDefaultsSchema(schema gjson.Result) map[string]interface{} {
+func flattenDefaultsSchema(schema gjson.Result) Schema {
 	value := schema.Get("fields")
-	results := map[string]interface{}{}
+	results := Schema{}
 
 	value.ForEach(func(key, value gjson.Result) bool {
 		// get the key name
@@ -281,7 +281,7 @@ func flattenDefaultsSchema(schema gjson.Result) map[string]interface{} {
 	return results
 }
 
-func getDefaultsObj(schema map[string]interface{}) ([]byte, error) {
+func getDefaultsObj(schema Schema) ([]byte, error) {
 	jsonSchema, err := json.Marshal(&schema)
 	if err != nil {
 		return nil, err
@@ -295,81 +295,27 @@ func getDefaultsObj(schema map[string]interface{}) ([]byte, error) {
 	return jsonSchemaWithDefaults, nil
 }
 
-// FillUpstreamsDefaults ingests upstreams' defaults from their schema.
-func FillUpstreamsDefaults(upstream *Upstream, schema map[string]interface{}) error {
-	tmpUpstream := Upstream{}
-
+// FillEntityDefaults ingests entities' defaults from their schema.
+func FillEntityDefaults(entity interface{}, schema Schema) error {
+	var tmpEntity interface{}
+	switch entity.(type) {
+	case *Target:
+		tmpEntity = &Target{}
+	case *Service:
+		tmpEntity = &Service{}
+	case *Route:
+		tmpEntity = &Route{}
+	case *Upstream:
+		tmpEntity = &Upstream{}
+	}
 	defaults, err := getDefaultsObj(schema)
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(defaults, &tmpUpstream)
-	if err != nil {
+	if err = json.Unmarshal(defaults, &tmpEntity); err != nil {
 		return err
 	}
-
-	err = mergo.Merge(upstream, tmpUpstream)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// FillServicesDefaults ingests services' defaults from their schema.
-func FillServicesDefaults(service *Service, schema map[string]interface{}) error {
-	tmpService := Service{}
-
-	defaults, err := getDefaultsObj(schema)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(defaults, &tmpService)
-	if err != nil {
-		return err
-	}
-
-	err = mergo.Merge(service, tmpService)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// FillRoutesDefaults ingests routes' defaults from their schema.
-func FillRoutesDefaults(route *Route, schema map[string]interface{}) error {
-	tmpRoute := Route{}
-
-	defaults, err := getDefaultsObj(schema)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(defaults, &tmpRoute)
-	if err != nil {
-		return err
-	}
-
-	err = mergo.Merge(route, tmpRoute)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// FillTargetsDefaults ingests targets' defaults from their schema.
-func FillTargetsDefaults(target *Target, schema map[string]interface{}) error {
-	tmpTarget := Target{}
-
-	defaults, err := getDefaultsObj(schema)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(defaults, &tmpTarget)
-	if err != nil {
-		return err
-	}
-
-	err = mergo.Merge(target, tmpTarget)
-	if err != nil {
+	if err = mergo.Merge(entity, tmpEntity); err != nil {
 		return err
 	}
 	return nil
@@ -377,7 +323,7 @@ func FillTargetsDefaults(target *Target, schema map[string]interface{}) error {
 
 // FillPluginsDefaults ingests plugin's defaults from its schema.
 // Takes in a plugin struct and mutate it in place.
-func FillPluginsDefaults(plugin *Plugin, schema map[string]interface{}) error {
+func FillPluginsDefaults(plugin *Plugin, schema Schema) error {
 	jsonb, err := json.Marshal(&schema)
 	if err != nil {
 		return err
