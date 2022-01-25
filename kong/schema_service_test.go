@@ -21,12 +21,13 @@ func TestSchemaService(T *testing.T) {
 		"plugins",
 		"ca_certificates",
 		"certificates",
-		"clustering_data_planes",
 		"consumers",
-		"parameters",
 		"snis",
 		"tags",
 		"workspaces",
+		// not present with < 2.3
+		// "clustering_data_planes",
+		// "parameters",
 	}
 	for _, entity := range entities {
 		schema, err := client.Schemas.Get(defaultCtx, entity)
