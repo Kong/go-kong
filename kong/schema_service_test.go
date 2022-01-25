@@ -24,7 +24,8 @@ func TestSchemaService(T *testing.T) {
 		"consumers",
 		"snis",
 		"tags",
-		"workspaces",
+		// not present in OSS
+		// "workspaces",
 		// not present with < 2.3
 		// "clustering_data_planes",
 		// "parameters",
