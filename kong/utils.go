@@ -315,10 +315,7 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 	if err = json.Unmarshal(defaults, &tmpEntity); err != nil {
 		return err
 	}
-	if err = mergo.Merge(entity, tmpEntity); err != nil {
-		return err
-	}
-	return nil
+	return mergo.Merge(entity, tmpEntity)
 }
 
 // FillPluginsDefaults ingests plugin's defaults from its schema.
