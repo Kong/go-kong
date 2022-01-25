@@ -250,6 +250,11 @@ func (in *CACertificate) DeepCopyInto(out *CACertificate) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.CertDigest != nil {
+		in, out := &in.CertDigest, &out.CertDigest
+		*out = new(string)
+		**out = **in
+	}
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
 		*out = new(int64)
@@ -318,8 +323,18 @@ func (in *Certificate) DeepCopyInto(out *Certificate) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.CertAlt != nil {
+		in, out := &in.CertAlt, &out.CertAlt
+		*out = new(string)
+		**out = **in
+	}
 	if in.Key != nil {
 		in, out := &in.Key, &out.Key
+		*out = new(string)
+		**out = **in
+	}
+	if in.KeyAlt != nil {
+		in, out := &in.KeyAlt, &out.KeyAlt
 		*out = new(string)
 		**out = **in
 	}
@@ -1548,6 +1563,11 @@ func (in *Service) DeepCopyInto(out *Service) {
 	if in.CreatedAt != nil {
 		in, out := &in.CreatedAt, &out.CreatedAt
 		*out = new(int)
+		**out = **in
+	}
+	if in.Enabled != nil {
+		in, out := &in.Enabled, &out.Enabled
+		*out = new(bool)
 		**out = **in
 	}
 	if in.Host != nil {
