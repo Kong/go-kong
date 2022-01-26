@@ -298,7 +298,7 @@ func getDefaultsObj(schema Schema) ([]byte, error) {
 // FillEntityDefaults ingests entities' defaults from their schema.
 func FillEntityDefaults(entity interface{}, schema Schema) error {
 	if schema == nil {
-		return nil
+		return fmt.Errorf("filling defaults for '%T': provided schema is nil", entity)
 	}
 	var tmpEntity interface{}
 	switch entity.(type) {
