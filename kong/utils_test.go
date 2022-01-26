@@ -207,27 +207,6 @@ func TestFillRoutesDefaults(T *testing.T) {
 				HTTPSRedirectStatusCode: Int(426),
 			},
 		},
-		// TODO: re-add once upstream patch has been merged.
-		// https://github.com/imdario/mergo/pull/203
-		// {
-		// 	name: "set opposite bools",
-		// 	route: &Route{
-		// 		Name:              String("r1"),
-		// 		Paths:             []*string{String("/r1")},
-		// 		Protocols:         []*string{String("grpc")},
-		// 		StripPath:         Bool(false),
-		// 		PreserveHost:      Bool(true),
-		// 	},
-		// 	expected: &Route{
-		// 		Name:                    String("r1"),
-		// 		Paths:                   []*string{String("/r1")},
-		// 		PreserveHost:            Bool(true),
-		// 		Protocols:               []*string{String("grpc")},
-		// 		RegexPriority:           Int(0),
-		// 		StripPath:               Bool(false),
-		// 		HTTPSRedirectStatusCode: Int(426),
-		// 	},
-		// },
 	}
 
 	for _, tc := range tests {
