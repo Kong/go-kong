@@ -297,6 +297,9 @@ func getDefaultsObj(schema Schema) ([]byte, error) {
 
 // FillEntityDefaults ingests entities' defaults from their schema.
 func FillEntityDefaults(entity interface{}, schema Schema) error {
+	if schema == nil {
+		return nil
+	}
 	var tmpEntity interface{}
 	switch entity.(type) {
 	case *Target:
@@ -307,15 +310,20 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 		tmpEntity = &Route{}
 	case *Upstream:
 		tmpEntity = &Upstream{}
+	default:
+		return fmt.Errorf("unsupported entity: '%T'", entity)
 	}
 	defaults, err := getDefaultsObj(schema)
 	if err != nil {
-		return err
+		return fmt.Errorf("parse schema for defaults: %v", err)
 	}
-	if err = json.Unmarshal(defaults, &tmpEntity); err != nil {
-		return err
+	if err := json.Unmarshal(defaults, &tmpEntity); err != nil {
+		return fmt.Errorf("unmarshal entity with defaults: %v", err)
 	}
-	return mergo.Merge(entity, tmpEntity)
+	if err := mergo.Merge(entity, tmpEntity); err != nil {
+		return fmt.Errorf("merge entity with its defaults: %v", err)
+	}
+	return nil
 }
 
 // FillPluginsDefaults ingests plugin's defaults from its schema.

@@ -24,11 +24,6 @@ func TestSchemaService(T *testing.T) {
 		"consumers",
 		"snis",
 		"tags",
-		// not present in OSS
-		// "workspaces",
-		// not present with < 2.3
-		// "clustering_data_planes",
-		// "parameters",
 	}
 	for _, entity := range entities {
 		schema, err := client.Schemas.Get(defaultCtx, entity)

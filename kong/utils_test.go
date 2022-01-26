@@ -175,7 +175,7 @@ func TestFillRoutesDefaults(T *testing.T) {
 		expected *Route
 	}{
 		{
-			name: "name paths",
+			name: "fills defaults for all fields except paths, leaves name unchanged",
 			route: &Route{
 				Name:  String("r1"),
 				Paths: []*string{String("/r1")},
@@ -191,7 +191,7 @@ func TestFillRoutesDefaults(T *testing.T) {
 			},
 		},
 		{
-			name: "name paths protocols",
+			name: "fills defaults for all fields except paths and protocols, leaves name unchanged",
 			route: &Route{
 				Name:      String("r1"),
 				Paths:     []*string{String("/r1")},
@@ -264,7 +264,7 @@ func TestFillServiceDefaults(T *testing.T) {
 		expected *Service
 	}{
 		{
-			name: "name and host only",
+			name: "fills defaults for all fields, leaves name and host unchanged",
 			service: &Service{
 				Name: String("svc1"),
 				Host: String("mockbin.org"),
@@ -281,7 +281,7 @@ func TestFillServiceDefaults(T *testing.T) {
 			},
 		},
 		{
-			name: "name host and port",
+			name: "fills defaults for all fields except port, leaves name and host unchanged",
 			service: &Service{
 				Name: String("svc1"),
 				Host: String("mockbin.org"),
@@ -299,7 +299,7 @@ func TestFillServiceDefaults(T *testing.T) {
 			},
 		},
 		{
-			name: "name host port and tags",
+			name: "fills defaults for all fields except port, leaves name, tags and host unchanged",
 			service: &Service{
 				Name: String("svc1"),
 				Host: String("mockbin.org"),
@@ -349,7 +349,7 @@ func TestFillTargetDefaults(T *testing.T) {
 		expected *Target
 	}{
 		{
-			name:   "empty",
+			name:   "fills default for weight",
 			target: &Target{},
 			expected: &Target{
 				Weight: Int(100),
@@ -386,7 +386,7 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 		expected *Upstream
 	}{
 		{
-			name: "name only",
+			name: "fills defaults for all fields, leaves name unchanged",
 			upstream: &Upstream{
 				Name: String("upstream1"),
 			},
@@ -440,7 +440,7 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 			},
 		},
 		{
-			name: "name algorithm hashon",
+			name: "fills defaults for all fields except algorithm and hash_on, leaves name unchanged",
 			upstream: &Upstream{
 				Name:      String("upstream1"),
 				Algorithm: String("consistent-hashing"),
