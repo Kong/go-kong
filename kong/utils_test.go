@@ -308,7 +308,10 @@ func TestFillServiceDefaults(T *testing.T) {
 			if err := FillEntityDefaults(s, fullSchema); err != nil {
 				t.Errorf(err.Error())
 			}
-			if diff := cmp.Diff(s, tc.expected); diff != "" {
+			opt := []cmp.Option{
+				cmpopts.IgnoreFields(Service{}, "Enabled"),
+			}
+			if diff := cmp.Diff(s, tc.expected, opt...); diff != "" {
 				t.Errorf(diff)
 			}
 		})
