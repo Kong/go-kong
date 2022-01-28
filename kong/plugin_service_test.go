@@ -321,7 +321,7 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	assert.Nil(client.Services.Delete(defaultCtx, createdService.ID))
 }
 
-func TestGetFullSchema(T *testing.T) {
+func TestPluginGetFullSchema(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/blang/semver/v4"
+	"github.com/imdario/mergo"
 	"github.com/tidwall/gjson"
 )
 
@@ -29,6 +30,11 @@ func Bool(b bool) *bool {
 // Int returns a pointer to i.
 func Int(i int) *int {
 	return &i
+}
+
+// Float64 returns a pointer to f.
+func Float64(f float64) *float64 {
+	return &f
 }
 
 func isEmptyString(s *string) bool {
@@ -208,9 +214,121 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 	return res
 }
 
+// flattenDefaultsSchema gets an arbitrarily nested and structured entity schema
+// and flattens it, turning it into a map that can be more easily unmarshalled
+// into proper entity objects.
+//
+// Sample input:
+// {
+// 	"fields": [
+//         {
+//             "algorithm": {
+//                 "default": "round-robin",
+//                 "one_of": ["consistent-hashing", "least-connections", "round-robin"],
+//                 "type": "string"
+//             }
+//         }, {
+//             "hash_on": {
+//                 "default": "none",
+//                 "one_of": ["none", "consumer", "ip", "header", "cookie"],
+//                 "type": "string"
+//             }
+//         }, {
+//             "hash_fallback": {
+//                 "default": "none",
+//                 "one_of": ["none", "consumer", "ip", "header", "cookie"],
+//                 "type": "string"
+//             }
+//         },
+//   ...
+// }
+//
+// Sample output:
+// {
+// 	"algorithm": "round-robin",
+// 	"hash_on": "none",
+// 	"hash_fallback": "none",
+//  ...
+// }
+func flattenDefaultsSchema(schema gjson.Result) Schema {
+	value := schema.Get("fields")
+	results := Schema{}
+
+	value.ForEach(func(key, value gjson.Result) bool {
+		// get the key name
+		ms := value.Map()
+		fname := ""
+		for k := range ms {
+			fname = k
+			break
+		}
+
+		ftype := value.Get(fname + ".type")
+		if ftype.String() == "record" {
+			newSubConfig := flattenDefaultsSchema(value.Get(fname))
+			results[fname] = newSubConfig
+			return true
+		}
+		value = value.Get(fname + ".default")
+		if value.Exists() {
+			results[fname] = value.Value()
+		} else {
+			results[fname] = nil
+		}
+		return true
+	})
+
+	return results
+}
+
+func getDefaultsObj(schema Schema) ([]byte, error) {
+	jsonSchema, err := json.Marshal(&schema)
+	if err != nil {
+		return nil, err
+	}
+	gjsonSchema := gjson.ParseBytes((jsonSchema))
+	defaults := flattenDefaultsSchema(gjsonSchema)
+	jsonSchemaWithDefaults, err := json.Marshal(&defaults)
+	if err != nil {
+		return nil, err
+	}
+	return jsonSchemaWithDefaults, nil
+}
+
+// FillEntityDefaults ingests entities' defaults from their schema.
+func FillEntityDefaults(entity interface{}, schema Schema) error {
+	if schema == nil {
+		return fmt.Errorf("filling defaults for '%T': provided schema is nil", entity)
+	}
+	var tmpEntity interface{}
+	switch entity.(type) {
+	case *Target:
+		tmpEntity = &Target{}
+	case *Service:
+		tmpEntity = &Service{}
+	case *Route:
+		tmpEntity = &Route{}
+	case *Upstream:
+		tmpEntity = &Upstream{}
+	default:
+		return fmt.Errorf("unsupported entity: '%T'", entity)
+	}
+	defaults, err := getDefaultsObj(schema)
+	if err != nil {
+		return fmt.Errorf("parse schema for defaults: %v", err)
+	}
+	if err := json.Unmarshal(defaults, &tmpEntity); err != nil {
+		return fmt.Errorf("unmarshal entity with defaults: %v", err)
+	}
+	if err := mergo.Merge(entity, tmpEntity); err != nil {
+		return fmt.Errorf("merge entity with its defaults: %v", err)
+	}
+	return nil
+}
+
 // FillPluginsDefaults ingests plugin's defaults from its schema.
 // Takes in a plugin struct and mutate it in place.
-func FillPluginsDefaults(plugin *Plugin, schema map[string]interface{}) error {
+func FillPluginsDefaults(plugin *Plugin, schema Schema) error {
 	jsonb, err := json.Marshal(&schema)
 	if err != nil {
 		return err

@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -155,6 +157,341 @@ func Test_requestWithHeaders(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := requestWithHeaders(tt.args.req, tt.args.headers); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("requestWithHeaders() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFillRoutesDefaults(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		route    *Route
+		expected *Route
+	}{
+		{
+			name: "fills defaults for all fields except paths, leaves name unchanged",
+			route: &Route{
+				Name:  String("r1"),
+				Paths: []*string{String("/r1")},
+			},
+			expected: &Route{
+				Name:                    String("r1"),
+				Paths:                   []*string{String("/r1")},
+				PreserveHost:            Bool(false),
+				Protocols:               []*string{String("http"), String("https")},
+				RegexPriority:           Int(0),
+				StripPath:               Bool(true),
+				HTTPSRedirectStatusCode: Int(426),
+			},
+		},
+		{
+			name: "fills defaults for all fields except paths and protocols, leaves name unchanged",
+			route: &Route{
+				Name:      String("r1"),
+				Paths:     []*string{String("/r1")},
+				Protocols: []*string{String("grpc")},
+			},
+			expected: &Route{
+				Name:                    String("r1"),
+				Paths:                   []*string{String("/r1")},
+				PreserveHost:            Bool(false),
+				Protocols:               []*string{String("grpc")},
+				RegexPriority:           Int(0),
+				StripPath:               Bool(true),
+				HTTPSRedirectStatusCode: Int(426),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			r := tc.route
+			fullSchema, err := client.Schemas.Get(defaultCtx, "routes")
+			assert.Nil(err)
+			assert.NotNil(fullSchema)
+			if err = FillEntityDefaults(r, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+			// Ignore fields to make tests pass despite small differences across releases.
+			opts := cmpopts.IgnoreFields(
+				Route{},
+				"RequestBuffering", "ResponseBuffering", "PathHandling",
+			)
+			if diff := cmp.Diff(r, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func TestFillServiceDefaults(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		service  *Service
+		expected *Service
+	}{
+		{
+			name: "fills defaults for all fields, leaves name and host unchanged",
+			service: &Service{
+				Name: String("svc1"),
+				Host: String("mockbin.org"),
+			},
+			expected: &Service{
+				Name:           String("svc1"),
+				Host:           String("mockbin.org"),
+				Port:           Int(80),
+				Protocol:       String("http"),
+				ConnectTimeout: Int(60000),
+				ReadTimeout:    Int(60000),
+				Retries:        Int(5),
+				WriteTimeout:   Int(60000),
+			},
+		},
+		{
+			name: "fills defaults for all fields except port, leaves name and host unchanged",
+			service: &Service{
+				Name: String("svc1"),
+				Host: String("mockbin.org"),
+				Port: Int(8080),
+			},
+			expected: &Service{
+				Name:           String("svc1"),
+				Host:           String("mockbin.org"),
+				Port:           Int(8080),
+				Protocol:       String("http"),
+				ConnectTimeout: Int(60000),
+				ReadTimeout:    Int(60000),
+				Retries:        Int(5),
+				WriteTimeout:   Int(60000),
+			},
+		},
+		{
+			name: "fills defaults for all fields except port, leaves name, tags and host unchanged",
+			service: &Service{
+				Name: String("svc1"),
+				Host: String("mockbin.org"),
+				Port: Int(8080),
+				Tags: []*string{String("tag1"), String("tag2")},
+			},
+			expected: &Service{
+				Name:           String("svc1"),
+				Host:           String("mockbin.org"),
+				Port:           Int(8080),
+				Protocol:       String("http"),
+				ConnectTimeout: Int(60000),
+				ReadTimeout:    Int(60000),
+				Retries:        Int(5),
+				WriteTimeout:   Int(60000),
+				Tags:           []*string{String("tag1"), String("tag2")},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			s := tc.service
+			fullSchema, err := client.Schemas.Get(defaultCtx, "services")
+			assert.Nil(err)
+			assert.NotNil(fullSchema)
+			if err := FillEntityDefaults(s, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+			opt := []cmp.Option{
+				cmpopts.IgnoreFields(Service{}, "Enabled"),
+			}
+			if diff := cmp.Diff(s, tc.expected, opt...); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func TestFillTargetDefaults(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		target   *Target
+		expected *Target
+	}{
+		{
+			name:   "fills default for weight",
+			target: &Target{},
+			expected: &Target{
+				Weight: Int(100),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			target := tc.target
+			fullSchema, err := client.Schemas.Get(defaultCtx, "targets")
+			assert.Nil(err)
+			assert.NotNil(fullSchema)
+			if err := FillEntityDefaults(target, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+			if diff := cmp.Diff(target, tc.expected); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func TestFillUpstreamsDefaults(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		upstream *Upstream
+		expected *Upstream
+	}{
+		{
+			name: "fills defaults for all fields, leaves name unchanged",
+			upstream: &Upstream{
+				Name: String("upstream1"),
+			},
+			expected: &Upstream{
+				Name:      String("upstream1"),
+				Algorithm: String("round-robin"),
+				Slots:     Int(10000),
+				Healthchecks: &Healthcheck{
+					Active: &ActiveHealthcheck{
+						Concurrency: Int(10),
+						Healthy: &Healthy{
+							HTTPStatuses: []int{200, 302},
+							Interval:     Int(0),
+							Successes:    Int(0),
+						},
+						HTTPPath:               String("/"),
+						HTTPSVerifyCertificate: Bool(true),
+						Type:                   String("http"),
+						Timeout:                Int(1),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{
+								429, 404,
+								500, 501, 502, 503, 504, 505,
+							},
+							TCPFailures: Int(0),
+							Timeouts:    Int(0),
+							Interval:    Int(0),
+						},
+					},
+					Passive: &PassiveHealthcheck{
+						Healthy: &Healthy{
+							HTTPStatuses: []int{
+								200, 201, 202, 203, 204, 205, 206, 207, 208, 226,
+								300, 301, 302, 303, 304, 305, 306, 307, 308,
+							},
+							Successes: Int(0),
+						},
+						Type: String("http"),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{429, 500, 503},
+							TCPFailures:  Int(0),
+							Timeouts:     Int(0),
+						},
+					},
+				},
+				HashOn:           String("none"),
+				HashFallback:     String("none"),
+				HashOnCookiePath: String("/"),
+			},
+		},
+		{
+			name: "fills defaults for all fields except algorithm and hash_on, leaves name unchanged",
+			upstream: &Upstream{
+				Name:      String("upstream1"),
+				Algorithm: String("consistent-hashing"),
+				HashOn:    String("ip"),
+			},
+			expected: &Upstream{
+				Name:      String("upstream1"),
+				Algorithm: String("consistent-hashing"),
+				Slots:     Int(10000),
+				Healthchecks: &Healthcheck{
+					Active: &ActiveHealthcheck{
+						Concurrency: Int(10),
+						Healthy: &Healthy{
+							HTTPStatuses: []int{200, 302},
+							Interval:     Int(0),
+							Successes:    Int(0),
+						},
+						HTTPPath:               String("/"),
+						HTTPSVerifyCertificate: Bool(true),
+						Type:                   String("http"),
+						Timeout:                Int(1),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{
+								429, 404,
+								500, 501, 502, 503, 504, 505,
+							},
+							TCPFailures: Int(0),
+							Timeouts:    Int(0),
+							Interval:    Int(0),
+						},
+					},
+					Passive: &PassiveHealthcheck{
+						Healthy: &Healthy{
+							HTTPStatuses: []int{
+								200, 201, 202, 203, 204, 205, 206, 207, 208, 226,
+								300, 301, 302, 303, 304, 305, 306, 307, 308,
+							},
+							Successes: Int(0),
+						},
+						Type: String("http"),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{429, 500, 503},
+							TCPFailures:  Int(0),
+							Timeouts:     Int(0),
+						},
+					},
+				},
+				HashOn:           String("ip"),
+				HashFallback:     String("none"),
+				HashOnCookiePath: String("/"),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			u := tc.upstream
+			fullSchema, err := client.Schemas.Get(defaultCtx, "upstreams")
+			assert.Nil(err)
+			assert.NotNil(fullSchema)
+			if err = FillEntityDefaults(u, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+			// Ignore fields to make tests pass despite small differences across releases.
+			opts := cmpopts.IgnoreFields(Healthcheck{}, "Threshold")
+			if diff := cmp.Diff(u, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
 			}
 		})
 	}
