@@ -1,6 +1,7 @@
 package kong
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 
@@ -41,7 +42,8 @@ func TestAPIError_Code(T *testing.T) {
 	assert.Nil(consumer)
 	assert.NotNil(err)
 
-	kongErr, ok := err.(*APIError)
+	var kongErr *APIError
+	ok := errors.As(err, &kongErr)
 	assert.True(ok)
 	assert.True(kongErr.Code() == 404)
 }

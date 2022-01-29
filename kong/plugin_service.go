@@ -3,6 +3,7 @@ package kong
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -183,7 +184,8 @@ func (s *PluginService) Validate(ctx context.Context, plugin *Plugin) (bool, str
 		// Hopefully (usually) we get a 400 because of a mangled plugin rather than
 		// a mangled request, but we can't easily tell as messageFromBody masks errors
 		if resp.StatusCode == http.StatusBadRequest {
-			apiError, ok := err.(*APIError)
+			var apiError *APIError
+			ok := errors.As(err, &apiError)
 			if !ok {
 				return false, "", err
 			}
