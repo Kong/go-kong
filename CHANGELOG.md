@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.26.0](#v0260)
 - [v0.25.1](#v0251)
 - [v0.25.0](#v0250)
 - [v0.24.0](#v0240)
@@ -30,6 +31,19 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.26.0]
+
+> Release date: 2022/01/31
+
+- Add missing entity fields from newer Kong releases.
+  [#120](https://github.com/Kong/go-kong/pull/120)
+- Add `SchemaService` and `FillEntityDefaults` utility supporting
+  filling defaults for Services, Routes, Upstream and Targets.
+  [#119](https://github.com/Kong/go-kong/pull/119)
+- Add `GetFullSchema` to plugins to retrieve their complete schema.
+  Also add `FillPluginsDefaults` utility to fill a plugin with its defaults.
+  [#114](https://github.com/Kong/go-kong/pull/114)
 
 ## [v0.25.1]
 
@@ -489,6 +503,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.26.0]: https://github.com/Kong/go-kong/compare/v0.25.1...v0.26.0
 [v0.25.1]: https://github.com/Kong/go-kong/compare/v0.24.0...v0.25.1
 [v0.25.0]: https://github.com/Kong/go-kong/compare/v0.24.0...v0.25.0
 [v0.24.0]: https://github.com/Kong/go-kong/compare/v0.23.0...v0.24.0
