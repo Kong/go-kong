@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
 	"regexp"
 	"strings"
 
@@ -295,6 +296,22 @@ func getDefaultsObj(schema Schema) ([]byte, error) {
 	return jsonSchemaWithDefaults, nil
 }
 
+type zeroValueTransformer struct{}
+
+func (t zeroValueTransformer) Transformer(typ reflect.Type) func(dst, src reflect.Value) error {
+	if typ == reflect.TypeOf(Bool(true)) || typ == reflect.TypeOf(Int(0)) {
+		return func(dst, src reflect.Value) error {
+			if dst.CanSet() {
+				if src.IsNil() {
+					src.Set(dst)
+				}
+			}
+			return nil
+		}
+	}
+	return nil
+}
+
 // FillEntityDefaults ingests entities' defaults from their schema.
 func FillEntityDefaults(entity interface{}, schema Schema) error {
 	if schema == nil {
@@ -320,7 +337,9 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 	if err := json.Unmarshal(defaults, &tmpEntity); err != nil {
 		return fmt.Errorf("unmarshal entity with defaults: %v", err)
 	}
-	if err := mergo.Merge(entity, tmpEntity); err != nil {
+	if err := mergo.Merge(
+		entity, tmpEntity, mergo.WithTransformers(zeroValueTransformer{}),
+	); err != nil {
 		return fmt.Errorf("merge entity with its defaults: %v", err)
 	}
 	return nil
