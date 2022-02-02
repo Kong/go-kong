@@ -207,6 +207,25 @@ func TestFillRoutesDefaults(T *testing.T) {
 				HTTPSRedirectStatusCode: Int(426),
 			},
 		},
+		{
+			name: "boolean default values don't overwrite existing fields if set",
+			route: &Route{
+				Name:         String("r1"),
+				Paths:        []*string{String("/r1")},
+				Protocols:    []*string{String("grpc")},
+				StripPath:    Bool(false),
+				PreserveHost: Bool(true),
+			},
+			expected: &Route{
+				Name:                    String("r1"),
+				Paths:                   []*string{String("/r1")},
+				PreserveHost:            Bool(true),
+				Protocols:               []*string{String("grpc")},
+				RegexPriority:           Int(0),
+				StripPath:               Bool(false),
+				HTTPSRedirectStatusCode: Int(426),
+			},
+		},
 	}
 
 	for _, tc := range tests {
@@ -335,6 +354,15 @@ func TestFillTargetDefaults(T *testing.T) {
 			target: &Target{},
 			expected: &Target{
 				Weight: Int(100),
+			},
+		},
+		{
+			name: "set zero-value",
+			target: &Target{
+				Weight: Int(0),
+			},
+			expected: &Target{
+				Weight: Int(0),
 			},
 		},
 	}
