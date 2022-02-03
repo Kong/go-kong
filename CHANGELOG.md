@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.27.0](#v0270)
 - [v0.26.0](#v0260)
 - [v0.25.1](#v0251)
 - [v0.25.0](#v0250)
@@ -31,6 +32,14 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.27.0]
+
+> Release date: 2022/02/03
+
+- Zero values (boolean `false` and integer `0`) now override default values
+  when filling entity defaults.
+  [#125](https://github.com/Kong/go-kong/pull/125)
 
 ## [v0.26.0]
 
@@ -503,6 +512,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.26.0]: https://github.com/Kong/go-kong/compare/v0.26.0...v0.27.0
 [v0.26.0]: https://github.com/Kong/go-kong/compare/v0.25.1...v0.26.0
 [v0.25.1]: https://github.com/Kong/go-kong/compare/v0.24.0...v0.25.1
 [v0.25.0]: https://github.com/Kong/go-kong/compare/v0.24.0...v0.25.0
