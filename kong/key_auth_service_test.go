@@ -302,7 +302,7 @@ func TestKeyAuthListMethods(T *testing.T) {
 }
 
 func TestKeyAuthCreateWithTTL(T *testing.T) {
-	runWhenKong(T, ">=1.4.0")
+	RunWhenKong(T, ">=1.4.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

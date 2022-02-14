@@ -8,7 +8,7 @@ import (
 )
 
 func TestRBACRoleService(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
+	RunWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -53,7 +53,7 @@ func TestRBACRoleService(T *testing.T) {
 }
 
 func TestRBACRoleServiceList(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
+	RunWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -86,7 +86,7 @@ func TestRBACRoleServiceList(T *testing.T) {
 }
 
 func TestRBACRoleListEndpoint(T *testing.T) {
-	runWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
+	RunWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

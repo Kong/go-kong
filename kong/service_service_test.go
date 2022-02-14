@@ -81,7 +81,7 @@ func TestServicesService(T *testing.T) {
 }
 
 func TestServiceWithTags(T *testing.T) {
-	runWhenKong(T, ">=1.1.0")
+	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -189,7 +189,7 @@ func compareServices(expected, actual []*Service) bool {
 }
 
 func TestServiceWithClientCert(T *testing.T) {
-	runWhenKong(T, ">=1.3.0")
+	RunWhenKong(T, ">=1.3.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

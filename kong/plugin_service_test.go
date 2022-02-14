@@ -84,7 +84,7 @@ func TestPluginsService(T *testing.T) {
 }
 
 func TestPluginWithTags(T *testing.T) {
-	runWhenKong(T, ">=1.1.0")
+	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

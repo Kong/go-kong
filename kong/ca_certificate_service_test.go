@@ -96,7 +96,7 @@ R+pHRocvtyc8EnkuMw6+jGHr
 )
 
 func TestCACertificatesService(T *testing.T) {
-	runWhenKong(T, ">=1.3.0")
+	RunWhenKong(T, ">=1.3.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -149,7 +149,7 @@ func TestCACertificatesService(T *testing.T) {
 }
 
 func TestCACertificateWithTags(T *testing.T) {
-	runWhenKong(T, ">=1.3.0")
+	RunWhenKong(T, ">=1.3.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -172,7 +172,7 @@ func TestCACertificateWithTags(T *testing.T) {
 }
 
 func TestCACertificateListEndpoint(T *testing.T) {
-	runWhenKong(T, ">=1.3.0")
+	RunWhenKong(T, ">=1.3.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

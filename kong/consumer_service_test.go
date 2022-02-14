@@ -65,7 +65,7 @@ func TestConsumersService(T *testing.T) {
 }
 
 func TestConsumerWithTags(T *testing.T) {
-	runWhenKong(T, ">=1.1.0")
+	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -156,7 +156,7 @@ func TestConsumerListEndpoint(T *testing.T) {
 }
 
 func TestConsumerListWithTags(T *testing.T) {
-	runWhenKong(T, ">=1.1.0")
+	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
