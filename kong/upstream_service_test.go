@@ -52,7 +52,7 @@ func TestUpstreamsService(T *testing.T) {
 }
 
 func TestUpstreamWithTags(T *testing.T) {
-	runWhenKong(T, ">=1.1.0")
+	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -154,7 +154,7 @@ func TestUpstreamWithPassiveHealthy(T *testing.T) {
 }
 
 func TestUpstreamWithAlgorithm(T *testing.T) {
-	runWhenKong(T, ">=1.3.0")
+	RunWhenKong(T, ">=1.3.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -265,7 +265,7 @@ func compareUpstreams(expected, actual []*Upstream) bool {
 }
 
 func TestUpstreamsWithHostHeader(T *testing.T) {
-	runWhenKong(T, ">=1.4.0")
+	RunWhenKong(T, ">=1.4.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

@@ -97,7 +97,7 @@ func TestRoutesRoute(T *testing.T) {
 }
 
 func TestRouteWithTags(T *testing.T) {
-	runWhenKong(T, ">=1.1.0")
+	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -262,7 +262,7 @@ func compareRoutes(expected, actual []*Route) bool {
 }
 
 func TestRouteWithHeaders(T *testing.T) {
-	runWhenKong(T, ">=1.3.0")
+	RunWhenKong(T, ">=1.3.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

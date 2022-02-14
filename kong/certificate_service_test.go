@@ -308,7 +308,7 @@ func TestCertificatesService(T *testing.T) {
 }
 
 func TestCertificateWithTags(T *testing.T) {
-	runWhenKong(T, ">=1.1.0")
+	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
