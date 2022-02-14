@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.28.0](#v0280)
 - [v0.27.0](#v0270)
 - [v0.26.0](#v0260)
 - [v0.25.1](#v0251)
@@ -32,6 +33,22 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.28.0]
+
+> Release date: 2022/02/14
+
+- The `RunWhenKong()` and `RunWhenEnterprise()` functions are now exported for
+  other packages that need to condition tests on Kong versions.
+  [#132](https://github.com/Kong/go-kong/pull/132)
+- RBAC permission actions are now an array of strings rather than a single
+  comma-separated string to properly reflect their Kong type.
+  [#131](https://github.com/Kong/go-kong/pull/132)
+- Enterprise versions returned by `ParseSemanticVersion()` now include their
+  supplemental Enterprise version as build info, rather than as a prerelease.
+  This fixes an issue where semver comparisons saw the initial patch of a minor
+  release as a lower version of that release.
+  [#129](https://github.com/Kong/go-kong/pull/129)
 
 ## [v0.27.0]
 
@@ -512,7 +529,8 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
-[v0.26.0]: https://github.com/Kong/go-kong/compare/v0.26.0...v0.27.0
+[v0.28.0]: https://github.com/Kong/go-kong/compare/v0.27.0...v0.28.0
+[v0.27.0]: https://github.com/Kong/go-kong/compare/v0.26.0...v0.27.0
 [v0.26.0]: https://github.com/Kong/go-kong/compare/v0.25.1...v0.26.0
 [v0.25.1]: https://github.com/Kong/go-kong/compare/v0.24.0...v0.25.1
 [v0.25.0]: https://github.com/Kong/go-kong/compare/v0.24.0...v0.25.0
