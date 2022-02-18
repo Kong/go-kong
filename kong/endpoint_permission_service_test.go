@@ -7,7 +7,7 @@ import (
 )
 
 func TestRBACEndpointPermissionservice(T *testing.T) {
-	RunWhenEnterprise(T, ">=0.33.0", requiredFeatures{rbac: true})
+	RunWhenEnterprise(T, ">=0.33.0", RequiredFeatures{RBAC: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
