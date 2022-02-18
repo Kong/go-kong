@@ -151,7 +151,7 @@ func TestWorkspaceServiceListAll(T *testing.T) {
 // Workspace entities
 
 func TestWorkspaceService_Entities(T *testing.T) {
-	RunWhenEnterprise(T, ">=0.33.0 <=2.0.5", requiredFeatures{})
+	RunWhenEnterprise(T, ">=0.33.0 <=2.0.5", RequiredFeatures{})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

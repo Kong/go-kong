@@ -9,9 +9,9 @@ import (
 	"github.com/blang/semver/v4"
 )
 
-type requiredFeatures struct {
-	portal bool
-	rbac   bool
+type RequiredFeatures struct {
+	Portal bool
+	RBAC   bool
 }
 
 // RunWhenKong skips the current test if the version of Kong doesn't
@@ -47,7 +47,7 @@ func RunWhenKong(t *testing.T, semverRange string) {
 // fall within the semver range. If a test requires
 // RBAC and RBAC is not enabled on Kong the test
 // will be skipped
-func RunWhenEnterprise(t *testing.T, semverRange string, required requiredFeatures) {
+func RunWhenEnterprise(t *testing.T, semverRange string, required RequiredFeatures) {
 	client, err := NewTestClient(nil, nil)
 	if err != nil {
 		t.Error(err)
@@ -64,12 +64,12 @@ func RunWhenEnterprise(t *testing.T, semverRange string, required requiredFeatur
 	}
 	configuration := info["configuration"].(map[string]interface{})
 
-	if required.rbac && configuration["rbac"].(string) != "on" {
+	if required.RBAC && configuration["rbac"].(string) != "on" {
 		t.Log("RBAC not enabled on test Kong instance, skipping")
 		t.Skip()
 	}
 
-	if required.portal && !configuration["portal"].(bool) {
+	if required.Portal && !configuration["portal"].(bool) {
 		t.Log("Portal not enabled on test Kong instance, skipping")
 		t.Skip()
 	}

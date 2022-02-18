@@ -89,7 +89,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestRunWhenEnterprise(T *testing.T) {
-	RunWhenEnterprise(T, ">=0.33.0", requiredFeatures{})
+	RunWhenEnterprise(T, ">=0.33.0", RequiredFeatures{})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -141,7 +141,7 @@ func (t *TestWorkspace) UpdateConfig(config map[string]interface{}) error {
 }
 
 func TestTestWorkspace(T *testing.T) {
-	RunWhenEnterprise(T, ">=0.33.0", requiredFeatures{portal: true})
+	RunWhenEnterprise(T, ">=0.33.0", RequiredFeatures{Portal: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
