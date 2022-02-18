@@ -13,5 +13,5 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3
 	github.com/stretchr/testify v1.7.0
 	github.com/tidwall/gjson v1.14.0
-	k8s.io/code-generator v0.23.3
+	k8s.io/code-generator v0.23.4
 )
