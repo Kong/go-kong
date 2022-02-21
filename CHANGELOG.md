@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.28.1](#v0281)
 - [v0.28.0](#v0280)
 - [v0.27.0](#v0270)
 - [v0.26.0](#v0260)
@@ -33,6 +34,14 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.28.1]
+
+> Release date: 2022/02/22
+
+- Export the `requiredFeatures` struct to be able to use `RunWhenEnterprise()`
+  in other packages.
+  [#135](https://github.com/Kong/go-kong/pull/135)
 
 ## [v0.28.0]
 
@@ -529,6 +538,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.28.1]: https://github.com/Kong/go-kong/compare/v0.28.0...v0.28.1
 [v0.28.0]: https://github.com/Kong/go-kong/compare/v0.27.0...v0.28.0
 [v0.27.0]: https://github.com/Kong/go-kong/compare/v0.26.0...v0.27.0
 [v0.26.0]: https://github.com/Kong/go-kong/compare/v0.25.1...v0.26.0
