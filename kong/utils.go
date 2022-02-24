@@ -117,7 +117,7 @@ func HTTPClientWithHeaders(client *http.Client,
 	}
 	res.Transport = headerRoundTripper{
 		headers: headers,
-		rt:      client.Transport,
+		rt:      res.Transport,
 	}
 	return res
 }
