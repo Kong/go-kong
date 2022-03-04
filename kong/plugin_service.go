@@ -179,6 +179,9 @@ func (s *PluginService) Validate(ctx context.Context, plugin *Plugin) (bool, str
 	}
 	resp, err := s.client.Do(ctx, req, nil)
 	if err != nil {
+		if resp == nil {
+			return false, "", err
+		}
 		// Arguably Kong should return a 422 Unprocessable Entity for a well-formed
 		// HTTP request with a mangled plugin, but it doesn't, it returns a 400.
 		// Hopefully (usually) we get a 400 because of a mangled plugin rather than
