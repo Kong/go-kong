@@ -197,6 +197,11 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 			return true
 		}
 		ftype := value.Get(fname + ".type")
+		// check if key is a foreign reference
+		if ftype.String() == "foreign" {
+			// yes, don't set it
+			return true
+		}
 		if ftype.String() == "record" {
 			subConfig := config[fname]
 			if subConfig == nil {
