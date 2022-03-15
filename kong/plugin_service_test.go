@@ -354,10 +354,12 @@ func TestFillPluginDefaults(T *testing.T) {
 		{
 			name: "no config no protocols",
 			plugin: &Plugin{
-				Name: String("basic-auth"),
+				Name:  String("basic-auth"),
+				RunOn: String("test"),
 			},
 			expected: &Plugin{
-				Name: String("basic-auth"),
+				Name:  String("basic-auth"),
+				RunOn: String("test"),
 				Config: Configuration{
 					"anonymous":        nil,
 					"hide_credentials": false,
@@ -370,12 +372,18 @@ func TestFillPluginDefaults(T *testing.T) {
 			name: "partial config no protocols",
 			plugin: &Plugin{
 				Name: String("basic-auth"),
+				Consumer: &Consumer{
+					ID: String("3bb9a73c-a467-11ec-b909-0242ac120002"),
+				},
 				Config: Configuration{
 					"hide_credentials": true,
 				},
 			},
 			expected: &Plugin{
 				Name: String("basic-auth"),
+				Consumer: &Consumer{
+					ID: String("3bb9a73c-a467-11ec-b909-0242ac120002"),
+				},
 				Config: Configuration{
 					"anonymous":        nil,
 					"hide_credentials": true,

@@ -172,6 +172,18 @@ func getDefaultProtocols(schema gjson.Result) []*string {
 	return res
 }
 
+func getConfigSchema(schema gjson.Result) (gjson.Result, error) {
+	fields := schema.Get("fields")
+
+	for _, field := range fields.Array() {
+		config := field.Map()["config"]
+		if config.Exists() {
+			return config, nil
+		}
+	}
+	return schema, fmt.Errorf("no 'config' field found in schema")
+}
+
 func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 	res := config.DeepCopy()
 	value := schema.Get("fields")
@@ -357,10 +369,14 @@ func FillPluginsDefaults(plugin *Plugin, schema Schema) error {
 		return err
 	}
 	gjsonSchema := gjson.ParseBytes((jsonb))
+	configSchema, err := getConfigSchema(gjsonSchema)
+	if err != nil {
+		return err
+	}
 	if plugin.Config == nil {
 		plugin.Config = make(Configuration)
 	}
-	plugin.Config = fillConfigRecord(gjsonSchema, plugin.Config)
+	plugin.Config = fillConfigRecord(configSchema, plugin.Config)
 	if plugin.Protocols == nil {
 		plugin.Protocols = getDefaultProtocols(gjsonSchema)
 	}
