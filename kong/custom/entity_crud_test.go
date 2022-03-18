@@ -1,9 +1,11 @@
 package custom
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v2"
 )
 
 func TestRender(t *testing.T) {
@@ -88,4 +90,35 @@ func TestEntityCRUDDefinition(t *testing.T) {
 	url, err = e.GetEndpoint(entity)
 	assert.NotNil(err)
 	assert.Empty(url)
+}
+
+func TestEntityCRUDUnmarshal(t *testing.T) {
+	assert := assert.New(t)
+
+	t.Run("unmarshal JSON into EntityCRUDDefinition", func(t *testing.T) {
+		bytes := []byte(`{
+			"name": "name",
+			"crud": "crud-path",
+			"primary_key": "primary-key"
+		}`)
+		var def EntityCRUDDefinition
+		err := json.Unmarshal(bytes, &def)
+		assert.Nil(err)
+		assert.Equal(Type("name"), def.Name)
+		assert.Equal("crud-path", def.CRUDPath)
+		assert.Equal("primary-key", def.PrimaryKey)
+	})
+
+	t.Run("unmarshal YAML into EntityCRUDDefinition", func(t *testing.T) {
+		var def EntityCRUDDefinition
+		bytes := []byte(`
+name: "name"
+crud: "crud-path"
+primary_key: "primary-key"`)
+		err := yaml.Unmarshal(bytes, &def)
+		assert.Nil(err)
+		assert.Equal(Type("name"), def.Name)
+		assert.Equal("crud-path", def.CRUDPath)
+		assert.Equal("primary-key", def.PrimaryKey)
+	})
 }

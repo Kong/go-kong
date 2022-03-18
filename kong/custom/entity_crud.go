@@ -40,7 +40,7 @@ type EntityCRUD interface {
 // EntityCRUDDefinition implements the EntityCRUD interface.
 type EntityCRUDDefinition struct {
 	Name       Type   `yaml:"name" json:"name"`
-	CRUDPath   string `yaml:"crud" json:"curd"`
+	CRUDPath   string `yaml:"crud" json:"crud"`
 	PrimaryKey string `yaml:"primary_key" json:"primary_key"`
 }
 
