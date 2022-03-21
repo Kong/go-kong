@@ -232,6 +232,13 @@ func TestTargetMarkHealthy(T *testing.T) {
 
 	upstream := &Upstream{
 		Name: String("vhost1.com"),
+		Healthchecks: &Healthcheck{
+			Passive: &PassiveHealthcheck{
+				Unhealthy: &Unhealthy{
+					HTTPFailures: Int(5),
+				},
+			},
+		},
 	}
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
@@ -245,11 +252,9 @@ func TestTargetMarkHealthy(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(createdTarget)
 
-	assert.NotNil(client.Targets.MarkHealthy(defaultCtx,
-		createdTarget.Upstream.ID, nil))
+	assert.NotNil(client.Targets.MarkHealthy(defaultCtx, createdTarget.Upstream.ID, nil))
 	assert.NotNil(client.Targets.MarkHealthy(defaultCtx, nil, createdTarget))
-	assert.Nil(client.Targets.MarkHealthy(defaultCtx,
-		createdTarget.Upstream.ID, createdTarget))
+	assert.Nil(client.Targets.MarkHealthy(defaultCtx, createdTarget.Upstream.ID, createdTarget))
 
 	assert.Nil(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
 }
@@ -263,6 +268,13 @@ func TestTargetMarkUnhealthy(T *testing.T) {
 
 	upstream := &Upstream{
 		Name: String("vhost1.com"),
+		Healthchecks: &Healthcheck{
+			Passive: &PassiveHealthcheck{
+				Unhealthy: &Unhealthy{
+					HTTPFailures: Int(5),
+				},
+			},
+		},
 	}
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
@@ -276,11 +288,9 @@ func TestTargetMarkUnhealthy(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(createdTarget)
 
-	assert.NotNil(client.Targets.MarkUnhealthy(defaultCtx,
-		createdTarget.Upstream.ID, nil))
+	assert.NotNil(client.Targets.MarkUnhealthy(defaultCtx, createdTarget.Upstream.ID, nil))
 	assert.NotNil(client.Targets.MarkUnhealthy(defaultCtx, nil, createdTarget))
-	assert.Nil(client.Targets.MarkUnhealthy(defaultCtx,
-		createdTarget.Upstream.ID, createdTarget))
+	assert.Nil(client.Targets.MarkUnhealthy(defaultCtx, createdTarget.Upstream.ID, createdTarget))
 
 	assert.Nil(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
 }
