@@ -2,8 +2,10 @@ package kong
 
 import (
 	"bytes"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/http"
 	"reflect"
 	"regexp"
@@ -15,8 +17,12 @@ import (
 )
 
 const (
-	versionParts = 4
+	versionParts    = 4
+	charset         = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzj"
+	autoFieldLength = 32
 )
+
+var charsetLength = big.NewInt(int64(len(charset)))
 
 // String returns pointer to s.
 func String(s string) *string {
@@ -155,6 +161,20 @@ func VersionFromInfo(info map[string]interface{}) string {
 	return version.(string)
 }
 
+func randomString(n int) string {
+	ret := make([]byte, n)
+	for i := 0; i < n; i++ {
+		num, err := rand.Int(rand.Reader, charsetLength)
+		if err != nil {
+			panic(fmt.Sprintf("failed to read a random byte from CSPRNG: %v",
+				err))
+		}
+		ret[i] = charset[num.Int64()]
+	}
+
+	return string(ret)
+}
+
 func getDefaultProtocols(schema gjson.Result) []*string {
 	var res []*string
 	fields := schema.Get("fields")
@@ -218,12 +238,17 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 			res[fname] = map[string]interface{}(newSubConfig)
 			return true
 		}
-		value = value.Get(fname + ".default")
-		if value.Exists() {
-			res[fname] = value.Value()
+		defValue := value.Get(fname + ".default")
+		if defValue.Exists() {
+			res[fname] = defValue.Value()
 		} else {
-			// if no default exists, set an explicit nil
-			res[fname] = nil
+			value := value.Get(fname + ".auto")
+			if value.Exists() {
+				res[fname] = randomString(autoFieldLength)
+			} else {
+				// if no default exists, set an explicit nil
+				res[fname] = nil
+			}
 		}
 		return true
 	})

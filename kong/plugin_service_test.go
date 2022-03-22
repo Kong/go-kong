@@ -459,6 +459,45 @@ func TestFillPluginDefaults(T *testing.T) {
 	}
 }
 
+func TestFillPluginDefaultsWithAutoFields(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.Nil(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name      string
+		plugin    *Plugin
+		autoField string
+	}{
+		{
+			name: "oauth2 has 'provision_key' auto field",
+			plugin: &Plugin{
+				Name: String("oauth2"),
+				Config: Configuration{
+					"enable_authorization_code": true,
+				},
+			},
+			autoField: "provision_key",
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			p := tc.plugin
+			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, p.Name)
+			assert.Nil(err)
+			assert.NotNil(fullSchema)
+			if err := FillPluginsDefaults(p, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+			// auto field shouldn't be nil
+			assert.NotNil(p.Config[tc.autoField])
+		})
+	}
+}
+
 func comparePlugins(expected, actual []*Plugin) bool {
 	var expectedNames, actualNames []string
 	for _, plugin := range expected {
