@@ -15,25 +15,36 @@ func TestRBACRoleService(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
+	workspace := &Workspace{
+		Name: String("rbac-role-test-workspace"),
+	}
+
+	createdWorkspace, err := client.Workspaces.Create(defaultCtx, workspace)
+
+	assert.Nil(err)
+	assert.NotNil(createdWorkspace)
+
+	workspaced, err := NewTestClient(String(defaultBaseURL+"/rbac-role-test-workspace"), nil)
+
 	role := &RBACRole{
 		Name: String("roleA"),
 	}
 
-	createdRole, err := client.RBACRoles.Create(defaultCtx, role)
+	createdRole, err := workspaced.RBACRoles.Create(defaultCtx, role)
 	assert.Nil(err)
 	assert.NotNil(createdRole)
 
-	role, err = client.RBACRoles.Get(defaultCtx, createdRole.ID)
+	role, err = workspaced.RBACRoles.Get(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 	assert.NotNil(role)
 
 	role.Comment = String("new comment")
-	role, err = client.RBACRoles.Update(defaultCtx, role)
+	role, err = workspaced.RBACRoles.Update(defaultCtx, role)
 	assert.Nil(err)
 	assert.NotNil(role)
 	assert.Equal("roleA", *role.Name)
 
-	err = client.RBACRoles.Delete(defaultCtx, createdRole.ID)
+	err = workspaced.RBACRoles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 
 	// ID can be specified
@@ -43,12 +54,15 @@ func TestRBACRoleService(T *testing.T) {
 		ID:   String(id),
 	}
 
-	createdRole, err = client.RBACRoles.Create(defaultCtx, role)
+	createdRole, err = workspaced.RBACRoles.Create(defaultCtx, role)
 	assert.Nil(err)
 	assert.NotNil(createdRole)
 	assert.Equal(id, *createdRole.ID)
 
-	err = client.RBACRoles.Delete(defaultCtx, createdRole.ID)
+	err = workspaced.RBACRoles.Delete(defaultCtx, createdRole.ID)
+	assert.Nil(err)
+
+	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
 }
 
@@ -60,6 +74,17 @@ func TestRBACRoleServiceList(T *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(client)
 
+	workspace := &Workspace{
+		Name: String("rbac-role-list-test-workspace"),
+	}
+
+	createdWorkspace, err := client.Workspaces.Create(defaultCtx, workspace)
+
+	assert.Nil(err)
+	assert.NotNil(createdWorkspace)
+
+	workspaced, err := NewTestClient(String(defaultBaseURL+"/rbac-role-list-test-workspace"), nil)
+
 	roleA := &RBACRole{
 		Name: String("roleA"),
 	}
@@ -67,21 +92,24 @@ func TestRBACRoleServiceList(T *testing.T) {
 		Name: String("roleB"),
 	}
 
-	createdRoleA, err := client.RBACRoles.Create(defaultCtx, roleA)
+	createdRoleA, err := workspaced.RBACRoles.Create(defaultCtx, roleA)
 	assert.Nil(err)
-	createdRoleB, err := client.RBACRoles.Create(defaultCtx, roleB)
+	createdRoleB, err := workspaced.RBACRoles.Create(defaultCtx, roleB)
 	assert.Nil(err)
 
-	roles, next, err := client.RBACRoles.List(defaultCtx, nil)
+	roles, next, err := workspaced.RBACRoles.List(defaultCtx, nil)
 	assert.Nil(err)
 	assert.Nil(next)
 	assert.NotNil(roles)
 	// Counts default roles (super-admin, admin, read-only)
 	assert.Equal(5, len(roles))
 
-	err = client.RBACRoles.Delete(defaultCtx, createdRoleA.ID)
+	err = workspaced.RBACRoles.Delete(defaultCtx, createdRoleA.ID)
 	assert.Nil(err)
-	err = client.RBACRoles.Delete(defaultCtx, createdRoleB.ID)
+	err = workspaced.RBACRoles.Delete(defaultCtx, createdRoleB.ID)
+	assert.Nil(err)
+
+	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
 }
 
@@ -92,6 +120,17 @@ func TestRBACRoleListEndpoint(T *testing.T) {
 	client, err := NewTestClient(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(client)
+
+	workspace := &Workspace{
+		Name: String("rbac-role-list-endpoint-test-workspace"),
+	}
+
+	createdWorkspace, err := client.Workspaces.Create(defaultCtx, workspace)
+
+	assert.Nil(err)
+	assert.NotNil(createdWorkspace)
+
+	workspaced, err := NewTestClient(String(defaultBaseURL+"/rbac-role-list-endpoint-test-workspace"), nil)
 
 	// fixtures
 	roles := []*RBACRole{
@@ -108,13 +147,13 @@ func TestRBACRoleListEndpoint(T *testing.T) {
 
 	// create fixturs
 	for i := 0; i < len(roles); i++ {
-		role, err := client.RBACRoles.Create(defaultCtx, roles[i])
+		role, err := workspaced.RBACRoles.Create(defaultCtx, roles[i])
 		assert.Nil(err)
 		assert.NotNil(role)
 		roles[i] = role
 	}
 
-	rolesFromKong, next, err := client.RBACRoles.List(defaultCtx, nil)
+	rolesFromKong, next, err := workspaced.RBACRoles.List(defaultCtx, nil)
 	assert.Nil(err)
 	assert.Nil(next)
 	assert.NotNil(rolesFromKong)
@@ -127,7 +166,7 @@ func TestRBACRoleListEndpoint(T *testing.T) {
 	rolesFromKong = []*RBACRole{}
 
 	// first page
-	page1, next, err := client.RBACRoles.List(defaultCtx, &ListOpt{Size: 1})
+	page1, next, err := workspaced.RBACRoles.List(defaultCtx, &ListOpt{Size: 1})
 	assert.Nil(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
@@ -136,7 +175,7 @@ func TestRBACRoleListEndpoint(T *testing.T) {
 
 	// last page
 	next.Size = 2
-	page2, next, err := client.RBACRoles.List(defaultCtx, next)
+	page2, next, err := workspaced.RBACRoles.List(defaultCtx, next)
 	assert.Nil(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
@@ -145,14 +184,17 @@ func TestRBACRoleListEndpoint(T *testing.T) {
 
 	assert.True(compareRBACRoles(roles, rolesFromKong))
 
-	roles, err = client.RBACRoles.ListAll(defaultCtx)
+	roles, err = workspaced.RBACRoles.ListAll(defaultCtx)
 	assert.Nil(err)
 	assert.NotNil(roles)
 	assert.Equal(3, len(roles))
 
 	for i := 0; i < len(roles); i++ {
-		assert.Nil(client.RBACRoles.Delete(defaultCtx, roles[i].ID))
+		assert.Nil(workspaced.RBACRoles.Delete(defaultCtx, roles[i].ID))
 	}
+
+	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
+	assert.Nil(err)
 }
 
 func compareRBACRoles(expected, actual []*RBACRole) bool {
