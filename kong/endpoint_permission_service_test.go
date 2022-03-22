@@ -24,11 +24,12 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 	assert.NotNil(createdWorkspace)
 
 	// Use new client in workspace context.
+	workspaced, err := NewTestClient(String(defaultBaseURL+"/endpoint-test-workspace"), nil)
 	role := &RBACRole{
 		Name: String("test-role-endpoint-perm"),
 	}
 
-	createdRole, err := client.RBACRoles.Create(defaultCtx, role)
+	createdRole, err := workspaced.RBACRoles.Create(defaultCtx, role)
 	assert.Nil(err)
 	assert.NotNil(createdRole)
 
@@ -44,28 +45,28 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 		},
 	}
 
-	createdEndpointPermission, err := client.RBACEndpointPermissions.Create(defaultCtx, ep)
+	createdEndpointPermission, err := workspaced.RBACEndpointPermissions.Create(defaultCtx, ep)
 	assert.Nil(err)
 	assert.NotNil(createdEndpointPermission)
 
-	ep, err = client.RBACEndpointPermissions.Get(
-		defaultCtx, createdRole.ID, createdWorkspace.ID, createdEndpointPermission.Endpoint)
+	ep, err = workspaced.RBACEndpointPermissions.Get(
+		defaultCtx, createdRole.ID, createdWorkspace.Name, createdEndpointPermission.Endpoint)
 	assert.Nil(err)
 	assert.NotNil(ep)
 
 	negative := true
 	ep.Comment = String("new comment")
 	ep.Negative = &negative
-	ep, err = client.RBACEndpointPermissions.Update(defaultCtx, ep)
+	ep, err = workspaced.RBACEndpointPermissions.Update(defaultCtx, ep)
 	assert.Nil(err)
 	assert.NotNil(ep)
 	assert.Equal("new comment", *ep.Comment)
 	assert.Equal(negative, *ep.Negative)
 
-	err = client.RBACEndpointPermissions.Delete(
+	err = workspaced.RBACEndpointPermissions.Delete(
 		defaultCtx, createdRole.ID, createdWorkspace.ID, createdEndpointPermission.Endpoint)
 	assert.Nil(err)
-	err = client.RBACRoles.Delete(defaultCtx, createdRole.ID)
+	err = workspaced.RBACRoles.Delete(defaultCtx, createdRole.ID)
 	assert.Nil(err)
 	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
 	assert.Nil(err)
