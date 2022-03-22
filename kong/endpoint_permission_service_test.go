@@ -1,6 +1,7 @@
 package kong
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -35,7 +36,7 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 	assert.NotNil(createdRole)
 
 	// Add Endpoint Permission to Role
-	ep := &RBACEndpointPermission{
+	origEp := &RBACEndpointPermission{
 		Role: &RBACRole{
 			ID: createdRole.ID,
 		},
@@ -46,14 +47,27 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 		},
 	}
 
-	createdEndpointPermission, err := workspaced.RBACEndpointPermissions.Create(defaultCtx, ep)
+	createdEndpointPermission, err := workspaced.RBACEndpointPermissions.Create(defaultCtx, origEp)
 	assert.Nil(err)
 	assert.NotNil(createdEndpointPermission)
 
-	ep, err = workspaced.RBACEndpointPermissions.Get(
+	ep, err := workspaced.RBACEndpointPermissions.Get(
 		defaultCtx, createdRole.ID, createdWorkspace.Name, createdEndpointPermission.Endpoint)
 	assert.Nil(err)
 	assert.NotNil(ep)
+	// we test this equality specifically because the Kong API handles this field oddly
+	// see https://github.com/Kong/go-kong/pull/148
+	var origActions []string
+	for _, action := range origEp.Actions {
+		origActions = append(origActions, *action)
+	}
+	var actions []string
+	for _, action := range ep.Actions {
+		actions = append(actions, *action)
+	}
+	sort.Strings(origActions)
+	sort.Strings(actions)
+	assert.Equal(origActions, actions)
 
 	negative := true
 	ep.Comment = String("new comment")
