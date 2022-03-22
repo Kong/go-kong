@@ -77,6 +77,24 @@ func RunWhenEnterprise(t *testing.T, semverRange string, required RequiredFeatur
 	RunWhenKong(t, semverRange)
 }
 
+// SkipWhenEnterprise skips a test if the Kong version is an Enterprise version
+func SkipWhenEnterprise(t *testing.T) {
+	client, err := NewTestClient(nil, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	info, err := client.Root(defaultCtx)
+	if err != nil {
+		t.Error(err)
+	}
+	version := VersionFromInfo(info)
+
+	if strings.Contains(version, "enterprise") {
+		t.Log("non-Enterprise test Kong instance, skipping")
+		t.Skip()
+	}
+}
+
 func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
 	if value, exists := os.LookupEnv("KONG_ADMIN_TOKEN"); exists {
 		c := &http.Client{}

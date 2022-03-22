@@ -230,6 +230,12 @@ func TestBasicAuthDelete(T *testing.T) {
 }
 
 func TestBasicAuthListMethods(T *testing.T) {
+	// Enterprise tests create an admin, which affects the list endpoints in peculiar ways. although the actual
+	// consumer and credential entities are hidden from the API they still affect pagination. Tests that check
+	// pagination behavior cannot check the same values on community and Enterprise. As such, we just don't run this
+	// check against Enterprise, as the behavior is otherwise generally the same: if the endpoint works on community,
+	// it will work on Enterprise, but you'll get different pagination for the same set of consumers
+	SkipWhenEnterprise(T)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -300,10 +306,6 @@ func TestBasicAuthListMethods(T *testing.T) {
 	assert.Equal(1, len(page1))
 
 	// last page
-	// XXX: This feels like a hack. I had to change the page size here
-	// to accommodate for the super admin created during database bootstrapping for Kong EE
-	// this super admin does not appear to effect basic-auth entities returned by a call
-	// to /basic-auths but does appear to effect paging behavior.
 	next.Size = 4
 	page2, next, err := client.BasicAuths.List(defaultCtx, next)
 	assert.Nil(err)

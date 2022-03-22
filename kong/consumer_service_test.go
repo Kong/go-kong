@@ -87,6 +87,12 @@ func TestConsumerWithTags(T *testing.T) {
 }
 
 func TestConsumerListEndpoint(T *testing.T) {
+	// Enterprise tests create an admin, which affects the list endpoints in peculiar ways. although the actual
+	// consumer and credential entities are hidden from the API they still affect pagination. Tests that check
+	// pagination behavior cannot check the same values on community and Enterprise. As such, we just don't run this
+	// check against Enterprise, as the behavior is otherwise generally the same: if the endpoint works on community,
+	// it will work on Enterprise, but you'll get different pagination for the same set of consumers
+	SkipWhenEnterprise(T)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
