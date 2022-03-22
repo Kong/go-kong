@@ -110,13 +110,16 @@ func TestRBACEntityPermissionserviceList(T *testing.T) {
 		Actions: []*string{
 			String("create"),
 			String("read"),
+			String("update"),
+			String("delete"),
 		},
 	}
 	ep2 := &RBACEntityPermission{
 		Role: &RBACRole{
 			ID: createdRole.ID,
 		},
-		EntityID: createdWorkspace.ID,
+		EntityID:   createdWorkspace.ID,
+		EntityType: String("workspaces"),
 		Actions: []*string{
 			String("update"),
 			String("delete"),
