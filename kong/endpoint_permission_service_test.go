@@ -25,6 +25,7 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 
 	// Use new client in workspace context.
 	workspaced, err := NewTestClient(String(defaultBaseURL+"/endpoint-test-workspace"), nil)
+	assert.Nil(err)
 	role := &RBACRole{
 		Name: String("test-role-endpoint-perm"),
 	}
