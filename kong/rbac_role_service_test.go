@@ -25,6 +25,7 @@ func TestRBACRoleService(T *testing.T) {
 	assert.NotNil(createdWorkspace)
 
 	workspaced, err := NewTestClient(String(defaultBaseURL+"/rbac-role-test-workspace"), nil)
+	assert.Nil(err)
 
 	role := &RBACRole{
 		Name: String("roleA"),
@@ -84,6 +85,7 @@ func TestRBACRoleServiceList(T *testing.T) {
 	assert.NotNil(createdWorkspace)
 
 	workspaced, err := NewTestClient(String(defaultBaseURL+"/rbac-role-list-test-workspace"), nil)
+	assert.Nil(err)
 
 	roleA := &RBACRole{
 		Name: String("roleA"),
@@ -131,6 +133,7 @@ func TestRBACRoleListEndpoint(T *testing.T) {
 	assert.NotNil(createdWorkspace)
 
 	workspaced, err := NewTestClient(String(defaultBaseURL+"/rbac-role-list-endpoint-test-workspace"), nil)
+	assert.Nil(err)
 
 	// fixtures
 	roles := []*RBACRole{
