@@ -67,4 +67,4 @@ export KONG_PORTAL=on
 
 sudo KONG_PASSWORD=kong kong migrations bootstrap
 sudo kong version
-sudo KONG_ADMIN_SESSION_CONF='{}' KONG_ADMIN_GUI_AUTH=basic-auth KONG_ENFORCE_RBAC=on KONG_PORTAL=on kong start
+sudo KONG_ADMIN_GUI_SESSION_CONF='{}' KONG_ADMIN_GUI_AUTH=basic-auth KONG_ENFORCE_RBAC=on KONG_PORTAL=on kong start
