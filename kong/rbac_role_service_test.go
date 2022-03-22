@@ -103,8 +103,7 @@ func TestRBACRoleServiceList(T *testing.T) {
 	assert.Nil(err)
 	assert.Nil(next)
 	assert.NotNil(roles)
-	// Counts default roles (super-admin, admin, read-only)
-	assert.Equal(5, len(roles))
+	assert.Equal(2, len(roles))
 
 	err = workspaced.RBACRoles.Delete(defaultCtx, createdRoleA.ID)
 	assert.Nil(err)
