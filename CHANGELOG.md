@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.29.0](#v0290)
 - [v0.28.1](#v0281)
 - [v0.28.0](#v0280)
 - [v0.27.0](#v0270)
@@ -34,6 +35,28 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.29.0]
+
+> Release date: 2022/03/25
+
+- Fixed a bug where `HTTPClientWithHeaders()` could not accept a `nil`
+  (default) client.
+  [#138](https://github.com/Kong/go-kong/pull/138)
+- Fixed a bug where the plugin service's `Validate()` method could not handle
+  errors associated with empty responses.
+  [#142](https://github.com/Kong/go-kong/pull/142)
+- Fixed a bug where plugin schema default retrieval included fields outside the
+  plugin's `config` object.
+  [#145](https://github.com/Kong/go-kong/pull/145)
+- Fixed a typo in the `EntityCRUD.CRUDPath` JSON serialization.
+  [#149](https://github.com/Kong/go-kong/pull/149)
+- Added support for the new `configuration_hash` field in the status service.
+  [#150](https://github.com/Kong/go-kong/pull/150)
+- Fixed incorrect JSON marshalling/unmarshalling for RBAC endpoint permissions.
+  [#148](https://github.com/Kong/go-kong/pull/148)
+- Fixed a bug with RBAC endpoint permission path construction.
+  [#148](https://github.com/Kong/go-kong/pull/148)
 
 ## [v0.28.1]
 
@@ -538,6 +561,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.29.0]: https://github.com/Kong/go-kong/compare/v0.28.1...v0.29.0
 [v0.28.1]: https://github.com/Kong/go-kong/compare/v0.28.0...v0.28.1
 [v0.28.0]: https://github.com/Kong/go-kong/compare/v0.27.0...v0.28.0
 [v0.27.0]: https://github.com/Kong/go-kong/compare/v0.26.0...v0.27.0
