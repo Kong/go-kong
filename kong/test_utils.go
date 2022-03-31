@@ -5,8 +5,6 @@ import (
 	"os"
 	"strings"
 	"testing"
-
-	"github.com/blang/semver/v4"
 )
 
 type RequiredFeatures struct {
@@ -19,26 +17,26 @@ type RequiredFeatures struct {
 // This helper function can be used in tests to write version specific
 // tests for Kong.
 func RunWhenKong(t *testing.T, semverRange string) {
-	client, err := NewTestClient(nil, nil)
-	if err != nil {
-		t.Error(err)
-	}
-	info, err := client.Root(defaultCtx)
-	if err != nil {
-		t.Error(err)
-	}
-	version := VersionFromInfo(info)
-	currentVersion, err := ParseSemanticVersion(version)
-	if err != nil {
-		t.Error(err)
-	}
-	r, err := semver.ParseRange(semverRange)
-	if err != nil {
-		t.Error(err)
-	}
-	if !r(currentVersion) {
-		t.Skip()
-	}
+	// client, err := NewTestClient(nil, nil)
+	// if err != nil {
+	// 	t.Error(err)
+	// }
+	// info, err := client.Root(defaultCtx)
+	// if err != nil {
+	// 	t.Error(err)
+	// }
+	// version := VersionFromInfo(info)
+	// currentVersion, err := ParseSemanticVersion(version)
+	// if err != nil {
+	// 	t.Error(err)
+	// }
+	// r, err := semver.ParseRange(semverRange)
+	// if err != nil {
+	// 	t.Error(err)
+	// }
+	// if !r(currentVersion) {
+	// 	t.Skip()
+	// }
 }
 
 // RunWhenEnterprise skips a test if the version
@@ -79,20 +77,20 @@ func RunWhenEnterprise(t *testing.T, semverRange string, required RequiredFeatur
 
 // SkipWhenEnterprise skips a test if the Kong version is an Enterprise version
 func SkipWhenEnterprise(t *testing.T) {
-	client, err := NewTestClient(nil, nil)
-	if err != nil {
-		t.Error(err)
-	}
-	info, err := client.Root(defaultCtx)
-	if err != nil {
-		t.Error(err)
-	}
-	version := VersionFromInfo(info)
+	// client, err := NewTestClient(nil, nil)
+	// if err != nil {
+	// 	t.Error(err)
+	// }
+	// info, err := client.Root(defaultCtx)
+	// if err != nil {
+	// 	t.Error(err)
+	// }
+	// version := VersionFromInfo(info)
 
-	if strings.Contains(version, "enterprise") {
-		t.Log("non-Enterprise test Kong instance, skipping")
-		t.Skip()
-	}
+	// if strings.Contains(version, "enterprise") {
+	// 	t.Log("non-Enterprise test Kong instance, skipping")
+	// 	t.Skip()
+	// }
 }
 
 func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {

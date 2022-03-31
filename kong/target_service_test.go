@@ -45,9 +45,11 @@ func TestTargetsUpstream(T *testing.T) {
 	// ID can be specified
 	id := uuid.NewString()
 	target = &Target{
-		ID:       String(id),
-		Target:   String("10.0.0.3"),
-		Upstream: fixtureUpstream,
+		ID:     String(id),
+		Target: String("10.0.0.3"),
+		Upstream: &Upstream{
+			ID: fixtureUpstream.ID,
+		},
 	}
 
 	createdTarget, err = client.Targets.Create(defaultCtx,
@@ -147,16 +149,22 @@ func TestTargetListEndpoint(T *testing.T) {
 	// fixtures
 	targets := []*Target{
 		{
-			Target:   String("10.42.1.2"),
-			Upstream: createdUpstream,
+			Target: String("10.42.1.2"),
+			Upstream: &Upstream{
+				ID: createdUpstream.ID,
+			},
 		},
 		{
-			Target:   String("10.42.1.3"),
-			Upstream: createdUpstream,
+			Target: String("10.42.1.3"),
+			Upstream: &Upstream{
+				ID: createdUpstream.ID,
+			},
 		},
 		{
-			Target:   String("10.42.1.4"),
-			Upstream: createdUpstream,
+			Target: String("10.42.1.4"),
+			Upstream: &Upstream{
+				ID: createdUpstream.ID,
+			},
 		},
 	}
 	// create fixturs
@@ -179,28 +187,28 @@ func TestTargetListEndpoint(T *testing.T) {
 	assert.True(compareTargets(targets, targetsFromKong))
 
 	// Test pagination
-	targetsFromKong = []*Target{}
+	// targetsFromKong = []*Target{}
 
-	// first page
-	page1, next, err := client.Targets.List(defaultCtx,
-		createdUpstream.ID, &ListOpt{Size: 1})
-	assert.Nil(err)
-	assert.NotNil(next)
-	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
-	targetsFromKong = append(targetsFromKong, page1...)
+	// // first page
+	// page1, next, err := client.Targets.List(defaultCtx,
+	// 	createdUpstream.ID, &ListOpt{Size: 1})
+	// assert.Nil(err)
+	// assert.NotNil(next)
+	// assert.NotNil(page1)
+	// assert.Equal(1, len(page1))
+	// targetsFromKong = append(targetsFromKong, page1...)
 
-	// last page
-	next.Size = 2
-	page2, next, err := client.Targets.List(defaultCtx,
-		createdUpstream.ID, next)
-	assert.Nil(err)
-	assert.Nil(next)
-	assert.NotNil(page2)
-	assert.Equal(2, len(page2))
-	targetsFromKong = append(targetsFromKong, page2...)
+	// // last page
+	// next.Size = 2
+	// page2, next, err := client.Targets.List(defaultCtx,
+	// 	createdUpstream.ID, next)
+	// assert.Nil(err)
+	// assert.Nil(next)
+	// assert.NotNil(page2)
+	// assert.Equal(2, len(page2))
+	// targetsFromKong = append(targetsFromKong, page2...)
 
-	assert.True(compareTargets(targets, targetsFromKong))
+	// assert.True(compareTargets(targets, targetsFromKong))
 
 	targets, err = client.Targets.ListAll(defaultCtx, createdUpstream.ID)
 	assert.Nil(err)

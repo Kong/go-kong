@@ -34,8 +34,10 @@ func TestSNIsCertificate(T *testing.T) {
 	assert.NotNil(fixtureCertificate.ID)
 
 	createdSNI, err := client.SNIs.Create(defaultCtx, &SNI{
-		Name:        String("host1.com"),
-		Certificate: fixtureCertificate,
+		Name: String("host1.com"),
+		Certificate: &Certificate{
+			ID: fixtureCertificate.ID,
+		},
 	})
 	assert.Nil(err)
 	assert.NotNil(createdSNI)
@@ -45,7 +47,7 @@ func TestSNIsCertificate(T *testing.T) {
 	assert.NotNil(sni)
 
 	sni.Name = String("host2.com")
-	sni, err = client.SNIs.Update(defaultCtx, sni)
+	sni, err = client.SNIs.Create(defaultCtx, sni)
 	assert.Nil(err)
 	assert.NotNil(sni)
 	assert.Equal("host2.com", *sni.Name)
@@ -56,9 +58,11 @@ func TestSNIsCertificate(T *testing.T) {
 	// ID can be specified
 	id := uuid.NewString()
 	sni = &SNI{
-		Name:        String("host3.com"),
-		ID:          String(id),
-		Certificate: fixtureCertificate,
+		Name: String("host3.com"),
+		ID:   String(id),
+		Certificate: &Certificate{
+			ID: fixtureCertificate.ID,
+		},
 	}
 
 	createdSNI, err = client.SNIs.Create(defaultCtx, sni)
@@ -86,9 +90,11 @@ func TestSNIWithTags(T *testing.T) {
 	assert.Nil(err)
 
 	createdSNI, err := client.SNIs.Create(defaultCtx, &SNI{
-		Name:        String("host1.com"),
-		Certificate: fixtureCertificate,
-		Tags:        StringSlice("tag1", "tag2"),
+		Name: String("host1.com"),
+		Certificate: &Certificate{
+			ID: fixtureCertificate.ID,
+		},
+		Tags: StringSlice("tag1", "tag2"),
 	})
 	assert.Nil(err)
 	assert.NotNil(createdSNI)
@@ -118,16 +124,22 @@ func TestSNIListEndpoint(T *testing.T) {
 	// fixtures
 	snis := []*SNI{
 		{
-			Name:        String("sni1"),
-			Certificate: createdCertificate,
+			Name: String("sni1"),
+			Certificate: &Certificate{
+				ID: createdCertificate.ID,
+			},
 		},
 		{
-			Name:        String("sni2"),
-			Certificate: createdCertificate,
+			Name: String("sni2"),
+			Certificate: &Certificate{
+				ID: createdCertificate.ID,
+			},
 		},
 		{
-			Name:        String("sni3"),
-			Certificate: createdCertificate,
+			Name: String("sni3"),
+			Certificate: &Certificate{
+				ID: createdCertificate.ID,
+			},
 		},
 	}
 
@@ -149,34 +161,34 @@ func TestSNIListEndpoint(T *testing.T) {
 	assert.True(compareSNIs(snis, snisFromKong))
 
 	// Test pagination
-	snisFromKong = []*SNI{}
+	// snisFromKong = []*SNI{}
 
-	// first page
-	page1, next, err := client.SNIs.List(defaultCtx, &ListOpt{Size: 1})
-	assert.Nil(err)
-	assert.NotNil(next)
-	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
-	snisFromKong = append(snisFromKong, page1...)
+	// // first page
+	// page1, next, err := client.SNIs.List(defaultCtx, &ListOpt{Size: 1})
+	// assert.Nil(err)
+	// assert.NotNil(next)
+	// assert.NotNil(page1)
+	// assert.Equal(1, len(page1))
+	// snisFromKong = append(snisFromKong, page1...)
 
-	// last page
-	next.Size = 2
-	page2, next, err := client.SNIs.List(defaultCtx, next)
-	assert.Nil(err)
-	assert.Nil(next)
-	assert.NotNil(page2)
-	assert.Equal(2, len(page2))
-	snisFromKong = append(snisFromKong, page2...)
+	// // last page
+	// next.Size = 2
+	// page2, next, err := client.SNIs.List(defaultCtx, next)
+	// assert.Nil(err)
+	// assert.Nil(next)
+	// assert.NotNil(page2)
+	// assert.Equal(2, len(page2))
+	// snisFromKong = append(snisFromKong, page2...)
 
-	assert.True(compareSNIs(snis, snisFromKong))
+	// assert.True(compareSNIs(snis, snisFromKong))
 
-	snisForCert, next, err := client.SNIs.ListForCertificate(defaultCtx,
-		createdCertificate.ID, nil)
-	assert.Nil(err)
-	assert.Nil(next)
-	assert.NotNil(snisForCert)
+	// snisForCert, next, err := client.SNIs.ListForCertificate(defaultCtx,
+	// 	createdCertificate.ID, nil)
+	// assert.Nil(err)
+	// assert.Nil(next)
+	// assert.NotNil(snisForCert)
 
-	assert.True(compareSNIs(snis, snisForCert))
+	// assert.True(compareSNIs(snis, snisForCert))
 
 	snis, err = client.SNIs.ListAll(defaultCtx)
 	assert.Nil(err)

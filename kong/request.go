@@ -39,11 +39,19 @@ func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs inter
 	// add query string if any
 	if qs != nil {
 		values, err := query.Values(qs)
+		values.Add("cluster.id", "4168295f-015e-4190-837e-0fcc5d72a52f")
 		if err != nil {
 			return nil, err
 		}
 		req.URL.RawQuery = values.Encode()
+	} else {
+		q := req.URL.Query()
+		q.Add("cluster.id", "4168295f-015e-4190-837e-0fcc5d72a52f")
+		req.URL.RawQuery = q.Encode()
 	}
+	fmt.Println("URL ", req.URL)
+	fmt.Println("METHOD ", req.Method)
+	fmt.Println("BODY ", req.Body)
 	return req, nil
 }
 

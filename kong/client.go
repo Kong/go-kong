@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	defaultBaseURL = "http://localhost:8001"
+	defaultBaseURL = "http://localhost:3000"
 	// DefaultTimeout is the timeout used for network connections and requests
 	// including TCP, TLS and HTTP layers.
 	DefaultTimeout = 60 * time.Second
