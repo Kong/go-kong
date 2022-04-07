@@ -69,6 +69,12 @@ func TestRoutesRoute(T *testing.T) {
 		Service: &Service{
 			ID: service.ID,
 		},
+		Destinations: []*CIDRPort{
+			{
+				IP:   String("10.0.0.0/8"),
+				Port: Int(80),
+			},
+		},
 	}
 
 	createdRoute, err = client.Routes.Create(defaultCtx, route)
@@ -78,8 +84,8 @@ func TestRoutesRoute(T *testing.T) {
 	assert.Equal(2, len(createdRoute.SNIs))
 	assert.Equal("snihost1.com", *createdRoute.SNIs[0])
 	assert.Equal("snihost2.com", *createdRoute.SNIs[1])
-	// assert.Equal("10.0.0.0/8", *createdRoute.Destinations[0].IP)
-	// assert.Equal(80, *createdRoute.Destinations[0].Port)
+	assert.Equal("10.0.0.0/8", *createdRoute.Destinations[0].IP)
+	assert.Equal(80, *createdRoute.Destinations[0].Port)
 
 	err = client.Routes.Delete(defaultCtx, createdRoute.ID)
 	assert.Nil(err)
