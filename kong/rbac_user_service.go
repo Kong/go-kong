@@ -37,8 +37,8 @@ type RBACUserService service
 
 // Create creates an RBAC User in Kong.
 func (s *RBACUserService) Create(ctx context.Context,
-	user *RBACUser) (*RBACUser, error) {
-
+	user *RBACUser,
+) (*RBACUser, error) {
 	if user == nil {
 		return nil, fmt.Errorf("cannot create a nil user")
 	}
@@ -64,8 +64,8 @@ func (s *RBACUserService) Create(ctx context.Context,
 
 // Get fetches a User in Kong.
 func (s *RBACUserService) Get(ctx context.Context,
-	nameOrID *string) (*RBACUser, error) {
-
+	nameOrID *string,
+) (*RBACUser, error) {
 	if isEmptyString(nameOrID) {
 		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -86,8 +86,8 @@ func (s *RBACUserService) Get(ctx context.Context,
 
 // Update updates a User in Kong.
 func (s *RBACUserService) Update(ctx context.Context,
-	user *RBACUser) (*RBACUser, error) {
-
+	user *RBACUser,
+) (*RBACUser, error) {
 	if user == nil {
 		return nil, fmt.Errorf("cannot update a nil User")
 	}
@@ -112,8 +112,8 @@ func (s *RBACUserService) Update(ctx context.Context,
 
 // Delete deletes a User in Kong
 func (s *RBACUserService) Delete(ctx context.Context,
-	userOrID *string) error {
-
+	userOrID *string,
+) error {
 	if isEmptyString(userOrID) {
 		return fmt.Errorf("UserOrID cannot be nil for Delete operation")
 	}
@@ -131,8 +131,8 @@ func (s *RBACUserService) Delete(ctx context.Context,
 // List fetches a list of Users in Kong.
 // opt can be used to control pagination.
 func (s *RBACUserService) List(ctx context.Context,
-	opt *ListOpt) ([]*RBACUser, *ListOpt, error) {
-
+	opt *ListOpt,
+) ([]*RBACUser, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/rbac/users/", opt)
 	if err != nil {
 		return nil, nil, err
@@ -173,8 +173,8 @@ func (s *RBACUserService) ListAll(ctx context.Context) ([]*RBACUser, error) {
 
 // AddRoles adds a comma separated list of roles to a User.
 func (s *RBACUserService) AddRoles(ctx context.Context,
-	nameOrID *string, roles []*RBACRole) ([]*RBACRole, error) {
-
+	nameOrID *string, roles []*RBACRole,
+) ([]*RBACRole, error) {
 	var updateRoles struct {
 		NameOrID *string `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 		Roles    *string `json:"roles,omitempty" yaml:"roles,omitempty"`
@@ -206,8 +206,8 @@ func (s *RBACUserService) AddRoles(ctx context.Context,
 
 // DeleteRoles deletes roles associated with a User
 func (s *RBACUserService) DeleteRoles(ctx context.Context,
-	nameOrID *string, roles []*RBACRole) error {
-
+	nameOrID *string, roles []*RBACRole,
+) error {
 	var updateRoles struct {
 		NameOrID *string `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 		Roles    *string `json:"roles,omitempty" yaml:"roles,omitempty"`
@@ -237,8 +237,8 @@ func (s *RBACUserService) DeleteRoles(ctx context.Context,
 
 // ListRoles returns a slice of Kong RBAC roles associated with a User.
 func (s *RBACUserService) ListRoles(ctx context.Context,
-	nameOrID *string) ([]*RBACRole, error) {
-
+	nameOrID *string,
+) ([]*RBACRole, error) {
 	endpoint := fmt.Sprintf("/rbac/users/%v/roles", *nameOrID)
 	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
 	if err != nil {
@@ -257,8 +257,8 @@ func (s *RBACUserService) ListRoles(ctx context.Context,
 
 // ListPermissions returns the entity and endpoint permissions associated with a user.
 func (s *RBACUserService) ListPermissions(ctx context.Context,
-	nameOrID *string) (*RBACPermissionsList, error) {
-
+	nameOrID *string,
+) (*RBACPermissionsList, error) {
 	endpoint := fmt.Sprintf("/rbac/users/%v/permissions", *nameOrID)
 	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
 	if err != nil {

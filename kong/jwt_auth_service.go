@@ -32,8 +32,8 @@ type JWTAuthService service
 // create a JWT in Kong, otherwise an ID
 // is auto-generated.
 func (s *JWTAuthService) Create(ctx context.Context,
-	consumerUsernameOrID *string, jwtAuth *JWTAuth) (*JWTAuth, error) {
-
+	consumerUsernameOrID *string, jwtAuth *JWTAuth,
+) (*JWTAuth, error) {
 	cred, err := s.client.credentials.Create(ctx, "jwt-auth",
 		consumerUsernameOrID, jwtAuth)
 	if err != nil {
@@ -51,8 +51,8 @@ func (s *JWTAuthService) Create(ctx context.Context,
 
 // Get fetches a JWT credential from Kong.
 func (s *JWTAuthService) Get(ctx context.Context,
-	consumerUsernameOrID, keyOrID *string) (*JWTAuth, error) {
-
+	consumerUsernameOrID, keyOrID *string,
+) (*JWTAuth, error) {
 	cred, err := s.client.credentials.Get(ctx, "jwt-auth",
 		consumerUsernameOrID, keyOrID)
 	if err != nil {
@@ -70,8 +70,8 @@ func (s *JWTAuthService) Get(ctx context.Context,
 
 // Update updates a JWT credential in Kong
 func (s *JWTAuthService) Update(ctx context.Context,
-	consumerUsernameOrID *string, jwtAuth *JWTAuth) (*JWTAuth, error) {
-
+	consumerUsernameOrID *string, jwtAuth *JWTAuth,
+) (*JWTAuth, error) {
 	cred, err := s.client.credentials.Update(ctx, "jwt-auth",
 		consumerUsernameOrID, jwtAuth)
 	if err != nil {
@@ -89,7 +89,8 @@ func (s *JWTAuthService) Update(ctx context.Context,
 
 // Delete deletes a JWT credential in Kong
 func (s *JWTAuthService) Delete(ctx context.Context,
-	consumerUsernameOrID, keyOrID *string) error {
+	consumerUsernameOrID, keyOrID *string,
+) error {
 	return s.client.credentials.Delete(ctx, "jwt-auth",
 		consumerUsernameOrID, keyOrID)
 }
@@ -97,7 +98,8 @@ func (s *JWTAuthService) Delete(ctx context.Context,
 // List fetches a list of JWT credentials in Kong.
 // opt can be used to control pagination.
 func (s *JWTAuthService) List(ctx context.Context,
-	opt *ListOpt) ([]*JWTAuth, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*JWTAuth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/jwts", opt)
 	if err != nil {
 		return nil, nil, err
@@ -141,7 +143,8 @@ func (s *JWTAuthService) ListAll(ctx context.Context) ([]*JWTAuth, error) {
 // in Kong associated with a specific consumer.
 // opt can be used to control pagination.
 func (s *JWTAuthService) ListForConsumer(ctx context.Context,
-	consumerUsernameOrID *string, opt *ListOpt) ([]*JWTAuth, *ListOpt, error) {
+	consumerUsernameOrID *string, opt *ListOpt,
+) ([]*JWTAuth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx,
 		"/consumers/"+*consumerUsernameOrID+"/jwt", opt)
 	if err != nil {

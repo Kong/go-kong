@@ -34,8 +34,8 @@ type RouteService service
 // create a route in Kong, otherwise an ID
 // is auto-generated.
 func (s *RouteService) Create(ctx context.Context,
-	route *Route) (*Route, error) {
-
+	route *Route,
+) (*Route, error) {
 	if route == nil {
 		return nil, fmt.Errorf("cannot create a nil route")
 	}
@@ -61,7 +61,8 @@ func (s *RouteService) Create(ctx context.Context,
 
 // CreateInService creates a route associated with serviceID
 func (s *RouteService) CreateInService(ctx context.Context,
-	serviceID *string, route *Route) (*Route, error) {
+	serviceID *string, route *Route,
+) (*Route, error) {
 	if isEmptyString(serviceID) {
 		return nil, fmt.Errorf("serviceID cannot be nil for creating a route")
 	}
@@ -75,8 +76,8 @@ func (s *RouteService) CreateInService(ctx context.Context,
 
 // Get fetches a Route in Kong.
 func (s *RouteService) Get(ctx context.Context,
-	nameOrID *string) (*Route, error) {
-
+	nameOrID *string,
+) (*Route, error) {
 	if isEmptyString(nameOrID) {
 		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -97,8 +98,8 @@ func (s *RouteService) Get(ctx context.Context,
 
 // Update updates a Route in Kong
 func (s *RouteService) Update(ctx context.Context,
-	route *Route) (*Route, error) {
-
+	route *Route,
+) (*Route, error) {
 	if route == nil {
 		return nil, fmt.Errorf("cannot update a nil route")
 	}
@@ -140,7 +141,8 @@ func (s *RouteService) Delete(ctx context.Context, nameOrID *string) error {
 // List fetches a list of Routes in Kong.
 // opt can be used to control pagination.
 func (s *RouteService) List(ctx context.Context,
-	opt *ListOpt) ([]*Route, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*Route, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/routes", opt)
 	if err != nil {
 		return nil, nil, err
@@ -183,7 +185,8 @@ func (s *RouteService) ListAll(ctx context.Context) ([]*Route, error) {
 // ListForService fetches a list of Routes in Kong associated with a service.
 // opt can be used to control pagination.
 func (s *RouteService) ListForService(ctx context.Context,
-	serviceNameOrID *string, opt *ListOpt) ([]*Route, *ListOpt, error) {
+	serviceNameOrID *string, opt *ListOpt,
+) ([]*Route, *ListOpt, error) {
 	data, next, err := s.client.list(ctx,
 		"/services/"+*serviceNameOrID+"/routes", opt)
 	if err != nil {

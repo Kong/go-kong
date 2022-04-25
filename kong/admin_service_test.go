@@ -137,7 +137,6 @@ func TestAdminServiceList(T *testing.T) {
 	assert.Nil(err)
 	err = client.Admins.Delete(defaultCtx, createdAdmin2.ID)
 	assert.Nil(err)
-
 }
 
 // XXX:
@@ -177,5 +176,4 @@ func TestAdminServiceRegisterCredentials(T *testing.T) {
 
 	err = client.Admins.Delete(defaultCtx, admin.ID)
 	assert.Nil(err)
-
 }

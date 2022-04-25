@@ -37,8 +37,8 @@ type DeveloperService service
 // the hidden consumer that backs the developer. Subsequent attempts to use such developers
 // result in fatal errors.
 func (s *DeveloperService) Create(ctx context.Context,
-	developer *Developer) (*Developer, error) {
-
+	developer *Developer,
+) (*Developer, error) {
 	queryPath := "/developers"
 	method := "POST"
 	req, err := s.client.NewRequest(method, queryPath, nil, developer)
@@ -56,8 +56,8 @@ func (s *DeveloperService) Create(ctx context.Context,
 
 // Get fetches a Developer in Kong.
 func (s *DeveloperService) Get(ctx context.Context,
-	emailOrID *string) (*Developer, error) {
-
+	emailOrID *string,
+) (*Developer, error) {
 	if isEmptyString(emailOrID) {
 		return nil, fmt.Errorf("emailOrID cannot be nil for Get operation")
 	}
@@ -78,8 +78,8 @@ func (s *DeveloperService) Get(ctx context.Context,
 
 // GetByCustomID fetches a Developer in Kong.
 func (s *DeveloperService) GetByCustomID(ctx context.Context,
-	customID *string) (*Developer, error) {
-
+	customID *string,
+) (*Developer, error) {
 	if isEmptyString(customID) {
 		return nil, fmt.Errorf("customID cannot be nil for Get operation")
 	}
@@ -112,8 +112,8 @@ func (s *DeveloperService) GetByCustomID(ctx context.Context,
 
 // Update updates a Developer in Kong
 func (s *DeveloperService) Update(ctx context.Context,
-	developer *Developer) (*Developer, error) {
-
+	developer *Developer,
+) (*Developer, error) {
 	if isEmptyString(developer.ID) {
 		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
@@ -136,8 +136,8 @@ func (s *DeveloperService) Update(ctx context.Context,
 
 // Delete deletes a Developer in Kong
 func (s *DeveloperService) Delete(ctx context.Context,
-	emailOrID *string) error {
-
+	emailOrID *string,
+) error {
 	if isEmptyString(emailOrID) {
 		return fmt.Errorf("emailOrID cannot be nil for Delete operation")
 	}
@@ -155,7 +155,8 @@ func (s *DeveloperService) Delete(ctx context.Context,
 // List fetches a list of Developers in Kong.
 // opt can be used to control pagination.
 func (s *DeveloperService) List(ctx context.Context,
-	opt *ListOpt) ([]*Developer, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*Developer, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/developers", opt)
 	if err != nil {
 		return nil, nil, err

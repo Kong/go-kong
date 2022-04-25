@@ -30,8 +30,8 @@ type UpstreamService service
 // create a upstream in Kong, otherwise an ID
 // is auto-generated.
 func (s *UpstreamService) Create(ctx context.Context,
-	upstream *Upstream) (*Upstream, error) {
-
+	upstream *Upstream,
+) (*Upstream, error) {
 	queryPath := "/upstreams"
 	method := "POST"
 	if upstream.ID != nil {
@@ -53,8 +53,8 @@ func (s *UpstreamService) Create(ctx context.Context,
 
 // Get fetches a Upstream in Kong.
 func (s *UpstreamService) Get(ctx context.Context,
-	upstreamNameOrID *string) (*Upstream, error) {
-
+	upstreamNameOrID *string,
+) (*Upstream, error) {
 	if isEmptyString(upstreamNameOrID) {
 		return nil, fmt.Errorf("upstreamNameOrID cannot" +
 			" be nil for Get operation")
@@ -76,8 +76,8 @@ func (s *UpstreamService) Get(ctx context.Context,
 
 // Update updates a Upstream in Kong
 func (s *UpstreamService) Update(ctx context.Context,
-	upstream *Upstream) (*Upstream, error) {
-
+	upstream *Upstream,
+) (*Upstream, error) {
 	if isEmptyString(upstream.ID) {
 		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
@@ -98,8 +98,8 @@ func (s *UpstreamService) Update(ctx context.Context,
 
 // Delete deletes a Upstream in Kong
 func (s *UpstreamService) Delete(ctx context.Context,
-	upstreamNameOrID *string) error {
-
+	upstreamNameOrID *string,
+) error {
 	if isEmptyString(upstreamNameOrID) {
 		return fmt.Errorf("upstreamNameOrID cannot be nil for Delete operation")
 	}
@@ -117,7 +117,8 @@ func (s *UpstreamService) Delete(ctx context.Context,
 // List fetches a list of Upstreams in Kong.
 // opt can be used to control pagination.
 func (s *UpstreamService) List(ctx context.Context,
-	opt *ListOpt) ([]*Upstream, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*Upstream, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/upstreams", opt)
 	if err != nil {
 		return nil, nil, err

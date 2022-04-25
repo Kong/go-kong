@@ -106,7 +106,8 @@ func requestWithHeaders(req *http.Request, headers http.Header) *http.Request {
 // HTTPClientWithHeaders returns a client which injects headers
 // before sending any request.
 func HTTPClientWithHeaders(client *http.Client,
-	headers http.Header) *http.Client {
+	headers http.Header,
+) *http.Client {
 	var res *http.Client
 	if client == nil {
 		defaultTransport := http.DefaultTransport.(*http.Transport)

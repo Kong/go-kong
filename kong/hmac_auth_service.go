@@ -32,8 +32,8 @@ type HMACAuthService service
 // create a hmac-auth in Kong, otherwise an ID
 // is auto-generated.
 func (s *HMACAuthService) Create(ctx context.Context,
-	consumerUsernameOrID *string, hmacAuth *HMACAuth) (*HMACAuth, error) {
-
+	consumerUsernameOrID *string, hmacAuth *HMACAuth,
+) (*HMACAuth, error) {
 	cred, err := s.client.credentials.Create(ctx, "hmac-auth",
 		consumerUsernameOrID, hmacAuth)
 	if err != nil {
@@ -51,8 +51,8 @@ func (s *HMACAuthService) Create(ctx context.Context,
 
 // Get fetches a hmac-auth credential from Kong.
 func (s *HMACAuthService) Get(ctx context.Context,
-	consumerUsernameOrID, usernameOrID *string) (*HMACAuth, error) {
-
+	consumerUsernameOrID, usernameOrID *string,
+) (*HMACAuth, error) {
 	cred, err := s.client.credentials.Get(ctx, "hmac-auth",
 		consumerUsernameOrID, usernameOrID)
 	if err != nil {
@@ -70,8 +70,8 @@ func (s *HMACAuthService) Get(ctx context.Context,
 
 // Update updates a hmac-auth credential in Kong
 func (s *HMACAuthService) Update(ctx context.Context,
-	consumerUsernameOrID *string, hmacAuth *HMACAuth) (*HMACAuth, error) {
-
+	consumerUsernameOrID *string, hmacAuth *HMACAuth,
+) (*HMACAuth, error) {
 	cred, err := s.client.credentials.Update(ctx, "hmac-auth",
 		consumerUsernameOrID, hmacAuth)
 	if err != nil {
@@ -89,7 +89,8 @@ func (s *HMACAuthService) Update(ctx context.Context,
 
 // Delete deletes a hmac-auth credential in Kong
 func (s *HMACAuthService) Delete(ctx context.Context,
-	consumerUsernameOrID, usernameOrID *string) error {
+	consumerUsernameOrID, usernameOrID *string,
+) error {
 	return s.client.credentials.Delete(ctx, "hmac-auth",
 		consumerUsernameOrID, usernameOrID)
 }
@@ -97,7 +98,8 @@ func (s *HMACAuthService) Delete(ctx context.Context,
 // List fetches a list of hmac-auth credentials in Kong.
 // opt can be used to control pagination.
 func (s *HMACAuthService) List(ctx context.Context,
-	opt *ListOpt) ([]*HMACAuth, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*HMACAuth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/hmac-auths", opt)
 	if err != nil {
 		return nil, nil, err
@@ -141,7 +143,8 @@ func (s *HMACAuthService) ListAll(ctx context.Context) ([]*HMACAuth, error) {
 // in Kong associated with a specific consumer.
 // opt can be used to control pagination.
 func (s *HMACAuthService) ListForConsumer(ctx context.Context,
-	consumerUsernameOrID *string, opt *ListOpt) ([]*HMACAuth, *ListOpt, error) {
+	consumerUsernameOrID *string, opt *ListOpt,
+) ([]*HMACAuth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx,
 		"/consumers/"+*consumerUsernameOrID+"/hmac-auth", opt)
 	if err != nil {

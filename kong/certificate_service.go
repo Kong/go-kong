@@ -30,8 +30,8 @@ type CertificateService service
 // create a certificate in Kong, otherwise an ID
 // is auto-generated.
 func (s *CertificateService) Create(ctx context.Context,
-	certificate *Certificate) (*Certificate, error) {
-
+	certificate *Certificate,
+) (*Certificate, error) {
 	queryPath := "/certificates"
 	method := "POST"
 	if certificate.ID != nil {
@@ -53,8 +53,8 @@ func (s *CertificateService) Create(ctx context.Context,
 
 // Get fetches a Certificate in Kong.
 func (s *CertificateService) Get(ctx context.Context,
-	usernameOrID *string) (*Certificate, error) {
-
+	usernameOrID *string,
+) (*Certificate, error) {
 	if isEmptyString(usernameOrID) {
 		return nil, fmt.Errorf("usernameOrID cannot be nil for Get operation")
 	}
@@ -75,8 +75,8 @@ func (s *CertificateService) Get(ctx context.Context,
 
 // Update updates a Certificate in Kong
 func (s *CertificateService) Update(ctx context.Context,
-	certificate *Certificate) (*Certificate, error) {
-
+	certificate *Certificate,
+) (*Certificate, error) {
 	if isEmptyString(certificate.ID) {
 		return nil, fmt.Errorf("ID cannot be nil for Update op           eration")
 	}
@@ -97,8 +97,8 @@ func (s *CertificateService) Update(ctx context.Context,
 
 // Delete deletes a Certificate in Kong
 func (s *CertificateService) Delete(ctx context.Context,
-	usernameOrID *string) error {
-
+	usernameOrID *string,
+) error {
 	if isEmptyString(usernameOrID) {
 		return fmt.Errorf("usernameOrID cannot be nil for Delete operation")
 	}
@@ -116,7 +116,8 @@ func (s *CertificateService) Delete(ctx context.Context,
 // List fetches a list of certificate in Kong.
 // opt can be used to control pagination.
 func (s *CertificateService) List(ctx context.Context,
-	opt *ListOpt) ([]*Certificate, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*Certificate, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/certificates", opt)
 	if err != nil {
 		return nil, nil, err
@@ -142,7 +143,8 @@ func (s *CertificateService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of Certificates present.
 func (s *CertificateService) ListAll(ctx context.Context) ([]*Certificate,
-	error) {
+	error,
+) {
 	var certificates, data []*Certificate
 	var err error
 	opt := &ListOpt{Size: pageSize}

@@ -32,8 +32,8 @@ type Svcservice service
 // create a service in Kong, otherwise an ID
 // is auto-generated.
 func (s *Svcservice) Create(ctx context.Context,
-	service *Service) (*Service, error) {
-
+	service *Service,
+) (*Service, error) {
 	if service == nil {
 		return nil, fmt.Errorf("cannot create a nil service")
 	}
@@ -59,8 +59,8 @@ func (s *Svcservice) Create(ctx context.Context,
 
 // Get fetches an Service in Kong.
 func (s *Svcservice) Get(ctx context.Context,
-	nameOrID *string) (*Service, error) {
-
+	nameOrID *string,
+) (*Service, error) {
 	if isEmptyString(nameOrID) {
 		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -81,8 +81,8 @@ func (s *Svcservice) Get(ctx context.Context,
 
 // GetForRoute fetches a Service associated with routeID in Kong.
 func (s *Svcservice) GetForRoute(ctx context.Context,
-	routeID *string) (*Service, error) {
-
+	routeID *string,
+) (*Service, error) {
 	if isEmptyString(routeID) {
 		return nil, fmt.Errorf("routeID cannot be nil for Get operation")
 	}
@@ -103,8 +103,8 @@ func (s *Svcservice) GetForRoute(ctx context.Context,
 
 // Update updates an Service in Kong
 func (s *Svcservice) Update(ctx context.Context,
-	service *Service) (*Service, error) {
-
+	service *Service,
+) (*Service, error) {
 	if service == nil {
 		return nil, fmt.Errorf("cannot update a nil service")
 	}
@@ -146,7 +146,8 @@ func (s *Svcservice) Delete(ctx context.Context, nameOrID *string) error {
 // List fetches a list of Services in Kong.
 // opt can be used to control pagination.
 func (s *Svcservice) List(ctx context.Context,
-	opt *ListOpt) ([]*Service, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*Service, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/services", opt)
 	if err != nil {
 		return nil, nil, err

@@ -313,8 +313,7 @@ func TestBasicAuthListMethods(T *testing.T) {
 	assert.NotNil(page2)
 	assert.Equal(3, len(page2))
 
-	basicAuthsForConsumer, next, err :=
-		client.BasicAuths.ListForConsumer(defaultCtx, consumer1.ID, nil)
+	basicAuthsForConsumer, next, err := client.BasicAuths.ListForConsumer(defaultCtx, consumer1.ID, nil)
 	assert.Nil(err)
 	assert.Nil(next)
 	assert.NotNil(basicAuthsForConsumer)

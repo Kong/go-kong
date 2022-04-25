@@ -30,8 +30,8 @@ type CACertificateService service
 // create a certificate in Kong, otherwise an ID
 // is auto-generated.
 func (s *CACertificateService) Create(ctx context.Context,
-	certificate *CACertificate) (*CACertificate, error) {
-
+	certificate *CACertificate,
+) (*CACertificate, error) {
 	queryPath := "/ca_certificates"
 	method := "POST"
 	if certificate.ID != nil {
@@ -53,8 +53,8 @@ func (s *CACertificateService) Create(ctx context.Context,
 
 // Get fetches a CACertificate in Kong.
 func (s *CACertificateService) Get(ctx context.Context,
-	ID *string) (*CACertificate, error) {
-
+	ID *string,
+) (*CACertificate, error) {
 	if isEmptyString(ID) {
 		return nil, fmt.Errorf("ID cannot be nil for Get operation")
 	}
@@ -75,8 +75,8 @@ func (s *CACertificateService) Get(ctx context.Context,
 
 // Update updates a CACertificate in Kong
 func (s *CACertificateService) Update(ctx context.Context,
-	certificate *CACertificate) (*CACertificate, error) {
-
+	certificate *CACertificate,
+) (*CACertificate, error) {
 	if isEmptyString(certificate.ID) {
 		return nil, fmt.Errorf("ID cannot be nil for Update op           eration")
 	}
@@ -97,8 +97,8 @@ func (s *CACertificateService) Update(ctx context.Context,
 
 // Delete deletes a CACertificate in Kong
 func (s *CACertificateService) Delete(ctx context.Context,
-	ID *string) error {
-
+	ID *string,
+) error {
 	if isEmptyString(ID) {
 		return fmt.Errorf("ID cannot be nil for Delete operation")
 	}
@@ -116,7 +116,8 @@ func (s *CACertificateService) Delete(ctx context.Context,
 // List fetches a list of certificate in Kong.
 // opt can be used to control pagination.
 func (s *CACertificateService) List(ctx context.Context,
-	opt *ListOpt) ([]*CACertificate, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*CACertificate, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/ca_certificates", opt)
 	if err != nil {
 		return nil, nil, err
@@ -142,7 +143,8 @@ func (s *CACertificateService) List(ctx context.Context,
 // This method can take a while if there
 // a lot of Certificates present.
 func (s *CACertificateService) ListAll(ctx context.Context) ([]*CACertificate,
-	error) {
+	error,
+) {
 	var certificates, data []*CACertificate
 	var err error
 	opt := &ListOpt{Size: pageSize}

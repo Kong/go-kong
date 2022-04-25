@@ -27,8 +27,8 @@ type DeveloperRoleService service
 
 // Create creates a Developer Role in Kong.
 func (s *DeveloperRoleService) Create(ctx context.Context,
-	role *DeveloperRole) (*DeveloperRole, error) {
-
+	role *DeveloperRole,
+) (*DeveloperRole, error) {
 	if role == nil {
 		return nil, fmt.Errorf("cannot create a nil role")
 	}
@@ -50,8 +50,8 @@ func (s *DeveloperRoleService) Create(ctx context.Context,
 
 // Get fetches a Developer Role in Kong.
 func (s *DeveloperRoleService) Get(ctx context.Context,
-	nameOrID *string) (*DeveloperRole, error) {
-
+	nameOrID *string,
+) (*DeveloperRole, error) {
 	if isEmptyString(nameOrID) {
 		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -72,8 +72,8 @@ func (s *DeveloperRoleService) Get(ctx context.Context,
 
 // Update updates a Developer Role in Kong.
 func (s *DeveloperRoleService) Update(ctx context.Context,
-	role *DeveloperRole) (*DeveloperRole, error) {
-
+	role *DeveloperRole,
+) (*DeveloperRole, error) {
 	if role == nil {
 		return nil, fmt.Errorf("cannot update a nil Role")
 	}
@@ -98,8 +98,8 @@ func (s *DeveloperRoleService) Update(ctx context.Context,
 
 // Delete deletes a Developer Role in Kong
 func (s *DeveloperRoleService) Delete(ctx context.Context,
-	RoleOrID *string) error {
-
+	RoleOrID *string,
+) error {
 	if isEmptyString(RoleOrID) {
 		return fmt.Errorf("RoleOrID cannot be nil for Delete operation")
 	}
@@ -117,7 +117,8 @@ func (s *DeveloperRoleService) Delete(ctx context.Context,
 // List fetches a list of all Developer Roles in Kong.
 // opt can be used to control pagination.
 func (s *DeveloperRoleService) List(ctx context.Context,
-	opt *ListOpt) ([]*DeveloperRole, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*DeveloperRole, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/developers/roles/", opt)
 	if err != nil {
 		return nil, nil, err

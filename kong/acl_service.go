@@ -32,8 +32,8 @@ type ACLService service
 // create the group association in Kong, otherwise an ID
 // is auto-generated.
 func (s *ACLService) Create(ctx context.Context,
-	consumerUsernameOrID *string, aclGroup *ACLGroup) (*ACLGroup, error) {
-
+	consumerUsernameOrID *string, aclGroup *ACLGroup,
+) (*ACLGroup, error) {
 	cred, err := s.client.credentials.Create(ctx, "acl",
 		consumerUsernameOrID, aclGroup)
 	if err != nil {
@@ -51,8 +51,8 @@ func (s *ACLService) Create(ctx context.Context,
 
 // Get fetches an ACL group for a consumer in Kong.
 func (s *ACLService) Get(ctx context.Context,
-	consumerUsernameOrID, groupOrID *string) (*ACLGroup, error) {
-
+	consumerUsernameOrID, groupOrID *string,
+) (*ACLGroup, error) {
 	cred, err := s.client.credentials.Get(ctx, "acl",
 		consumerUsernameOrID, groupOrID)
 	if err != nil {
@@ -70,8 +70,8 @@ func (s *ACLService) Get(ctx context.Context,
 
 // Update updates an ACL group for a consumer in Kong
 func (s *ACLService) Update(ctx context.Context,
-	consumerUsernameOrID *string, aclGroup *ACLGroup) (*ACLGroup, error) {
-
+	consumerUsernameOrID *string, aclGroup *ACLGroup,
+) (*ACLGroup, error) {
 	cred, err := s.client.credentials.Update(ctx, "acl",
 		consumerUsernameOrID, aclGroup)
 	if err != nil {
@@ -89,7 +89,8 @@ func (s *ACLService) Update(ctx context.Context,
 
 // Delete deletes an ACL group association for a consumer in Kong
 func (s *ACLService) Delete(ctx context.Context,
-	consumerUsernameOrID, groupOrID *string) error {
+	consumerUsernameOrID, groupOrID *string,
+) error {
 	return s.client.credentials.Delete(ctx, "acl",
 		consumerUsernameOrID, groupOrID)
 }
@@ -97,7 +98,8 @@ func (s *ACLService) Delete(ctx context.Context,
 // List fetches a list of all ACL group and consumer associations in Kong.
 // opt can be used to control pagination.
 func (s *ACLService) List(ctx context.Context,
-	opt *ListOpt) ([]*ACLGroup, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*ACLGroup, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/acls", opt)
 	if err != nil {
 		return nil, nil, err
@@ -141,7 +143,8 @@ func (s *ACLService) ListAll(ctx context.Context) ([]*ACLGroup, error) {
 // in Kong associated with a specific consumer.
 // opt can be used to control pagination.
 func (s *ACLService) ListForConsumer(ctx context.Context,
-	consumerUsernameOrID *string, opt *ListOpt) ([]*ACLGroup, *ListOpt, error) {
+	consumerUsernameOrID *string, opt *ListOpt,
+) ([]*ACLGroup, *ListOpt, error) {
 	data, next, err := s.client.list(ctx,
 		"/consumers/"+*consumerUsernameOrID+"/acls", opt)
 	if err != nil {

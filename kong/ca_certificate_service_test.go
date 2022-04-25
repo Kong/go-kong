@@ -201,8 +201,7 @@ func TestCACertificateListEndpoint(T *testing.T) {
 		certificates[i] = certificate
 	}
 
-	certificatesFromKong, next, err :=
-		client.CACertificates.List(defaultCtx, nil)
+	certificatesFromKong, next, err := client.CACertificates.List(defaultCtx, nil)
 
 	assert.Nil(err)
 	assert.Nil(next)

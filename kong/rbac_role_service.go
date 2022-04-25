@@ -27,8 +27,8 @@ type RBACRoleService service
 
 // Create creates a Role in Kong.
 func (s *RBACRoleService) Create(ctx context.Context,
-	role *RBACRole) (*RBACRole, error) {
-
+	role *RBACRole,
+) (*RBACRole, error) {
 	if role == nil {
 		return nil, fmt.Errorf("cannot create a nil role")
 	}
@@ -54,8 +54,8 @@ func (s *RBACRoleService) Create(ctx context.Context,
 
 // Get fetches a Role in Kong.
 func (s *RBACRoleService) Get(ctx context.Context,
-	nameOrID *string) (*RBACRole, error) {
-
+	nameOrID *string,
+) (*RBACRole, error) {
 	if isEmptyString(nameOrID) {
 		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -76,8 +76,8 @@ func (s *RBACRoleService) Get(ctx context.Context,
 
 // Update updates a Role in Kong.
 func (s *RBACRoleService) Update(ctx context.Context,
-	role *RBACRole) (*RBACRole, error) {
-
+	role *RBACRole,
+) (*RBACRole, error) {
 	if role == nil {
 		return nil, fmt.Errorf("cannot update a nil Role")
 	}
@@ -102,8 +102,8 @@ func (s *RBACRoleService) Update(ctx context.Context,
 
 // Delete deletes a Role in Kong
 func (s *RBACRoleService) Delete(ctx context.Context,
-	RoleOrID *string) error {
-
+	RoleOrID *string,
+) error {
 	if isEmptyString(RoleOrID) {
 		return fmt.Errorf("RoleOrID cannot be nil for Delete operation")
 	}
@@ -120,8 +120,8 @@ func (s *RBACRoleService) Delete(ctx context.Context,
 
 // List fetches a list of all Roles in Kong.
 func (s *RBACRoleService) List(ctx context.Context,
-	opt *ListOpt) ([]*RBACRole, *ListOpt, error) {
-
+	opt *ListOpt,
+) ([]*RBACRole, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/rbac/roles/", opt)
 	if err != nil {
 		return nil, nil, err

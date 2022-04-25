@@ -290,8 +290,7 @@ func TestHMACAuthListMethods(T *testing.T) {
 	assert.NotNil(page2)
 	assert.Equal(3, len(page2))
 
-	hmacAuthsForConsumer, next, err :=
-		client.HMACAuths.ListForConsumer(defaultCtx, consumer1.ID, nil)
+	hmacAuthsForConsumer, next, err := client.HMACAuths.ListForConsumer(defaultCtx, consumer1.ID, nil)
 	assert.Nil(err)
 	assert.Nil(next)
 	assert.NotNil(hmacAuthsForConsumer)
