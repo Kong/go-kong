@@ -31,8 +31,8 @@ type KeyAuthService service
 // create a key-auth in Kong, otherwise an ID
 // is auto-generated.
 func (s *KeyAuthService) Create(ctx context.Context,
-	consumerUsernameOrID *string, keyAuth *KeyAuth) (*KeyAuth, error) {
-
+	consumerUsernameOrID *string, keyAuth *KeyAuth,
+) (*KeyAuth, error) {
 	cred, err := s.client.credentials.Create(ctx, "key-auth",
 		consumerUsernameOrID, keyAuth)
 	if err != nil {
@@ -50,8 +50,8 @@ func (s *KeyAuthService) Create(ctx context.Context,
 
 // Get fetches a key-auth credential from Kong.
 func (s *KeyAuthService) Get(ctx context.Context,
-	consumerUsernameOrID, keyOrID *string) (*KeyAuth, error) {
-
+	consumerUsernameOrID, keyOrID *string,
+) (*KeyAuth, error) {
 	cred, err := s.client.credentials.Get(ctx, "key-auth",
 		consumerUsernameOrID, keyOrID)
 	if err != nil {
@@ -69,8 +69,8 @@ func (s *KeyAuthService) Get(ctx context.Context,
 
 // Update updates a key-auth credential in Kong
 func (s *KeyAuthService) Update(ctx context.Context,
-	consumerUsernameOrID *string, keyAuth *KeyAuth) (*KeyAuth, error) {
-
+	consumerUsernameOrID *string, keyAuth *KeyAuth,
+) (*KeyAuth, error) {
 	cred, err := s.client.credentials.Update(ctx, "key-auth",
 		consumerUsernameOrID, keyAuth)
 	if err != nil {
@@ -88,7 +88,8 @@ func (s *KeyAuthService) Update(ctx context.Context,
 
 // Delete deletes a key-auth credential in Kong
 func (s *KeyAuthService) Delete(ctx context.Context,
-	consumerUsernameOrID, keyOrID *string) error {
+	consumerUsernameOrID, keyOrID *string,
+) error {
 	return s.client.credentials.Delete(ctx, "key-auth",
 		consumerUsernameOrID, keyOrID)
 }
@@ -96,7 +97,8 @@ func (s *KeyAuthService) Delete(ctx context.Context,
 // List fetches a list of key-auth credentials in Kong.
 // opt can be used to control pagination.
 func (s *KeyAuthService) List(ctx context.Context,
-	opt *ListOpt) ([]*KeyAuth, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*KeyAuth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/key-auths", opt)
 	if err != nil {
 		return nil, nil, err
@@ -140,7 +142,8 @@ func (s *KeyAuthService) ListAll(ctx context.Context) ([]*KeyAuth, error) {
 // in Kong associated with a specific consumer.
 // opt can be used to control pagination.
 func (s *KeyAuthService) ListForConsumer(ctx context.Context,
-	consumerUsernameOrID *string, opt *ListOpt) ([]*KeyAuth, *ListOpt, error) {
+	consumerUsernameOrID *string, opt *ListOpt,
+) ([]*KeyAuth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx,
 		"/consumers/"+*consumerUsernameOrID+"/key-auth", opt)
 	if err != nil {

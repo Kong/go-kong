@@ -33,8 +33,8 @@ type Oauth2Service service
 // is auto-generated.
 func (s *Oauth2Service) Create(ctx context.Context,
 	consumerUsernameOrID *string,
-	oauth2Cred *Oauth2Credential) (*Oauth2Credential, error) {
-
+	oauth2Cred *Oauth2Credential,
+) (*Oauth2Credential, error) {
 	cred, err := s.client.credentials.Create(ctx, "oauth2",
 		consumerUsernameOrID, oauth2Cred)
 	if err != nil {
@@ -52,8 +52,8 @@ func (s *Oauth2Service) Create(ctx context.Context,
 
 // Get fetches an oauth2 credential from Kong.
 func (s *Oauth2Service) Get(ctx context.Context,
-	consumerUsernameOrID, clientIDorID *string) (*Oauth2Credential, error) {
-
+	consumerUsernameOrID, clientIDorID *string,
+) (*Oauth2Credential, error) {
 	cred, err := s.client.credentials.Get(ctx, "oauth2",
 		consumerUsernameOrID, clientIDorID)
 	if err != nil {
@@ -72,8 +72,8 @@ func (s *Oauth2Service) Get(ctx context.Context,
 // Update updates an oauth2 credential in Kong.
 func (s *Oauth2Service) Update(ctx context.Context,
 	consumerUsernameOrID *string,
-	oauth2Cred *Oauth2Credential) (*Oauth2Credential, error) {
-
+	oauth2Cred *Oauth2Credential,
+) (*Oauth2Credential, error) {
 	cred, err := s.client.credentials.Update(ctx, "oauth2",
 		consumerUsernameOrID, oauth2Cred)
 	if err != nil {
@@ -91,7 +91,8 @@ func (s *Oauth2Service) Update(ctx context.Context,
 
 // Delete deletes an oauth2 credential in Kong.
 func (s *Oauth2Service) Delete(ctx context.Context,
-	consumerUsernameOrID, clientIDorID *string) error {
+	consumerUsernameOrID, clientIDorID *string,
+) error {
 	return s.client.credentials.Delete(ctx, "oauth2",
 		consumerUsernameOrID, clientIDorID)
 }
@@ -99,7 +100,8 @@ func (s *Oauth2Service) Delete(ctx context.Context,
 // List fetches a list of oauth2 credentials in Kong.
 // opt can be used to control pagination.
 func (s *Oauth2Service) List(ctx context.Context,
-	opt *ListOpt) ([]*Oauth2Credential, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*Oauth2Credential, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/oauth2", opt)
 	if err != nil {
 		return nil, nil, err
@@ -125,7 +127,8 @@ func (s *Oauth2Service) List(ctx context.Context,
 // This method can take a while if there
 // a lot of oauth2 credentials present.
 func (s *Oauth2Service) ListAll(
-	ctx context.Context) ([]*Oauth2Credential, error) {
+	ctx context.Context,
+) ([]*Oauth2Credential, error) {
 	var oauth2Creds, data []*Oauth2Credential
 	var err error
 	opt := &ListOpt{Size: pageSize}
@@ -145,7 +148,8 @@ func (s *Oauth2Service) ListAll(
 // opt can be used to control pagination.
 func (s *Oauth2Service) ListForConsumer(ctx context.Context,
 	consumerUsernameOrID *string, opt *ListOpt) ([]*Oauth2Credential,
-	*ListOpt, error) {
+	*ListOpt, error,
+) {
 	data, next, err := s.client.list(ctx,
 		"/consumers/"+*consumerUsernameOrID+"/oauth2", opt)
 	if err != nil {

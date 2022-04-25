@@ -285,8 +285,7 @@ func TestKeyAuthListMethods(T *testing.T) {
 	assert.NotNil(page2)
 	assert.Equal(3, len(page2))
 
-	keyAuthsForConsumer, next, err :=
-		client.KeyAuths.ListForConsumer(defaultCtx, consumer1.ID, nil)
+	keyAuthsForConsumer, next, err := client.KeyAuths.ListForConsumer(defaultCtx, consumer1.ID, nil)
 	assert.Nil(err)
 	assert.Nil(next)
 	assert.NotNil(keyAuthsForConsumer)

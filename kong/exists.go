@@ -7,7 +7,8 @@ import (
 
 // exists check the existence  with a HEAD HTTP verb
 func (c *Client) exists(ctx context.Context,
-	endpoint string) (bool, error) {
+	endpoint string,
+) (bool, error) {
 	// Originally, this used HEAD. We promptly discovered that HEAD doesn't actually work for this
 	// in Kong <=2.6: https://github.com/Kong/kong/issues/7554
 	// Although future versions will support HEAD for existence checks, using GET for backwards

@@ -41,8 +41,8 @@ var credPath = map[string]string{
 // is auto-generated.
 func (s *credentialService) Create(ctx context.Context, credType string,
 	consumerUsernameOrID *string,
-	credential interface{}) (json.RawMessage, error) {
-
+	credential interface{},
+) (json.RawMessage, error) {
 	if isEmptyString(consumerUsernameOrID) {
 		return nil, fmt.Errorf("consumerUsernameOrID cannot be nil")
 	}
@@ -81,8 +81,8 @@ func (s *credentialService) Create(ctx context.Context, credType string,
 // Get fetches a credential of credType with credIdentifier from Kong.
 func (s *credentialService) Get(ctx context.Context, credType string,
 	consumerUsernameOrID *string,
-	credIdentifier *string) (json.RawMessage, error) {
-
+	credIdentifier *string,
+) (json.RawMessage, error) {
 	if isEmptyString(credIdentifier) {
 		return nil, fmt.Errorf("credIdentifier cannot be nil for Get operation")
 	}
@@ -112,8 +112,8 @@ func (s *credentialService) Get(ctx context.Context, credType string,
 // Update updates credential in Kong
 func (s *credentialService) Update(ctx context.Context, credType string,
 	consumerUsernameOrID *string,
-	credential interface{}) (json.RawMessage, error) {
-
+	credential interface{},
+) (json.RawMessage, error) {
 	if isEmptyString(consumerUsernameOrID) {
 		return nil, fmt.Errorf("consumerUsernameOrID cannot be nil")
 	}
@@ -157,8 +157,8 @@ func (s *credentialService) Update(ctx context.Context, credType string,
 
 // Delete deletes a credential in Kong
 func (s *credentialService) Delete(ctx context.Context, credType string,
-	consumerUsernameOrID, credIdentifier *string) error {
-
+	consumerUsernameOrID, credIdentifier *string,
+) error {
 	if isEmptyString(credIdentifier) {
 		return fmt.Errorf("credIdentifier cannot be nil for Delete operation")
 	}

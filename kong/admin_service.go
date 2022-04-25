@@ -45,8 +45,8 @@ type AdminService service
 
 // Invite creates an Admin in Kong.
 func (s *AdminService) Invite(ctx context.Context,
-	admin *Admin) (*Admin, error) {
-
+	admin *Admin,
+) (*Admin, error) {
 	if admin == nil {
 		return nil, fmt.Errorf("cannot create a nil admin")
 	}
@@ -71,14 +71,15 @@ func (s *AdminService) Invite(ctx context.Context,
 // Create aliases the Invite function as it performs
 // essentially the same operation.
 func (s *AdminService) Create(ctx context.Context,
-	admin *Admin) (*Admin, error) {
+	admin *Admin,
+) (*Admin, error) {
 	return s.Invite(ctx, admin)
 }
 
 // Get fetches a Admin in Kong.
 func (s *AdminService) Get(ctx context.Context,
-	nameOrID *string) (*Admin, error) {
-
+	nameOrID *string,
+) (*Admin, error) {
 	if isEmptyString(nameOrID) {
 		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -101,8 +102,8 @@ func (s *AdminService) Get(ctx context.Context,
 // GenerateRegisterURL fetches an Admin in Kong
 // and returns a unique registration URL for the Admin
 func (s *AdminService) GenerateRegisterURL(ctx context.Context,
-	nameOrID *string) (*Admin, error) {
-
+	nameOrID *string,
+) (*Admin, error) {
 	if isEmptyString(nameOrID) {
 		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -124,8 +125,8 @@ func (s *AdminService) GenerateRegisterURL(ctx context.Context,
 
 // Update updates an Admin in Kong.
 func (s *AdminService) Update(ctx context.Context,
-	admin *Admin) (*Admin, error) {
-
+	admin *Admin,
+) (*Admin, error) {
 	if admin == nil {
 		return nil, fmt.Errorf("cannot update a nil Admin")
 	}
@@ -150,8 +151,8 @@ func (s *AdminService) Update(ctx context.Context,
 
 // Delete deletes an Admin in Kong
 func (s *AdminService) Delete(ctx context.Context,
-	AdminOrID *string) error {
-
+	AdminOrID *string,
+) error {
 	if isEmptyString(AdminOrID) {
 		return fmt.Errorf("AdminOrID cannot be nil for Delete operation")
 	}
@@ -168,8 +169,8 @@ func (s *AdminService) Delete(ctx context.Context,
 
 // List fetches a list of all Admins in Kong.
 func (s *AdminService) List(ctx context.Context,
-	opt *ListOpt) ([]*Admin, *ListOpt, error) {
-
+	opt *ListOpt,
+) ([]*Admin, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/admins/", opt)
 	if err != nil {
 		return nil, nil, err
@@ -193,8 +194,8 @@ func (s *AdminService) List(ctx context.Context,
 
 // RegisterCredentials registers credentials for existing Kong Admins
 func (s *AdminService) RegisterCredentials(ctx context.Context,
-	admin *Admin) error {
-
+	admin *Admin,
+) error {
 	if admin == nil {
 		return fmt.Errorf("cannot register credentials for a nil Admin")
 	}
@@ -223,7 +224,8 @@ func (s *AdminService) RegisterCredentials(ctx context.Context,
 
 // ListWorkspaces lists the workspaces associated with an admin
 func (s *AdminService) ListWorkspaces(ctx context.Context,
-	emailOrID *string) ([]*Workspace, error) {
+	emailOrID *string,
+) ([]*Workspace, error) {
 	endpoint := fmt.Sprintf("/admins/%v/workspaces", *emailOrID)
 	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
 	if err != nil {
@@ -239,8 +241,8 @@ func (s *AdminService) ListWorkspaces(ctx context.Context,
 
 // ListRoles returns a slice of Kong RBAC roles associated with an Admin.
 func (s *AdminService) ListRoles(ctx context.Context,
-	emailOrID *string, opt *ListOpt) ([]*RBACRole, error) {
-
+	emailOrID *string, opt *ListOpt,
+) ([]*RBACRole, error) {
 	endpoint := fmt.Sprintf("/admins/%v/roles", *emailOrID)
 	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
 	if err != nil {
@@ -260,8 +262,8 @@ func (s *AdminService) ListRoles(ctx context.Context,
 
 // UpdateRoles creates or updates roles associated with an Admin
 func (s *AdminService) UpdateRoles(ctx context.Context,
-	emailOrID *string, roles []*RBACRole) ([]*RBACRole, error) {
-
+	emailOrID *string, roles []*RBACRole,
+) ([]*RBACRole, error) {
 	var updateRoles struct {
 		NameOrID *string `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 		Roles    *string `json:"roles,omitempty" yaml:"roles,omitempty"`
@@ -292,8 +294,8 @@ func (s *AdminService) UpdateRoles(ctx context.Context,
 
 // DeleteRoles deletes roles associated with an Admin
 func (s *AdminService) DeleteRoles(ctx context.Context,
-	emailOrID *string, roles []*RBACRole) error {
-
+	emailOrID *string, roles []*RBACRole,
+) error {
 	var updateRoles struct {
 		NameOrID *string `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 		Roles    *string `json:"roles,omitempty" yaml:"roles,omitempty"`
@@ -324,8 +326,8 @@ func (s *AdminService) DeleteRoles(ctx context.Context,
 // GetConsumer fetches the Consumer that gets generated for an Admin when
 // the Admin is created.
 func (s *AdminService) GetConsumer(ctx context.Context,
-	emailOrID *string) (*Consumer, error) {
-
+	emailOrID *string,
+) (*Consumer, error) {
 	if isEmptyString(emailOrID) {
 		return nil, fmt.Errorf("emailOrID cannot be nil for GetConsumer operation")
 	}

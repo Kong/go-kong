@@ -33,8 +33,8 @@ type BasicAuthService service
 // create a basic-auth in Kong, otherwise an ID
 // is auto-generated.
 func (s *BasicAuthService) Create(ctx context.Context,
-	consumerUsernameOrID *string, basicAuth *BasicAuth) (*BasicAuth, error) {
-
+	consumerUsernameOrID *string, basicAuth *BasicAuth,
+) (*BasicAuth, error) {
 	cred, err := s.client.credentials.Create(ctx, "basic-auth",
 		consumerUsernameOrID, basicAuth)
 	if err != nil {
@@ -52,8 +52,8 @@ func (s *BasicAuthService) Create(ctx context.Context,
 
 // Get fetches a basic-auth credential from Kong.
 func (s *BasicAuthService) Get(ctx context.Context,
-	consumerUsernameOrID, usernameOrID *string) (*BasicAuth, error) {
-
+	consumerUsernameOrID, usernameOrID *string,
+) (*BasicAuth, error) {
 	cred, err := s.client.credentials.Get(ctx, "basic-auth",
 		consumerUsernameOrID, usernameOrID)
 	if err != nil {
@@ -71,8 +71,8 @@ func (s *BasicAuthService) Get(ctx context.Context,
 
 // Update updates a basic-auth credential in Kong
 func (s *BasicAuthService) Update(ctx context.Context,
-	consumerUsernameOrID *string, basicAuth *BasicAuth) (*BasicAuth, error) {
-
+	consumerUsernameOrID *string, basicAuth *BasicAuth,
+) (*BasicAuth, error) {
 	cred, err := s.client.credentials.Update(ctx, "basic-auth",
 		consumerUsernameOrID, basicAuth)
 	if err != nil {
@@ -90,7 +90,8 @@ func (s *BasicAuthService) Update(ctx context.Context,
 
 // Delete deletes a basic-auth credential in Kong
 func (s *BasicAuthService) Delete(ctx context.Context,
-	consumerUsernameOrID, usernameOrID *string) error {
+	consumerUsernameOrID, usernameOrID *string,
+) error {
 	return s.client.credentials.Delete(ctx, "basic-auth",
 		consumerUsernameOrID, usernameOrID)
 }
@@ -98,7 +99,8 @@ func (s *BasicAuthService) Delete(ctx context.Context,
 // List fetches a list of basic-auth credentials in Kong.
 // opt can be used to control pagination.
 func (s *BasicAuthService) List(ctx context.Context,
-	opt *ListOpt) ([]*BasicAuth, *ListOpt, error) {
+	opt *ListOpt,
+) ([]*BasicAuth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/basic-auths", opt)
 	if err != nil {
 		return nil, nil, err
@@ -142,7 +144,8 @@ func (s *BasicAuthService) ListAll(ctx context.Context) ([]*BasicAuth, error) {
 // in Kong associated with a specific consumer.
 // opt can be used to control pagination.
 func (s *BasicAuthService) ListForConsumer(ctx context.Context,
-	consumerUsernameOrID *string, opt *ListOpt) ([]*BasicAuth, *ListOpt, error) {
+	consumerUsernameOrID *string, opt *ListOpt,
+) ([]*BasicAuth, *ListOpt, error) {
 	data, next, err := s.client.list(ctx,
 		"/consumers/"+*consumerUsernameOrID+"/basic-auth", opt)
 	if err != nil {

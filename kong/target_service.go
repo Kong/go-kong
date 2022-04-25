@@ -35,7 +35,8 @@ type TargetService service
 // create a target in Kong, otherwise an ID
 // is auto-generated.
 func (s *TargetService) Create(ctx context.Context,
-	upstreamNameOrID *string, target *Target) (*Target, error) {
+	upstreamNameOrID *string, target *Target,
+) (*Target, error) {
 	if isEmptyString(upstreamNameOrID) {
 		return nil, fmt.Errorf("upstreamNameOrID can not be nil")
 	}
@@ -60,7 +61,8 @@ func (s *TargetService) Create(ctx context.Context,
 
 // Delete deletes a Target in Kong
 func (s *TargetService) Delete(ctx context.Context,
-	upstreamNameOrID *string, targetOrID *string) error {
+	upstreamNameOrID *string, targetOrID *string,
+) error {
 	if isEmptyString(upstreamNameOrID) {
 		return fmt.Errorf("upstreamNameOrID cannot be nil for Get operation")
 	}
@@ -82,7 +84,8 @@ func (s *TargetService) Delete(ctx context.Context,
 // List fetches a list of Targets in Kong.
 // opt can be used to control pagination.
 func (s *TargetService) List(ctx context.Context,
-	upstreamNameOrID *string, opt *ListOpt) ([]*Target, *ListOpt, error) {
+	upstreamNameOrID *string, opt *ListOpt,
+) ([]*Target, *ListOpt, error) {
 	if isEmptyString(upstreamNameOrID) {
 		return nil, nil, fmt.Errorf(
 			"upstreamNameOrID cannot be nil for Get operation")
@@ -111,7 +114,8 @@ func (s *TargetService) List(ctx context.Context,
 
 // ListAll fetches all Targets in Kong for an upstream.
 func (s *TargetService) ListAll(ctx context.Context,
-	upstreamNameOrID *string) ([]*Target, error) {
+	upstreamNameOrID *string,
+) ([]*Target, error) {
 	var targets, data []*Target
 	var err error
 	opt := &ListOpt{Size: pageSize}
@@ -129,7 +133,8 @@ func (s *TargetService) ListAll(ctx context.Context,
 // MarkHealthy marks target belonging to upstreamNameOrID as healthy in
 // Kong's load balancer.
 func (s *TargetService) MarkHealthy(ctx context.Context,
-	upstreamNameOrID *string, target *Target) error {
+	upstreamNameOrID *string, target *Target,
+) error {
 	if target == nil {
 		return fmt.Errorf("cannot set health status for a nil target")
 	}
@@ -161,7 +166,8 @@ func (s *TargetService) MarkHealthy(ctx context.Context,
 // MarkUnhealthy marks target belonging to upstreamNameOrID as unhealthy in
 // Kong's load balancer.
 func (s *TargetService) MarkUnhealthy(ctx context.Context,
-	upstreamNameOrID *string, target *Target) error {
+	upstreamNameOrID *string, target *Target,
+) error {
 	if target == nil {
 		return fmt.Errorf("cannot set health status for a nil target")
 	}

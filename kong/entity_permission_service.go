@@ -25,8 +25,8 @@ type RBACEntityPermissionService service
 
 // Create creates an RBACEntityPermission in Kong.
 func (s *RBACEntityPermissionService) Create(ctx context.Context,
-	ep *RBACEntityPermission) (*RBACEntityPermission, error) {
-
+	ep *RBACEntityPermission,
+) (*RBACEntityPermission, error) {
 	if ep == nil {
 		return nil, fmt.Errorf("cannot create a nil entitypermission")
 	}
@@ -52,8 +52,8 @@ func (s *RBACEntityPermissionService) Create(ctx context.Context,
 
 // Get fetches an EntityPermission in Kong.
 func (s *RBACEntityPermissionService) Get(ctx context.Context,
-	roleNameOrID *string, entityName *string) (*RBACEntityPermission, error) {
-
+	roleNameOrID *string, entityName *string,
+) (*RBACEntityPermission, error) {
 	if isEmptyString(entityName) {
 		return nil, fmt.Errorf("entityName cannot be nil for Get operation")
 	}
@@ -74,8 +74,8 @@ func (s *RBACEntityPermissionService) Get(ctx context.Context,
 
 // Update updates an EntityPermission in Kong.
 func (s *RBACEntityPermissionService) Update(ctx context.Context,
-	ep *RBACEntityPermission) (*RBACEntityPermission, error) {
-
+	ep *RBACEntityPermission,
+) (*RBACEntityPermission, error) {
 	if ep == nil {
 		return nil, fmt.Errorf("cannot update a nil EntityPermission")
 	}
@@ -105,8 +105,8 @@ func (s *RBACEntityPermissionService) Update(ctx context.Context,
 
 // Delete deletes an EntityPermission in Kong
 func (s *RBACEntityPermissionService) Delete(ctx context.Context,
-	roleNameOrID *string, entityID *string) error {
-
+	roleNameOrID *string, entityID *string,
+) error {
 	if roleNameOrID == nil {
 		return fmt.Errorf("cannot update an EntityPermission with role as nil")
 	}
@@ -127,8 +127,8 @@ func (s *RBACEntityPermissionService) Delete(ctx context.Context,
 
 // ListAllForRole fetches a list of all RBACEntityPermissions in Kong for a given role.
 func (s *RBACEntityPermissionService) ListAllForRole(ctx context.Context,
-	roleNameOrID *string) ([]*RBACEntityPermission, error) {
-
+	roleNameOrID *string,
+) ([]*RBACEntityPermission, error) {
 	endpoint := fmt.Sprintf("/rbac/roles/%v/entities", *roleNameOrID)
 	data, _, err := s.client.list(ctx, endpoint, nil)
 	if err != nil {

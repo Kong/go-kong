@@ -46,7 +46,8 @@ type WorkspaceService service
 
 // Exists checks the exitence of the Workspace in Kong.
 func (s *WorkspaceService) Exists(ctx context.Context,
-	nameOrID *string) (bool, error) {
+	nameOrID *string,
+) (bool, error) {
 	if isEmptyString(nameOrID) {
 		return false, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -57,7 +58,8 @@ func (s *WorkspaceService) Exists(ctx context.Context,
 
 // ExistsByName checks the exitence of the Workspace using its name in Kong.
 func (s *WorkspaceService) ExistsByName(ctx context.Context,
-	name *string) (bool, error) {
+	name *string,
+) (bool, error) {
 	if isEmptyString(name) {
 		return false, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -68,8 +70,8 @@ func (s *WorkspaceService) ExistsByName(ctx context.Context,
 
 // Create creates a Workspace in Kong.
 func (s *WorkspaceService) Create(ctx context.Context,
-	workspace *Workspace) (*Workspace, error) {
-
+	workspace *Workspace,
+) (*Workspace, error) {
 	if workspace == nil {
 		return nil, fmt.Errorf("cannot create a nil workspace")
 	}
@@ -95,8 +97,8 @@ func (s *WorkspaceService) Create(ctx context.Context,
 
 // Get fetches a Workspace in Kong.
 func (s *WorkspaceService) Get(ctx context.Context,
-	nameOrID *string) (*Workspace, error) {
-
+	nameOrID *string,
+) (*Workspace, error) {
 	if isEmptyString(nameOrID) {
 		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -118,8 +120,8 @@ func (s *WorkspaceService) Get(ctx context.Context,
 // Update updates a Workspace in Kong. Only updates to the
 // `comment` field are supported. To rename a workspace use Create.
 func (s *WorkspaceService) Update(ctx context.Context,
-	workspace *Workspace) (*Workspace, error) {
-
+	workspace *Workspace,
+) (*Workspace, error) {
 	if workspace == nil {
 		return nil, fmt.Errorf("cannot update a nil Workspace")
 	}
@@ -144,8 +146,8 @@ func (s *WorkspaceService) Update(ctx context.Context,
 
 // Delete deletes a Workspace in Kong
 func (s *WorkspaceService) Delete(ctx context.Context,
-	WorkspaceOrID *string) error {
-
+	WorkspaceOrID *string,
+) error {
 	if isEmptyString(WorkspaceOrID) {
 		return fmt.Errorf("WorkspaceOrID cannot be nil for Delete operation")
 	}
@@ -162,8 +164,8 @@ func (s *WorkspaceService) Delete(ctx context.Context,
 
 // List fetches a list of all Workspaces in Kong.
 func (s *WorkspaceService) List(ctx context.Context,
-	opt *ListOpt) ([]*Workspace, *ListOpt, error) {
-
+	opt *ListOpt,
+) ([]*Workspace, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/workspaces/", opt)
 	if err != nil {
 		return nil, nil, err
@@ -208,8 +210,8 @@ func (s *WorkspaceService) ListAll(ctx context.Context) ([]*Workspace, error) {
 //
 // Deprecated: Kong 2.x removed this endpoint.
 func (s *WorkspaceService) AddEntities(ctx context.Context,
-	workspaceNameOrID *string, entityIds *string) (*[]map[string]interface{}, error) {
-
+	workspaceNameOrID *string, entityIds *string,
+) (*[]map[string]interface{}, error) {
 	if entityIds == nil {
 		return nil, fmt.Errorf("entityIds cannot be nil")
 	}
@@ -239,8 +241,8 @@ func (s *WorkspaceService) AddEntities(ctx context.Context,
 //
 // Deprecated: Kong 2.x removed this endpoint.
 func (s *WorkspaceService) DeleteEntities(ctx context.Context,
-	workspaceNameOrID *string, entityIds *string) error {
-
+	workspaceNameOrID *string, entityIds *string,
+) error {
 	if entityIds == nil {
 		return fmt.Errorf("entityIds cannot be nil")
 	}
@@ -267,8 +269,8 @@ func (s *WorkspaceService) DeleteEntities(ctx context.Context,
 //
 // Deprecated: Kong 2.x removed this endpoint.
 func (s *WorkspaceService) ListEntities(ctx context.Context,
-	workspaceNameOrID *string) ([]*WorkspaceEntity, error) {
-
+	workspaceNameOrID *string,
+) ([]*WorkspaceEntity, error) {
 	endpoint := fmt.Sprintf("/workspaces/%v/entities", *workspaceNameOrID)
 
 	data, _, err := s.client.list(ctx, endpoint, nil)
