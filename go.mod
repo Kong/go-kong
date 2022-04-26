@@ -10,7 +10,7 @@ require (
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.3.0
 	github.com/imdario/mergo v0.3.12
-	github.com/mitchellh/mapstructure v1.4.3
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/stretchr/testify v1.7.1
 	github.com/tidwall/gjson v1.14.1
 	gopkg.in/yaml.v2 v2.4.0
