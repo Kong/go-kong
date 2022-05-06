@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
 // AbstractTargetService handles Targets in Kong.
@@ -41,22 +42,7 @@ func (s *TargetService) Create(ctx context.Context,
 		return nil, fmt.Errorf("upstreamNameOrID can not be nil")
 	}
 	queryPath := "/upstreams/" + *upstreamNameOrID + "/targets"
-	method := "POST"
-	// if target.ID != nil {
-	// 	queryPath = queryPath + "/" + *target.ID
-	// 	method = "PUT"
-	// }
-	req, err := s.client.NewRequest(method, queryPath, nil, target)
-	if err != nil {
-		return nil, err
-	}
-
-	var createdTarget Target
-	_, err = s.client.Do(ctx, req, &createdTarget)
-	if err != nil {
-		return nil, err
-	}
-	return &createdTarget, nil
+	return makeRequest(ctx, s.client, "POST", queryPath, target)
 }
 
 // Delete deletes a Target in Kong
@@ -154,12 +140,7 @@ func (s *TargetService) MarkHealthy(ctx context.Context,
 
 	endpoint := fmt.Sprintf("/upstreams/%v/targets/%v/healthy",
 		*upstreamNameOrID, *tid)
-	req, err := s.client.NewRequest("POST", endpoint, nil, nil)
-	if err != nil {
-		return err
-	}
-
-	_, err = s.client.Do(ctx, req, nil)
+	_, err := makeRequest(ctx, s.client, "POST", endpoint, nil)
 	return err
 }
 
@@ -187,11 +168,43 @@ func (s *TargetService) MarkUnhealthy(ctx context.Context,
 
 	endpoint := fmt.Sprintf("/upstreams/%v/targets/%v/unhealthy",
 		*upstreamNameOrID, *tid)
-	req, err := s.client.NewRequest("POST", endpoint, nil, nil)
+	_, err := makeRequest(ctx, s.client, "POST", endpoint, nil)
+	return err
+}
+
+func makeRequest(
+	ctx context.Context, client *Client, method, endpoint string, target *Target,
+) (*Target, error) {
+	var err error
+	var res *Response
+	var req *http.Request
+
+	if target == nil {
+		req, err = client.NewRequest(method, endpoint, nil, nil)
+	} else {
+		req, err = client.NewRequest(method, endpoint, nil, target)
+	}
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = s.client.Do(ctx, req, nil)
-	return err
+	var createdTarget Target
+	if target == nil {
+		res, err = client.Do(ctx, req, nil)
+	} else {
+		res, err = client.Do(ctx, req, &createdTarget)
+	}
+
+	// In Kong 3.0 POST requests will not be supported anymore for this entity,
+	// so we need to introduce some retry logic to make sure this
+	// method works for both POSTs and PUTs
+	if err != nil && (res != nil && res.StatusCode == http.StatusMethodNotAllowed) {
+		var createdTargetP *Target
+		createdTargetP, err = makeRequest(ctx, client, "PUT", endpoint, target)
+		createdTarget = *createdTargetP
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &createdTarget, nil
 }
