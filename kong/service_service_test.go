@@ -5,10 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestServicesService(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -23,7 +25,7 @@ func TestServicesService(T *testing.T) {
 
 	createdService, err := client.Services.Create(defaultCtx, service)
 	assert.NoError(err)
-	assert.NotNil(createdService)
+	require.NotNil(createdService)
 
 	service, err = client.Services.Get(defaultCtx, createdService.ID)
 	assert.NoError(err)
@@ -105,6 +107,7 @@ func TestServiceWithTags(T *testing.T) {
 
 func TestServiceListEndpoint(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -141,7 +144,7 @@ func TestServiceListEndpoint(T *testing.T) {
 	assert.Equal(3, len(servicesFromKong))
 
 	// check if we see all services
-	assert.True(compareServices(services, servicesFromKong))
+	assert.True(compareServices(T, services, servicesFromKong))
 
 	// Test pagination
 	servicesFromKong = []*Service{}
@@ -149,7 +152,7 @@ func TestServiceListEndpoint(T *testing.T) {
 	// first page
 	page1, next, err := client.Services.List(defaultCtx, &ListOpt{Size: 1})
 	assert.NoError(err)
-	assert.NotNil(next)
+	require.NotNil(next)
 	assert.NotNil(page1)
 	assert.Equal(1, len(page1))
 	servicesFromKong = append(servicesFromKong, page1...)
@@ -163,7 +166,7 @@ func TestServiceListEndpoint(T *testing.T) {
 	assert.Equal(2, len(page2))
 	servicesFromKong = append(servicesFromKong, page2...)
 
-	assert.True(compareServices(services, servicesFromKong))
+	assert.True(compareServices(T, services, servicesFromKong))
 
 	services, err = client.Services.ListAll(defaultCtx)
 	assert.NoError(err)
@@ -175,9 +178,12 @@ func TestServiceListEndpoint(T *testing.T) {
 	}
 }
 
-func compareServices(expected, actual []*Service) bool {
+func compareServices(T *testing.T, expected, actual []*Service) bool {
 	var expectedUsernames, actualUsernames []string
 	for _, service := range expected {
+		if !assert.NotNil(T, service) {
+			continue
+		}
 		expectedUsernames = append(expectedUsernames, *service.Name)
 	}
 

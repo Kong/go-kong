@@ -5,10 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSNIsCertificate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -30,7 +32,7 @@ func TestSNIsCertificate(T *testing.T) {
 			Cert: String(cert1),
 		})
 	assert.NoError(err)
-	assert.NotNil(fixtureCertificate)
+	require.NotNil(fixtureCertificate)
 	assert.NotNil(fixtureCertificate.ID)
 
 	createdSNI, err := client.SNIs.Create(defaultCtx, &SNI{
@@ -100,6 +102,7 @@ func TestSNIWithTags(T *testing.T) {
 
 func TestSNIListEndpoint(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -146,7 +149,7 @@ func TestSNIListEndpoint(T *testing.T) {
 	assert.Equal(3, len(snisFromKong))
 
 	// check if we see all snis
-	assert.True(compareSNIs(snis, snisFromKong))
+	assert.True(compareSNIs(T, snis, snisFromKong))
 
 	// Test pagination
 	snisFromKong = []*SNI{}
@@ -154,7 +157,7 @@ func TestSNIListEndpoint(T *testing.T) {
 	// first page
 	page1, next, err := client.SNIs.List(defaultCtx, &ListOpt{Size: 1})
 	assert.NoError(err)
-	assert.NotNil(next)
+	require.NotNil(next)
 	assert.NotNil(page1)
 	assert.Equal(1, len(page1))
 	snisFromKong = append(snisFromKong, page1...)
@@ -168,7 +171,7 @@ func TestSNIListEndpoint(T *testing.T) {
 	assert.Equal(2, len(page2))
 	snisFromKong = append(snisFromKong, page2...)
 
-	assert.True(compareSNIs(snis, snisFromKong))
+	assert.True(compareSNIs(T, snis, snisFromKong))
 
 	snisForCert, next, err := client.SNIs.ListForCertificate(defaultCtx,
 		createdCertificate.ID, nil)
@@ -176,7 +179,7 @@ func TestSNIListEndpoint(T *testing.T) {
 	assert.Nil(next)
 	assert.NotNil(snisForCert)
 
-	assert.True(compareSNIs(snis, snisForCert))
+	assert.True(compareSNIs(T, snis, snisForCert))
 
 	snis, err = client.SNIs.ListAll(defaultCtx)
 	assert.NoError(err)
@@ -190,9 +193,12 @@ func TestSNIListEndpoint(T *testing.T) {
 	assert.NoError(client.Certificates.Delete(defaultCtx, createdCertificate.ID))
 }
 
-func compareSNIs(expected, actual []*SNI) bool {
+func compareSNIs(T *testing.T, expected, actual []*SNI) bool {
 	var expectedUsernames, actualUsernames []string
 	for _, sni := range expected {
+		if !assert.NotNil(T, sni) {
+			continue
+		}
 		expectedUsernames = append(expectedUsernames, *sni.Name)
 	}
 

@@ -8,10 +8,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMTLSCreate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -39,7 +41,7 @@ func TestMTLSCreate(T *testing.T) {
 	// without a CA certificate attached
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	mtls = &MTLSAuth{
 		SubjectName: String("test@example.com"),
@@ -54,7 +56,7 @@ func TestMTLSCreate(T *testing.T) {
 	// with a CA certificate attached
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	certificate := &CACertificate{
 		Cert: String(caCert1),
@@ -78,6 +80,7 @@ func TestMTLSCreate(T *testing.T) {
 
 func TestMTLSCreateWithID(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -96,7 +99,7 @@ func TestMTLSCreateWithID(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdMTLS, err := client.MTLSAuths.Create(defaultCtx, consumer.ID,
 		mtls)
@@ -111,6 +114,7 @@ func TestMTLSCreateWithID(T *testing.T) {
 
 func TestMTLSGet(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -129,7 +133,7 @@ func TestMTLSGet(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdMTLS, err := client.MTLSAuths.Create(defaultCtx, consumer.ID, mtls)
 	assert.NoError(err)
@@ -153,6 +157,7 @@ func TestMTLSGet(T *testing.T) {
 
 func TestMTLSUpdate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -171,7 +176,7 @@ func TestMTLSUpdate(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdMTLS, err := client.MTLSAuths.Create(defaultCtx, consumer.ID, mtls)
 	assert.NoError(err)
@@ -192,6 +197,7 @@ func TestMTLSUpdate(T *testing.T) {
 
 func TestMTLSDelete(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -210,7 +216,7 @@ func TestMTLSDelete(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdMTLS, err := client.MTLSAuths.Create(defaultCtx, consumer.ID, mtls)
 	assert.NoError(err)
@@ -228,6 +234,7 @@ func TestMTLSDelete(T *testing.T) {
 
 func TestMTLSListMethods(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -240,7 +247,7 @@ func TestMTLSListMethods(T *testing.T) {
 
 	consumer1, err = client.Consumers.Create(defaultCtx, consumer1)
 	assert.NoError(err)
-	assert.NotNil(consumer1)
+	require.NotNil(consumer1)
 
 	consumer2 := &Consumer{
 		Username: String("bar"),
@@ -248,7 +255,7 @@ func TestMTLSListMethods(T *testing.T) {
 
 	consumer2, err = client.Consumers.Create(defaultCtx, consumer2)
 	assert.NoError(err)
-	assert.NotNil(consumer2)
+	require.NotNil(consumer2)
 
 	// fixtures
 	mtlss := []*MTLSAuth{

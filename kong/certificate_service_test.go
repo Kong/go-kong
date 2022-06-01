@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -254,6 +255,7 @@ StncqiK5F5CsWRrwQCpoNDkOAQE/l7QZgBzYrXw4vQ==
 
 func TestCertificatesService(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -273,18 +275,18 @@ func TestCertificatesService(T *testing.T) {
 	certificate.Cert = String(cert1)
 	createdCertificate, err = client.Certificates.Create(defaultCtx, certificate)
 	assert.NoError(err)
-	assert.NotNil(createdCertificate)
+	require.NotNil(createdCertificate)
 
 	certificate, err = client.Certificates.Get(defaultCtx, createdCertificate.ID)
 	assert.NoError(err)
-	assert.NotNil(certificate)
+	require.NotNil(certificate)
 	assert.Equal(2, len(createdCertificate.SNIs))
 
 	certificate.Key = String(key2)
 	certificate.Cert = String(cert2)
 	certificate, err = client.Certificates.Update(defaultCtx, certificate)
 	assert.NoError(err)
-	assert.NotNil(certificate)
+	require.NotNil(certificate)
 	assert.Equal(key2, *certificate.Key)
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
@@ -300,7 +302,7 @@ func TestCertificatesService(T *testing.T) {
 
 	createdCertificate, err = client.Certificates.Create(defaultCtx, certificate)
 	assert.NoError(err)
-	assert.NotNil(createdCertificate)
+	require.NotNil(createdCertificate)
 	assert.Equal(id, *createdCertificate.ID)
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
@@ -332,6 +334,7 @@ func TestCertificateWithTags(T *testing.T) {
 
 func TestCertificateListEndpoint(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -368,7 +371,7 @@ func TestCertificateListEndpoint(T *testing.T) {
 	assert.Equal(3, len(certificatesFromKong))
 
 	// check if we see all certificates
-	assert.True(compareCertificates(certificates, certificatesFromKong))
+	assert.True(compareCertificates(T, certificates, certificatesFromKong))
 
 	// Test pagination
 	certificatesFromKong = []*Certificate{}
@@ -376,8 +379,8 @@ func TestCertificateListEndpoint(T *testing.T) {
 	// first page
 	page1, next, err := client.Certificates.List(defaultCtx, &ListOpt{Size: 1})
 	assert.NoError(err)
-	assert.NotNil(next)
-	assert.NotNil(page1)
+	require.NotNil(next)
+	require.NotNil(page1)
 	assert.Equal(1, len(page1))
 	certificatesFromKong = append(certificatesFromKong, page1...)
 
@@ -386,15 +389,15 @@ func TestCertificateListEndpoint(T *testing.T) {
 	page2, next, err := client.Certificates.List(defaultCtx, next)
 	assert.NoError(err)
 	assert.Nil(next)
-	assert.NotNil(page2)
+	require.NotNil(page2)
 	assert.Equal(2, len(page2))
 	certificatesFromKong = append(certificatesFromKong, page2...)
 
-	assert.True(compareCertificates(certificates, certificatesFromKong))
+	assert.True(compareCertificates(T, certificates, certificatesFromKong))
 
 	certificates, err = client.Certificates.ListAll(defaultCtx)
 	assert.NoError(err)
-	assert.NotNil(certificates)
+	require.NotNil(certificates)
 	assert.Equal(3, len(certificates))
 
 	for i := 0; i < len(certificates); i++ {
@@ -402,9 +405,12 @@ func TestCertificateListEndpoint(T *testing.T) {
 	}
 }
 
-func compareCertificates(expected, actual []*Certificate) bool {
+func compareCertificates(T *testing.T, expected, actual []*Certificate) bool {
 	var expectedUsernames, actualUsernames []string
 	for _, certificate := range expected {
+		if !assert.NotNil(T, certificate) {
+			continue
+		}
 		expectedUsernames = append(expectedUsernames, *certificate.Cert)
 	}
 

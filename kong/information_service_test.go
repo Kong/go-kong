@@ -5,10 +5,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestInfoService(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -16,10 +18,10 @@ func TestInfoService(T *testing.T) {
 
 	info, err := client.Info.Get(defaultCtx)
 	assert.NoError(err)
-	assert.NotNil(info)
-	assert.NotNil(info.Version)
-	assert.NotNil(info.Configuration)
-	assert.NotNil(info.Configuration.Database)
+	require.NotNil(info)
+	require.NotNil(info.Version)
+	require.NotNil(info.Configuration)
+	require.NotNil(info.Configuration.Database)
 }
 
 func TestConvert(T *testing.T) {

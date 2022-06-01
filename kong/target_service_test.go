@@ -5,10 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTargetsUpstream(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -28,7 +30,7 @@ func TestTargetsUpstream(T *testing.T) {
 		Name: String("vhost.com"),
 	})
 	assert.NoError(err)
-	assert.NotNil(fixtureUpstream)
+	require.NotNil(fixtureUpstream)
 	assert.NotNil(fixtureUpstream.ID)
 
 	createdTarget, err := client.Targets.Create(defaultCtx,
@@ -62,6 +64,7 @@ func TestTargetsUpstream(T *testing.T) {
 
 func TestTargetsUpdate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -72,7 +75,7 @@ func TestTargetsUpdate(T *testing.T) {
 		Name: String("vhost.com"),
 	})
 	assert.NoError(err)
-	assert.NotNil(fixtureUpstream)
+	require.NotNil(fixtureUpstream)
 	assert.NotNil(fixtureUpstream.ID)
 
 	targetID := "0fa49cd2-ee93-492a-bedf-b80778d539ae"
@@ -131,6 +134,7 @@ func TestTargetWithTags(T *testing.T) {
 
 func TestTargetListEndpoint(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -142,7 +146,7 @@ func TestTargetListEndpoint(T *testing.T) {
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
 	assert.NoError(err)
-	assert.NotNil(createdUpstream)
+	require.NotNil(createdUpstream)
 
 	// fixtures
 	targets := []*Target{
@@ -225,6 +229,7 @@ func compareTargets(expected, actual []*Target) bool {
 
 func TestTargetMarkHealthy(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -243,7 +248,7 @@ func TestTargetMarkHealthy(T *testing.T) {
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
 	assert.NoError(err)
-	assert.NotNil(createdUpstream)
+	require.NotNil(createdUpstream)
 
 	createdTarget, err := client.Targets.Create(defaultCtx,
 		createdUpstream.ID, &Target{
@@ -261,6 +266,7 @@ func TestTargetMarkHealthy(T *testing.T) {
 
 func TestTargetMarkUnhealthy(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -279,7 +285,7 @@ func TestTargetMarkUnhealthy(T *testing.T) {
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
 	assert.NoError(err)
-	assert.NotNil(createdUpstream)
+	require.NotNil(createdUpstream)
 
 	createdTarget, err := client.Targets.Create(defaultCtx,
 		createdUpstream.ID, &Target{
