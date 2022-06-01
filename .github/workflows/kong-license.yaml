@@ -1,0 +1,29 @@
+name: Update Kong license secret
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    env:
+      PULP_USERNAME: ${{ secrets.PULP_USERNAME}}
+      PULP_PASSWORD: ${{ secrets.PULP_PASSWORD}}
+      PULP_LICENSE_URL: ${{ secrets.PULP_LICENSE_URL}}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: License
+        id: license
+        run: |
+          LICENSE=$(curl -s -L -u"$PULP_USERNAME:$PULP_PASSWORD" "$PULP_LICENSE_URL")
+          echo "::add-mask::$LICENSE"
+          echo "::set-output name=LICENSE::$LICENSE"
+
+      - uses: gliech/create-github-secret-action@ea87807ab20663b30a1a2d14d7f6dd9490b1e7a1 # v1.4.10
+        with:
+          name: KONG_LICENSE_DATA
+          value: ${{ steps.license.outputs.LICENSE }}
+          pa_token: ${{ secrets.REPO_PAT }}
