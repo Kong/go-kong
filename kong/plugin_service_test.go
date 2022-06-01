@@ -6,6 +6,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPluginsServiceValidation(T *testing.T) {
@@ -41,6 +42,7 @@ func TestPluginsServiceValidation(T *testing.T) {
 
 func TestPluginsService(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -52,7 +54,7 @@ func TestPluginsService(T *testing.T) {
 
 	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
 	assert.NoError(err)
-	assert.NotNil(createdPlugin)
+	require.NotNil(createdPlugin)
 
 	plugin, err = client.Plugins.Get(defaultCtx, createdPlugin.ID)
 	assert.NoError(err)
@@ -157,7 +159,7 @@ func TestPluginListEndpoint(T *testing.T) {
 	assert.Equal(3, len(pluginsFromKong))
 
 	// check if we see all plugins
-	assert.True(comparePlugins(plugins, pluginsFromKong))
+	assert.True(comparePlugins(T, plugins, pluginsFromKong))
 
 	// Test pagination
 	pluginsFromKong = []*Plugin{}
@@ -186,7 +188,7 @@ func TestPluginListEndpoint(T *testing.T) {
 	assert.Equal(1, len(page3))
 	pluginsFromKong = append(pluginsFromKong, page3...)
 
-	assert.True(comparePlugins(plugins, pluginsFromKong))
+	assert.True(comparePlugins(T, plugins, pluginsFromKong))
 
 	plugins, err = client.Plugins.ListAll(defaultCtx)
 	assert.NoError(err)
@@ -200,6 +202,7 @@ func TestPluginListEndpoint(T *testing.T) {
 
 func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -227,7 +230,7 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 		Username: String("foo"),
 	})
 	assert.NoError(err)
-	assert.NotNil(createdConsumer)
+	require.NotNil(createdConsumer)
 
 	plugins := []*Plugin{
 		// global
@@ -285,9 +288,9 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	assert.Equal(len(plugins), len(pluginsFromKong))
 
 	// check if we see all plugins
-	assert.True(comparePlugins(plugins, pluginsFromKong))
+	assert.True(comparePlugins(T, plugins, pluginsFromKong))
 
-	assert.True(comparePlugins(plugins, pluginsFromKong))
+	assert.True(comparePlugins(T, plugins, pluginsFromKong))
 
 	pluginsFromKong, err = client.Plugins.ListAll(defaultCtx)
 	assert.NoError(err)
@@ -459,9 +462,12 @@ func TestFillPluginDefaults(T *testing.T) {
 	}
 }
 
-func comparePlugins(expected, actual []*Plugin) bool {
+func comparePlugins(T *testing.T, expected, actual []*Plugin) bool {
 	var expectedNames, actualNames []string
 	for _, plugin := range expected {
+		if !assert.NotNil(T, plugin) {
+			continue
+		}
 		expectedNames = append(expectedNames, *plugin.Name)
 	}
 

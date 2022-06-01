@@ -5,10 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRoutesRoute(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -38,7 +40,7 @@ func TestRoutesRoute(T *testing.T) {
 	}
 	createdRoute, err := client.Routes.Create(defaultCtx, route)
 	assert.NoError(err)
-	assert.NotNil(createdRoute)
+	require.NotNil(createdRoute)
 
 	route, err = client.Routes.Get(defaultCtx, createdRoute.ID)
 	assert.NoError(err)
@@ -121,6 +123,7 @@ func TestRouteWithTags(T *testing.T) {
 
 func TestCreateInRoute(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -135,7 +138,7 @@ func TestCreateInRoute(T *testing.T) {
 
 	createdService, err := client.Services.Create(defaultCtx, service)
 	assert.NoError(err)
-	assert.NotNil(createdService)
+	require.NotNil(createdService)
 
 	route := &Route{
 		Hosts: StringSlice("host1.com", "host2.com"),
@@ -158,6 +161,7 @@ func TestCreateInRoute(T *testing.T) {
 
 func TestRouteListEndpoint(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -205,7 +209,7 @@ func TestRouteListEndpoint(T *testing.T) {
 	assert.Equal(3, len(routesFromKong))
 
 	// check if we see all routes
-	assert.True(compareRoutes(routes, routesFromKong))
+	assert.True(compareRoutes(T, routes, routesFromKong))
 
 	// Test pagination
 	routesFromKong = []*Route{}
@@ -213,7 +217,7 @@ func TestRouteListEndpoint(T *testing.T) {
 	// first page
 	page1, next, err := client.Routes.List(defaultCtx, &ListOpt{Size: 1})
 	assert.NoError(err)
-	assert.NotNil(next)
+	require.NotNil(next)
 	assert.NotNil(page1)
 	assert.Equal(1, len(page1))
 	routesFromKong = append(routesFromKong, page1...)
@@ -227,14 +231,14 @@ func TestRouteListEndpoint(T *testing.T) {
 	assert.Equal(2, len(page2))
 	routesFromKong = append(routesFromKong, page2...)
 
-	assert.True(compareRoutes(routes, routesFromKong))
+	assert.True(compareRoutes(T, routes, routesFromKong))
 
 	routesForService, next, err := client.Routes.ListForService(defaultCtx,
 		createdService.ID, nil)
 	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(routesForService)
-	assert.True(compareRoutes(routes, routesForService))
+	assert.True(compareRoutes(T, routes, routesForService))
 
 	routes, err = client.Routes.ListAll(defaultCtx)
 	assert.NoError(err)
@@ -248,9 +252,12 @@ func TestRouteListEndpoint(T *testing.T) {
 	assert.NoError(client.Services.Delete(defaultCtx, createdService.ID))
 }
 
-func compareRoutes(expected, actual []*Route) bool {
+func compareRoutes(T *testing.T, expected, actual []*Route) bool {
 	var expectedUsernames, actualUsernames []string
 	for _, route := range expected {
+		if !assert.NotNil(T, route) {
+			continue
+		}
 		expectedUsernames = append(expectedUsernames, *route.Paths[0])
 	}
 

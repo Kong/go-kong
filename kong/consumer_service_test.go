@@ -7,10 +7,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestConsumersService(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -23,11 +25,11 @@ func TestConsumersService(T *testing.T) {
 
 	createdConsumer, err := client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(createdConsumer)
+	require.NotNil(createdConsumer)
 
 	consumer, err = client.Consumers.Get(defaultCtx, createdConsumer.ID)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	consumer, err = client.Consumers.GetByCustomID(defaultCtx,
 		String("does-not-exist"))
@@ -37,12 +39,12 @@ func TestConsumersService(T *testing.T) {
 	consumer, err = client.Consumers.GetByCustomID(defaultCtx,
 		String("custom_id_foo"))
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	consumer.Username = String("bar")
 	consumer, err = client.Consumers.Update(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 	assert.Equal("bar", *consumer.Username)
 
 	err = client.Consumers.Delete(defaultCtx, createdConsumer.ID)
@@ -94,6 +96,7 @@ func TestConsumerListEndpoint(T *testing.T) {
 	// it will work on Enterprise, but you'll get different pagination for the same set of consumers
 	SkipWhenEnterprise(T)
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -116,7 +119,7 @@ func TestConsumerListEndpoint(T *testing.T) {
 	for i := 0; i < len(consumers); i++ {
 		consumer, err := client.Consumers.Create(defaultCtx, consumers[i])
 		assert.NoError(err)
-		assert.NotNil(consumer)
+		require.NotNil(consumer)
 		consumers[i] = consumer
 	}
 
@@ -164,6 +167,7 @@ func TestConsumerListEndpoint(T *testing.T) {
 func TestConsumerListWithTags(T *testing.T) {
 	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -201,7 +205,7 @@ func TestConsumerListWithTags(T *testing.T) {
 	for i := 0; i < len(consumers); i++ {
 		consumer, err := client.Consumers.Create(defaultCtx, consumers[i])
 		assert.NoError(err)
-		assert.NotNil(consumer)
+		require.NotNil(consumer)
 		consumers[i] = consumer
 	}
 

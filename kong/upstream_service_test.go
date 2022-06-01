@@ -5,10 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUpstreamsService(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -20,7 +22,7 @@ func TestUpstreamsService(T *testing.T) {
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
 	assert.NoError(err)
-	assert.NotNil(createdUpstream)
+	require.NotNil(createdUpstream)
 
 	upstream, err = client.Upstreams.Get(defaultCtx, createdUpstream.ID)
 	assert.NoError(err)
@@ -76,6 +78,7 @@ func TestUpstreamWithTags(T *testing.T) {
 // regression test for #6
 func TestUpstreamWithActiveUnHealthyInterval(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -94,7 +97,7 @@ func TestUpstreamWithActiveUnHealthyInterval(T *testing.T) {
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
 	assert.NoError(err)
-	assert.NotNil(createdUpstream)
+	require.NotNil(createdUpstream)
 
 	err = client.Upstreams.Delete(defaultCtx, createdUpstream.ID)
 	assert.NoError(err)
@@ -126,6 +129,7 @@ func TestUpstreamWithPassiveUnHealthyInterval(T *testing.T) {
 
 func TestUpstreamWithPassiveHealthy(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -146,7 +150,7 @@ func TestUpstreamWithPassiveHealthy(T *testing.T) {
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
 	assert.NoError(err)
-	assert.NotNil(createdUpstream)
+	require.NotNil(createdUpstream)
 	assert.Equal("http", *createdUpstream.Healthchecks.Passive.Type)
 
 	err = client.Upstreams.Delete(defaultCtx, createdUpstream.ID)
@@ -210,7 +214,7 @@ func TestUpstreamListEndpoint(T *testing.T) {
 	assert.Equal(3, len(upstreamsFromKong))
 
 	// check if we see all upstreams
-	assert.True(compareUpstreams(upstreams, upstreamsFromKong))
+	assert.True(compareUpstreams(T, upstreams, upstreamsFromKong))
 
 	// Test pagination
 	upstreamsFromKong = []*Upstream{}
@@ -239,7 +243,7 @@ func TestUpstreamListEndpoint(T *testing.T) {
 	assert.Equal(1, len(page3))
 	upstreamsFromKong = append(upstreamsFromKong, page3...)
 
-	assert.True(compareUpstreams(upstreams, upstreamsFromKong))
+	assert.True(compareUpstreams(T, upstreams, upstreamsFromKong))
 
 	upstreams, err = client.Upstreams.ListAll(defaultCtx)
 	assert.NoError(err)
@@ -251,9 +255,12 @@ func TestUpstreamListEndpoint(T *testing.T) {
 	}
 }
 
-func compareUpstreams(expected, actual []*Upstream) bool {
+func compareUpstreams(T *testing.T, expected, actual []*Upstream) bool {
 	var expectedNames, actualNames []string
 	for _, upstream := range expected {
+		if !assert.NotNil(T, upstream) {
+			continue
+		}
 		expectedNames = append(expectedNames, *upstream.Name)
 	}
 

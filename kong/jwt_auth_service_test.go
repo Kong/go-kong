@@ -5,10 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestJWTCreate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -35,7 +37,7 @@ func TestJWTCreate(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	jwt = &JWTAuth{
 		Key:          String("foo"),
@@ -53,6 +55,7 @@ func TestJWTCreate(T *testing.T) {
 
 func TestJWTCreateWithID(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -72,7 +75,7 @@ func TestJWTCreateWithID(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdJWT, err := client.JWTAuths.Create(defaultCtx, consumer.ID,
 		jwt)
@@ -88,6 +91,7 @@ func TestJWTCreateWithID(T *testing.T) {
 
 func TestJWTGet(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -106,7 +110,7 @@ func TestJWTGet(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdJWT, err := client.JWTAuths.Create(defaultCtx, consumer.ID, jwt)
 	assert.NoError(err)
@@ -135,6 +139,7 @@ func TestJWTGet(T *testing.T) {
 
 func TestJWTUpdate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -153,7 +158,7 @@ func TestJWTUpdate(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdJWT, err := client.JWTAuths.Create(defaultCtx, consumer.ID, jwt)
 	assert.NoError(err)
@@ -176,6 +181,7 @@ func TestJWTUpdate(T *testing.T) {
 
 func TestJWTDelete(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -194,7 +200,7 @@ func TestJWTDelete(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdJWT, err := client.JWTAuths.Create(defaultCtx, consumer.ID, jwt)
 	assert.NoError(err)
@@ -212,6 +218,7 @@ func TestJWTDelete(T *testing.T) {
 
 func TestJWTListMethods(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -224,7 +231,7 @@ func TestJWTListMethods(T *testing.T) {
 
 	consumer1, err = client.Consumers.Create(defaultCtx, consumer1)
 	assert.NoError(err)
-	assert.NotNil(consumer1)
+	require.NotNil(consumer1)
 
 	consumer2 := &Consumer{
 		Username: String("bar"),
@@ -232,7 +239,7 @@ func TestJWTListMethods(T *testing.T) {
 
 	consumer2, err = client.Consumers.Create(defaultCtx, consumer2)
 	assert.NoError(err)
-	assert.NotNil(consumer2)
+	require.NotNil(consumer2)
 
 	// fixtures
 	jwts := []*JWTAuth{

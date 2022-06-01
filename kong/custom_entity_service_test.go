@@ -6,11 +6,13 @@ import (
 
 	"github.com/kong/go-kong/kong/custom"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCustomEntityService(T *testing.T) {
 	T.Skip()
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -19,7 +21,7 @@ func TestCustomEntityService(T *testing.T) {
 	consumer, err := client.Consumers.Create(defaultCtx,
 		&Consumer{Username: String("foo")})
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	// create a key associated with the consumer
 	k1 := custom.NewEntityObject("key-auth")

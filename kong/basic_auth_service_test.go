@@ -5,10 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBasicAuthCreate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -37,7 +39,7 @@ func TestBasicAuthCreate(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	// no username is specified
 	basicAuth = &BasicAuth{}
@@ -61,6 +63,7 @@ func TestBasicAuthCreate(T *testing.T) {
 
 func TestBasicAuthCreateWithID(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -80,7 +83,7 @@ func TestBasicAuthCreateWithID(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx, consumer.ID,
 		basicAuth)
@@ -97,6 +100,7 @@ func TestBasicAuthCreateWithID(T *testing.T) {
 
 func TestBasicAuthGet(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -116,7 +120,7 @@ func TestBasicAuthGet(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx,
 		consumer.ID, basicAuth)
@@ -147,6 +151,7 @@ func TestBasicAuthGet(T *testing.T) {
 
 func TestBasicAuthUpdate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -166,7 +171,7 @@ func TestBasicAuthUpdate(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx,
 		consumer.ID, basicAuth)
@@ -192,6 +197,7 @@ func TestBasicAuthUpdate(T *testing.T) {
 
 func TestBasicAuthDelete(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -211,7 +217,7 @@ func TestBasicAuthDelete(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx,
 		consumer.ID, basicAuth)
@@ -237,6 +243,7 @@ func TestBasicAuthListMethods(T *testing.T) {
 	// it will work on Enterprise, but you'll get different pagination for the same set of consumers
 	SkipWhenEnterprise(T)
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -249,7 +256,7 @@ func TestBasicAuthListMethods(T *testing.T) {
 
 	consumer1, err = client.Consumers.Create(defaultCtx, consumer1)
 	assert.NoError(err)
-	assert.NotNil(consumer1)
+	require.NotNil(consumer1)
 
 	consumer2 := &Consumer{
 		Username: String("bar"),
@@ -257,7 +264,7 @@ func TestBasicAuthListMethods(T *testing.T) {
 
 	consumer2, err = client.Consumers.Create(defaultCtx, consumer2)
 	assert.NoError(err)
-	assert.NotNil(consumer2)
+	require.NotNil(consumer2)
 
 	// fixtures
 	basicAuths := []*BasicAuth{

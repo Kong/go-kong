@@ -5,10 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestKeyAuthCreate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -37,7 +39,7 @@ func TestKeyAuthCreate(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	keyAuth = &KeyAuth{}
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
@@ -50,6 +52,7 @@ func TestKeyAuthCreate(T *testing.T) {
 
 func TestKeyAuthCreateWithID(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -68,7 +71,7 @@ func TestKeyAuthCreateWithID(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)
@@ -83,6 +86,7 @@ func TestKeyAuthCreateWithID(T *testing.T) {
 
 func TestKeyAuthGet(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -101,7 +105,7 @@ func TestKeyAuthGet(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)
@@ -133,6 +137,7 @@ func TestKeyAuthGet(T *testing.T) {
 
 func TestKeyAuthUpdate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -151,7 +156,7 @@ func TestKeyAuthUpdate(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)
@@ -175,6 +180,7 @@ func TestKeyAuthUpdate(T *testing.T) {
 
 func TestKeyAuthDelete(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -193,7 +199,7 @@ func TestKeyAuthDelete(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)
@@ -213,6 +219,7 @@ func TestKeyAuthDelete(T *testing.T) {
 
 func TestKeyAuthListMethods(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -225,7 +232,7 @@ func TestKeyAuthListMethods(T *testing.T) {
 
 	consumer1, err = client.Consumers.Create(defaultCtx, consumer1)
 	assert.NoError(err)
-	assert.NotNil(consumer1)
+	require.NotNil(consumer1)
 
 	consumer2 := &Consumer{
 		Username: String("bar"),
@@ -233,7 +240,7 @@ func TestKeyAuthListMethods(T *testing.T) {
 
 	consumer2, err = client.Consumers.Create(defaultCtx, consumer2)
 	assert.NoError(err)
-	assert.NotNil(consumer2)
+	require.NotNil(consumer2)
 
 	// fixtures
 	keyAuths := []*KeyAuth{
@@ -303,6 +310,7 @@ func TestKeyAuthListMethods(T *testing.T) {
 func TestKeyAuthCreateWithTTL(T *testing.T) {
 	RunWhenKong(T, ">=1.4.0")
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -320,7 +328,7 @@ func TestKeyAuthCreateWithTTL(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)

@@ -5,10 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestOauth2CredentialCreate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -32,7 +34,7 @@ func TestOauth2CredentialCreate(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	oauth2Cred = &Oauth2Credential{
 		ClientID:     String("foo"),
@@ -50,6 +52,7 @@ func TestOauth2CredentialCreate(T *testing.T) {
 
 func TestOauth2CredentialCreateWithID(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -71,7 +74,7 @@ func TestOauth2CredentialCreateWithID(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdOauth2Credential, err := client.Oauth2Credentials.Create(
 		defaultCtx, consumer.ID, oauth2Cred)
@@ -87,6 +90,7 @@ func TestOauth2CredentialCreateWithID(T *testing.T) {
 
 func TestOauth2CredentialGet(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -107,7 +111,7 @@ func TestOauth2CredentialGet(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdOauth2Credential, err := client.Oauth2Credentials.Create(defaultCtx,
 		consumer.ID, oauth2Cred)
@@ -140,6 +144,7 @@ func TestOauth2CredentialGet(T *testing.T) {
 func TestOauth2CredentialUpdate(T *testing.T) {
 	RunWhenKong(T, "<=2.0.5")
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -160,7 +165,7 @@ func TestOauth2CredentialUpdate(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdOauth2Credential, err := client.Oauth2Credentials.Create(
 		defaultCtx, consumer.ID, oauth2Cred)
@@ -185,6 +190,7 @@ func TestOauth2CredentialUpdate(T *testing.T) {
 
 func TestOauth2CredentialDelete(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -205,7 +211,7 @@ func TestOauth2CredentialDelete(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdOauth2Credential, err := client.Oauth2Credentials.Create(defaultCtx, consumer.ID, oauth2Cred)
 	assert.NoError(err)
@@ -225,6 +231,7 @@ func TestOauth2CredentialDelete(T *testing.T) {
 
 func TestOauth2CredentialListMethods(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -237,7 +244,7 @@ func TestOauth2CredentialListMethods(T *testing.T) {
 
 	consumer1, err = client.Consumers.Create(defaultCtx, consumer1)
 	assert.NoError(err)
-	assert.NotNil(consumer1)
+	require.NotNil(consumer1)
 
 	consumer2 := &Consumer{
 		Username: String("bar"),
@@ -245,7 +252,7 @@ func TestOauth2CredentialListMethods(T *testing.T) {
 
 	consumer2, err = client.Consumers.Create(defaultCtx, consumer2)
 	assert.NoError(err)
-	assert.NotNil(consumer2)
+	require.NotNil(consumer2)
 
 	// fixtures
 	oauth2Creds := []*Oauth2Credential{

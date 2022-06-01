@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewTestClient(t *testing.T) {
@@ -57,6 +58,7 @@ func TestRootJSON(T *testing.T) {
 
 func TestDo(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -64,18 +66,18 @@ func TestDo(T *testing.T) {
 
 	req, err := client.NewRequest("GET", "/does-not-exist", nil, nil)
 	assert.NoError(err)
-	assert.NotNil(req)
+	require.NotNil(req)
 	resp, err := client.Do(context.Background(), req, nil)
 	assert.True(IsNotFoundErr(err))
-	assert.NotNil(resp)
+	require.NotNil(resp)
 	assert.Equal(404, resp.StatusCode)
 
 	req, err = client.NewRequest("POST", "/", nil, nil)
 	assert.NoError(err)
-	assert.NotNil(req)
+	require.NotNil(req)
 	resp, err = client.Do(context.Background(), req, nil)
-	assert.NotNil(err)
-	assert.NotNil(resp)
+	require.NotNil(err)
+	require.NotNil(resp)
 	body, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(err)
 	assert.Empty(body)

@@ -5,10 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHMACAuthCreate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -32,7 +34,7 @@ func TestHMACAuthCreate(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	// no username is specified
 	hmacAuth = &HMACAuth{}
@@ -53,6 +55,7 @@ func TestHMACAuthCreate(T *testing.T) {
 
 func TestHMACAuthCreateWithID(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -72,7 +75,7 @@ func TestHMACAuthCreateWithID(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdHMACAuth, err := client.HMACAuths.Create(defaultCtx, consumer.ID,
 		hmacAuth)
@@ -88,6 +91,7 @@ func TestHMACAuthCreateWithID(T *testing.T) {
 
 func TestHMACAuthGet(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -106,7 +110,7 @@ func TestHMACAuthGet(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdHMACAuth, err := client.HMACAuths.Create(defaultCtx,
 		consumer.ID, hmacAuth)
@@ -136,6 +140,7 @@ func TestHMACAuthGet(T *testing.T) {
 
 func TestHMACAuthUpdate(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -155,7 +160,7 @@ func TestHMACAuthUpdate(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdHMACAuth, err := client.HMACAuths.Create(defaultCtx,
 		consumer.ID, hmacAuth)
@@ -180,6 +185,7 @@ func TestHMACAuthUpdate(T *testing.T) {
 
 func TestHMACAuthDelete(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -198,7 +204,7 @@ func TestHMACAuthDelete(T *testing.T) {
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	assert.NoError(err)
-	assert.NotNil(consumer)
+	require.NotNil(consumer)
 
 	createdHMACAuth, err := client.HMACAuths.Create(defaultCtx,
 		consumer.ID, hmacAuth)
@@ -218,6 +224,7 @@ func TestHMACAuthDelete(T *testing.T) {
 
 func TestHMACAuthListMethods(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -230,7 +237,7 @@ func TestHMACAuthListMethods(T *testing.T) {
 
 	consumer1, err = client.Consumers.Create(defaultCtx, consumer1)
 	assert.NoError(err)
-	assert.NotNil(consumer1)
+	require.NotNil(consumer1)
 
 	consumer2 := &Consumer{
 		Username: String("bar"),
@@ -238,7 +245,7 @@ func TestHMACAuthListMethods(T *testing.T) {
 
 	consumer2, err = client.Consumers.Create(defaultCtx, consumer2)
 	assert.NoError(err)
-	assert.NotNil(consumer2)
+	require.NotNil(consumer2)
 
 	// fixtures
 	hmacAuths := []*HMACAuth{

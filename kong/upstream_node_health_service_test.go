@@ -4,10 +4,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUpstreamNodeHealthService(T *testing.T) {
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -21,7 +23,7 @@ func TestUpstreamNodeHealthService(T *testing.T) {
 		},
 	)
 	assert.NoError(err)
-	assert.NotNil(fixtureUpstream)
+	require.NotNil(fixtureUpstream)
 	assert.NotNil(fixtureUpstream.ID)
 
 	// create a target
