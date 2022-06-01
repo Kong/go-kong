@@ -11,7 +11,7 @@ func TestServicesService(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	service := &Service{
@@ -22,17 +22,17 @@ func TestServicesService(T *testing.T) {
 	}
 
 	createdService, err := client.Services.Create(defaultCtx, service)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdService)
 
 	service, err = client.Services.Get(defaultCtx, createdService.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(service)
 
 	service.Name = String("bar")
 	service.Host = String("newUpstream")
 	service, err = client.Services.Update(defaultCtx, service)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(service)
 	assert.Equal("bar", *service.Name)
 	assert.Equal("newUpstream", *service.Host)
@@ -41,20 +41,20 @@ func TestServicesService(T *testing.T) {
 	route, err := client.Routes.CreateInService(defaultCtx, service.ID, &Route{
 		Paths: StringSlice("/route"),
 	})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(route)
 
 	serviceForRoute, err := client.Services.GetForRoute(defaultCtx, route.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(serviceForRoute)
 
 	assert.Equal(*service.ID, *serviceForRoute.ID)
 
 	err = client.Routes.Delete(defaultCtx, route.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	err = client.Services.Delete(defaultCtx, service.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -65,13 +65,13 @@ func TestServicesService(T *testing.T) {
 	}
 
 	createdService, err = client.Services.Create(defaultCtx, service)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdService)
 	assert.Equal(id, *createdService.ID)
 	assert.Equal("buzz", *createdService.Host)
 
 	err = client.Services.Delete(defaultCtx, createdService.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	_, err = client.Services.Create(defaultCtx, nil)
 	assert.NotNil(err)
@@ -85,7 +85,7 @@ func TestServiceWithTags(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	service := &Service{
@@ -95,19 +95,19 @@ func TestServiceWithTags(T *testing.T) {
 	}
 
 	createdService, err := client.Services.Create(defaultCtx, service)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdService)
 	assert.Equal(StringSlice("tag1", "tag2"), createdService.Tags)
 
 	err = client.Services.Delete(defaultCtx, createdService.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 }
 
 func TestServiceListEndpoint(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -129,13 +129,13 @@ func TestServiceListEndpoint(T *testing.T) {
 	// create fixturs
 	for i := 0; i < len(services); i++ {
 		service, err := client.Services.Create(defaultCtx, services[i])
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.NotNil(service)
 		services[i] = service
 	}
 
 	servicesFromKong, next, err := client.Services.List(defaultCtx, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(servicesFromKong)
 	assert.Equal(3, len(servicesFromKong))
@@ -148,7 +148,7 @@ func TestServiceListEndpoint(T *testing.T) {
 
 	// first page
 	page1, next, err := client.Services.List(defaultCtx, &ListOpt{Size: 1})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
 	assert.Equal(1, len(page1))
@@ -157,7 +157,7 @@ func TestServiceListEndpoint(T *testing.T) {
 	// last page
 	next.Size = 2
 	page2, next, err := client.Services.List(defaultCtx, next)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
 	assert.Equal(2, len(page2))
@@ -166,12 +166,12 @@ func TestServiceListEndpoint(T *testing.T) {
 	assert.True(compareServices(services, servicesFromKong))
 
 	services, err = client.Services.ListAll(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(services)
 	assert.Equal(3, len(services))
 
 	for i := 0; i < len(services); i++ {
-		assert.Nil(client.Services.Delete(defaultCtx, services[i].ID))
+		assert.NoError(client.Services.Delete(defaultCtx, services[i].ID))
 	}
 }
 
@@ -193,7 +193,7 @@ func TestServiceWithClientCert(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	certificate := &Certificate{
@@ -201,7 +201,7 @@ func TestServiceWithClientCert(T *testing.T) {
 		Cert: String(cert1),
 	}
 	createdCertificate, err := client.Certificates.Create(defaultCtx, certificate)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdCertificate)
 
 	service := &Service{
@@ -212,13 +212,13 @@ func TestServiceWithClientCert(T *testing.T) {
 	}
 
 	createdService, err := client.Services.Create(defaultCtx, service)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdService)
 	assert.Equal(*createdCertificate.ID, *createdService.ClientCertificate.ID)
 
 	err = client.Services.Delete(defaultCtx, createdService.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 }

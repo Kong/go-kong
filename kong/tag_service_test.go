@@ -11,11 +11,11 @@ func TestTagExists(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	exists, err := client.Tags.Exists(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.True(exists)
 }
 
@@ -24,10 +24,10 @@ func TestTagDoesNotExists(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	exists, err := client.Tags.Exists(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.False(exists)
 }

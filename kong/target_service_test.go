@@ -11,7 +11,7 @@ func TestTargetsUpstream(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	target := &Target{
@@ -27,7 +27,7 @@ func TestTargetsUpstream(T *testing.T) {
 	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
 		Name: String("vhost.com"),
 	})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(fixtureUpstream)
 	assert.NotNil(fixtureUpstream.ID)
 
@@ -35,12 +35,12 @@ func TestTargetsUpstream(T *testing.T) {
 		fixtureUpstream.ID, &Target{
 			Target: String("10.0.0.1:80"),
 		})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdTarget)
 
 	err = client.Targets.Delete(defaultCtx, fixtureUpstream.ID,
 		createdTarget.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -52,26 +52,26 @@ func TestTargetsUpstream(T *testing.T) {
 
 	createdTarget, err = client.Targets.Create(defaultCtx,
 		fixtureUpstream.ID, target)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdTarget)
 	assert.Equal(id, *createdTarget.ID)
 
 	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 }
 
 func TestTargetsUpdate(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	// create a upstream
 	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
 		Name: String("vhost.com"),
 	})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(fixtureUpstream)
 	assert.NotNil(fixtureUpstream.ID)
 
@@ -81,26 +81,26 @@ func TestTargetsUpdate(T *testing.T) {
 			ID:     &targetID,
 			Target: String("10.0.0.1:80"),
 		})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdTarget)
 	assert.Equal(targetID, *createdTarget.ID)
 
 	err = client.Targets.Delete(defaultCtx, fixtureUpstream.ID,
 		createdTarget.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	createdTarget, err = client.Targets.Create(defaultCtx,
 		fixtureUpstream.ID, &Target{
 			ID:     &targetID,
 			Target: String("10.0.0.2:80"),
 		})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdTarget)
 	assert.Equal(targetID, *createdTarget.ID)
 	assert.Equal("10.0.0.2:80", *createdTarget.Target)
 
 	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 }
 
 func TestTargetWithTags(T *testing.T) {
@@ -108,32 +108,32 @@ func TestTargetWithTags(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
 		Name: String("vhost.com"),
 	})
-	assert.Nil(err)
+	assert.NoError(err)
 
 	createdTarget, err := client.Targets.Create(defaultCtx,
 		fixtureUpstream.ID, &Target{
 			Target: String("10.0.0.1:80"),
 			Tags:   StringSlice("tag1", "tag2"),
 		})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdTarget)
 	assert.Equal(StringSlice("tag1", "tag2"), createdTarget.Tags)
 
 	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 }
 
 func TestTargetListEndpoint(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	upstream := &Upstream{
@@ -141,7 +141,7 @@ func TestTargetListEndpoint(T *testing.T) {
 	}
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdUpstream)
 
 	// fixtures
@@ -163,14 +163,14 @@ func TestTargetListEndpoint(T *testing.T) {
 	for i := 0; i < len(targets); i++ {
 		target, err := client.Targets.Create(defaultCtx,
 			createdUpstream.ID, targets[i])
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.NotNil(target)
 		targets[i] = target
 	}
 
 	targetsFromKong, next, err := client.Targets.List(defaultCtx,
 		createdUpstream.ID, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(targetsFromKong)
 	assert.Equal(3, len(targetsFromKong))
@@ -184,7 +184,7 @@ func TestTargetListEndpoint(T *testing.T) {
 	// first page
 	page1, next, err := client.Targets.List(defaultCtx,
 		createdUpstream.ID, &ListOpt{Size: 1})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
 	assert.Equal(1, len(page1))
@@ -194,7 +194,7 @@ func TestTargetListEndpoint(T *testing.T) {
 	next.Size = 2
 	page2, next, err := client.Targets.List(defaultCtx,
 		createdUpstream.ID, next)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
 	assert.Equal(2, len(page2))
@@ -203,11 +203,11 @@ func TestTargetListEndpoint(T *testing.T) {
 	assert.True(compareTargets(targets, targetsFromKong))
 
 	targets, err = client.Targets.ListAll(defaultCtx, createdUpstream.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(targets)
 	assert.Equal(3, len(targets))
 
-	assert.Nil(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
+	assert.NoError(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
 }
 
 func compareTargets(expected, actual []*Target) bool {
@@ -227,7 +227,7 @@ func TestTargetMarkHealthy(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	upstream := &Upstream{
@@ -242,28 +242,28 @@ func TestTargetMarkHealthy(T *testing.T) {
 	}
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdUpstream)
 
 	createdTarget, err := client.Targets.Create(defaultCtx,
 		createdUpstream.ID, &Target{
 			Target: String("10.0.0.1:80"),
 		})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdTarget)
 
 	assert.NotNil(client.Targets.MarkHealthy(defaultCtx, createdTarget.Upstream.ID, nil))
 	assert.NotNil(client.Targets.MarkHealthy(defaultCtx, nil, createdTarget))
-	assert.Nil(client.Targets.MarkHealthy(defaultCtx, createdTarget.Upstream.ID, createdTarget))
+	assert.NoError(client.Targets.MarkHealthy(defaultCtx, createdTarget.Upstream.ID, createdTarget))
 
-	assert.Nil(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
+	assert.NoError(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
 }
 
 func TestTargetMarkUnhealthy(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	upstream := &Upstream{
@@ -278,19 +278,19 @@ func TestTargetMarkUnhealthy(T *testing.T) {
 	}
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdUpstream)
 
 	createdTarget, err := client.Targets.Create(defaultCtx,
 		createdUpstream.ID, &Target{
 			Target: String("10.0.0.1:80"),
 		})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdTarget)
 
 	assert.NotNil(client.Targets.MarkUnhealthy(defaultCtx, createdTarget.Upstream.ID, nil))
 	assert.NotNil(client.Targets.MarkUnhealthy(defaultCtx, nil, createdTarget))
-	assert.Nil(client.Targets.MarkUnhealthy(defaultCtx, createdTarget.Upstream.ID, createdTarget))
+	assert.NoError(client.Targets.MarkUnhealthy(defaultCtx, createdTarget.Upstream.ID, createdTarget))
 
-	assert.Nil(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
+	assert.NoError(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
 }

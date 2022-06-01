@@ -22,7 +22,7 @@ func TestIsNotFoundErrE2E(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	consumer, err := client.Consumers.Get(defaultCtx, String("does-not-exists"))
@@ -35,7 +35,7 @@ func TestAPIError_Code(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	consumer, err := client.Consumers.Get(defaultCtx, String("does-not-exists"))

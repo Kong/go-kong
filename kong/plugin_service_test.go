@@ -12,7 +12,7 @@ func TestPluginsServiceValidation(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	goodPlugin := &Plugin{
@@ -31,11 +31,11 @@ func TestPluginsServiceValidation(T *testing.T) {
 
 	valid, _, err := client.Plugins.Validate(defaultCtx, goodPlugin)
 	assert.True(valid)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	valid, msg, err := client.Plugins.Validate(defaultCtx, badPlugin)
 	assert.False(valid)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal("schema violation (config.garbage: unknown field)", msg)
 }
 
@@ -43,7 +43,7 @@ func TestPluginsService(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	plugin := &Plugin{
@@ -51,21 +51,21 @@ func TestPluginsService(T *testing.T) {
 	}
 
 	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdPlugin)
 
 	plugin, err = client.Plugins.Get(defaultCtx, createdPlugin.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(plugin)
 
 	plugin.Config["key_in_body"] = true
 	plugin, err = client.Plugins.Update(defaultCtx, plugin)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(plugin)
 	assert.Equal(true, plugin.Config["key_in_body"])
 
 	err = client.Plugins.Delete(defaultCtx, createdPlugin.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -75,12 +75,12 @@ func TestPluginsService(T *testing.T) {
 	}
 
 	createdPlugin, err = client.Plugins.Create(defaultCtx, plugin)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdPlugin)
 	assert.Equal(id, *createdPlugin.ID)
 
 	err = client.Plugins.Delete(defaultCtx, createdPlugin.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 }
 
 func TestPluginWithTags(T *testing.T) {
@@ -88,7 +88,7 @@ func TestPluginWithTags(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	plugin := &Plugin{
@@ -97,19 +97,19 @@ func TestPluginWithTags(T *testing.T) {
 	}
 
 	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdPlugin)
 	assert.Equal(StringSlice("tag1", "tag2"), createdPlugin.Tags)
 
 	err = client.Plugins.Delete(defaultCtx, createdPlugin.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 }
 
 func TestUnknownPlugin(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	plugin, err := client.Plugins.Create(defaultCtx, &Plugin{
@@ -123,7 +123,7 @@ func TestPluginListEndpoint(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -142,16 +142,16 @@ func TestPluginListEndpoint(T *testing.T) {
 	// create fixturs
 	for i := 0; i < len(plugins); i++ {
 		schema, err := client.Plugins.GetSchema(defaultCtx, plugins[i].Name)
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.NotNil(schema)
 		plugin, err := client.Plugins.Create(defaultCtx, plugins[i])
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.NotNil(plugin)
 		plugins[i] = plugin
 	}
 
 	pluginsFromKong, next, err := client.Plugins.List(defaultCtx, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(pluginsFromKong)
 	assert.Equal(3, len(pluginsFromKong))
@@ -164,7 +164,7 @@ func TestPluginListEndpoint(T *testing.T) {
 
 	// first page
 	page1, next, err := client.Plugins.List(defaultCtx, &ListOpt{Size: 1})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
 	assert.Equal(1, len(page1))
@@ -172,7 +172,7 @@ func TestPluginListEndpoint(T *testing.T) {
 
 	// second page
 	page2, next, err := client.Plugins.List(defaultCtx, next)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page2)
 	assert.Equal(1, len(page2))
@@ -180,7 +180,7 @@ func TestPluginListEndpoint(T *testing.T) {
 
 	// last page
 	page3, next, err := client.Plugins.List(defaultCtx, next)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page3)
 	assert.Equal(1, len(page3))
@@ -189,12 +189,12 @@ func TestPluginListEndpoint(T *testing.T) {
 	assert.True(comparePlugins(plugins, pluginsFromKong))
 
 	plugins, err = client.Plugins.ListAll(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(plugins)
 	assert.Equal(3, len(plugins))
 
 	for i := 0; i < len(plugins); i++ {
-		assert.Nil(client.Plugins.Delete(defaultCtx, plugins[i].ID))
+		assert.NoError(client.Plugins.Delete(defaultCtx, plugins[i].ID))
 	}
 }
 
@@ -202,7 +202,7 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -213,20 +213,20 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 		Port: Int(42),
 		Path: String("/path"),
 	})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdService)
 
 	createdRoute, err := client.Routes.Create(defaultCtx, &Route{
 		Hosts:   StringSlice("host1.com", "host2.com"),
 		Service: createdService,
 	})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdRoute)
 
 	createdConsumer, err := client.Consumers.Create(defaultCtx, &Consumer{
 		Username: String("foo"),
 	})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdConsumer)
 
 	plugins := []*Plugin{
@@ -271,16 +271,16 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	// create fixturs
 	for i := 0; i < len(plugins); i++ {
 		schema, err := client.Plugins.GetSchema(defaultCtx, plugins[i].Name)
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.NotNil(schema)
 		plugin, err := client.Plugins.Create(defaultCtx, plugins[i])
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.NotNil(plugin)
 		plugins[i] = plugin
 	}
 
 	pluginsFromKong, err := client.Plugins.ListAll(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(pluginsFromKong)
 	assert.Equal(len(plugins), len(pluginsFromKong))
 
@@ -290,48 +290,48 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	assert.True(comparePlugins(plugins, pluginsFromKong))
 
 	pluginsFromKong, err = client.Plugins.ListAll(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(pluginsFromKong)
 	assert.Equal(8, len(pluginsFromKong))
 
 	pluginsFromKong, err = client.Plugins.ListAllForConsumer(defaultCtx,
 		createdConsumer.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(pluginsFromKong)
 	assert.Equal(1, len(pluginsFromKong))
 
 	pluginsFromKong, err = client.Plugins.ListAllForService(defaultCtx,
 		createdService.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(pluginsFromKong)
 	assert.Equal(2, len(pluginsFromKong))
 
 	pluginsFromKong, err = client.Plugins.ListAllForRoute(defaultCtx,
 		createdRoute.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(pluginsFromKong)
 	assert.Equal(2, len(pluginsFromKong))
 
 	for i := 0; i < len(plugins); i++ {
-		assert.Nil(client.Plugins.Delete(defaultCtx, plugins[i].ID))
+		assert.NoError(client.Plugins.Delete(defaultCtx, plugins[i].ID))
 	}
 
-	assert.Nil(client.Consumers.Delete(defaultCtx, createdConsumer.ID))
-	assert.Nil(client.Routes.Delete(defaultCtx, createdRoute.ID))
-	assert.Nil(client.Services.Delete(defaultCtx, createdService.ID))
+	assert.NoError(client.Consumers.Delete(defaultCtx, createdConsumer.ID))
+	assert.NoError(client.Routes.Delete(defaultCtx, createdRoute.ID))
+	assert.NoError(client.Services.Delete(defaultCtx, createdService.ID))
 }
 
 func TestPluginGetFullSchema(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	schema, err := client.Plugins.GetFullSchema(defaultCtx, String("key-auth"))
 	_, ok := schema["fields"]
 	assert.True(ok)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	schema, err = client.Plugins.GetFullSchema(defaultCtx, String("noexist"))
 	assert.Nil(schema)
@@ -343,7 +343,7 @@ func TestFillPluginDefaults(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	tests := []struct {
@@ -447,7 +447,7 @@ func TestFillPluginDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			p := tc.plugin
 			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, p.Name)
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.NotNil(fullSchema)
 			if err := FillPluginsDefaults(p, fullSchema); err != nil {
 				t.Errorf(err.Error())

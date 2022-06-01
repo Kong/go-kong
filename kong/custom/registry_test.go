@@ -16,7 +16,7 @@ func TestDefaultRegistry(t *testing.T) {
 		Name: typ,
 	}
 	err := r.Register(typ, &entitiy)
-	assert.Nil(err)
+	assert.NoError(err)
 	err = r.Register(typ, &entitiy)
 	assert.NotNil(err)
 
@@ -30,5 +30,5 @@ func TestDefaultRegistry(t *testing.T) {
 	assert.NotNil(err)
 
 	err = r.Unregister(typ)
-	assert.Nil(err)
+	assert.NoError(err)
 }

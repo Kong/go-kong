@@ -12,11 +12,11 @@ func TestDevelopersService(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	testWs, err := NewTestWorkspace(client, "default")
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NoError(testWs.UpdateConfig(map[string]interface{}{
 		"portal_auth":         "basic-auth",
 		"portal_session_conf": map[string]interface{}{"secret": "garbage"},
@@ -31,11 +31,11 @@ func TestDevelopersService(T *testing.T) {
 	}
 
 	createdDeveloper, err := client.Developers.Create(defaultCtx, developer)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdDeveloper)
 
 	developer, err = client.Developers.Get(defaultCtx, createdDeveloper.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(developer)
 
 	developer, err = client.Developers.GetByCustomID(defaultCtx,
@@ -45,17 +45,17 @@ func TestDevelopersService(T *testing.T) {
 
 	developer, err = client.Developers.GetByCustomID(defaultCtx,
 		String("custom_id_foo"))
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(developer)
 
 	developer.Email = String("bar@example.com")
 	developer, err = client.Developers.Update(defaultCtx, developer)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(developer)
 	assert.Equal("bar@example.com", *developer.Email)
 
 	err = client.Developers.Delete(defaultCtx, createdDeveloper.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -67,12 +67,12 @@ func TestDevelopersService(T *testing.T) {
 	}
 
 	createdDeveloper, err = client.Developers.Create(defaultCtx, developer)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdDeveloper)
 	assert.Equal(id, *createdDeveloper.ID)
 
 	err = client.Developers.Delete(defaultCtx, createdDeveloper.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	assert.NoError(testWs.Reset())
 }
@@ -82,11 +82,11 @@ func TestDeveloperListEndpoint(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	testWs, err := NewTestWorkspace(client, "default")
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NoError(testWs.UpdateConfig(map[string]interface{}{
 		"portal_auth":         "basic-auth",
 		"portal_session_conf": map[string]interface{}{"secret": "garbage"},
@@ -115,13 +115,13 @@ func TestDeveloperListEndpoint(T *testing.T) {
 	// create fixturs
 	for i := 0; i < len(developers); i++ {
 		developer, err := client.Developers.Create(defaultCtx, developers[i])
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.NotNil(developer)
 		developers[i] = developer
 	}
 
 	developersFromKong, next, err := client.Developers.List(defaultCtx, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(developersFromKong)
 	assert.Equal(3, len(developersFromKong))
@@ -134,7 +134,7 @@ func TestDeveloperListEndpoint(T *testing.T) {
 
 	// first page
 	page1, next, err := client.Developers.List(defaultCtx, &ListOpt{Size: 1})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
 	assert.Equal(1, len(page1))
@@ -143,7 +143,7 @@ func TestDeveloperListEndpoint(T *testing.T) {
 	// last page
 	next.Size = 2
 	page2, next, err := client.Developers.List(defaultCtx, next)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
 	assert.Equal(2, len(page2))
@@ -152,12 +152,12 @@ func TestDeveloperListEndpoint(T *testing.T) {
 	assert.True(compareDevelopers(developers, developersFromKong))
 
 	developers, err = client.Developers.ListAll(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(developers)
 	assert.Equal(3, len(developers))
 
 	for i := 0; i < len(developers); i++ {
-		assert.Nil(client.Developers.Delete(defaultCtx, developers[i].ID))
+		assert.NoError(client.Developers.Delete(defaultCtx, developers[i].ID))
 	}
 
 	assert.NoError(testWs.Reset())

@@ -14,7 +14,7 @@ func TestRender(t *testing.T) {
 	entity := NewEntityObject("key-auth")
 	entity.AddRelation("consumer_id", "bob")
 	result, err := render("/consumers/${consumer_id}/key-auths", entity)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(result, "/consumers/bob/key-auths")
 
 	result, err = render("/consumers/${random_id}/key-auths", entity)
@@ -43,23 +43,23 @@ func TestEntityCRUDDefinition(t *testing.T) {
 
 	assert.Equal(typ, e.Type())
 	url, err := e.GetEndpoint(entity)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal("/consumers/gopher/foo/unique-id", url)
 
 	url, err = e.PatchEndpoint(entity)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal("/consumers/gopher/foo/unique-id", url)
 
 	url, err = e.DeleteEndpoint(entity)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal("/consumers/gopher/foo/unique-id", url)
 
 	url, err = e.PostEndpoint(entity)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal("/consumers/gopher/foo", url)
 
 	url, err = e.ListEndpoint(entity)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal("/consumers/gopher/foo", url)
 
 	entity = NewEntityObject(typ)
@@ -103,7 +103,7 @@ func TestEntityCRUDUnmarshal(t *testing.T) {
 		}`)
 		var def EntityCRUDDefinition
 		err := json.Unmarshal(bytes, &def)
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.Equal(Type("name"), def.Name)
 		assert.Equal("crud-path", def.CRUDPath)
 		assert.Equal("primary-key", def.PrimaryKey)
@@ -116,7 +116,7 @@ name: "name"
 crud: "crud-path"
 primary_key: "primary-key"`)
 		err := yaml.Unmarshal(bytes, &def)
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.Equal(Type("name"), def.Name)
 		assert.Equal("crud-path", def.CRUDPath)
 		assert.Equal("primary-key", def.PrimaryKey)
