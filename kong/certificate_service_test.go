@@ -256,7 +256,7 @@ func TestCertificatesService(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	certificate := &Certificate{
@@ -272,23 +272,23 @@ func TestCertificatesService(T *testing.T) {
 	certificate.Key = String(key1)
 	certificate.Cert = String(cert1)
 	createdCertificate, err = client.Certificates.Create(defaultCtx, certificate)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdCertificate)
 
 	certificate, err = client.Certificates.Get(defaultCtx, createdCertificate.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(certificate)
 	assert.Equal(2, len(createdCertificate.SNIs))
 
 	certificate.Key = String(key2)
 	certificate.Cert = String(cert2)
 	certificate, err = client.Certificates.Update(defaultCtx, certificate)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(certificate)
 	assert.Equal(key2, *certificate.Key)
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -299,12 +299,12 @@ func TestCertificatesService(T *testing.T) {
 	}
 
 	createdCertificate, err = client.Certificates.Create(defaultCtx, certificate)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdCertificate)
 	assert.Equal(id, *createdCertificate.ID)
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 }
 
 func TestCertificateWithTags(T *testing.T) {
@@ -312,7 +312,7 @@ func TestCertificateWithTags(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	certificate := &Certificate{
@@ -322,19 +322,19 @@ func TestCertificateWithTags(T *testing.T) {
 	}
 
 	createdCertificate, err := client.Certificates.Create(defaultCtx, certificate)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdCertificate)
 	assert.Equal(StringSlice("tag1", "tag2"), createdCertificate.Tags)
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 }
 
 func TestCertificateListEndpoint(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -356,13 +356,13 @@ func TestCertificateListEndpoint(T *testing.T) {
 	// create fixturs
 	for i := 0; i < len(certificates); i++ {
 		certificate, err := client.Certificates.Create(defaultCtx, certificates[i])
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.NotNil(certificate)
 		certificates[i] = certificate
 	}
 
 	certificatesFromKong, next, err := client.Certificates.List(defaultCtx, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(certificatesFromKong)
 	assert.Equal(3, len(certificatesFromKong))
@@ -375,7 +375,7 @@ func TestCertificateListEndpoint(T *testing.T) {
 
 	// first page
 	page1, next, err := client.Certificates.List(defaultCtx, &ListOpt{Size: 1})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
 	assert.Equal(1, len(page1))
@@ -384,7 +384,7 @@ func TestCertificateListEndpoint(T *testing.T) {
 	// last page
 	next.Size = 2
 	page2, next, err := client.Certificates.List(defaultCtx, next)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
 	assert.Equal(2, len(page2))
@@ -393,12 +393,12 @@ func TestCertificateListEndpoint(T *testing.T) {
 	assert.True(compareCertificates(certificates, certificatesFromKong))
 
 	certificates, err = client.Certificates.ListAll(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(certificates)
 	assert.Equal(3, len(certificates))
 
 	for i := 0; i < len(certificates); i++ {
-		assert.Nil(client.Certificates.Delete(defaultCtx, certificates[i].ID))
+		assert.NoError(client.Certificates.Delete(defaultCtx, certificates[i].ID))
 	}
 }
 

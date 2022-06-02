@@ -100,7 +100,7 @@ func TestCACertificatesService(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	certificate := &CACertificate{
@@ -115,21 +115,21 @@ func TestCACertificatesService(T *testing.T) {
 	certificate.Cert = String(caCert1)
 	createdCertificate, err = client.CACertificates.Create(defaultCtx,
 		certificate)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdCertificate)
 
 	certificate, err = client.CACertificates.Get(defaultCtx,
 		createdCertificate.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(certificate)
 
 	certificate.Cert = String(caCert2)
 	certificate, err = client.CACertificates.Update(defaultCtx, certificate)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(certificate)
 
 	err = client.CACertificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -140,12 +140,12 @@ func TestCACertificatesService(T *testing.T) {
 
 	createdCertificate, err = client.CACertificates.Create(defaultCtx,
 		certificate)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdCertificate)
 	assert.Equal(id, *createdCertificate.ID)
 
 	err = client.CACertificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 }
 
 func TestCACertificateWithTags(T *testing.T) {
@@ -153,7 +153,7 @@ func TestCACertificateWithTags(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	certificate := &CACertificate{
@@ -163,12 +163,12 @@ func TestCACertificateWithTags(T *testing.T) {
 
 	createdCertificate, err := client.CACertificates.Create(defaultCtx,
 		certificate)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(createdCertificate)
 	assert.Equal(StringSlice("tag1", "tag2"), createdCertificate.Tags)
 
 	err = client.CACertificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.Nil(err)
+	assert.NoError(err)
 }
 
 func TestCACertificateListEndpoint(T *testing.T) {
@@ -176,7 +176,7 @@ func TestCACertificateListEndpoint(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -196,14 +196,14 @@ func TestCACertificateListEndpoint(T *testing.T) {
 	for i := 0; i < len(certificates); i++ {
 		certificate, err := client.CACertificates.Create(defaultCtx,
 			certificates[i])
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.NotNil(certificate)
 		certificates[i] = certificate
 	}
 
 	certificatesFromKong, next, err := client.CACertificates.List(defaultCtx, nil)
 
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(certificatesFromKong)
 	assert.Equal(3, len(certificatesFromKong))
@@ -218,7 +218,7 @@ func TestCACertificateListEndpoint(T *testing.T) {
 	page1, next, err := client.CACertificates.List(defaultCtx, &ListOpt{
 		Size: 1,
 	})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
 	assert.Equal(1, len(page1))
@@ -227,7 +227,7 @@ func TestCACertificateListEndpoint(T *testing.T) {
 	// last page
 	next.Size = 2
 	page2, next, err := client.CACertificates.List(defaultCtx, next)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
 	assert.Equal(2, len(page2))
@@ -236,12 +236,12 @@ func TestCACertificateListEndpoint(T *testing.T) {
 	assert.True(compareCACertificates(certificates, certificatesFromKong))
 
 	certificates, err = client.CACertificates.ListAll(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(certificates)
 	assert.Equal(3, len(certificates))
 
 	for i := 0; i < len(certificates); i++ {
-		assert.Nil(client.CACertificates.Delete(defaultCtx, certificates[i].ID))
+		assert.NoError(client.CACertificates.Delete(defaultCtx, certificates[i].ID))
 	}
 }
 

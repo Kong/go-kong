@@ -166,7 +166,7 @@ func TestFillRoutesDefaults(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	tests := []struct {
@@ -232,7 +232,7 @@ func TestFillRoutesDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			r := tc.route
 			fullSchema, err := client.Schemas.Get(defaultCtx, "routes")
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.NotNil(fullSchema)
 			if err = FillEntityDefaults(r, fullSchema); err != nil {
 				t.Errorf(err.Error())
@@ -253,7 +253,7 @@ func TestFillServiceDefaults(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	tests := []struct {
@@ -322,7 +322,7 @@ func TestFillServiceDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			s := tc.service
 			fullSchema, err := client.Schemas.Get(defaultCtx, "services")
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.NotNil(fullSchema)
 			if err := FillEntityDefaults(s, fullSchema); err != nil {
 				t.Errorf(err.Error())
@@ -341,7 +341,7 @@ func TestFillTargetDefaults(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	tests := []struct {
@@ -371,7 +371,7 @@ func TestFillTargetDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			target := tc.target
 			fullSchema, err := client.Schemas.Get(defaultCtx, "targets")
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.NotNil(fullSchema)
 			if err := FillEntityDefaults(target, fullSchema); err != nil {
 				t.Errorf(err.Error())
@@ -387,7 +387,7 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	tests := []struct {
@@ -511,7 +511,7 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			u := tc.upstream
 			fullSchema, err := client.Schemas.Get(defaultCtx, "upstreams")
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.NotNil(fullSchema)
 			if err = FillEntityDefaults(u, fullSchema); err != nil {
 				t.Errorf(err.Error())

@@ -21,11 +21,11 @@ func TestKongStatus(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	status, err := client.Status(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(status)
 }
 
@@ -33,11 +33,11 @@ func TestRoot(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	root, err := client.Root(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(root)
 	assert.NotNil(root["version"])
 }
@@ -50,7 +50,7 @@ func TestRootJSON(T *testing.T) {
 	assert.NotNil(client)
 
 	root, err := client.RootJSON(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotEmpty(root)
 	assert.Contains(string(root), `"version"`)
 }
@@ -59,11 +59,11 @@ func TestDo(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	req, err := client.NewRequest("GET", "/does-not-exist", nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(req)
 	resp, err := client.Do(context.Background(), req, nil)
 	assert.True(IsNotFoundErr(err))
@@ -71,13 +71,13 @@ func TestDo(T *testing.T) {
 	assert.Equal(404, resp.StatusCode)
 
 	req, err = client.NewRequest("POST", "/", nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(req)
 	resp, err = client.Do(context.Background(), req, nil)
 	assert.NotNil(err)
 	assert.NotNil(resp)
 	body, err := ioutil.ReadAll(resp.Body)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Empty(body)
 	assert.Equal(405, resp.StatusCode)
 }
@@ -93,11 +93,11 @@ func TestRunWhenEnterprise(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	root, err := client.Root(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(root)
 	v := root["version"].(string)
 	assert.Contains(v, "enterprise")
@@ -145,28 +145,28 @@ func TestTestWorkspace(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	wsName := "default"
 
 	origWorkspace, err := client.Workspaces.Get(defaultCtx, String(wsName))
-	assert.Nil(err)
+	assert.NoError(err)
 
 	testWs, err := NewTestWorkspace(client, wsName)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(wsName, *testWs.workspace.Name)
 
 	err = testWs.UpdateConfig(map[string]interface{}{"portal": true, "portal_auto_approve": true})
-	assert.Nil(err)
+	assert.NoError(err)
 	currWorkspace, err := client.Workspaces.Get(defaultCtx, String(wsName))
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(currWorkspace.Config["portal"], true)
 	assert.Equal(currWorkspace.Config["portal_auto_approve"], true)
 
 	err = testWs.Reset()
-	assert.Nil(err)
+	assert.NoError(err)
 	currWorkspace, err = client.Workspaces.Get(defaultCtx, String(wsName))
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(currWorkspace.Config, origWorkspace.Config)
 }

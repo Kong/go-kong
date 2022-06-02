@@ -11,11 +11,11 @@ func TestInfoService(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(client)
 
 	info, err := client.Info.Get(defaultCtx)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(info)
 	assert.NotNil(info.Version)
 	assert.NotNil(info.Configuration)
