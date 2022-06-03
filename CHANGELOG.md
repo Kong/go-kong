@@ -1,6 +1,6 @@
 # Table of Contents
 
-- [Unreleased](#Unreleased)
+- [v0.34.0](#v0340)
 - [v0.33.0](#v0330)
 - [v0.32.0](#v0320)
 - [v0.31.1](#v0311)
@@ -42,10 +42,12 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
-## [Unreleased]
+## [v0.34.0]
 
 > Release date: TBD
 
+- Add support to consumer_groups
+  [#221](https://github.com/Kong/go-kong/pull/221)
 - Add support to filling entity defaults using JSON schemas.
   [#231](https://github.com/Kong/go-kong/pull/231)
 - Add possibility to client to send declarative configs via `ReloadDeclarativeRawConfig()`
@@ -631,7 +633,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
-[Unreleased]: https://github.com/Kong/go-kong/compare/v0.33.0...Unreleased
+[v0.34.0]: https://github.com/Kong/go-kong/compare/v0.33.0...v0.34.0
 [v0.33.0]: https://github.com/Kong/go-kong/compare/v0.32.0...v0.33.0
 [v0.32.0]: https://github.com/Kong/go-kong/compare/v0.31.1...v0.32.0
 [v0.31.1]: https://github.com/Kong/go-kong/compare/v0.31.0...v0.31.1

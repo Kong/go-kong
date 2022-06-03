@@ -930,3 +930,72 @@ func TestHTTPClientWithHeaders(t *testing.T) {
 		"creating Kong's HTTP client using nil http.Client shouldn't panic",
 	)
 }
+
+func TestFillConsumerGroupPluginDefaults(T *testing.T) {
+	RunWhenEnterprise(T, ">=2.7.0", RequiredFeatures{})
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.NoError(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		plugin   *ConsumerGroupPlugin
+		expected *ConsumerGroupPlugin
+	}{
+		{
+			name:   "fills default for consumer_group_plugins",
+			plugin: &ConsumerGroupPlugin{},
+			expected: &ConsumerGroupPlugin{
+				Config: Configuration{
+					"window_type":            "sliding",
+					"retry_after_jitter_max": float64(0),
+				},
+			},
+		},
+		{
+			name: "fills default only for unset retry_after_jitter_max field",
+			plugin: &ConsumerGroupPlugin{
+				Config: Configuration{
+					"window_type": "fixed",
+				},
+			},
+			expected: &ConsumerGroupPlugin{
+				Config: Configuration{
+					"window_type":            "fixed",
+					"retry_after_jitter_max": float64(0),
+				},
+			},
+		},
+		{
+			name: "fills default only for unset window_type field",
+			plugin: &ConsumerGroupPlugin{
+				Config: Configuration{
+					"retry_after_jitter_max": float64(10),
+				},
+			},
+			expected: &ConsumerGroupPlugin{
+				Config: Configuration{
+					"window_type":            "sliding",
+					"retry_after_jitter_max": float64(10),
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+			fullSchema, err := client.Schemas.Get(defaultCtx, "consumer_group_plugins")
+			assert.NoError(err)
+			assert.NotNil(fullSchema)
+			if err := FillEntityDefaults(plugin, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+			if diff := cmp.Diff(plugin, tc.expected); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}

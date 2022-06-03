@@ -434,6 +434,8 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 		tmpEntity = &Route{}
 	case *Upstream:
 		tmpEntity = &Upstream{}
+	case *ConsumerGroupPlugin:
+		tmpEntity = &ConsumerGroupPlugin{}
 	default:
 		return fmt.Errorf("unsupported entity: '%T'", entity)
 	}
