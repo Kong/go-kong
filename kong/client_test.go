@@ -3,6 +3,7 @@ package kong
 import (
 	"context"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"testing"
 
@@ -57,31 +58,55 @@ func TestRootJSON(T *testing.T) {
 }
 
 func TestDo(T *testing.T) {
-	assert := assert.New(T)
-	require := require.New(T)
+	testcases := []struct {
+		name           string
+		httpClientFunc func() *http.Client
+	}{
+		{
+			name:           "nil http.Client",
+			httpClientFunc: func() *http.Client { return nil },
+		},
+		{
+			name:           "default/uninitialized http.Client",
+			httpClientFunc: func() *http.Client { return &http.Client{} },
+		},
+		{
+			name:           "default/uninitialized http.Client with HTTPClientWithHeaders",
+			httpClientFunc: func() *http.Client { return HTTPClientWithHeaders(&http.Client{}, nil) },
+		},
+	}
 
-	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	for _, tc := range testcases {
+		tc := tc
 
-	req, err := client.NewRequest("GET", "/does-not-exist", nil, nil)
-	assert.NoError(err)
-	require.NotNil(req)
-	resp, err := client.Do(context.Background(), req, nil)
-	assert.True(IsNotFoundErr(err))
-	require.NotNil(resp)
-	assert.Equal(404, resp.StatusCode)
+		T.Run(tc.name, func(T *testing.T) {
+			assert := assert.New(T)
+			require := require.New(T)
 
-	req, err = client.NewRequest("POST", "/", nil, nil)
-	assert.NoError(err)
-	require.NotNil(req)
-	resp, err = client.Do(context.Background(), req, nil)
-	require.NotNil(err)
-	require.NotNil(resp)
-	body, err := ioutil.ReadAll(resp.Body)
-	assert.NoError(err)
-	assert.Empty(body)
-	assert.Equal(405, resp.StatusCode)
+			client, err := NewTestClient(nil, tc.httpClientFunc())
+			require.NoError(err)
+			require.NotNil(client)
+
+			req, err := client.NewRequest("GET", "/does-not-exist", nil, nil)
+			assert.NoError(err)
+			require.NotNil(req)
+			resp, err := client.Do(context.Background(), req, nil)
+			assert.True(IsNotFoundErr(err), "got %v", err)
+			require.NotNil(resp)
+			assert.Equal(404, resp.StatusCode)
+
+			req, err = client.NewRequest("POST", "/", nil, nil)
+			assert.NoError(err)
+			require.NotNil(req)
+			resp, err = client.Do(context.Background(), req, nil)
+			require.NotNil(err)
+			require.NotNil(resp)
+			body, err := ioutil.ReadAll(resp.Body)
+			assert.NoError(err)
+			assert.Empty(body)
+			assert.Equal(405, resp.StatusCode)
+		})
+	}
 }
 
 func TestMain(m *testing.M) {

@@ -88,7 +88,7 @@ func (s *CustomEntityService) Create(ctx context.Context,
 	o := entity.Object()
 	// Necessary to Marshal an empty map
 	// as {} and not null
-	if o == nil || len(o) == 0 {
+	if len(o) == 0 {
 		o = make(map[string]interface{})
 	}
 	req, err := s.client.NewRequest(method, queryPath, nil, o)
@@ -123,7 +123,7 @@ func (s *CustomEntityService) Update(ctx context.Context,
 	o := entity.Object()
 	// Necessary to Marshal an empty map
 	// as {} and not null
-	if o == nil || len(o) == 0 {
+	if len(o) == 0 {
 		o = make(map[string]interface{})
 	}
 	req, err := s.client.NewRequest("PATCH", queryPath, nil, o)

@@ -2,6 +2,7 @@ package kong
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"reflect"
 	"testing"
 
@@ -523,4 +524,27 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 			}
 		})
 	}
+}
+
+func TestHTTPClientWithHeaders(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+	}))
+	defer srv.Close()
+
+	assert.NotPanics(t,
+		func() {
+			client := HTTPClientWithHeaders(&http.Client{}, nil)
+			assert.NotNil(t, client)
+		},
+		"creating Kong's HTTP client using default/uninitialized http.Client shouldn't panic",
+	)
+
+	assert.NotPanics(t,
+		func() {
+			client := HTTPClientWithHeaders(nil, nil)
+			assert.NotNil(t, client)
+		},
+		"creating Kong's HTTP client using nil http.Client shouldn't panic",
+	)
 }

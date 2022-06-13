@@ -115,6 +115,11 @@ func HTTPClientWithHeaders(client *http.Client,
 		res.Transport = defaultTransport
 	} else {
 		res = client
+		// If a client with nil transport has been provided then set it to http's
+		// default transport so that the caller is still able to use it.
+		if res.Transport == nil {
+			res.Transport = http.DefaultTransport.(*http.Transport)
+		}
 	}
 	res.Transport = headerRoundTripper{
 		headers: headers,
