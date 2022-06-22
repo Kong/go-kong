@@ -9,6 +9,7 @@ require (
 	github.com/google/go-cmp v0.5.8
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.3.0
+	github.com/hashicorp/go-retryablehttp v0.7.1
 	github.com/imdario/mergo v0.3.12
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/stretchr/testify v1.7.4
@@ -26,6 +27,7 @@ require (
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.5 // indirect
 	github.com/go-openapi/swag v0.19.14 // indirect
+	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect

@@ -5,14 +5,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/kong/go-kong/kong/custom"
 )
 
@@ -95,6 +98,75 @@ type Status struct {
 	ConfigurationHash string `json:"configuration_hash,omitempty" yaml:"configuration_hash,omitempty"`
 }
 
+// backoffStrategy provides a callback for Client.Backoff which
+// will perform exponential backoff based on the attempt number and limited
+// by the provided minimum and maximum durations.
+//
+// It also tries to parse Retry-After response header when a http.StatusTooManyRequests
+// (HTTP Code 429) is found in the resp parameter. Hence it will return the number of
+// seconds the server states it may be ready to process more requests from this client.
+//
+// This is the same as DefaultBackoff (https://github.com/hashicorp/go-retryablehttp/blob/master/client.go#L510)
+// except that here we are only retrying on 429s.
+func backoffStrategy(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
+	const (
+		base            = 10
+		bitSize         = 64
+		baseExponential = 2
+	)
+	if resp != nil {
+		if resp.StatusCode == http.StatusTooManyRequests {
+			if s, ok := resp.Header["Retry-After"]; ok {
+				if sleep, err := strconv.ParseInt(s[0], base, bitSize); err == nil {
+					return time.Second * time.Duration(sleep)
+				}
+			}
+		}
+	}
+
+	mult := math.Pow(baseExponential, float64(attemptNum)) * float64(min)
+	sleep := time.Duration(mult)
+	if float64(sleep) != mult || sleep > max {
+		sleep = max
+	}
+	return sleep
+}
+
+// retryPolicy provides a callback for Client.CheckRetry, which
+// will retry on 429s errors.
+func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, error) {
+	// do not retry on context.Canceled or context.DeadlineExceeded
+	if ctx.Err() != nil {
+		return false, ctx.Err()
+	}
+
+	// 429 Too Many Requests is recoverable. Sometimes the server puts
+	// a Retry-After response header to indicate when the server is
+	// available to start processing request from client.
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return true, nil
+	}
+	return false, nil
+}
+
+func getRetryableClient(client *http.Client) *http.Client {
+	const (
+		minRetryWait = 1 * time.Second
+		maxRetryWait = 10 * time.Second
+		retryMax     = 10
+	)
+	retryClient := retryablehttp.NewClient()
+	retryClient.HTTPClient = client
+	retryClient.Backoff = backoffStrategy
+	retryClient.CheckRetry = retryPolicy
+	retryClient.RetryMax = retryMax
+	retryClient.RetryWaitMax = maxRetryWait
+	retryClient.RetryWaitMin = minRetryWait
+	// logging is handled by go-kong.
+	retryClient.Logger = nil
+	return retryClient.StandardClient()
+}
+
 // NewClient returns a Client which talks to Admin API of Kong
 func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	if client == nil {
@@ -110,7 +182,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 		}
 	}
 	kong := new(Client)
-	kong.client = client
+	kong.client = getRetryableClient(client)
 	var rootURL string
 	if baseURL != nil {
 		rootURL = *baseURL
