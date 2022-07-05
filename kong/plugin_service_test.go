@@ -107,6 +107,36 @@ func TestPluginWithTags(T *testing.T) {
 	assert.NoError(err)
 }
 
+func TestPluginWithOrdering(T *testing.T) {
+	RunWhenEnterprise(T, ">=3.0.0", RequiredFeatures{})
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.NoError(err)
+	assert.NotNil(client)
+
+	plugin := &Plugin{
+		Name: String("request-termination"),
+		Ordering: &PluginOrdering{
+			Before: PluginOrderingPhase{
+				"access": []string{"key-auth", "basic-auth"},
+			},
+		},
+	}
+
+	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
+	assert.NoError(err)
+	assert.NotNil(createdPlugin)
+	assert.Equal(PluginOrdering{
+		Before: PluginOrderingPhase{
+			"access": []string{"key-auth", "basic-auth"},
+		},
+	}, *createdPlugin.Ordering)
+
+	err = client.Plugins.Delete(defaultCtx, createdPlugin.ID)
+	assert.NoError(err)
+}
+
 func TestUnknownPlugin(T *testing.T) {
 	assert := assert.New(T)
 
