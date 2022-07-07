@@ -121,6 +121,9 @@ func TestPluginWithOrdering(T *testing.T) {
 			Before: PluginOrderingPhase{
 				"access": []string{"key-auth", "basic-auth"},
 			},
+			After: PluginOrderingPhase{
+				"access": []string{"correlation-id"},
+			},
 		},
 	}
 
@@ -131,10 +134,39 @@ func TestPluginWithOrdering(T *testing.T) {
 		Before: PluginOrderingPhase{
 			"access": []string{"key-auth", "basic-auth"},
 		},
+		After: PluginOrderingPhase{
+			"access": []string{"correlation-id"},
+		},
 	}, *createdPlugin.Ordering)
 
 	err = client.Plugins.Delete(defaultCtx, createdPlugin.ID)
 	assert.NoError(err)
+
+	plugin = &Plugin{
+		Name: String("request-termination"),
+		Ordering: &PluginOrdering{
+			Before: PluginOrderingPhase{
+				"not-a-phase": []string{"key-auth", "basic-auth"},
+			},
+		},
+	}
+
+	createdPlugin, err = client.Plugins.Create(defaultCtx, plugin)
+	assert.Error(err)
+	assert.Nil(createdPlugin)
+
+	plugin = &Plugin{
+		Name: String("request-termination"),
+		Ordering: &PluginOrdering{
+			Before: PluginOrderingPhase{
+				"access": []string{"not-a-plugin"},
+			},
+		},
+	}
+
+	createdPlugin, err = client.Plugins.Create(defaultCtx, plugin)
+	assert.Error(err)
+	assert.Nil(createdPlugin)
 }
 
 func TestUnknownPlugin(T *testing.T) {
