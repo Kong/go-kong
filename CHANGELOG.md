@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.30.0](#v0300)
 - [v0.29.0](#v0290)
 - [v0.28.1](#v0281)
 - [v0.28.0](#v0280)
@@ -35,6 +36,18 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.30.0]
+
+> Release date: 2022/07/11
+
+- Updated to Go 1.18.
+  [#164](https://github.com/Kong/go-kong/pull/164)
+- Fixed an issue with the HTTP client wrapper not setting any transport when
+  none was configured. It now uses the default transport.
+  [#179](https://github.com/Kong/go-kong/pull/179)
+- Added support for the new `ordering` field on Enterprise 3.x plugins.
+  [#187](https://github.com/Kong/go-kong/pull/187)
 
 ## [v0.29.0]
 
@@ -561,6 +574,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.30.0]: https://github.com/Kong/go-kong/compare/v0.29.0...v0.30.0
 [v0.29.0]: https://github.com/Kong/go-kong/compare/v0.28.1...v0.29.0
 [v0.28.1]: https://github.com/Kong/go-kong/compare/v0.28.0...v0.28.1
 [v0.28.0]: https://github.com/Kong/go-kong/compare/v0.27.0...v0.28.0
