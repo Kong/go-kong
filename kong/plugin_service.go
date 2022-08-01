@@ -12,12 +12,18 @@ import (
 type AbstractPluginService interface {
 	// Create creates a Plugin in Kong.
 	Create(ctx context.Context, plugin *Plugin) (*Plugin, error)
+	// CreateForService creates a Plugin in Kong.
+	CreateForService(ctx context.Context, serviceIDorName *string, plugin *Plugin) (*Plugin, error)
 	// Get fetches a Plugin in Kong.
 	Get(ctx context.Context, usernameOrID *string) (*Plugin, error)
 	// Update updates a Plugin in Kong
 	Update(ctx context.Context, plugin *Plugin) (*Plugin, error)
+	// UpdateForService updates a Plugin in Kong for a service
+	UpdateForService(ctx context.Context, serviceIDorName *string, plugin *Plugin) (*Plugin, error)
 	// Delete deletes a Plugin in Kong
 	Delete(ctx context.Context, usernameOrID *string) error
+	// DeleteForService deletes a Plugin in Kong
+	DeleteForService(ctx context.Context, serviceIDorName *string, pluginID *string) error
 	// List fetches a list of Plugins in Kong.
 	List(ctx context.Context, opt *ListOpt) ([]*Plugin, *ListOpt, error)
 	// ListAll fetches all Plugins in Kong.
@@ -97,17 +103,24 @@ func (s *PluginService) Create(ctx context.Context,
 		queryPath = queryPath + "/" + *plugin.ID
 		method = "PUT"
 	}
-	req, err := s.client.NewRequest(method, queryPath, nil, plugin)
-	if err != nil {
-		return nil, err
+	return s.sendRequest(ctx, plugin, queryPath, method)
+}
+
+// CreateForService creates a Plugin in Kong at Service level.
+// If an ID is specified, it will be used to
+// create a plugin in Kong, otherwise an ID
+// is auto-generated.
+func (s *PluginService) CreateForService(ctx context.Context,
+	serviceIDorName *string, plugin *Plugin,
+) (*Plugin, error) {
+	if isEmptyString(plugin.ID) {
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
+	}
+	if isEmptyString(serviceIDorName) {
+		return nil, fmt.Errorf("serviceIDorName cannot be nil")
 	}
 
-	var createdPlugin Plugin
-	_, err = s.client.Do(ctx, req, &createdPlugin)
-	if err != nil {
-		return nil, err
-	}
-	return &createdPlugin, nil
+	return s.sendRequest(ctx, plugin, fmt.Sprintf("/services/%v/plugins", *serviceIDorName), "POST")
 }
 
 // Get fetches a Plugin in Kong.
@@ -141,34 +154,56 @@ func (s *PluginService) Update(ctx context.Context,
 	}
 
 	endpoint := fmt.Sprintf("/plugins/%v", *plugin.ID)
-	req, err := s.client.NewRequest("PATCH", endpoint, nil, plugin)
-	if err != nil {
-		return nil, err
+	return s.sendRequest(ctx, plugin, endpoint, "PATCH")
+}
+
+// UpdateForService updates a Plugin in Kong at Service level.
+func (s *PluginService) UpdateForService(ctx context.Context,
+	serviceIDorName *string, plugin *Plugin,
+) (*Plugin, error) {
+	if isEmptyString(plugin.ID) {
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
+	}
+	if isEmptyString(serviceIDorName) {
+		return nil, fmt.Errorf("serviceIDorName cannot be nil")
 	}
 
-	var updatedAPI Plugin
-	_, err = s.client.Do(ctx, req, &updatedAPI)
-	if err != nil {
-		return nil, err
-	}
-	return &updatedAPI, nil
+	endpoint := fmt.Sprintf("/services/%v/plugins/%v", *serviceIDorName, *plugin.ID)
+	return s.sendRequest(ctx, plugin, endpoint, "PATCH")
 }
 
 // Delete deletes a Plugin in Kong
 func (s *PluginService) Delete(ctx context.Context,
-	usernameOrID *string,
+	pluginID *string,
 ) error {
-	if isEmptyString(usernameOrID) {
-		return fmt.Errorf("usernameOrID cannot be nil for Delete operation")
+	if isEmptyString(pluginID) {
+		return fmt.Errorf("pluginID cannot be nil for Delete operation")
 	}
 
-	endpoint := fmt.Sprintf("/plugins/%v", *usernameOrID)
-	req, err := s.client.NewRequest("DELETE", endpoint, nil, nil)
+	endpoint := fmt.Sprintf("/plugins/%v", *pluginID)
+	_, err := s.sendRequest(ctx, nil, endpoint, "DELETE")
 	if err != nil {
 		return err
 	}
+	return err
+}
 
-	_, err = s.client.Do(ctx, req, nil)
+// DeleteForService deletes a Plugin in Kong at Service level.
+func (s *PluginService) DeleteForService(ctx context.Context,
+	serviceIDorName *string, pluginID *string,
+) error {
+	if isEmptyString(pluginID) {
+		return fmt.Errorf("plugin ID cannot be nil for Delete operation")
+	}
+	if isEmptyString(serviceIDorName) {
+		return fmt.Errorf("serviceIDorName cannot be nil")
+	}
+
+	endpoint := fmt.Sprintf("/services/%v/plugins/%v", *serviceIDorName, *pluginID)
+	_, err := s.sendRequest(ctx, nil, endpoint, "DELETE")
+	if err != nil {
+		return err
+	}
 	return err
 }
 
@@ -293,4 +328,33 @@ func (s *PluginService) ListAllForRoute(ctx context.Context,
 		return nil, fmt.Errorf("routeID cannot be nil")
 	}
 	return s.listAllByPath(ctx, "/routes/"+*routeID+"/plugins")
+}
+
+func (s *PluginService) sendRequest(ctx context.Context, plugin *Plugin, endpoint, method string) (*Plugin, error) {
+	var req *http.Request
+	var err error
+	if method == "DELETE" {
+		req, err = s.client.NewRequest(method, endpoint, nil, nil)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		req, err = s.client.NewRequest(method, endpoint, nil, plugin)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var createdPlugin Plugin
+	if method == "DELETE" {
+		_, err = s.client.Do(ctx, req, nil)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		_, err = s.client.Do(ctx, req, &createdPlugin)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &createdPlugin, nil
 }
