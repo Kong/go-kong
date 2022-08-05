@@ -37,16 +37,6 @@ jobs:
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-      # This will set KONG_LINCENSE_DATA environment variable.
-      # NOTE:
-      # This could be (?) made a shared step but for some reason it's impossible
-      # to override:
-      # Warning: Skip output 'license' since it may contain secret.
-      # on Github Actions when setting a job output.
-      - uses: Kong/kong-license@9fb64ad7be1ed2b121a70990783d7c0869e531d5
-        id: license_step
-        with:
-          password: ${{ secrets.PULP_PASSWORD }}
       - name: Setup go
         uses: actions/setup-go@v3
         with:
