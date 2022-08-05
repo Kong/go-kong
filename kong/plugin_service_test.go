@@ -83,6 +83,46 @@ func TestPluginsService(T *testing.T) {
 
 	err = client.Plugins.Delete(defaultCtx, createdPlugin.ID)
 	assert.NoError(err)
+
+	service := &Service{
+		Name: String("fooWithPlugin"),
+		Host: String("upstream"),
+		Port: Int(42),
+		Path: String("/path"),
+	}
+	// Clean Data
+	err = client.Services.Delete(defaultCtx, service.Name)
+	assert.NoError(err)
+	// Test to create plugin from service endpoint
+	createdService, err := client.Services.Create(defaultCtx, service)
+	assert.NoError(err)
+
+	id = uuid.NewString()
+	pluginForService := &Plugin{
+		Name: String("key-auth"),
+		ID:   String(id),
+		Config: Configuration{
+			"anonymous": "true",
+		},
+	}
+
+	createdPlugin, err = client.Plugins.CreateForService(defaultCtx, createdService.Name, pluginForService)
+	assert.NoError(err)
+	assert.NotNil(createdPlugin)
+	assert.Equal(id, *createdPlugin.ID)
+	assert.Equal("true", createdPlugin.Config["anonymous"])
+
+	createdPlugin.Config["anonymous"] = "false"
+	updatedPlugin, err := client.Plugins.UpdateForService(defaultCtx, createdService.Name, createdPlugin)
+	assert.NoError(err)
+	assert.NotNil(createdPlugin)
+	assert.Equal(id, *createdPlugin.ID)
+	assert.Equal("false", updatedPlugin.Config["anonymous"])
+
+	err = client.Plugins.DeleteForService(defaultCtx, createdService.Name, updatedPlugin.ID)
+	assert.NoError(err)
+
+	assert.NoError(client.Services.Delete(defaultCtx, createdService.ID))
 }
 
 func TestPluginWithTags(T *testing.T) {
