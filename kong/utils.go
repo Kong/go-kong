@@ -242,37 +242,39 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 // into proper entity objects.
 //
 // Sample input:
-// {
-// 	"fields": [
-//         {
-//             "algorithm": {
-//                 "default": "round-robin",
-//                 "one_of": ["consistent-hashing", "least-connections", "round-robin"],
-//                 "type": "string"
-//             }
-//         }, {
-//             "hash_on": {
-//                 "default": "none",
-//                 "one_of": ["none", "consumer", "ip", "header", "cookie"],
-//                 "type": "string"
-//             }
-//         }, {
-//             "hash_fallback": {
-//                 "default": "none",
-//                 "one_of": ["none", "consumer", "ip", "header", "cookie"],
-//                 "type": "string"
-//             }
-//         },
-//   ...
-// }
+//
+//	{
+//		"fields": [
+//	        {
+//	            "algorithm": {
+//	                "default": "round-robin",
+//	                "one_of": ["consistent-hashing", "least-connections", "round-robin"],
+//	                "type": "string"
+//	            }
+//	        }, {
+//	            "hash_on": {
+//	                "default": "none",
+//	                "one_of": ["none", "consumer", "ip", "header", "cookie"],
+//	                "type": "string"
+//	            }
+//	        }, {
+//	            "hash_fallback": {
+//	                "default": "none",
+//	                "one_of": ["none", "consumer", "ip", "header", "cookie"],
+//	                "type": "string"
+//	            }
+//	        },
+//	  ...
+//	}
 //
 // Sample output:
-// {
-// 	"algorithm": "round-robin",
-// 	"hash_on": "none",
-// 	"hash_fallback": "none",
-//  ...
-// }
+//
+//	{
+//		"algorithm": "round-robin",
+//		"hash_on": "none",
+//		"hash_fallback": "none",
+//	 ...
+//	}
 func flattenDefaultsSchema(schema gjson.Result) Schema {
 	value := schema.Get("fields")
 	results := Schema{}
