@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.31.0](#v0310)
 - [v0.30.0](#v0300)
 - [v0.29.0](#v0290)
 - [v0.28.1](#v0281)
@@ -36,6 +37,15 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.31.0]
+
+> Release date: 2022/07/11
+
+- Updated to Go 1.19.
+- Added `ForService` variants of plugin calls, which use
+  `/service/<id>/plugins/` endpoints.
+  [#192](https://github.com/Kong/go-kong/pull/192)
 
 ## [v0.30.0]
 
@@ -574,6 +584,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.31.0]: https://github.com/Kong/go-kong/compare/v0.30.0...v0.31.0
 [v0.30.0]: https://github.com/Kong/go-kong/compare/v0.29.0...v0.30.0
 [v0.29.0]: https://github.com/Kong/go-kong/compare/v0.28.1...v0.29.0
 [v0.28.1]: https://github.com/Kong/go-kong/compare/v0.28.0...v0.28.1
