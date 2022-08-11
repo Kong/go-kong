@@ -3,7 +3,7 @@ package kong
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -34,6 +34,6 @@ func hasError(res *http.Response) error {
 		return nil
 	}
 
-	body, _ := ioutil.ReadAll(res.Body) // TODO error in error?
+	body, _ := io.ReadAll(res.Body) // TODO error in error?
 	return NewAPIError(res.StatusCode, messageFromBody(body))
 }

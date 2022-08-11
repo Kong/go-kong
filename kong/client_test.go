@@ -2,7 +2,7 @@ package kong
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"testing"
@@ -101,7 +101,7 @@ func TestDo(T *testing.T) {
 			resp, err = client.Do(context.Background(), req, nil)
 			require.NotNil(err)
 			require.NotNil(resp)
-			body, err := ioutil.ReadAll(resp.Body)
+			body, err := io.ReadAll(resp.Body)
 			assert.NoError(err)
 			assert.Empty(body)
 			assert.Equal(405, resp.StatusCode)
