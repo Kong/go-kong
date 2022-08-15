@@ -1917,6 +1917,26 @@ func (in *Upstream) DeepCopyInto(out *Upstream) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.HashOnQueryArg != nil {
+		in, out := &in.HashOnQueryArg, &out.HashOnQueryArg
+		*out = new(string)
+		**out = **in
+	}
+	if in.HashFallbackQueryArg != nil {
+		in, out := &in.HashFallbackQueryArg, &out.HashFallbackQueryArg
+		*out = new(string)
+		**out = **in
+	}
+	if in.HashOnURICapture != nil {
+		in, out := &in.HashOnURICapture, &out.HashOnURICapture
+		*out = new(string)
+		**out = **in
+	}
+	if in.HashFallbackURICapture != nil {
+		in, out := &in.HashFallbackURICapture, &out.HashFallbackURICapture
+		*out = new(string)
+		**out = **in
+	}
 	if in.Tags != nil {
 		in, out := &in.Tags, &out.Tags
 		*out = make([]*string, len(*in))
