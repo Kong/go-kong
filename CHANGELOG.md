@@ -40,12 +40,14 @@
 
 ## [v0.31.0]
 
-> Release date: 2022/07/11
+> Release date: 2022/08/16
 
 - Updated to Go 1.19.
 - Added `ForService` variants of plugin calls, which use
   `/service/<id>/plugins/` endpoints.
   [#192](https://github.com/Kong/go-kong/pull/192)
+- Added support for Kong 3.0 upstream fields.
+  [#200](https://github.com/Kong/go-kong/pull/200)
 
 ## [v0.30.0]
 
