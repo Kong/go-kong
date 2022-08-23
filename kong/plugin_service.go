@@ -113,14 +113,17 @@ func (s *PluginService) Create(ctx context.Context,
 func (s *PluginService) CreateForService(ctx context.Context,
 	serviceIDorName *string, plugin *Plugin,
 ) (*Plugin, error) {
-	if isEmptyString(plugin.ID) {
-		return nil, fmt.Errorf("ID cannot be nil for Update operation")
+	queryPath := "/plugins"
+	method := "POST"
+	if plugin.ID != nil {
+		queryPath = queryPath + "/" + *plugin.ID
+		method = "PUT"
 	}
 	if isEmptyString(serviceIDorName) {
 		return nil, fmt.Errorf("serviceIDorName cannot be nil")
 	}
 
-	return s.sendRequest(ctx, plugin, fmt.Sprintf("/services/%v/plugins", *serviceIDorName), "POST")
+	return s.sendRequest(ctx, plugin, fmt.Sprintf("/services/%v"+queryPath, *serviceIDorName), method)
 }
 
 // Get fetches a Plugin in Kong.
