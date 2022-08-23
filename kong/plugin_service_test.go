@@ -122,6 +122,12 @@ func TestPluginsService(T *testing.T) {
 	err = client.Plugins.DeleteForService(defaultCtx, createdService.Name, updatedPlugin.ID)
 	assert.NoError(err)
 
+	//Create plugin without ID
+	_, err = client.Plugins.CreateForService(defaultCtx, createdService.Name, &Plugin{Name: String("key-auth")})
+	assert.NoError(err)
+	assert.NotNil(createdPlugin)
+	assert.NotNil(createdPlugin.ID)
+
 	assert.NoError(client.Services.Delete(defaultCtx, createdService.ID))
 }
 
