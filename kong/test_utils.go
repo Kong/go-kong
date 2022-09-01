@@ -3,10 +3,7 @@ package kong
 import (
 	"net/http"
 	"os"
-	"strings"
 	"testing"
-
-	"github.com/blang/semver/v4"
 )
 
 type RequiredFeatures struct {
@@ -15,10 +12,10 @@ type RequiredFeatures struct {
 }
 
 // RunWhenKong skips the current test if the version of Kong doesn't
-// fall in the semverRange.
+// fall in the versionRange.
 // This helper function can be used in tests to write version specific
 // tests for Kong.
-func RunWhenKong(t *testing.T, semverRange string) {
+func RunWhenKong(t *testing.T, versionRange string) {
 	client, err := NewTestClient(nil, nil)
 	if err != nil {
 		t.Error(err)
@@ -32,7 +29,7 @@ func RunWhenKong(t *testing.T, semverRange string) {
 	if err != nil {
 		t.Error(err)
 	}
-	r, err := semver.ParseRange(semverRange)
+	r, err := NewRange(versionRange)
 	if err != nil {
 		t.Error(err)
 	}
@@ -44,10 +41,10 @@ func RunWhenKong(t *testing.T, semverRange string) {
 // RunWhenEnterprise skips a test if the version
 // of Kong running is not enterprise edition. Skips
 // the current test if the version of Kong doesn't
-// fall within the semver range. If a test requires
+// fall within the version range. If a test requires
 // RBAC and RBAC is not enabled on Kong the test
 // will be skipped
-func RunWhenEnterprise(t *testing.T, semverRange string, required RequiredFeatures) {
+func RunWhenEnterprise(t *testing.T, versionRange string, required RequiredFeatures) {
 	client, err := NewTestClient(nil, nil)
 	if err != nil {
 		t.Error(err)
@@ -57,8 +54,12 @@ func RunWhenEnterprise(t *testing.T, semverRange string, required RequiredFeatur
 		t.Error(err)
 	}
 	version := VersionFromInfo(info)
+	currentVersion, err := ParseSemanticVersion(version)
+	if err != nil {
+		t.Error(err)
+	}
 
-	if !strings.Contains(version, "enterprise") {
+	if !currentVersion.IsKongGatewayEnterprise() {
 		t.Log("non-Enterprise test Kong instance, skipping")
 		t.Skip()
 	}
@@ -74,7 +75,13 @@ func RunWhenEnterprise(t *testing.T, semverRange string, required RequiredFeatur
 		t.Skip()
 	}
 
-	RunWhenKong(t, semverRange)
+	r, err := NewRange(versionRange)
+	if err != nil {
+		t.Error(err)
+	}
+	if !r(currentVersion) {
+		t.Skip()
+	}
 }
 
 // SkipWhenEnterprise skips a test if the Kong version is an Enterprise version
@@ -88,8 +95,12 @@ func SkipWhenEnterprise(t *testing.T) {
 		t.Error(err)
 	}
 	version := VersionFromInfo(info)
+	currentVersion, err := ParseSemanticVersion(version)
+	if err != nil {
+		t.Error(err)
+	}
 
-	if strings.Contains(version, "enterprise") {
+	if currentVersion.IsKongGatewayEnterprise() {
 		t.Log("non-Enterprise test Kong instance, skipping")
 		t.Skip()
 	}

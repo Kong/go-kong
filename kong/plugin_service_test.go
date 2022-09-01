@@ -563,6 +563,7 @@ func TestFillPluginDefaults(T *testing.T) {
 			if err := FillPluginsDefaults(p, fullSchema); err != nil {
 				t.Errorf(err.Error())
 			}
+
 			if diff := cmp.Diff(p, tc.expected); diff != "" {
 				t.Errorf(diff)
 			}
