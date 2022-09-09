@@ -17,7 +17,7 @@ type Version struct {
 	str string
 }
 
-// Range represents a range of versions which can be use to validate if a Version is valid
+// Range represents a range of versions which can be used to validate if a Version is valid
 // for a Range.
 type Range func(Version) bool
 
