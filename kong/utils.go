@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/blang/semver/v4"
 	"github.com/imdario/mergo"
 	"github.com/tidwall/gjson"
 )
@@ -130,25 +129,33 @@ func HTTPClientWithHeaders(client *http.Client,
 
 // ParseSemanticVersion creates a semantic version from the version
 // returned by Kong.
-func ParseSemanticVersion(v string) (semver.Version, error) {
-	re := regexp.MustCompile(`(\d+\.\d+)(?:[\.-](\d+))?(?:\-?(.+)$|$)`)
+func ParseSemanticVersion(v string) (Version, error) {
+	re := regexp.MustCompile(`((?:\d+\.\d+\.\d+)|(?:\d+\.\d+))(?:[\.-](\d+))?(?:\-?(.+)$|$)`)
 	m := re.FindStringSubmatch(v)
 	if len(m) != versionParts {
-		return semver.Version{}, fmt.Errorf("unknown Kong version : '%v'", v)
+		return Version{}, fmt.Errorf("unknown Kong version : '%v'", v)
 	}
 	if m[2] == "" {
-		m[2] = "0"
+		// Only append zero patch version if major and minor have been detected
+		if strings.Count(m[1], ".") == 1 {
+			m[2] = ".0"
+		}
+	} else if strings.Count(m[2], ".") == 0 {
+		// Ensure stripped digit is prefixed with a "."
+		m[2] = "." + m[2]
 	}
 	if m[3] != "" {
 		if strings.Contains(m[3], "enterprise") {
+			// Convert enterprise pre-release to build metadata
 			m[3] = "+" + strings.Replace(m[3], "enterprise-edition", "enterprise", 1)
 		} else {
+			// Keep pre-release information intact
 			m[3] = "-" + m[3]
 		}
 		m[3] = strings.Replace(m[3], ".", "", -1)
 	}
-	v = fmt.Sprintf("%s.%s%s", m[1], m[2], m[3])
-	return semver.Make(v)
+
+	return NewVersion(fmt.Sprintf("%s%s%s", m[1], m[2], m[3]))
 }
 
 // VersionFromInfo retrieves the version from the response of root
