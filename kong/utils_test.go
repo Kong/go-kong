@@ -59,24 +59,65 @@ func TestStringSlice(t *testing.T) {
 }
 
 func TestFixVersion(t *testing.T) {
-	validVersions := map[string]string{
-		"0.14.1":                          "0.14.1",
-		"0.14.2rc":                        "0.14.2-rc",
-		"0.14.2rc1":                       "0.14.2-rc1",
-		"0.14.2preview":                   "0.14.2-preview",
-		"0.14.2preview1":                  "0.14.2-preview1",
-		"0.33-enterprise-edition":         "0.33.0+enterprise",
-		"0.33-1-enterprise-edition":       "0.33.1+enterprise",
-		"1.3.0.0-enterprise-edition-lite": "1.3.0+0-enterprise-lite",
-		"1.3.0.0-enterprise-lite":         "1.3.0+0-enterprise-lite",
+	tests := []struct {
+		version         string
+		expectedVersion string
+		isEnterprise    bool
+	}{
+		{
+			version:         "0.14.1",
+			expectedVersion: "0.14.1",
+		},
+		{
+			version:         "0.14.2rc",
+			expectedVersion: "0.14.2",
+		},
+		{
+			version:         "0.14.2rc1",
+			expectedVersion: "0.14.2",
+		},
+		{
+			version:         "0.14.2preview",
+			expectedVersion: "0.14.2",
+		},
+		{
+			version:         "0.14.2preview1",
+			expectedVersion: "0.14.2",
+		},
+		{
+			version:         "0.33-enterprise-edition",
+			expectedVersion: "0.33.0",
+			isEnterprise:    true,
+		},
+		{
+			version:         "0.33-1-enterprise-edition",
+			expectedVersion: "0.33.1",
+			isEnterprise:    true,
+		},
+		{
+			version:         "1.3.0.0-enterprise-edition-lite",
+			expectedVersion: "1.3.0.0",
+			isEnterprise:    true,
+		},
+		{
+			version:         "3.0.0.0",
+			expectedVersion: "3.0.0.0",
+			isEnterprise:    true,
+		},
+		{
+			version:         "3.0.0.0-enterprise-edition",
+			expectedVersion: "3.0.0.0",
+			isEnterprise:    true,
+		},
 	}
-	for inputVersion, expectedVersion := range validVersions {
-		v, err := ParseSemanticVersion(inputVersion)
+	for _, test := range tests {
+		v, err := ParseSemanticVersion(test.version)
 		if err != nil {
-			t.Errorf("error converting %s: %v", inputVersion, err)
-		} else if v.String() != expectedVersion {
-			t.Errorf("converting %s, expecting %s, getting %s", inputVersion, expectedVersion, v.String())
+			t.Errorf("error converting %s: %v", test.version, err)
+		} else if v.String() != test.expectedVersion {
+			t.Errorf("converting %s, expecting %s, getting %s", test.version, test.expectedVersion, v.String())
 		}
+		assert.Equal(t, test.isEnterprise, v.IsKongGatewayEnterprise())
 	}
 
 	invalidVersions := []string{
