@@ -116,7 +116,9 @@ func TestMain(m *testing.M) {
 }
 
 func TestRunWhenEnterprise(T *testing.T) {
-	RunWhenEnterprise(T, ">=0.33.0", RequiredFeatures{})
+	// TODO refactor this to test that a version is Enterprise without relying on the IsKongGatewayEnterprise function
+	// that this calls https://github.com/Kong/go-kong/issues/212
+	RunWhenEnterprise(T, ">=0.33.0 <3.0.0", RequiredFeatures{})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
