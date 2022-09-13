@@ -15,7 +15,6 @@ jobs:
     strategy:
       matrix:
         kong_version:
-        - 'enterprise-1.5.0.11'
         - 'enterprise-2.1.4.6'
         - 'enterprise-2.2.1.3'
         - 'enterprise-2.3.3.4'
