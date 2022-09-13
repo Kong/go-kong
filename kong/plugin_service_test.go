@@ -451,6 +451,9 @@ func TestPluginGetFullSchema(T *testing.T) {
 }
 
 func TestFillPluginDefaults(T *testing.T) {
+	// TODO https://github.com/Kong/go-kong/issues/214 this should only skip Enterprise 3.x (with a separate test)
+	// not all Enterprise versions.
+	SkipWhenEnterprise(T)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
