@@ -39,6 +39,20 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
+## [v0.32.0]
+
+> Release date: 2022/08/23
+
+This release is not yet fully compatible with Kong 3.x. The target service `MarkHealthy()` and `MarkUnhealthy()`
+functions do not yet work on 3.x. Other functionality supports 3.x, but may not yet support all new 3.x schema fields.
+
+- Added support for 3.x Enterprise version strings.
+  [#207](https://github.com/Kong/go-kong/pull/207)
+- Added support for `expression` and `priority` route fields.
+  [#210](https://github.com/Kong/go-kong/pull/210)
+- Dropped support for 1.5 Enterprise, which exited sunset support in 2022-04.
+- Added 3.x to test matrices.
+
 ## [v0.31.1]
 
 > Release date: 2022/08/23
