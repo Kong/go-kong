@@ -228,6 +228,8 @@ func compareTargets(expected, actual []*Target) bool {
 }
 
 func TestTargetMarkHealthy(T *testing.T) {
+	// TODO https://github.com/Kong/go-kong/issues/213 this does not yet work on 3.x
+	RunWhenKong(T, "<3.0.0")
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -265,6 +267,8 @@ func TestTargetMarkHealthy(T *testing.T) {
 }
 
 func TestTargetMarkUnhealthy(T *testing.T) {
+	// TODO https://github.com/Kong/go-kong/issues/213 this does not yet work on 3.x
+	RunWhenKong(T, "<3.0.0")
 	assert := assert.New(T)
 	require := require.New(T)
 
