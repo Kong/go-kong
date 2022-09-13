@@ -9,6 +9,7 @@ sudo apt-get install openssl libpcre3 procps perl wget zlibc
 function setup_kong(){
   SWITCH="1.3.000"
   SWITCH2="2.0.000"
+  SWITCH3="2.8.000"
 
   URL="https://download.konghq.com/gateway-1.x-ubuntu-xenial/pool/all/k/kong/kong_${KONG_VERSION}_all.deb"
 
@@ -22,13 +23,26 @@ function setup_kong(){
   URL="https://download.konghq.com/gateway-2.x-ubuntu-xenial/pool/all/k/kong/kong_${KONG_VERSION}_amd64.deb"
   fi
 
-  /usr/bin/curl -sL $URL -o kong.deb
+  if [[ "$KONG_VERSION" > "$SWITCH3" ]];
+  then
+  URL="https://download.konghq.com/gateway-3.x-ubuntu-focal/pool/all/k/kong/kong_${KONG_VERSION}_amd64.deb"
+  fi
+
+  echo "Saving ${URL} to kong.deb"
+  RESPONSE_CODE=$(/usr/bin/curl -sL \
+    -w "%{http_code}" \
+    $URL -o kong.deb)
+  if [[ $RESPONSE_CODE != "200" ]]; then
+    echo "error retrieving kong package from ${URL}. response code ${RESPONSE_CODE}"
+    exit 1 
+  fi
 }
 
 function setup_kong_enterprise(){
   KONG_VERSION="${KONG_VERSION#enterprise-}"
   SWITCH="1.5.0.100"
   SWITCH2="2.0.0.000"
+  SWITCH3="2.8.0.000"
 
   URL="https://download.konghq.com/private/gateway-1.x-ubuntu-xenial/pool/all/k/kong-enterprise-edition/kong-enterprise-edition_${KONG_VERSION}_all.deb"
 
@@ -42,6 +56,12 @@ function setup_kong_enterprise(){
   URL="https://download.konghq.com/gateway-2.x-ubuntu-xenial/pool/all/k/kong-enterprise-edition/kong-enterprise-edition_${KONG_VERSION}_all.deb"
   fi
 
+  if [[ "$KONG_VERSION" > "$SWITCH3" ]];
+  then
+  URL="https://download.konghq.com/gateway-3.x-ubuntu-bionic/pool/all/k/kong-enterprise-edition/kong-enterprise-edition_${KONG_VERSION}_amd64.deb"
+  fi
+
+  echo "Saving ${URL} to kong.deb"
   RESPONSE_CODE=$(/usr/bin/curl -sL \
     -w "%{http_code}" \
     -u $KONG_ENTERPRISE_REPO_USERNAME:$KONG_ENTERPRISE_REPO_PASSSWORD \
