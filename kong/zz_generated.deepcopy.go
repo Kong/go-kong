@@ -1410,6 +1410,11 @@ func (in *Route) DeepCopyInto(out *Route) {
 		*out = new(int)
 		**out = **in
 	}
+	if in.Expression != nil {
+		in, out := &in.Expression, &out.Expression
+		*out = new(string)
+		**out = **in
+	}
 	if in.Hosts != nil {
 		in, out := &in.Hosts, &out.Hosts
 		*out = make([]*string, len(*in))
@@ -1476,6 +1481,11 @@ func (in *Route) DeepCopyInto(out *Route) {
 	if in.PreserveHost != nil {
 		in, out := &in.PreserveHost, &out.PreserveHost
 		*out = new(bool)
+		**out = **in
+	}
+	if in.Priority != nil {
+		in, out := &in.Priority, &out.Priority
+		*out = new(int)
 		**out = **in
 	}
 	if in.Protocols != nil {

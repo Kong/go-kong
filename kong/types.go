@@ -43,6 +43,7 @@ type CIDRPort struct {
 // +k8s:deepcopy-gen=true
 type Route struct {
 	CreatedAt     *int                `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Expression    *string             `json:"expression,omitempty" yaml:"expression,omitempty"`
 	Hosts         []*string           `json:"hosts,omitempty" yaml:"hosts,omitempty"`
 	Headers       map[string][]string `json:"headers,omitempty" yaml:"headers,omitempty"`
 	ID            *string             `json:"id,omitempty" yaml:"id,omitempty"`
@@ -51,6 +52,7 @@ type Route struct {
 	Paths         []*string           `json:"paths,omitempty" yaml:"paths,omitempty"`
 	PathHandling  *string             `json:"path_handling,omitempty" yaml:"path_handling,omitempty"`
 	PreserveHost  *bool               `json:"preserve_host,omitempty" yaml:"preserve_host,omitempty"`
+	Priority      *int                `json:"priority,omitempty" yaml:"priority,omitempty"`
 	Protocols     []*string           `json:"protocols,omitempty" yaml:"protocols,omitempty"`
 	RegexPriority *int                `json:"regex_priority,omitempty" yaml:"regex_priority,omitempty"`
 	Service       *Service            `json:"service,omitempty" yaml:"service,omitempty"`
