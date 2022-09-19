@@ -14,16 +14,22 @@ type AbstractPluginService interface {
 	Create(ctx context.Context, plugin *Plugin) (*Plugin, error)
 	// CreateForService creates a Plugin in Kong.
 	CreateForService(ctx context.Context, serviceIDorName *string, plugin *Plugin) (*Plugin, error)
+	// CreateForRoute creates a Plugin in Kong.
+	CreateForRoute(ctx context.Context, routeIDorName *string, plugin *Plugin) (*Plugin, error)
 	// Get fetches a Plugin in Kong.
 	Get(ctx context.Context, usernameOrID *string) (*Plugin, error)
 	// Update updates a Plugin in Kong
 	Update(ctx context.Context, plugin *Plugin) (*Plugin, error)
 	// UpdateForService updates a Plugin in Kong for a service
 	UpdateForService(ctx context.Context, serviceIDorName *string, plugin *Plugin) (*Plugin, error)
+	// UpdateForRoute updates a Plugin in Kong for a service
+	UpdateForRoute(ctx context.Context, routeIDorName *string, plugin *Plugin) (*Plugin, error)
 	// Delete deletes a Plugin in Kong
 	Delete(ctx context.Context, usernameOrID *string) error
 	// DeleteForService deletes a Plugin in Kong
 	DeleteForService(ctx context.Context, serviceIDorName *string, pluginID *string) error
+	// DeleteForRoute deletes a Plugin in Kong
+	DeleteForRoute(ctx context.Context, routeIDorName *string, pluginID *string) error
 	// List fetches a list of Plugins in Kong.
 	List(ctx context.Context, opt *ListOpt) ([]*Plugin, *ListOpt, error)
 	// ListAll fetches all Plugins in Kong.
@@ -126,6 +132,27 @@ func (s *PluginService) CreateForService(ctx context.Context,
 	return s.sendRequest(ctx, plugin, fmt.Sprintf("/services/%v"+queryPath, *serviceIDorName), method)
 }
 
+// CreateForRoute creates a Plugin in Kong at Route level.
+// If an ID is specified, it will be used to
+// create a plugin in Kong, otherwise an ID
+// is auto-generated.
+func (s *PluginService) CreateForRoute(ctx context.Context,
+	routeIDorName *string, plugin *Plugin,
+) (*Plugin, error) {
+	queryPath := "/plugins"
+	method := "POST"
+
+	if plugin.ID != nil {
+		queryPath = queryPath + "/" + *plugin.ID
+		method = "PUT"
+	}
+	if isEmptyString(routeIDorName) {
+		return nil, fmt.Errorf("routeIDorName cannot be nil")
+	}
+
+	return s.sendRequest(ctx, plugin, fmt.Sprintf("/routes/%v"+queryPath, *routeIDorName), method)
+}
+
 // Get fetches a Plugin in Kong.
 func (s *PluginService) Get(ctx context.Context,
 	usernameOrID *string,
@@ -175,6 +202,21 @@ func (s *PluginService) UpdateForService(ctx context.Context,
 	return s.sendRequest(ctx, plugin, endpoint, "PATCH")
 }
 
+// UpdateForRoute updates a Plugin in Kong at Route level.
+func (s *PluginService) UpdateForRoute(ctx context.Context,
+	routeIDorName *string, plugin *Plugin,
+) (*Plugin, error) {
+	if isEmptyString(plugin.ID) {
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
+	}
+	if isEmptyString(routeIDorName) {
+		return nil, fmt.Errorf("routeIDorName cannot be nil")
+	}
+
+	endpoint := fmt.Sprintf("/routes/%v/plugins/%v", *routeIDorName, *plugin.ID)
+	return s.sendRequest(ctx, plugin, endpoint, "PATCH")
+}
+
 // Delete deletes a Plugin in Kong
 func (s *PluginService) Delete(ctx context.Context,
 	pluginID *string,
@@ -203,6 +245,25 @@ func (s *PluginService) DeleteForService(ctx context.Context,
 	}
 
 	endpoint := fmt.Sprintf("/services/%v/plugins/%v", *serviceIDorName, *pluginID)
+	_, err := s.sendRequest(ctx, nil, endpoint, "DELETE")
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+// DeleteForRoute deletes a Plugin in Kong at Route level.
+func (s *PluginService) DeleteForRoute(ctx context.Context,
+	routeIDorName *string, pluginID *string,
+) error {
+	if isEmptyString(pluginID) {
+		return fmt.Errorf("plugin ID cannot be nil for Delete operation")
+	}
+	if isEmptyString(routeIDorName) {
+		return fmt.Errorf("routeIDorName cannot be nil")
+	}
+
+	endpoint := fmt.Sprintf("/routes/%v/plugins/%v", *routeIDorName, *pluginID)
 	_, err := s.sendRequest(ctx, nil, endpoint, "DELETE")
 	if err != nil {
 		return err
