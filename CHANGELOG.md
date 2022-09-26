@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.32.0](#v0320)
 - [v0.31.1](#v0311)
 - [v0.31.0](#v0310)
 - [v0.30.0](#v0300)
@@ -38,6 +39,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## v0.33.0
+
+> Release date: to be released
+
+- Add plugin to a route
+  [#217](https://github.com/Kong/go-kong/pull/217)
 
 ## [v0.32.0]
 
@@ -608,6 +616,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.32.0]: https://github.com/Kong/go-kong/compare/v0.31.1...v0.32.0
 [v0.31.1]: https://github.com/Kong/go-kong/compare/v0.31.0...v0.31.1
 [v0.31.0]: https://github.com/Kong/go-kong/compare/v0.30.0...v0.31.0
 [v0.30.0]: https://github.com/Kong/go-kong/compare/v0.29.0...v0.30.0
