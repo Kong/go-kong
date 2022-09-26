@@ -268,7 +268,7 @@ func (s *PluginService) DeleteForRoute(ctx context.Context,
 	if err != nil {
 		return err
 	}
-	return err
+	return nil
 }
 
 // Validate validates a Plugin against its schema
