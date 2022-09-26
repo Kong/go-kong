@@ -129,6 +129,51 @@ func TestPluginsService(T *testing.T) {
 	assert.NotNil(createdPlugin.ID)
 
 	assert.NoError(client.Services.Delete(defaultCtx, createdService.ID))
+
+	// Create Plugin for route
+	route := &Route{
+		Name:  String("route_plugin"),
+		Paths: []*string{String("/route_plugin")},
+	}
+	// Clean Data
+	err = client.Routes.Delete(defaultCtx, route.Name)
+	assert.NoError(err)
+	// Test to create plugin from route endpoint
+	createdRoute, err := client.Routes.Create(defaultCtx, route)
+	assert.NoError(err)
+
+	id = uuid.NewString()
+	pluginForRoute := &Plugin{
+		Name: String("key-auth"),
+		ID:   String(id),
+		Config: Configuration{
+			"anonymous": "true",
+		},
+	}
+
+	createdPlugin, err = client.Plugins.CreateForRoute(defaultCtx, createdRoute.Name, pluginForRoute)
+	assert.NoError(err)
+	assert.NotNil(createdPlugin)
+	assert.Equal(id, *createdPlugin.ID)
+	assert.Equal("true", createdPlugin.Config["anonymous"])
+
+	createdPlugin.Config["anonymous"] = "false"
+	updatedPlugin, err = client.Plugins.UpdateForRoute(defaultCtx, createdRoute.Name, createdPlugin)
+	assert.NoError(err)
+	assert.NotNil(createdPlugin)
+	assert.Equal(id, *createdPlugin.ID)
+	assert.Equal("false", updatedPlugin.Config["anonymous"])
+
+	err = client.Plugins.DeleteForRoute(defaultCtx, createdRoute.Name, updatedPlugin.ID)
+	assert.NoError(err)
+
+	// Create plugin without ID
+	_, err = client.Plugins.CreateForRoute(defaultCtx, createdRoute.Name, &Plugin{Name: String("key-auth")})
+	assert.NoError(err)
+	assert.NotNil(createdPlugin)
+	assert.NotNil(createdPlugin.ID)
+
+	assert.NoError(client.Routes.Delete(defaultCtx, createdRoute.ID))
 }
 
 func TestPluginWithTags(T *testing.T) {
