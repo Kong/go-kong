@@ -122,14 +122,10 @@ func (s *VaultService) List(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	var vaults []*Vault
+	vaults := make([]*Vault, 0, len(data))
 	for _, object := range data {
-		b, err := object.MarshalJSON()
-		if err != nil {
-			return nil, nil, err
-		}
 		var vault Vault
-		err = json.Unmarshal(b, &vault)
+		err = json.Unmarshal(object, &vault)
 		if err != nil {
 			return nil, nil, err
 		}
