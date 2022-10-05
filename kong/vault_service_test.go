@@ -11,6 +11,7 @@ import (
 func TestVaultsService(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.0.0", RequiredFeatures{})
 	require := require.New(t)
+	assert := assert.New(t)
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
@@ -28,6 +29,11 @@ func TestVaultsService(t *testing.T) {
 	createdVault, err := client.Vaults.Create(defaultCtx, vault)
 	require.NoError(err)
 	require.NotNil(createdVault)
+	t.Cleanup(func() {
+		// Note the assert here as we might want more logic to be run as part of the cleanup,
+		// regardless of the return value of removing this particular object.
+		assert.NoError(client.Vaults.Delete(defaultCtx, createdVault.ID))
+	})
 
 	vault, err = client.Vaults.Get(defaultCtx, createdVault.ID)
 	require.NoError(err)
@@ -61,6 +67,11 @@ func TestVaultsService(t *testing.T) {
 	createdVault, err = client.Vaults.Create(defaultCtx, vault)
 	require.NoError(err)
 	require.NotNil(createdVault)
+	t.Cleanup(func() {
+		// Note the assert here as we might want more logic to be run as part of the cleanup,
+		// regardless of the return value of removing this particular object.
+		assert.NoError(client.Vaults.Delete(defaultCtx, createdVault.ID))
+	})
 	require.Equal(id, *createdVault.ID)
 	require.Equal("aws", *createdVault.Name)
 	require.Equal("aws vault for secrets", *createdVault.Description)
@@ -79,6 +90,7 @@ func TestVaultsService(t *testing.T) {
 func TestVaultWithTags(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.0.0", RequiredFeatures{})
 	require := require.New(t)
+	assert := assert.New(t)
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
@@ -97,6 +109,11 @@ func TestVaultWithTags(t *testing.T) {
 	createdVault, err := client.Vaults.Create(defaultCtx, vault)
 	require.NoError(err)
 	require.NotNil(createdVault)
+	t.Cleanup(func() {
+		// Note the assert here as we might want more logic to be run as part of the cleanup,
+		// regardless of the return value of removing this particular object.
+		assert.NoError(client.Vaults.Delete(defaultCtx, createdVault.ID))
+	})
 	require.Equal(StringSlice("tag1", "tag2"), createdVault.Tags)
 
 	err = client.Vaults.Delete(defaultCtx, createdVault.ID)
