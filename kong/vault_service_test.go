@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -105,6 +106,7 @@ func TestVaultWithTags(t *testing.T) {
 func TestVaultListEndpoint(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.0.0", RequiredFeatures{})
 	require := require.New(t)
+	assert := assert.New(t)
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
@@ -144,6 +146,12 @@ func TestVaultListEndpoint(t *testing.T) {
 		require.NoError(err)
 		require.NotNil(vault)
 		vaults[i] = vault
+
+		t.Cleanup(func() {
+			// Note the assert here as we might want more logic to be run as part of the cleanup,
+			// regardless of the return value of removing this particular object.
+			assert.NoError(client.Vaults.Delete(defaultCtx, vault.ID))
+		})
 	}
 
 	vaultsFromKong, next, err := client.Vaults.List(defaultCtx, nil)
@@ -181,10 +189,6 @@ func TestVaultListEndpoint(t *testing.T) {
 	require.NoError(err)
 	require.NotNil(vaults)
 	require.Equal(3, len(vaults))
-
-	for i := 0; i < len(vaults); i++ {
-		require.NoError(client.Vaults.Delete(defaultCtx, vaults[i].ID))
-	}
 }
 
 func compareVaults(t *testing.T, expected, actual []*Vault) bool {
