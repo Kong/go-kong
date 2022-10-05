@@ -44,6 +44,8 @@
 
 > Release date: to be released
 
+- Add support to Kong Vaults
+  [#224](https://github.com/Kong/go-kong/pull/224)
 - Add plugin to a route
   [#217](https://github.com/Kong/go-kong/pull/217)
 
