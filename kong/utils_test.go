@@ -12,6 +12,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestStringArrayToString(t *testing.T) {
@@ -570,27 +571,27 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 	}
 }
 
-func getJSONSchemaFromFile(filename string) Schema {
+func getJSONSchemaFromFile(t *testing.T, filename string) Schema {
 	jsonFile, err := os.Open(filename)
 	if err != nil {
-		panic(err)
+		require.NoError(t, err)
 	}
 	defer jsonFile.Close()
 
 	var schema Schema
 	byteValue, err := io.ReadAll(jsonFile)
 	if err != nil {
-		panic(err)
+		require.NoError(t, err)
 	}
 	if err := json.Unmarshal(byteValue, &schema); err != nil {
-		panic(err)
+		require.NoError(t, err)
 	}
 	return schema
 }
 
 func TestFillUpstreamsDefaultsFromJSONSchema(t *testing.T) {
 	// load upstream JSON schema from local file.
-	schema := getJSONSchemaFromFile("testdata/upstreamJSONSchema.json")
+	schema := getJSONSchemaFromFile(t, "testdata/upstreamJSONSchema.json")
 
 	tests := []struct {
 		name     string
@@ -712,9 +713,7 @@ func TestFillUpstreamsDefaultsFromJSONSchema(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			u := tc.upstream
-			if err := FillEntityDefaults(u, schema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, FillEntityDefaults(u, schema))
 			// Ignore fields to make tests pass despite small differences across releases.
 			opts := cmpopts.IgnoreFields(Healthcheck{}, "Threshold")
 			if diff := cmp.Diff(u, tc.expected, opts); diff != "" {
@@ -726,7 +725,7 @@ func TestFillUpstreamsDefaultsFromJSONSchema(t *testing.T) {
 
 func TestFillServicesDefaultsFromJSONSchema(t *testing.T) {
 	// load service JSON schema from local file.
-	schema := getJSONSchemaFromFile("testdata/serviceJSONSchema.json")
+	schema := getJSONSchemaFromFile(t, "testdata/serviceJSONSchema.json")
 
 	tests := []struct {
 		name     string
@@ -793,9 +792,7 @@ func TestFillServicesDefaultsFromJSONSchema(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			s := tc.service
-			if err := FillEntityDefaults(s, schema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, FillEntityDefaults(s, schema))
 			opt := []cmp.Option{
 				cmpopts.IgnoreFields(Service{}, "Enabled"),
 			}
@@ -808,7 +805,7 @@ func TestFillServicesDefaultsFromJSONSchema(t *testing.T) {
 
 func TestFillRoutesDefaultsFromJSONSchema(t *testing.T) {
 	// load route JSON schema from local file.
-	schema := getJSONSchemaFromFile("testdata/routeJSONSchema.json")
+	schema := getJSONSchemaFromFile(t, "testdata/routeJSONSchema.json")
 
 	tests := []struct {
 		name     string
@@ -872,9 +869,7 @@ func TestFillRoutesDefaultsFromJSONSchema(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			r := tc.route
-			if err := FillEntityDefaults(r, schema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, FillEntityDefaults(r, schema))
 			// Ignore fields to make tests pass despite small differences across releases.
 			opts := cmpopts.IgnoreFields(
 				Route{},
@@ -889,7 +884,7 @@ func TestFillRoutesDefaultsFromJSONSchema(t *testing.T) {
 
 func TestFillTargetDefaultsFromJSONSchema(t *testing.T) {
 	// load route JSON schema from local file.
-	schema := getJSONSchemaFromFile("testdata/targetJSONSchema.json")
+	schema := getJSONSchemaFromFile(t, "testdata/targetJSONSchema.json")
 
 	tests := []struct {
 		name     string
@@ -917,9 +912,7 @@ func TestFillTargetDefaultsFromJSONSchema(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			target := tc.target
-			if err := FillEntityDefaults(target, schema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, FillEntityDefaults(target, schema))
 			if diff := cmp.Diff(target, tc.expected); diff != "" {
 				t.Errorf(diff)
 			}
