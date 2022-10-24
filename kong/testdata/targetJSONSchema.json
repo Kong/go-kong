@@ -1,0 +1,61 @@
+{
+    "additionalProperties": false,
+    "properties": {
+        "created_at": {
+            "minimum": 1,
+            "type": "integer"
+        },
+        "id": {
+            "description": "must be a valid UUID",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "type": "string"
+        },
+        "tags": {
+            "items": {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^(?:[0-9a-zA-Z.\\-_~:]+(?: *[0-9a-zA-Z.\\-_~:])*)?$",
+                "type": "string"
+            },
+            "maxItems": 8,
+            "type": "array",
+            "uniqueItems": true
+        },
+        "target": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "type": "string"
+        },
+        "updated_at": {
+            "minimum": 1,
+            "type": "integer"
+        },
+        "upstream": {
+            "additionalProperties": false,
+            "description": "foreign",
+            "properties": {
+                "id": {
+                    "description": "must be a valid UUID",
+                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "type": "object"
+        },
+        "weight": {
+            "default": 100,
+            "maximum": 65535,
+            "minimum": 0,
+            "type": "integer"
+        }
+    },
+    "required": [
+        "id",
+        "target",
+        "upstream"
+    ],
+    "type": "object"
+}

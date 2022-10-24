@@ -1,8 +1,11 @@
 package kong
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"testing"
 
@@ -561,6 +564,363 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 			// Ignore fields to make tests pass despite small differences across releases.
 			opts := cmpopts.IgnoreFields(Healthcheck{}, "Threshold")
 			if diff := cmp.Diff(u, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func getJSONSchemaFromFile(filename string) Schema {
+	jsonFile, err := os.Open(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer jsonFile.Close()
+
+	var schema Schema
+	byteValue, err := io.ReadAll(jsonFile)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(byteValue, &schema); err != nil {
+		panic(err)
+	}
+	return schema
+}
+
+func TestFillUpstreamsDefaultsFromJSONSchema(t *testing.T) {
+	// load upstream JSON schema from local file.
+	schema := getJSONSchemaFromFile("testdata/upstreamJSONSchema.json")
+
+	tests := []struct {
+		name     string
+		upstream *Upstream
+		expected *Upstream
+	}{
+		{
+			name: "fills defaults for all fields, leaves name unchanged",
+			upstream: &Upstream{
+				Name: String("upstream1"),
+			},
+			expected: &Upstream{
+				Name:      String("upstream1"),
+				Algorithm: String("round-robin"),
+				Slots:     Int(10000),
+				Healthchecks: &Healthcheck{
+					Active: &ActiveHealthcheck{
+						Concurrency: Int(10),
+						Healthy: &Healthy{
+							HTTPStatuses: []int{200, 302},
+							Interval:     Int(0),
+							Successes:    Int(0),
+						},
+						HTTPPath:               String("/"),
+						HTTPSVerifyCertificate: Bool(true),
+						Type:                   String("http"),
+						Timeout:                Int(1),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{
+								429, 404,
+								500, 501, 502, 503, 504, 505,
+							},
+							TCPFailures: Int(0),
+							Timeouts:    Int(0),
+							Interval:    Int(0),
+						},
+					},
+					Passive: &PassiveHealthcheck{
+						Healthy: &Healthy{
+							HTTPStatuses: []int{
+								200, 201, 202, 203, 204, 205, 206, 207, 208, 226,
+								300, 301, 302, 303, 304, 305, 306, 307, 308,
+							},
+							Successes: Int(0),
+						},
+						Type: String("http"),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{429, 500, 503},
+							TCPFailures:  Int(0),
+							Timeouts:     Int(0),
+						},
+					},
+				},
+				HashOn:           String("none"),
+				HashFallback:     String("none"),
+				HashOnCookiePath: String("/"),
+			},
+		},
+		{
+			name: "fills defaults for all fields except algorithm and hash_on, leaves name unchanged",
+			upstream: &Upstream{
+				Name:      String("upstream1"),
+				Algorithm: String("consistent-hashing"),
+				HashOn:    String("ip"),
+			},
+			expected: &Upstream{
+				Name:      String("upstream1"),
+				Algorithm: String("consistent-hashing"),
+				Slots:     Int(10000),
+				Healthchecks: &Healthcheck{
+					Active: &ActiveHealthcheck{
+						Concurrency: Int(10),
+						Healthy: &Healthy{
+							HTTPStatuses: []int{200, 302},
+							Interval:     Int(0),
+							Successes:    Int(0),
+						},
+						HTTPPath:               String("/"),
+						HTTPSVerifyCertificate: Bool(true),
+						Type:                   String("http"),
+						Timeout:                Int(1),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{
+								429, 404,
+								500, 501, 502, 503, 504, 505,
+							},
+							TCPFailures: Int(0),
+							Timeouts:    Int(0),
+							Interval:    Int(0),
+						},
+					},
+					Passive: &PassiveHealthcheck{
+						Healthy: &Healthy{
+							HTTPStatuses: []int{
+								200, 201, 202, 203, 204, 205, 206, 207, 208, 226,
+								300, 301, 302, 303, 304, 305, 306, 307, 308,
+							},
+							Successes: Int(0),
+						},
+						Type: String("http"),
+						Unhealthy: &Unhealthy{
+							HTTPFailures: Int(0),
+							HTTPStatuses: []int{429, 500, 503},
+							TCPFailures:  Int(0),
+							Timeouts:     Int(0),
+						},
+					},
+				},
+				HashOn:           String("ip"),
+				HashFallback:     String("none"),
+				HashOnCookiePath: String("/"),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			u := tc.upstream
+			if err := FillEntityDefaults(u, schema); err != nil {
+				t.Errorf(err.Error())
+			}
+			// Ignore fields to make tests pass despite small differences across releases.
+			opts := cmpopts.IgnoreFields(Healthcheck{}, "Threshold")
+			if diff := cmp.Diff(u, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func TestFillServicesDefaultsFromJSONSchema(t *testing.T) {
+	// load service JSON schema from local file.
+	schema := getJSONSchemaFromFile("testdata/serviceJSONSchema.json")
+
+	tests := []struct {
+		name     string
+		service  *Service
+		expected *Service
+	}{
+		{
+			name: "fills defaults for all fields, leaves name and host unchanged",
+			service: &Service{
+				Name: String("svc1"),
+				Host: String("mockbin.org"),
+			},
+			expected: &Service{
+				Name:           String("svc1"),
+				Host:           String("mockbin.org"),
+				Port:           Int(80),
+				Protocol:       String("http"),
+				ConnectTimeout: Int(60000),
+				ReadTimeout:    Int(60000),
+				Retries:        Int(5),
+				WriteTimeout:   Int(60000),
+			},
+		},
+		{
+			name: "fills defaults for all fields except port, leaves name and host unchanged",
+			service: &Service{
+				Name: String("svc1"),
+				Host: String("mockbin.org"),
+				Port: Int(8080),
+			},
+			expected: &Service{
+				Name:           String("svc1"),
+				Host:           String("mockbin.org"),
+				Port:           Int(8080),
+				Protocol:       String("http"),
+				ConnectTimeout: Int(60000),
+				ReadTimeout:    Int(60000),
+				Retries:        Int(5),
+				WriteTimeout:   Int(60000),
+			},
+		},
+		{
+			name: "fills defaults for all fields except port, leaves name, tags and host unchanged",
+			service: &Service{
+				Name: String("svc1"),
+				Host: String("mockbin.org"),
+				Port: Int(8080),
+				Tags: []*string{String("tag1"), String("tag2")},
+			},
+			expected: &Service{
+				Name:           String("svc1"),
+				Host:           String("mockbin.org"),
+				Port:           Int(8080),
+				Protocol:       String("http"),
+				ConnectTimeout: Int(60000),
+				ReadTimeout:    Int(60000),
+				Retries:        Int(5),
+				WriteTimeout:   Int(60000),
+				Tags:           []*string{String("tag1"), String("tag2")},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			s := tc.service
+			if err := FillEntityDefaults(s, schema); err != nil {
+				t.Errorf(err.Error())
+			}
+			opt := []cmp.Option{
+				cmpopts.IgnoreFields(Service{}, "Enabled"),
+			}
+			if diff := cmp.Diff(s, tc.expected, opt...); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func TestFillRoutesDefaultsFromJSONSchema(t *testing.T) {
+	// load route JSON schema from local file.
+	schema := getJSONSchemaFromFile("testdata/routeJSONSchema.json")
+
+	tests := []struct {
+		name     string
+		route    *Route
+		expected *Route
+	}{
+		{
+			name: "fills defaults for all fields except paths, leaves name unchanged",
+			route: &Route{
+				Name:  String("r1"),
+				Paths: []*string{String("/r1")},
+			},
+			expected: &Route{
+				Name:                    String("r1"),
+				Paths:                   []*string{String("/r1")},
+				PreserveHost:            Bool(false),
+				Protocols:               []*string{String("http"), String("https")},
+				RegexPriority:           Int(0),
+				StripPath:               Bool(true),
+				HTTPSRedirectStatusCode: Int(426),
+			},
+		},
+		{
+			name: "fills defaults for all fields except paths and protocols, leaves name unchanged",
+			route: &Route{
+				Name:      String("r1"),
+				Paths:     []*string{String("/r1")},
+				Protocols: []*string{String("grpc")},
+			},
+			expected: &Route{
+				Name:                    String("r1"),
+				Paths:                   []*string{String("/r1")},
+				PreserveHost:            Bool(false),
+				Protocols:               []*string{String("grpc")},
+				RegexPriority:           Int(0),
+				StripPath:               Bool(true),
+				HTTPSRedirectStatusCode: Int(426),
+			},
+		},
+		{
+			name: "boolean default values don't overwrite existing fields if set",
+			route: &Route{
+				Name:         String("r1"),
+				Paths:        []*string{String("/r1")},
+				Protocols:    []*string{String("grpc")},
+				StripPath:    Bool(false),
+				PreserveHost: Bool(true),
+			},
+			expected: &Route{
+				Name:                    String("r1"),
+				Paths:                   []*string{String("/r1")},
+				PreserveHost:            Bool(true),
+				Protocols:               []*string{String("grpc")},
+				RegexPriority:           Int(0),
+				StripPath:               Bool(false),
+				HTTPSRedirectStatusCode: Int(426),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			r := tc.route
+			if err := FillEntityDefaults(r, schema); err != nil {
+				t.Errorf(err.Error())
+			}
+			// Ignore fields to make tests pass despite small differences across releases.
+			opts := cmpopts.IgnoreFields(
+				Route{},
+				"RequestBuffering", "ResponseBuffering", "PathHandling",
+			)
+			if diff := cmp.Diff(r, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func TestFillTargetDefaultsFromJSONSchema(t *testing.T) {
+	// load route JSON schema from local file.
+	schema := getJSONSchemaFromFile("testdata/targetJSONSchema.json")
+
+	tests := []struct {
+		name     string
+		target   *Target
+		expected *Target
+	}{
+		{
+			name:   "fills default for weight",
+			target: &Target{},
+			expected: &Target{
+				Weight: Int(100),
+			},
+		},
+		{
+			name: "set zero-value",
+			target: &Target{
+				Weight: Int(0),
+			},
+			expected: &Target{
+				Weight: Int(0),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			target := tc.target
+			if err := FillEntityDefaults(target, schema); err != nil {
+				t.Errorf(err.Error())
+			}
+			if diff := cmp.Diff(target, tc.expected); diff != "" {
 				t.Errorf(diff)
 			}
 		})

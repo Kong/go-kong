@@ -248,7 +248,9 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 // and flattens it, turning it into a map that can be more easily unmarshalled
 // into proper entity objects.
 //
-// Sample input:
+// This supports both Lua and JSON schemas.
+//
+// Sample Lua schema input:
 //
 //	{
 //		"fields": [
@@ -274,6 +276,32 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 //	  ...
 //	}
 //
+// Sample JSON schema input:
+//
+//	{
+//		"properties": [
+//	        {
+//	            "algorithm": {
+//	                "default": "round-robin",
+//	                "enum": ["consistent-hashing", "least-connections", "round-robin"],
+//	                "type": "string"
+//	            }
+//	        }, {
+//	            "hash_on": {
+//	                "default": "none",
+//	                "enum": ["none", "consumer", "ip", "header", "cookie"],
+//	                "type": "string"
+//	            }
+//	        }, {
+//	            "hash_fallback": {
+//	                "default": "none",
+//	                "enum": ["none", "consumer", "ip", "header", "cookie"],
+//	                "type": "string"
+//	            }
+//	        },
+//	  ...
+//	}
+//
 // Sample output:
 //
 //	{
@@ -283,7 +311,49 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 //	 ...
 //	}
 func flattenDefaultsSchema(schema gjson.Result) Schema {
-	value := schema.Get("fields")
+	fields := schema.Get("fields")
+	if fields.Exists() {
+		return flattenLuaSchema(fields)
+	}
+	properties := schema.Get("properties")
+	if properties.Exists() {
+		return flattenJSONSchema(properties)
+	}
+	return Schema{}
+}
+
+func flattenJSONSchema(value gjson.Result) Schema {
+	results := Schema{}
+
+	value.ForEach(func(key, value gjson.Result) bool {
+		name := key.String()
+
+		ftype := value.Get("type")
+		// when type==object and additionalProperties==false, the object
+		// represents either a foreign relationship or a map entry.
+		// In both cases, defaults don't need to be injected.
+		additionalProperties := value.Get("additionalProperties")
+		if ftype.String() == "object" &&
+			(!additionalProperties.Exists() ||
+				(additionalProperties.Exists() &&
+					additionalProperties.Bool())) {
+			newSubConfig := flattenDefaultsSchema(value)
+			results[name] = newSubConfig
+			return true
+		}
+		value = value.Get("default")
+		if value.Exists() {
+			results[name] = value.Value()
+		} else {
+			results[name] = nil
+		}
+		return true
+	})
+
+	return results
+}
+
+func flattenLuaSchema(value gjson.Result) Schema {
 	results := Schema{}
 
 	value.ForEach(func(key, value gjson.Result) bool {
