@@ -11,7 +11,7 @@ require (
 	github.com/imdario/mergo v0.3.12
 	github.com/kong/semver/v4 v4.0.1
 	github.com/mitchellh/mapstructure v1.5.0
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/tidwall/gjson v1.14.3
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/code-generator v0.25.3
