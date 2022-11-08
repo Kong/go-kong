@@ -1,0 +1,302 @@
+{
+    "additionalProperties": false,
+    "allOf": [
+        {
+            "description": "client_certificate can be set only when protocol is `https`",
+            "if": {
+                "required": [
+                    "client_certificate"
+                ]
+            },
+            "then": {
+                "properties": {
+                    "protocol": {
+                        "const": "https"
+                    }
+                },
+                "required": [
+                    "protocol"
+                ]
+            },
+            "title": "client_certificate_rule"
+        },
+        {
+            "description": "tls_verify can be set only when protocol is `https`",
+            "if": {
+                "properties": {
+                    "tls_verify": {
+                        "const": true
+                    }
+                },
+                "required": [
+                    "tls_verify"
+                ]
+            },
+            "then": {
+                "properties": {
+                    "protocol": {
+                        "const": "https"
+                    }
+                },
+                "required": [
+                    "protocol"
+                ]
+            },
+            "title": "tls_verify_rule"
+        },
+        {
+            "description": "tls_verify_depth can be set only when protocol is `https`",
+            "if": {
+                "required": [
+                    "tls_verify_depth"
+                ]
+            },
+            "then": {
+                "properties": {
+                    "protocol": {
+                        "const": "https"
+                    }
+                },
+                "required": [
+                    "protocol"
+                ]
+            }
+        },
+        {
+            "description": "ca_certificates can be set only when protocol is `https`",
+            "if": {
+                "required": [
+                    "ca_certificates"
+                ]
+            },
+            "then": {
+                "properties": {
+                    "protocol": {
+                        "const": "https"
+                    }
+                },
+                "required": [
+                    "protocol"
+                ]
+            }
+        },
+        {
+            "description": "path can be set only when protocol is 'http' or 'https'",
+            "if": {
+                "properties": {
+                    "protocol": {
+                        "oneOf": [
+                            {
+                                "const": "grpc"
+                            },
+                            {
+                                "const": "grpcs"
+                            },
+                            {
+                                "const": "tcp"
+                            },
+                            {
+                                "const": "tls"
+                            },
+                            {
+                                "const": "udp"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "protocol"
+                ]
+            },
+            "then": {
+                "properties": {
+                    "path": {
+                        "not": {}
+                    }
+                }
+            }
+        },
+        {
+            "description": "url should not be set",
+            "not": {
+                "required": [
+                    "url"
+                ]
+            }
+        },
+        {
+            "description": "'ws' and 'wss' protocols are Kong Enterprise-only features. Please upgrade to Kong Enterprise to use this feature.",
+            "not": {
+                "properties": {
+                    "protocol": {
+                        "oneOf": [
+                            {
+                                "const": "ws",
+                                "type": "string"
+                            },
+                            {
+                                "const": "wss",
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "protocol"
+                ]
+            },
+            "title": "ws_protocols_rule"
+        }
+    ],
+    "properties": {
+        "ca_certificates": {
+            "items": {
+                "description": "must be a valid UUID",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "client_certificate": {
+            "additionalProperties": false,
+            "description": "foreign",
+            "properties": {
+                "id": {
+                    "description": "must be a valid UUID",
+                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "type": "object"
+        },
+        "connect_timeout": {
+            "default": 60000,
+            "maximum": 2147483646,
+            "minimum": 1,
+            "type": "integer"
+        },
+        "created_at": {
+            "minimum": 1,
+            "type": "integer"
+        },
+        "enabled": {
+            "default": true,
+            "type": "boolean"
+        },
+        "host": {
+            "description": "must be a valid hostname",
+            "maxLength": 256,
+            "pattern": "^[a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?(.[a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?)*$",
+            "type": "string"
+        },
+        "id": {
+            "description": "must be a valid UUID",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "type": "string"
+        },
+        "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[0-9a-zA-Z.\\-_~]*$",
+            "type": "string"
+        },
+        "path": {
+            "allOf": [
+                {
+                    "description": "must begin with `/`",
+                    "pattern": "^/.*"
+                },
+                {
+                    "description": "length must not exceed 1024",
+                    "maxLength": 1024
+                },
+                {
+                    "not": {
+                        "description": "must not contain `//`",
+                        "pattern": "//"
+                    }
+                }
+            ],
+            "type": "string"
+        },
+        "port": {
+            "default": 80,
+            "maximum": 65535,
+            "minimum": 1,
+            "type": "integer"
+        },
+        "protocol": {
+            "default": "http",
+            "enum": [
+                "http",
+                "https",
+                "grpc",
+                "grpcs",
+                "tcp",
+                "udp",
+                "tls",
+                "tls_passthrough",
+                "ws",
+                "wss"
+            ],
+            "type": "string"
+        },
+        "read_timeout": {
+            "default": 60000,
+            "maximum": 2147483646,
+            "minimum": 1,
+            "type": "integer"
+        },
+        "retries": {
+            "default": 5,
+            "maximum": 32767,
+            "minimum": 1,
+            "type": "integer"
+        },
+        "tags": {
+            "items": {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^(?:[0-9a-zA-Z.\\-_~:]+(?: *[0-9a-zA-Z.\\-_~:])*)?$",
+                "type": "string"
+            },
+            "maxItems": 8,
+            "type": "array",
+            "uniqueItems": true
+        },
+        "tls_verify": {
+            "type": "boolean"
+        },
+        "tls_verify_depth": {
+            "maximum": 64,
+            "minimum": 0,
+            "type": "integer"
+        },
+        "updated_at": {
+            "minimum": 1,
+            "type": "integer"
+        },
+        "url": {
+            "type": "string"
+        },
+        "write_timeout": {
+            "default": 60000,
+            "maximum": 2147483646,
+            "minimum": 1,
+            "type": "integer"
+        }
+    },
+    "required": [
+        "id",
+        "protocol",
+        "host",
+        "port",
+        "connect_timeout",
+        "read_timeout",
+        "write_timeout"
+    ],
+    "type": "object"
+}

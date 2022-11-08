@@ -1,0 +1,752 @@
+{
+    "additionalProperties": false,
+    "allOf": [
+        {
+            "description": "'snis' can be set only when protocols has one of 'https', 'grpcs', 'tls' or 'tls_passthrough'",
+            "if": {
+                "required": [
+                    "snis"
+                ]
+            },
+            "then": {
+                "properties": {
+                    "protocols": {
+                        "contains": {
+                            "oneOf": [
+                                {
+                                    "const": "https",
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "grpcs",
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "tls",
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "tls_passthrough",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "title": "sni_rule"
+        },
+        {
+            "description": "when protocols has 'http' or 'https', 'sources' or 'destinations' cannot be set",
+            "if": {
+                "properties": {
+                    "protocols": {
+                        "contains": {
+                            "anyOf": [
+                                {
+                                    "const": "https",
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "http",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "protocols"
+                ]
+            },
+            "then": {
+                "properties": {
+                    "destinations": {
+                        "not": {}
+                    },
+                    "sources": {
+                        "not": {
+                            "description": "when protocols has 'http' or 'https', 'sources' or 'destination' cannot be set"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "description": "when protocols has 'http', at least one of 'hosts', 'methods', 'paths' or 'headers' must be set",
+            "if": {
+                "properties": {
+                    "protocols": {
+                        "contains": {
+                            "const": "http"
+                        }
+                    }
+                },
+                "required": [
+                    "protocols"
+                ]
+            },
+            "then": {
+                "anyOf": [
+                    {
+                        "required": [
+                            "methods"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "hosts"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "paths"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "paths"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "headers"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "description": "when protocols has 'https', at least one of 'snis', 'hosts', 'methods', 'paths' or 'headers' must be set",
+            "if": {
+                "properties": {
+                    "protocols": {
+                        "contains": {
+                            "const": "https"
+                        }
+                    }
+                },
+                "required": [
+                    "protocols"
+                ]
+            },
+            "then": {
+                "anyOf": [
+                    {
+                        "required": [
+                            "methods"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "hosts"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "paths"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "paths"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "headers"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "snis"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "description": "when protocol has 'tcp', 'tls', 'tls_passthrough' or 'udp', 'methods', 'hosts', 'paths', 'headers' cannot be set",
+            "if": {
+                "properties": {
+                    "protocols": {
+                        "contains": {
+                            "anyOf": [
+                                {
+                                    "const": "tcp",
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "udp",
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "tls",
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "tls_passthrough",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "protocols"
+                ]
+            },
+            "then": {
+                "properties": {
+                    "headers": {
+                        "not": {}
+                    },
+                    "hosts": {
+                        "not": {}
+                    },
+                    "methods": {
+                        "not": {}
+                    },
+                    "paths": {
+                        "not": {}
+                    }
+                }
+            }
+        },
+        {
+            "description": "when protocols has 'tcp', 'tls' or 'udp', then at least one of 'sources', 'destinations' or 'snis' must be set",
+            "if": {
+                "properties": {
+                    "protocols": {
+                        "contains": {
+                            "anyOf": [
+                                {
+                                    "const": "tcp",
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "udp",
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "tls",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "protocols"
+                ]
+            },
+            "then": {
+                "anyOf": [
+                    {
+                        "required": [
+                            "sources"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "destinations"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "snis"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "description": "when protocol has 'grpc' or 'grpcs', 'strip_path', 'methods', 'sources', 'destinations' cannot be set",
+            "if": {
+                "properties": {
+                    "protocols": {
+                        "contains": {
+                            "anyOf": [
+                                {
+                                    "const": "grpc",
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "grpcs",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "protocols"
+                ]
+            },
+            "then": {
+                "properties": {
+                    "destinations": {
+                        "not": {}
+                    },
+                    "methods": {
+                        "not": {}
+                    },
+                    "sources": {
+                        "not": {}
+                    },
+                    "strip_path": {
+                        "not": {
+                            "const": true
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "description": "when protocols has 'grpc', at least one of 'hosts', 'headers' or 'paths' must be set",
+            "if": {
+                "properties": {
+                    "protocols": {
+                        "contains": {
+                            "const": "grpc"
+                        }
+                    }
+                },
+                "required": [
+                    "protocols"
+                ]
+            },
+            "then": {
+                "anyOf": [
+                    {
+                        "required": [
+                            "hosts"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "headers"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "paths"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "description": "when protocols has 'grpcs', at least one of 'hosts', 'headers', 'paths' or 'snis' must be set",
+            "if": {
+                "properties": {
+                    "protocols": {
+                        "contains": {
+                            "const": "grpcs"
+                        }
+                    }
+                },
+                "required": [
+                    "protocols"
+                ]
+            },
+            "then": {
+                "anyOf": [
+                    {
+                        "required": [
+                            "hosts"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "headers"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "paths"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "snis"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "description": "when protocols has 'tls_passthrough', 'snis' must be set",
+            "if": {
+                "properties": {
+                    "protocols": {
+                        "contains": {
+                            "const": "tls_passthrough"
+                        }
+                    }
+                },
+                "required": [
+                    "protocols"
+                ]
+            },
+            "then": {
+                "anyOf": [
+                    {
+                        "required": [
+                            "snis"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "description": "'ws' and 'wss' protocols are Kong Enterprise-only features. Please upgrade to Kong Enterprise to use this feature.",
+            "not": {
+                "properties": {
+                    "protocols": {
+                        "contains": {
+                            "anyOf": [
+                                {
+                                    "const": "ws",
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "wss",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "protocols"
+                ]
+            },
+            "title": "ws_protocols_rule"
+        }
+    ],
+    "properties": {
+        "created_at": {
+            "minimum": 1,
+            "type": "integer"
+        },
+        "destinations": {
+            "items": {
+                "anyOf": [
+                    {
+                        "description": "at least one of 'ip' or 'port' is required",
+                        "required": [
+                            "ip"
+                        ]
+                    },
+                    {
+                        "description": "at least one of 'ip' or 'port' is required",
+                        "required": [
+                            "port"
+                        ]
+                    }
+                ],
+                "properties": {
+                    "ip": {
+                        "anyOf": [
+                            {
+                                "description": "must be a valid IP or CIDR",
+                                "pattern": "^([0-9]{1,3}[.]{1}){3}[0-9]{1,3}$"
+                            },
+                            {
+                                "description": "must be a valid IP or CIDR",
+                                "pattern": "^([0-9]{1,3}[.]{1}){3}[0-9]{1,3}/[0-9]{1,3}$"
+                            }
+                        ],
+                        "type": "string"
+                    },
+                    "port": {
+                        "maximum": 65535,
+                        "minimum": 1,
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "maxItems": 16,
+            "type": "array"
+        },
+        "headers": {
+            "additionalProperties": false,
+            "maxProperties": 16,
+            "patternProperties": {
+                "^[A-Za-z0-9!#$%&'*+-.^_|~]{1,64}$": {
+                    "properties": {
+                        "values": {
+                            "items": {
+                                "maxLength": 64,
+                                "type": "string"
+                            },
+                            "maxItems": 16,
+                            "type": "array"
+                        }
+                    },
+                    "type": "object"
+                },
+                "^[Hh][Oo][Ss][Tt]$": {
+                    "not": {
+                        "description": "must not contain 'host' header"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "hosts": {
+            "items": {
+                "description": "must be a valid hostname",
+                "maxLength": 256,
+                "pattern": "^[a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?(.[a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?)*$",
+                "type": "string"
+            },
+            "maxItems": 16,
+            "type": "array"
+        },
+        "https_redirect_status_code": {
+            "default": 426,
+            "enum": [
+                426,
+                301,
+                302,
+                307,
+                308
+            ],
+            "type": "integer"
+        },
+        "id": {
+            "description": "must be a valid UUID",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "type": "string"
+        },
+        "methods": {
+            "items": {
+                "maxItems": 16,
+                "pattern": "^[A-Z]+$",
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[0-9a-zA-Z.\\-_~]*$",
+            "type": "string"
+        },
+        "path_handling": {
+            "default": "v0",
+            "enum": [
+                "v0",
+                "v1"
+            ],
+            "type": "string"
+        },
+        "paths": {
+            "items": {
+                "allOf": [
+                    {
+                        "description": "must begin with `/` (prefix path) or `~/` (regex path)",
+                        "pattern": "^/.*|^~/.*"
+                    },
+                    {
+                        "description": "length must not exceed 1024",
+                        "maxLength": 1024
+                    },
+                    {
+                        "not": {
+                            "description": "must not contain `//`",
+                            "pattern": "//"
+                        }
+                    }
+                ],
+                "type": "string"
+            },
+            "maxItems": 16,
+            "type": "array"
+        },
+        "preserve_host": {
+            "default": false,
+            "type": "boolean"
+        },
+        "protocols": {
+            "anyOf": [
+                {
+                    "description": "must contain only one subset [ http https ]",
+                    "items": {
+                        "enum": [
+                            "http",
+                            "https"
+                        ],
+                        "type": "string"
+                    }
+                },
+                {
+                    "description": "must contain only one subset [ tcp udp tls ]",
+                    "items": {
+                        "enum": [
+                            "tcp",
+                            "udp",
+                            "tls"
+                        ],
+                        "type": "string"
+                    }
+                },
+                {
+                    "description": "must contain only one subset [ grpc grpcs ]",
+                    "items": {
+                        "enum": [
+                            "grpc",
+                            "grpcs"
+                        ],
+                        "type": "string"
+                    }
+                },
+                {
+                    "description": "must contain only one subset [ tls_passthrough ]",
+                    "items": {
+                        "enum": [
+                            "tls_passthrough"
+                        ],
+                        "type": "string"
+                    }
+                },
+                {
+                    "description": "must contain only one subset [ ws wss ]",
+                    "items": {
+                        "enum": [
+                            "ws",
+                            "wss"
+                        ],
+                        "type": "string"
+                    }
+                }
+            ],
+            "default": [
+                "http",
+                "https"
+            ],
+            "items": {
+                "enum": [
+                    "http",
+                    "https",
+                    "grpc",
+                    "grpcs",
+                    "tcp",
+                    "udp",
+                    "tls",
+                    "tls_passthrough",
+                    "ws",
+                    "wss"
+                ],
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "regex_priority": {
+            "default": 0,
+            "exclusiveMinimum": -1,
+            "type": "integer"
+        },
+        "request_buffering": {
+            "default": true,
+            "type": "boolean"
+        },
+        "response_buffering": {
+            "default": true,
+            "type": "boolean"
+        },
+        "service": {
+            "additionalProperties": false,
+            "description": "foreign",
+            "properties": {
+                "id": {
+                    "description": "must be a valid UUID",
+                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "type": "object"
+        },
+        "snis": {
+            "items": {
+                "description": "must be a valid hostname",
+                "maxLength": 256,
+                "pattern": "^[a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?(.[a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?)*$",
+                "type": "string"
+            },
+            "maxItems": 16,
+            "type": "array"
+        },
+        "sources": {
+            "items": {
+                "anyOf": [
+                    {
+                        "description": "at least one of 'ip' or 'port' is required",
+                        "required": [
+                            "ip"
+                        ]
+                    },
+                    {
+                        "description": "at least one of 'ip' or 'port' is required",
+                        "required": [
+                            "port"
+                        ]
+                    }
+                ],
+                "properties": {
+                    "ip": {
+                        "anyOf": [
+                            {
+                                "description": "must be a valid IP or CIDR",
+                                "pattern": "^([0-9]{1,3}[.]{1}){3}[0-9]{1,3}$"
+                            },
+                            {
+                                "description": "must be a valid IP or CIDR",
+                                "pattern": "^([0-9]{1,3}[.]{1}){3}[0-9]{1,3}/[0-9]{1,3}$"
+                            }
+                        ],
+                        "type": "string"
+                    },
+                    "port": {
+                        "maximum": 65535,
+                        "minimum": 1,
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "maxItems": 16,
+            "type": "array"
+        },
+        "strip_path": {
+            "default": true,
+            "type": "boolean"
+        },
+        "tags": {
+            "items": {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^(?:[0-9a-zA-Z.\\-_~:]+(?: *[0-9a-zA-Z.\\-_~:])*)?$",
+                "type": "string"
+            },
+            "maxItems": 8,
+            "type": "array",
+            "uniqueItems": true
+        },
+        "updated_at": {
+            "minimum": 1,
+            "type": "integer"
+        }
+    },
+    "required": [
+        "id",
+        "protocols"
+    ],
+    "type": "object"
+}
