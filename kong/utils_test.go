@@ -2,7 +2,6 @@ package kong
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -573,19 +572,10 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 
 func getJSONSchemaFromFile(t *testing.T, filename string) Schema {
 	jsonFile, err := os.Open(filename)
-	if err != nil {
-		require.NoError(t, err)
-	}
+	require.NoError(t, err)
 	defer jsonFile.Close()
-
 	var schema Schema
-	byteValue, err := io.ReadAll(jsonFile)
-	if err != nil {
-		require.NoError(t, err)
-	}
-	if err := json.Unmarshal(byteValue, &schema); err != nil {
-		require.NoError(t, err)
-	}
+	require.NoError(t, json.NewDecoder(jsonFile).Decode(&schema))
 	return schema
 }
 
@@ -913,9 +903,7 @@ func TestFillTargetDefaultsFromJSONSchema(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			target := tc.target
 			require.NoError(t, FillEntityDefaults(target, schema))
-			if diff := cmp.Diff(target, tc.expected); diff != "" {
-				t.Errorf(diff)
-			}
+			require.Equal(t, tc.expected, target)
 		})
 	}
 }
