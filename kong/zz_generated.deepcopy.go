@@ -965,6 +965,11 @@ func (in *Oauth2Credential) DeepCopyInto(out *Oauth2Credential) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.ClientType != nil {
+		in, out := &in.ClientType, &out.ClientType
+		*out = new(string)
+		**out = **in
+	}
 	if in.HashSecret != nil {
 		in, out := &in.HashSecret, &out.HashSecret
 		*out = new(bool)
