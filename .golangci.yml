@@ -1,3 +1,8 @@
+run:
+  timeout: 5m
+  build-tags:
+  - enterprise
+
 linters:
   enable:
   - asciicheck
@@ -8,6 +13,7 @@ linters:
   - durationcheck
   - errcheck
   - errname
+  - errorlint
   - exhaustive
   - exportloopref
   - gci
@@ -17,8 +23,10 @@ linters:
   - goimports
   - gomnd
   - gosec
+  - gosimple
   - govet
   - importas
+  - ineffassign
   - lll
   - megacheck
   - misspell
@@ -27,7 +35,13 @@ linters:
   - nolintlint
   - predeclared
   - revive
+  - staticcheck
   - stylecheck
+  - typecheck
   - unconvert
   - unparam
+  - unused
   - wastedassign
+
+issues:
+  max-same-issues: 0

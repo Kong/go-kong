@@ -234,7 +234,7 @@ func (s *AdminService) ListWorkspaces(ctx context.Context,
 	var workspaces []*Workspace
 	_, err = s.client.Do(ctx, req, &workspaces)
 	if err != nil {
-		return nil, fmt.Errorf("error updating admin workspaces: %v", err)
+		return nil, fmt.Errorf("error updating admin workspaces: %w", err)
 	}
 	return workspaces, nil
 }
@@ -254,7 +254,7 @@ func (s *AdminService) ListRoles(ctx context.Context,
 	}
 	_, err = s.client.Do(ctx, req, &listRoles)
 	if err != nil {
-		return nil, fmt.Errorf("error listing admin roles: %v", err)
+		return nil, fmt.Errorf("error listing admin roles: %w", err)
 	}
 
 	return listRoles.Roles, nil
@@ -287,7 +287,7 @@ func (s *AdminService) UpdateRoles(ctx context.Context,
 	}
 	_, err = s.client.Do(ctx, req, &listRoles)
 	if err != nil {
-		return nil, fmt.Errorf("error updating admin roles: %v", err)
+		return nil, fmt.Errorf("error updating admin roles: %w", err)
 	}
 	return listRoles.Roles, nil
 }
@@ -317,7 +317,7 @@ func (s *AdminService) DeleteRoles(ctx context.Context,
 
 	_, err = s.client.Do(ctx, req, nil)
 	if err != nil {
-		return fmt.Errorf("error deleting admin roles: %v", err)
+		return fmt.Errorf("error deleting admin roles: %w", err)
 	}
 
 	return nil
