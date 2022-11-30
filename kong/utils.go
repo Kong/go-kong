@@ -433,15 +433,15 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 	}
 	defaults, err := getDefaultsObj(schema)
 	if err != nil {
-		return fmt.Errorf("parse schema for defaults: %v", err)
+		return fmt.Errorf("parse schema for defaults: %w", err)
 	}
 	if err := json.Unmarshal(defaults, &tmpEntity); err != nil {
-		return fmt.Errorf("unmarshal entity with defaults: %v", err)
+		return fmt.Errorf("unmarshal entity with defaults: %w", err)
 	}
 	if err := mergo.Merge(
 		entity, tmpEntity, mergo.WithTransformers(zeroValueTransformer{}),
 	); err != nil {
-		return fmt.Errorf("merge entity with its defaults: %v", err)
+		return fmt.Errorf("merge entity with its defaults: %w", err)
 	}
 	return nil
 }
