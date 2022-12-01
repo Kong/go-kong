@@ -31,6 +31,7 @@ func TestHasError(T *testing.T) {
 			want: &APIError{
 				httpCode: 404,
 				message:  "potayto pohtato",
+				raw:      []byte(`{"message": "potayto pohtato", "some": "other field"}`),
 			},
 		},
 		{
@@ -42,6 +43,7 @@ func TestHasError(T *testing.T) {
 			want: &APIError{
 				httpCode: 404,
 				message:  "",
+				raw:      []byte(`{"nothing": "nothing"}`),
 			},
 		},
 		{
@@ -53,6 +55,7 @@ func TestHasError(T *testing.T) {
 			want: &APIError{
 				httpCode: 404,
 				message:  "<failed to parse response body: unexpected end of JSON input>",
+				raw:      []byte(``),
 			},
 		},
 		{
@@ -64,6 +67,7 @@ func TestHasError(T *testing.T) {
 			want: &APIError{
 				httpCode: 404,
 				message:  "<failed to parse response body: invalid character 'T' looking for beginning of value>",
+				raw:      []byte(`This is not json`),
 			},
 		},
 	} {
