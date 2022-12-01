@@ -10,12 +10,21 @@ import (
 type APIError struct {
 	httpCode int
 	message  string
+	raw      []byte
 }
 
 func NewAPIError(code int, msg string) *APIError {
 	return &APIError{
 		httpCode: code,
 		message:  msg,
+	}
+}
+
+func NewAPIErrorWithRaw(code int, msg string, raw []byte) *APIError {
+	return &APIError{
+		httpCode: code,
+		message:  msg,
+		raw:      raw,
 	}
 }
 
@@ -26,6 +35,11 @@ func (e *APIError) Error() string {
 // Code returns the HTTP status code for the error.
 func (e *APIError) Code() int {
 	return e.httpCode
+}
+
+// Raw returns the raw HTTP error response body.
+func (e *APIError) Raw() []byte {
+	return e.raw
 }
 
 // IsNotFoundErr returns true if the error or it's cause is
