@@ -62,3 +62,10 @@ jobs:
           name: codecov-${{ matrix.kong_version }}
           flags: ${{ matrix.kong_version }},integration,enterprise
           fail_ci_if_error: true
+
+  test-enterprise-passed:
+    runs-on: ubuntu-latest
+    needs: test-enterprise
+    steps:
+    - name: integrations tests pased
+      run: echo all integrations tests passed
