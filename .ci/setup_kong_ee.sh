@@ -2,7 +2,7 @@
 
 set -e
 
-KONG_IMAGE=kong/kong-gateway:${KONG_VERSION}
+KONG_IMAGE=${KONG_IMAGE_REPO:-kong/kong-gateway}:${KONG_IMAGE_TAG:-3.0.0.0}
 NETWORK_NAME=kong-test
 
 PG_CONTAINER_NAME=pg
@@ -33,6 +33,11 @@ waitKongAPI() {
     sleep $1
   done
 }
+
+if [[ -v TEST_KONG_PULL_USERNAME ]]; then
+  echo "${TEST_KONG_PULL_PASSWORD}" | docker login --username "${TEST_KONG_PULL_USERNAME}" --password-stdin
+fi
+
 
 # Start a PostgreSQL container
 docker run --rm -d --name $PG_CONTAINER_NAME \

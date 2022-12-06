@@ -1,4 +1,4 @@
-name: 'Integration Test : Community'
+name: 'Integration Test : Community Nightly'
 
 on:
   push:
@@ -11,21 +11,9 @@ on:
 
 jobs:
   test:
-    strategy:
-      matrix:
-        kong_version:
-        - '2.0.5'
-        - '2.1.4'
-        - '2.2.2'
-        - '2.3.3'
-        - '2.4.0'
-        - '2.5.1'
-        - '2.6.0'
-        - '2.7.0'
-        - '2.8.0'
-        - '3.0.0'
     env:
-      KONG_IMAGE_TAG: ${{ matrix.kong_version }}
+      KONG_IMAGE_REPO: "kong/kong"
+      KONG_IMAGE_TAG: "master-alpine"
       KONG_ANONYMOUS_REPORTS: "off"
     runs-on: ubuntu-latest
     steps:
@@ -48,6 +36,7 @@ jobs:
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v3.1.1
         with:
-          name: codecov-${{ matrix.kong_version }}
-          flags: ${{ matrix.kong_version }},integration,community
+          name: codecov-nightly
+          flags: nightly,integration,community
           fail_ci_if_error: true
+
