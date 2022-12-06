@@ -22,6 +22,7 @@ linters:
   - gofumpt
   - goimports
   - gomnd
+  - gomodguard
   - gosec
   - gosimple
   - govet
@@ -45,3 +46,17 @@ linters:
 
 issues:
   max-same-issues: 0
+
+linters-settings:
+  gomodguard:
+    blocked:
+      modules:
+      - github.com/ghodss/yaml:
+          recommendations:
+          - sigs.k8s.io/yaml
+      - gopkg.in/yaml.v2:
+          recommendations:
+          - sigs.k8s.io/yaml
+      - gopkg.in/yaml.v3:
+          recommendations:
+          - sigs.k8s.io/yaml
