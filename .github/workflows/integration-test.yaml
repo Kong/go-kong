@@ -14,7 +14,6 @@ jobs:
     strategy:
       matrix:
         kong_version:
-        - '2.0.5'
         - '2.1.4'
         - '2.2.2'
         - '2.3.3'
@@ -23,7 +22,8 @@ jobs:
         - '2.6.0'
         - '2.7.0'
         - '2.8.0'
-        - '3.0.0'
+        - '3.0.1'
+        - '3.1.0'
     env:
       KONG_VERSION: ${{ matrix.kong_version }}
       KONG_ANONYMOUS_REPORTS: "off"
@@ -51,3 +51,10 @@ jobs:
           name: codecov-${{ matrix.kong_version }}
           flags: ${{ matrix.kong_version }},integration,community
           fail_ci_if_error: true
+
+  test-passed:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+    - name: integrations tests pased
+      run: echo all integrations tests passed

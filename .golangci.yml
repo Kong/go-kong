@@ -1,3 +1,8 @@
+run:
+  timeout: 5m
+  build-tags:
+  - enterprise
+
 linters:
   enable:
   - asciicheck
@@ -8,6 +13,7 @@ linters:
   - durationcheck
   - errcheck
   - errname
+  - errorlint
   - exhaustive
   - exportloopref
   - gci
@@ -16,9 +22,12 @@ linters:
   - gofumpt
   - goimports
   - gomnd
+  - gomodguard
   - gosec
+  - gosimple
   - govet
   - importas
+  - ineffassign
   - lll
   - megacheck
   - misspell
@@ -27,7 +36,27 @@ linters:
   - nolintlint
   - predeclared
   - revive
+  - staticcheck
   - stylecheck
+  - typecheck
   - unconvert
   - unparam
+  - unused
   - wastedassign
+
+issues:
+  max-same-issues: 0
+
+linters-settings:
+  gomodguard:
+    blocked:
+      modules:
+      - github.com/ghodss/yaml:
+          recommendations:
+          - sigs.k8s.io/yaml
+      - gopkg.in/yaml.v2:
+          recommendations:
+          - sigs.k8s.io/yaml
+      - gopkg.in/yaml.v3:
+          recommendations:
+          - sigs.k8s.io/yaml

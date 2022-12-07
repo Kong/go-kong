@@ -218,8 +218,14 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 
 		// check if key is already set in the config
 		if _, ok := config[fname]; ok {
-			// yes, don't set it
-			return true
+			// the field is set. If it's not a map, then
+			// the field is fully set. If it's a map, we
+			// need to make sure that all fields are properly
+			// filled.
+			if _, ok := config[fname].(map[string]interface{}); !ok {
+				// not a map, field is already set.
+				return true
+			}
 		}
 		ftype := value.Get(fname + ".type")
 		if ftype.String() == "record" {
@@ -433,15 +439,15 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 	}
 	defaults, err := getDefaultsObj(schema)
 	if err != nil {
-		return fmt.Errorf("parse schema for defaults: %v", err)
+		return fmt.Errorf("parse schema for defaults: %w", err)
 	}
 	if err := json.Unmarshal(defaults, &tmpEntity); err != nil {
-		return fmt.Errorf("unmarshal entity with defaults: %v", err)
+		return fmt.Errorf("unmarshal entity with defaults: %w", err)
 	}
 	if err := mergo.Merge(
 		entity, tmpEntity, mergo.WithTransformers(zeroValueTransformer{}),
 	); err != nil {
-		return fmt.Errorf("merge entity with its defaults: %v", err)
+		return fmt.Errorf("merge entity with its defaults: %w", err)
 	}
 	return nil
 }

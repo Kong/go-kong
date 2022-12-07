@@ -8,7 +8,7 @@ test-enterprise:
 
 .PHONY: lint
 lint:
-	golangci-lint run ./...
+	golangci-lint run -v ./...
 
 .PHONY: verify-codegen
 verify-codegen:

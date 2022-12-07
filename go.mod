@@ -13,8 +13,8 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/stretchr/testify v1.8.1
 	github.com/tidwall/gjson v1.14.4
-	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/code-generator v0.25.4
+	sigs.k8s.io/yaml v1.3.0
 )
 
 require (
@@ -43,9 +43,9 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.12 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/gengo v0.0.0-20220613173612-397b4ae3bce7 // indirect
 	k8s.io/klog/v2 v2.70.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20220803162953-67bda5d908f1 // indirect
-	sigs.k8s.io/yaml v1.2.0 // indirect
 )

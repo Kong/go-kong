@@ -199,7 +199,7 @@ func (s *RBACUserService) AddRoles(ctx context.Context,
 	}
 	_, err = s.client.Do(ctx, req, &listRoles)
 	if err != nil {
-		return nil, fmt.Errorf("error updating roles: %v", err)
+		return nil, fmt.Errorf("error updating roles: %w", err)
 	}
 	return listRoles.Roles, nil
 }
@@ -229,7 +229,7 @@ func (s *RBACUserService) DeleteRoles(ctx context.Context,
 
 	_, err = s.client.Do(ctx, req, nil)
 	if err != nil {
-		return fmt.Errorf("error deleting roles: %v", err)
+		return fmt.Errorf("error deleting roles: %w", err)
 	}
 
 	return nil
@@ -250,7 +250,7 @@ func (s *RBACUserService) ListRoles(ctx context.Context,
 	}
 	_, err = s.client.Do(ctx, req, &listRoles)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving list of roles: %v", err)
+		return nil, fmt.Errorf("error retrieving list of roles: %w", err)
 	}
 	return listRoles.Roles, nil
 }
@@ -268,7 +268,7 @@ func (s *RBACUserService) ListPermissions(ctx context.Context,
 	var permissionsList RBACPermissionsList
 	_, err = s.client.Do(ctx, req, &permissionsList)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving list of permissions for role: %v", err)
+		return nil, fmt.Errorf("error retrieving list of permissions for role: %w", err)
 	}
 
 	return &permissionsList, nil
