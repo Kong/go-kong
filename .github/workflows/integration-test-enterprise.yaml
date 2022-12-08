@@ -28,6 +28,18 @@ jobs:
       KONG_VERSION: ${{ matrix.kong_version }}
       KONG_ANONYMOUS_REPORTS: "off"
       KONG_ADMIN_TOKEN: kong
+      # We don't want to run enterprise tests for contributors whose workflow runs
+      # do not have access to enterprise license (here, through the means of
+      # kong-license action) so don't run this job when the required secret is not
+      # available.
+      # Instead of making it conditional on job level we need to job.env because
+      # secrets context is only available at this level.
+      #
+      # ref: https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
+      #
+      # PULP_PASSWORD secret is set in "Configure ci" environment
+      PULP_PASSWORD: ${{ secrets.PULP_PASSWORD }}
+
     runs-on: ubuntu-latest
     steps:
       # This will set KONG_LINCENSE_DATA environment variable.
@@ -37,26 +49,33 @@ jobs:
       # Warning: Skip output 'license' since it may contain secret.
       # on Github Actions when setting a job output.
       - uses: Kong/kong-license@9fb64ad7be1ed2b121a70990783d7c0869e531d5
+        if: env.PULP_PASSWORD != ''
         id: license_step
         with:
           password: ${{ secrets.PULP_PASSWORD }}
       - name: Setup go
+        if: env.PULP_PASSWORD != ''
         uses: actions/setup-go@v3
         with:
           go-version: '^1.16'
       - name: Checkout repository
+        if: env.PULP_PASSWORD != ''
         uses: actions/checkout@v3
       - uses: actions/cache@v3.0.11
+        if: env.PULP_PASSWORD != ''
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Setup Kong
+        if: env.PULP_PASSWORD != ''
         run: make setup-kong-ee
       - name: Run tests
+        if: env.PULP_PASSWORD != ''
         run: make test-coverage-enterprise
       - name: Upload Code Coverage
+        if: env.PULP_PASSWORD != ''
         uses: codecov/codecov-action@v3.1.1
         with:
           name: codecov-${{ matrix.kong_version }}
