@@ -10,8 +10,25 @@ on:
     - '*'
 
 jobs:
+  secret-available:
+    outputs:
+      ok: ${{ steps.exists.outputs.ok }}
+    runs-on: ubuntu-latest
+    env:
+      PULP_PASSWORD: ${{ secrets.PULP_PASSWORD }}
+    steps:
+    - name: check for secret availability
+      id: exists
+      run: |
+        if [ ! -z "$PULP_PASSWORD" ]; then
+          echo "ok=true" >> $GITHUB_OUTPUT
+        fi
+
   test-enterprise:
     continue-on-error: true
+    needs:
+    - secret-available
+    if: needs.secret-available.outputs.ok == 'true'
     strategy:
       matrix:
         kong_version:
