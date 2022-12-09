@@ -21,8 +21,8 @@ func TestKeyService(T *testing.T) {
 	//nolint:lll // JSON can't split lines so the encoded field is way too long for Go
 	key := &Key{
 		Name: String("foo"),
-		Kid:  String("foo-1"),
-		Jwk: String(`{
+		KID:  String("foo-1"),
+		JWK: String(`{
 			"kty": "RSA",
 			"kid": "foo-1",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -54,8 +54,8 @@ func TestKeyService(T *testing.T) {
 	key = &Key{
 		Name: String("foo"),
 		ID:   String(id),
-		Kid:  String("foo-2"),
-		Jwk: String(`{
+		KID:  String("foo-2"),
+		JWK: String(`{
 			"kty": "RSA",
 			"kid": "foo-2",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -89,9 +89,9 @@ func TestKeyServiceWithSet(T *testing.T) {
 	//nolint:lll // JSON can't split lines so the encoded field is way too long for Go
 	key := &Key{
 		Name: String("foo"),
-		Kid:  String("foo-1"),
+		KID:  String("foo-1"),
 		Set:  &KeySet{ID: createdKeySet.ID},
-		Jwk: String(`{
+		JWK: String(`{
 			"kty": "RSA",
 			"kid": "foo-1",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -124,8 +124,8 @@ func TestKeyServiceWithSet(T *testing.T) {
 		Name: String("foo"),
 		ID:   String(id),
 		Set:  &KeySet{ID: createdKeySet.ID},
-		Kid:  String("foo-2"),
-		Jwk: String(`{
+		KID:  String("foo-2"),
+		JWK: String(`{
 			"kty": "RSA",
 			"kid": "foo-2",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -159,8 +159,8 @@ func TestKeyWithTags(T *testing.T) {
 	//nolint:lll // JSON can't split lines so the encoded field is way too long for Go
 	key := &Key{
 		Name: String("foo"),
-		Kid:  String("foo-1"),
-		Jwk: String(`{
+		KID:  String("foo-1"),
+		JWK: String(`{
 			"kty": "RSA",
 			"kid": "foo-1",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -195,9 +195,9 @@ func TestKeyWithTagsWithSet(T *testing.T) {
 	//nolint:lll // JSON can't split lines so the encoded field is way too long for Go
 	key := &Key{
 		Name: String("foo"),
-		Kid:  String("foo-1"),
+		KID:  String("foo-1"),
 		Set:  &KeySet{ID: createdKeySet.ID},
-		Jwk: String(`{
+		JWK: String(`{
 			"kty": "RSA",
 			"kid": "foo-1",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -234,8 +234,8 @@ func TestKeyListWithTags(T *testing.T) {
 	keys := []*Key{
 		{
 			Name: String("user1"),
-			Kid:  String("user-key-1"),
-			Jwk: String(`{
+			KID:  String("user-key-1"),
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-1",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -246,8 +246,8 @@ func TestKeyListWithTags(T *testing.T) {
 		},
 		{
 			Name: String("user2"),
-			Kid:  String("user-key-2"),
-			Jwk: String(`{
+			KID:  String("user-key-2"),
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-2",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -258,8 +258,8 @@ func TestKeyListWithTags(T *testing.T) {
 		},
 		{
 			Name: String("user3"),
-			Kid:  String("user-key-3"),
-			Jwk: String(`{
+			KID:  String("user-key-3"),
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-3",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -270,8 +270,8 @@ func TestKeyListWithTags(T *testing.T) {
 		},
 		{
 			Name: String("user4"),
-			Kid:  String("user-key-4"),
-			Jwk: String(`{
+			KID:  String("user-key-4"),
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-4",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -282,8 +282,8 @@ func TestKeyListWithTags(T *testing.T) {
 		},
 		{
 			Name: String("user5"),
-			Kid:  String("user-key-5"),
-			Jwk: String(`{
+			KID:  String("user-key-5"),
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-5",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -294,8 +294,8 @@ func TestKeyListWithTags(T *testing.T) {
 		},
 		{
 			Name: String("user6"),
-			Kid:  String("user-key-6"),
-			Jwk: String(`{
+			KID:  String("user-key-6"),
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-6",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -393,9 +393,9 @@ func TestKeyListWithTagsWithSet(T *testing.T) {
 	keys := []*Key{
 		{
 			Name: String("user1"),
-			Kid:  String("user-key-1"),
+			KID:  String("user-key-1"),
 			Set:  &KeySet{ID: createdKeySet.ID},
-			Jwk: String(`{
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-1",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -406,9 +406,9 @@ func TestKeyListWithTagsWithSet(T *testing.T) {
 		},
 		{
 			Name: String("user2"),
-			Kid:  String("user-key-2"),
+			KID:  String("user-key-2"),
 			Set:  &KeySet{ID: createdKeySet.ID},
-			Jwk: String(`{
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-2",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -419,9 +419,9 @@ func TestKeyListWithTagsWithSet(T *testing.T) {
 		},
 		{
 			Name: String("user3"),
-			Kid:  String("user-key-3"),
+			KID:  String("user-key-3"),
 			Set:  &KeySet{ID: createdKeySet.ID},
-			Jwk: String(`{
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-3",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -432,9 +432,9 @@ func TestKeyListWithTagsWithSet(T *testing.T) {
 		},
 		{
 			Name: String("user4"),
-			Kid:  String("user-key-4"),
+			KID:  String("user-key-4"),
 			Set:  &KeySet{ID: createdKeySet.ID},
-			Jwk: String(`{
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-4",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -445,9 +445,9 @@ func TestKeyListWithTagsWithSet(T *testing.T) {
 		},
 		{
 			Name: String("user5"),
-			Kid:  String("user-key-5"),
+			KID:  String("user-key-5"),
 			Set:  &KeySet{ID: createdKeySet.ID},
-			Jwk: String(`{
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-5",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",
@@ -458,9 +458,9 @@ func TestKeyListWithTagsWithSet(T *testing.T) {
 		},
 		{
 			Name: String("user6"),
-			Kid:  String("user-key-6"),
+			KID:  String("user-key-6"),
 			Set:  &KeySet{ID: createdKeySet.ID},
-			Jwk: String(`{
+			JWK: String(`{
 			"kty": "RSA",
 			"kid": "user-key-6",
 			"n": "v2KAzzfruqctVHaE9WSCWIg1xAhMwxTIK-i56WNqPtpWBo9AqxcVea8NyVctEjUNq_mix5CklNy3ru7ARh7rBG_LU65fzs4fY_uYalul3QZSnr61Gj-cTUB3Gy4PhA63yXCbYRR3gDy6WR_wfis1MS61j0R_AjgXuVufmmC0F7R9qSWfR8ft0CbQgemEHY3ddKeW7T7fKv1jnRwYAkl5B_xtvxRFIYT-uR9NNftixNpUIW7q8qvOH7D9icXOg4_wIVxTRe5QiRYwEFoUbV1V9bFtu5FLal0vZnLaWwg5tA6enhzBpxJNdrS0v1RcPpyeNP-9r3cUDGmeftwz9v95UQ",

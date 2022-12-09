@@ -856,18 +856,18 @@ func (in *Key) DeepCopyInto(out *Key) {
 		*out = new(string)
 		**out = **in
 	}
-	if in.Kid != nil {
-		in, out := &in.Kid, &out.Kid
+	if in.KID != nil {
+		in, out := &in.KID, &out.KID
 		*out = new(string)
 		**out = **in
 	}
-	if in.Jwk != nil {
-		in, out := &in.Jwk, &out.Jwk
+	if in.JWK != nil {
+		in, out := &in.JWK, &out.JWK
 		*out = new(string)
 		**out = **in
 	}
-	if in.Pem != nil {
-		in, out := &in.Pem, &out.Pem
+	if in.PEM != nil {
+		in, out := &in.PEM, &out.PEM
 		*out = new(PEM)
 		(*in).DeepCopyInto(*out)
 	}

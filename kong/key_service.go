@@ -49,7 +49,7 @@ func (s *KeyService) Create(ctx context.Context,
 	return &createdKey, nil
 }
 
-// Get fetches a Consumer in Kong.
+// Get fetches a Key in Kong.
 func (s *KeyService) Get(ctx context.Context,
 	nameOrID *string,
 ) (*Key, error) {
@@ -71,7 +71,7 @@ func (s *KeyService) Get(ctx context.Context,
 	return &key, nil
 }
 
-// Update updates a Consumer in Kong
+// Update updates a Key in Kong
 func (s *KeyService) Update(ctx context.Context,
 	key *Key,
 ) (*Key, error) {
@@ -93,7 +93,7 @@ func (s *KeyService) Update(ctx context.Context,
 	return &updatedAPI, nil
 }
 
-// Delete deletes a Consumer in Kong
+// Delete deletes a Key in Kong
 func (s *KeyService) Delete(ctx context.Context,
 	nameOrID *string,
 ) error {
