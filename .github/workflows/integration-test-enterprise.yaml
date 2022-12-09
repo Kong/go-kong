@@ -57,12 +57,12 @@ jobs:
         id: license_step
         with:
           password: ${{ secrets.PULP_PASSWORD }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Setup go
         uses: actions/setup-go@v3
         with:
-          go-version: '^1.16'
-      - name: Checkout repository
-        uses: actions/checkout@v3
+          go-version-file: go.mod
       - uses: actions/cache@v3.0.11
         with:
           path: ~/go/pkg/mod
