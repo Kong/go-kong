@@ -39,6 +39,7 @@ type Client struct {
 	workspace               string       // Do not access directly. Use Workspace()/SetWorkspace().
 	workspaceLock           sync.RWMutex // Synchronizes access to workspace.
 	common                  service
+	Configs                 AbstractConfigService
 	Consumers               AbstractConsumerService
 	Developers              AbstractDeveloperService
 	DeveloperRoles          AbstractDeveloperRoleService
@@ -127,6 +128,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.defaultRootURL = url.String()
 
 	kong.common.client = kong
+	kong.Configs = (*ConfigService)(&kong.common)
 	kong.Consumers = (*ConsumerService)(&kong.common)
 	kong.Developers = (*DeveloperService)(&kong.common)
 	kong.DeveloperRoles = (*DeveloperRoleService)(&kong.common)

@@ -48,6 +48,8 @@
 
 - Add support to filling entity defaults using JSON schemas.
   [#231](https://github.com/Kong/go-kong/pull/231)
+- Add possibility to client to send declarative configs via `ReloadDeclarativeRawConfig()`
+  [#252](https://github.com/Kong/go-kong/pull/252)
 
 ## [v0.33.0]
 
