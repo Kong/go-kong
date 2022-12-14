@@ -561,6 +561,13 @@ func TestFillPluginDefaults(T *testing.T) {
 						"headers":     "x-new-header:value",
 						"querystring": []interface{}{},
 					},
+					"append": map[string]interface{}{
+						"headers": "x-append-header:value",
+					},
+					"remove": map[string]interface{}{
+						"body":        []interface{}{},
+						"querystring": "?query=val",
+					},
 				},
 				Enabled:   Bool(false),
 				Protocols: []*string{String("grpc"), String("grpcs")},
@@ -576,13 +583,13 @@ func TestFillPluginDefaults(T *testing.T) {
 					},
 					"append": map[string]interface{}{
 						"body":        []interface{}{},
-						"headers":     []interface{}{},
+						"headers":     "x-append-header:value",
 						"querystring": []interface{}{},
 					},
 					"remove": map[string]interface{}{
 						"body":        []interface{}{},
 						"headers":     []interface{}{},
-						"querystring": []interface{}{},
+						"querystring": "?query=val",
 					},
 					"rename": map[string]interface{}{
 						"body":        []interface{}{},
