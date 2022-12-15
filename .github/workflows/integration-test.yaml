@@ -50,6 +50,7 @@ jobs:
         with:
           name: codecov-${{ matrix.kong_version }}
           flags: ${{ matrix.kong_version }},integration,community
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
 
   test-passed:
