@@ -27,19 +27,18 @@ func (s *ConsumerGroupConsumerService) Create(ctx context.Context,
 	consumerGroupNameOrID *string, consumerNameOrID *string,
 ) (*ConsumerGroupObject, error) {
 	if isEmptyString(consumerGroupNameOrID) {
-		return nil, fmt.Errorf("consumerGroupNameOrID cannot be nil for Delete operation")
+		return nil, fmt.Errorf("consumerGroupNameOrID cannot be nil for Create operation")
 	}
 	if isEmptyString(consumerNameOrID) {
-		return nil, fmt.Errorf("consumerNameOrID cannot be nil for Delete operation")
+		return nil, fmt.Errorf("consumerNameOrID cannot be nil for Create operation")
 	}
 
 	queryPath := "/consumer_groups/" + *consumerGroupNameOrID + "/consumers"
-	method := "POST"
 
 	data := url.Values{}
 	data.Set("consumer", *consumerNameOrID)
 
-	req, err := s.client.NewRequest(method, queryPath, nil, data)
+	req, err := s.client.NewRequest("POST", queryPath, nil, data)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +79,7 @@ func (s *ConsumerGroupConsumerService) ListAll(
 	ctx context.Context, consumerGroupNameOrID *string,
 ) (*ConsumerGroupObject, error) {
 	if isEmptyString(consumerGroupNameOrID) {
-		return nil, fmt.Errorf("consumerGroupNameOrID cannot be nil for Delete operation")
+		return nil, fmt.Errorf("consumerGroupNameOrID cannot be nil for ListAll operation")
 	}
 	endpoint := fmt.Sprintf(
 		"/consumer_groups/%v/consumers", *consumerGroupNameOrID,
