@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/google/go-querystring/query"
@@ -17,17 +18,26 @@ func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs inter
 		return nil, fmt.Errorf("endpoint can't be nil")
 	}
 	// body to be sent in JSON
-	var buf []byte
+	var r io.Reader
 	if body != nil {
-		var err error
-		buf, err = json.Marshal(body)
-		if err != nil {
-			return nil, err
+		switch v := body.(type) {
+		case string:
+			r = bytes.NewBufferString(v)
+		case []byte:
+			r = bytes.NewBuffer(v)
+		case io.Reader:
+			r = v
+		default:
+			b, err := json.Marshal(body)
+			if err != nil {
+				return nil, err
+			}
+			r = bytes.NewBuffer(b)
 		}
 	}
 
 	// Create a new request
-	req, err := http.NewRequest(method, baseURL+endpoint, bytes.NewBuffer(buf))
+	req, err := http.NewRequest(method, baseURL+endpoint, r)
 	if err != nil {
 		return nil, err
 	}
