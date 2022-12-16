@@ -50,6 +50,8 @@
   [#231](https://github.com/Kong/go-kong/pull/231)
 - Add possibility to client to send declarative configs via `ReloadDeclarativeRawConfig()`
   [#252](https://github.com/Kong/go-kong/pull/252)
+- Add `BaseRootURL()` to Client
+  [#255](https://github.com/Kong/go-kong/pull/255)
 
 ## [v0.33.0]
 
