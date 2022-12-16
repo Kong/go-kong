@@ -40,6 +40,8 @@ type Client struct {
 	workspaceLock           sync.RWMutex // Synchronizes access to workspace.
 	common                  service
 	Configs                 AbstractConfigService
+	ConsumerGroupConsumers  AbstractConsumerGroupConsumerService
+	ConsumerGroups          AbstractConsumerGroupService
 	Consumers               AbstractConsumerService
 	Developers              AbstractDeveloperService
 	DeveloperRoles          AbstractDeveloperRoleService
@@ -131,6 +133,8 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 
 	kong.common.client = kong
 	kong.Configs = (*ConfigService)(&kong.common)
+	kong.ConsumerGroupConsumers = (*ConsumerGroupConsumerService)(&kong.common)
+	kong.ConsumerGroups = (*ConsumerGroupService)(&kong.common)
 	kong.Consumers = (*ConsumerService)(&kong.common)
 	kong.Developers = (*DeveloperService)(&kong.common)
 	kong.DeveloperRoles = (*DeveloperRoleService)(&kong.common)
