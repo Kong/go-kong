@@ -35,7 +35,7 @@ var defaultCtx = context.Background()
 // Kong cluster
 type Client struct {
 	client                  *http.Client
-	defaultRootURL          string
+	baseRootURL             string
 	workspace               string       // Do not access directly. Use Workspace()/SetWorkspace().
 	workspaceLock           sync.RWMutex // Synchronizes access to workspace.
 	common                  service
@@ -125,7 +125,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parsing URL: %w", err)
 	}
-	kong.defaultRootURL = url.String()
+	kong.baseRootURL = url.String()
 
 	kong.common.client = kong
 	kong.Configs = (*ConfigService)(&kong.common)
@@ -195,9 +195,9 @@ func (c *Client) Workspace() string {
 // baseURL build the base URL from the rootURL and the workspace
 func (c *Client) workspacedBaseURL(workspace string) string {
 	if len(workspace) > 0 {
-		return c.defaultRootURL + "/" + workspace
+		return c.baseRootURL + "/" + workspace
 	}
-	return c.defaultRootURL
+	return c.baseRootURL
 }
 
 // DoRAW executes an HTTP request and returns an http.Response
@@ -367,5 +367,5 @@ func (c *Client) RootJSON(ctx context.Context) ([]byte, error) {
 }
 
 func (c *Client) BaseRootURL() string {
-	return c.defaultRootURL
+	return c.baseRootURL
 }

@@ -209,13 +209,20 @@ func TestBaseRootURL(t *testing.T) {
 		require.Equal(t, client.BaseRootURL(), "http://localhost:8001")
 	})
 
-	// Don't test setting the URL via env because that can mess up other tests.
-
-	t.Run("set via flag", func(t *testing.T) {
-		client, err := NewClient(String("https://customkong.com"), nil)
+	t.Run("set via env", func(t *testing.T) {
+		t.Setenv("KONG_ADMIN_URL", "https://customkong.com")
+		client, err := NewClient(nil, nil)
 		require.NoError(t, err)
 		require.NotNil(t, client)
 
 		require.Equal(t, client.BaseRootURL(), "https://customkong.com")
+	})
+
+	t.Run("set via flag", func(t *testing.T) {
+		client, err := NewClient(String("https://customkong2.com"), nil)
+		require.NoError(t, err)
+		require.NotNil(t, client)
+
+		require.Equal(t, client.BaseRootURL(), "https://customkong2.com")
 	})
 }
