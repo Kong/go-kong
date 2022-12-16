@@ -365,3 +365,7 @@ func (c *Client) RootJSON(ctx context.Context) ([]byte, error) {
 
 	return body, nil
 }
+
+func (c *Client) BaseRootURL() string {
+	return c.defaultRootURL
+}
