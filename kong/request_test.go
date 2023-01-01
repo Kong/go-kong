@@ -89,4 +89,33 @@ func TestNewRequestBody(t *testing.T) {
 			string(b),
 		)
 	})
+
+	t.Run("query params are set in URL", func(t *testing.T) {
+		cl, err := NewClient(nil, nil)
+		require.NoError(t, err)
+		cl.QueryParams.Add("cluster.id", "clusterId")
+		cl.QueryParams.Add("params", "test1")
+		cl.QueryParams.Add("params", "test2")
+
+		req, err := cl.NewRequest("GET", "/", nil, nil)
+		require.NoError(t, err)
+		require.Contains(t, req.URL.String(), "cluster.id=clusterId&params=test1&params=test2")
+	})
+
+	t.Run("query params and qs are set in URL", func(t *testing.T) {
+		type Opt struct {
+			Params   string `url:"params"`
+			NewParam string `url:"newParam"`
+		}
+		cl, err := NewClient(nil, nil)
+		require.NoError(t, err)
+		cl.QueryParams.Add("cluster.id", "clusterId")
+		cl.QueryParams.Add("params", "test1")
+		cl.QueryParams.Add("params", "test2")
+
+		req, err := cl.NewRequest("GET", "/", Opt{"test3", "newParam"}, nil)
+		require.NoError(t, err)
+		require.Contains(t, req.URL.String(),
+			"cluster.id=clusterId&newParam=newParam&params=test3&params=test1&params=test2")
+	})
 }
