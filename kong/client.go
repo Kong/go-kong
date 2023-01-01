@@ -34,8 +34,10 @@ var defaultCtx = context.Background()
 // Client talks to the Admin API or control plane of a
 // Kong cluster
 type Client struct {
-	client                  *http.Client
-	baseRootURL             string
+	client      *http.Client
+	baseRootURL string
+	// QueryParams are query string parameters that are set on all requests.
+	QueryParams             url.Values
 	workspace               string       // Do not access directly. Use Workspace()/SetWorkspace().
 	workspaceLock           sync.RWMutex // Synchronizes access to workspace.
 	common                  service
@@ -116,6 +118,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 		}
 	}
 	kong := new(Client)
+	kong.QueryParams = make(url.Values, 0)
 	kong.client = client
 	var rootURL string
 	if baseURL != nil {

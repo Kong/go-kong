@@ -48,12 +48,23 @@ func (c *Client) NewRequestRaw(method, baseURL string, endpoint string, qs inter
 	}
 
 	// add query string if any
-	if qs != nil {
-		values, err := query.Values(qs)
-		if err != nil {
-			return nil, err
+	if qs != nil || len(c.QueryParams) > 0 {
+		if qs == nil {
+			req.URL.RawQuery = c.QueryParams.Encode()
+		} else {
+			values, err := query.Values(qs)
+			if err != nil {
+				return nil, err
+			}
+
+			// apply global query params
+			for param, paramValues := range c.QueryParams {
+				for _, paramValue := range paramValues {
+					values.Add(param, paramValue)
+				}
+			}
+			req.URL.RawQuery = values.Encode()
 		}
-		req.URL.RawQuery = values.Encode()
 	}
 	return req, nil
 }
