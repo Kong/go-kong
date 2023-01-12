@@ -37,3 +37,13 @@ func IsNotFoundErr(e error) bool {
 	}
 	return false
 }
+
+// IsForbiddenErr returns true if the error or its cause is
+// a 403 response from Kong.
+func IsForbiddenErr(e error) bool {
+	var apiErr *APIError
+	if errors.As(e, &apiErr) {
+		return apiErr.httpCode == http.StatusForbidden
+	}
+	return false
+}
