@@ -107,7 +107,7 @@ func SkipWhenEnterprise(t *testing.T) {
 }
 
 func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
-	if value, exists := os.LookupEnv("KONG_ADMIN_TOKEN"); exists {
+	if value, exists := os.LookupEnv("KONG_ADMIN_TOKEN"); exists && value != "" {
 		c := &http.Client{}
 		defaultTransport := http.DefaultTransport.(*http.Transport)
 		c.Transport = defaultTransport
