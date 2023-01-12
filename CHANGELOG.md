@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.34.1](#v0341)
 - [v0.34.0](#v0340)
 - [v0.33.0](#v0330)
 - [v0.32.0](#v0320)
@@ -41,6 +42,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.34.1]
+
+> Release date: 2022/12/22
+
+- Fix ingestion of entity defaults with arbitray map values
+  [#258](https://github.com/Kong/go-kong/pull/258)
 
 ## [v0.34.0]
 
@@ -639,6 +647,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.34.1]: https://github.com/Kong/go-kong/compare/v0.34.0...v0.34.1
 [v0.34.0]: https://github.com/Kong/go-kong/compare/v0.33.0...v0.34.0
 [v0.33.0]: https://github.com/Kong/go-kong/compare/v0.32.0...v0.33.0
 [v0.32.0]: https://github.com/Kong/go-kong/compare/v0.31.1...v0.32.0
