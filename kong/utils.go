@@ -217,12 +217,24 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 		}
 
 		// check if key is already set in the config
-		if _, ok := config[fname]; ok {
+		if v, ok := config[fname]; ok {
 			// the field is set. If it's not a map, then
 			// the field is fully set. If it's a map, we
 			// need to make sure that all fields are properly
 			// filled.
-			if _, ok := config[fname].(map[string]interface{}); !ok {
+			//
+			// some fields are defined as arbitrary maps,
+			// containing a 'keys' and 'values' subfields.
+			// in this case, the map is already fully set.
+			switch v.(type) {
+			case map[string]interface{}:
+				keys := value.Get(fname + ".keys")
+				values := value.Get(fname + ".values")
+				if keys.Exists() && values.Exists() {
+					// an arbitrary map, field is already set.
+					return true
+				}
+			default:
 				// not a map, field is already set.
 				return true
 			}
@@ -434,6 +446,8 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 		tmpEntity = &Route{}
 	case *Upstream:
 		tmpEntity = &Upstream{}
+	case *ConsumerGroupPlugin:
+		tmpEntity = &ConsumerGroupPlugin{}
 	default:
 		return fmt.Errorf("unsupported entity: '%T'", entity)
 	}

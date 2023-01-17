@@ -499,6 +499,7 @@ func TestFillPluginDefaults(T *testing.T) {
 	// TODO https://github.com/Kong/go-kong/issues/214 this should only skip Enterprise 3.x (with a separate test)
 	// not all Enterprise versions.
 	SkipWhenEnterprise(T)
+	RunWhenKong(T, ">=2.3.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -605,6 +606,38 @@ func TestFillPluginDefaults(T *testing.T) {
 				},
 				Protocols: []*string{String("grpc"), String("grpcs")},
 				Enabled:   Bool(false),
+			},
+		},
+		{
+			name: "nested config with arbitrary map field",
+			plugin: &Plugin{
+				Name: String("http-log"),
+				Config: Configuration{
+					"custom_fields_by_lua": map[string]interface{}{
+						"foo": "bar",
+					},
+				},
+				Enabled:   Bool(false),
+				Protocols: []*string{String("grpc"), String("grpcs")},
+			},
+			expected: &Plugin{
+				Name: String("http-log"),
+				Config: Configuration{
+					"content_type": string("application/json"),
+					"custom_fields_by_lua": map[string]interface{}{
+						"foo": "bar",
+					},
+					"flush_timeout": float64(2),
+					"headers":       nil,
+					"http_endpoint": nil,
+					"keepalive":     float64(60000),
+					"method":        string("POST"),
+					"queue_size":    float64(1),
+					"retry_count":   float64(10),
+					"timeout":       float64(10000),
+				},
+				Enabled:   Bool(false),
+				Protocols: []*string{String("grpc"), String("grpcs")},
 			},
 		},
 	}

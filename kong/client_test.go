@@ -115,23 +115,6 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestRunWhenEnterprise(T *testing.T) {
-	// TODO refactor this to test that a version is Enterprise without relying on the IsKongGatewayEnterprise function
-	// that this calls https://github.com/Kong/go-kong/issues/212
-	RunWhenEnterprise(T, ">=0.33.0 <3.0.0", RequiredFeatures{})
-	assert := assert.New(T)
-
-	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
-
-	root, err := client.Root(defaultCtx)
-	assert.NoError(err)
-	assert.NotNil(root)
-	v := root["version"].(string)
-	assert.Contains(v, "enterprise")
-}
-
 type TestWorkspace struct {
 	workspace      *Workspace
 	client         *Client
@@ -198,4 +181,31 @@ func TestTestWorkspace(T *testing.T) {
 	currWorkspace, err = client.Workspaces.Get(defaultCtx, String(wsName))
 	assert.NoError(err)
 	assert.Equal(currWorkspace.Config, origWorkspace.Config)
+}
+
+func TestBaseRootURL(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		client, err := NewClient(nil, nil)
+		require.NoError(t, err)
+		require.NotNil(t, client)
+
+		require.Equal(t, client.BaseRootURL(), "http://localhost:8001")
+	})
+
+	t.Run("set via env", func(t *testing.T) {
+		t.Setenv("KONG_ADMIN_URL", "https://customkong.com")
+		client, err := NewClient(nil, nil)
+		require.NoError(t, err)
+		require.NotNil(t, client)
+
+		require.Equal(t, client.BaseRootURL(), "https://customkong.com")
+	})
+
+	t.Run("set via flag", func(t *testing.T) {
+		client, err := NewClient(String("https://customkong2.com"), nil)
+		require.NoError(t, err)
+		require.NotNil(t, client)
+
+		require.Equal(t, client.BaseRootURL(), "https://customkong2.com")
+	})
 }

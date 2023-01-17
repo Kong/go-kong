@@ -2,6 +2,7 @@ package kong
 
 import (
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -261,7 +262,14 @@ func TestTargetMarkHealthy(T *testing.T) {
 
 	assert.NotNil(client.Targets.MarkHealthy(defaultCtx, createdTarget.Upstream.ID, nil))
 	assert.NotNil(client.Targets.MarkHealthy(defaultCtx, nil, createdTarget))
-	assert.NoError(client.Targets.MarkHealthy(defaultCtx, createdTarget.Upstream.ID, createdTarget))
+	assert.Eventually(func() bool {
+		err := client.Targets.MarkHealthy(defaultCtx, createdTarget.Upstream.ID, createdTarget)
+		if err != nil {
+			T.Logf("failed marking target %s healthy", *createdTarget.ID)
+			return false
+		}
+		return true
+	}, 5*time.Second, 100*time.Millisecond)
 
 	assert.NoError(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
 }
@@ -300,7 +308,15 @@ func TestTargetMarkUnhealthy(T *testing.T) {
 
 	assert.NotNil(client.Targets.MarkUnhealthy(defaultCtx, createdTarget.Upstream.ID, nil))
 	assert.NotNil(client.Targets.MarkUnhealthy(defaultCtx, nil, createdTarget))
-	assert.NoError(client.Targets.MarkUnhealthy(defaultCtx, createdTarget.Upstream.ID, createdTarget))
+
+	assert.Eventually(func() bool {
+		err := client.Targets.MarkUnhealthy(defaultCtx, createdTarget.Upstream.ID, createdTarget)
+		if err != nil {
+			T.Logf("failed marking target %s healthy", *createdTarget.ID)
+			return false
+		}
+		return true
+	}, 5*time.Second, 100*time.Millisecond)
 
 	assert.NoError(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
 }

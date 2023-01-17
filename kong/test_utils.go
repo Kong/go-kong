@@ -107,7 +107,7 @@ func SkipWhenEnterprise(t *testing.T) {
 }
 
 func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
-	if value, exists := os.LookupEnv("KONG_ADMIN_TOKEN"); exists {
+	if value, exists := os.LookupEnv("KONG_ADMIN_TOKEN"); exists && value != "" {
 		c := &http.Client{}
 		defaultTransport := http.DefaultTransport.(*http.Transport)
 		c.Transport = defaultTransport
@@ -120,4 +120,43 @@ func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
 		return NewClient(baseURL, c)
 	}
 	return NewClient(baseURL, client)
+}
+
+func RunWhenDBMode(t *testing.T, dbmode string) {
+	client, err := NewTestClient(nil, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	info, err := client.Root(defaultCtx)
+	if err != nil {
+		t.Error(err)
+	}
+
+	config, ok := info["configuration"]
+	if !ok {
+		t.Logf("failed to find 'configuration' config key in kong configuration")
+		t.Skip()
+	}
+
+	configuration, ok := config.(map[string]any)
+	if !ok {
+		t.Logf("'configuration' key is not a map but %T", config)
+		t.Skip()
+	}
+
+	dbConfig, ok := configuration["database"]
+	if !ok {
+		t.Logf("failed to find 'database' config key in kong confiration")
+		t.Skip()
+	}
+
+	dbMode, ok := dbConfig.(string)
+	if !ok {
+		t.Logf("'database' config key is not a string but %T", dbConfig)
+		t.Skip()
+	}
+
+	if dbMode != dbmode {
+		t.Skip()
+	}
 }
