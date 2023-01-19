@@ -102,9 +102,10 @@ type ConsumerGroupObject struct {
 // ConsumerGroup represents a ConsumerGroup in Kong.
 // +k8s:deepcopy-gen=true
 type ConsumerGroup struct {
-	ID        *string `json:"id,omitempty" yaml:"id,omitempty"`
-	Name      *string `json:"name,omitempty" yaml:"name,omitempty"`
-	CreatedAt *int64  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
+	Name      *string   `json:"name,omitempty" yaml:"name,omitempty"`
+	CreatedAt *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Tags      []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 // ConsumerGroupConsumer represents a ConsumerGroupConsumer in Kong.

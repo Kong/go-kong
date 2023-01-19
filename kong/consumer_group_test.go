@@ -55,6 +55,36 @@ func TestConsumerGroupsService(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestConsumerGroupWithTags(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.1.1", RequiredFeatures{})
+	require := require.New(t)
+	assert := assert.New(t)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	cg := &ConsumerGroup{
+		Name: String("foo"),
+		Tags: StringSlice("tag1", "tag2"),
+	}
+
+	createdConsumerGroup, err := client.ConsumerGroups.Create(defaultCtx, cg)
+	require.NoError(err)
+	t.Cleanup(func() {
+		err = client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID)
+		assert.NoError(err)
+	})
+	assert.NotNil(createdConsumerGroup)
+	require.Equal(cg.Tags, createdConsumerGroup.Tags)
+
+	createdConsumerGroup.Tags = StringSlice("tag1", "tag2", "tag3")
+	updatedConsumerGroup, err := client.ConsumerGroups.Update(defaultCtx, createdConsumerGroup)
+	require.NoError(err)
+	assert.NotNil(updatedConsumerGroup)
+	assert.Equal(updatedConsumerGroup.Tags, createdConsumerGroup.Tags)
+}
+
 func TestConsumerGroupListEndpoint(t *testing.T) {
 	RunWhenEnterprise(t, ">=2.7.0", RequiredFeatures{})
 	assert := assert.New(t)
