@@ -23,10 +23,6 @@ jobs:
     steps:
       # This will set KONG_LINCENSE_DATA environment variable.
       # NOTE:
-      # This could be (?) made a shared step but for some reason it's impossible
-      # to override:
-      # Warning: Skip output 'license' since it may contain secret.
-      # on Github Actions when setting a job output.
       - uses: Kong/kong-license@9fb64ad7be1ed2b121a70990783d7c0869e531d5
         id: license_step
         with:
@@ -34,10 +30,10 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v3
         with:
-          go-version: '^1.16'
+          go-version: '^1.19'
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: actions/cache@v3.0.11
+      - uses: actions/cache@v3.2.3
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
