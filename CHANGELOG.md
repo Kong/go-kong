@@ -50,6 +50,8 @@
 
 - Add consumer_groups tags support
   [#265](https://github.com/Kong/go-kong/pull/265)
+- Add IsForbiddenErr error checking for 403s
+  [#264](https://github.com/Kong/go-kong/pull/264)
 
 ## [v0.34.1]
 
