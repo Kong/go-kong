@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.35.0](#v0350)
 - [v0.34.1](#v0341)
 - [v0.34.0](#v0340)
 - [v0.33.0](#v0330)
@@ -42,6 +43,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.35.0]
+
+> Release date: 2023/01/19
+
+- Add consumer_groups tags support
+  [#265](https://github.com/Kong/go-kong/pull/265)
 
 ## [v0.34.1]
 
