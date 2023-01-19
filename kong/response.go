@@ -35,5 +35,5 @@ func hasError(res *http.Response) error {
 	}
 
 	body, _ := io.ReadAll(res.Body) // TODO error in error?
-	return NewAPIError(res.StatusCode, messageFromBody(body))
+	return NewAPIError(res.StatusCode, messageFromBody(body), body)
 }

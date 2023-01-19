@@ -104,7 +104,7 @@ func (s *DeveloperService) GetByCustomID(ctx context.Context,
 	}
 
 	if len(resp.Data) == 0 {
-		return nil, NewAPIError(http.StatusNotFound, "Not found")
+		return nil, NewAPIError(http.StatusNotFound, "Not found", []byte{})
 	}
 
 	return &resp.Data[0], nil

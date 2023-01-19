@@ -12,7 +12,7 @@ import (
 
 func TestIsNotFoundErr(T *testing.T) {
 	assert := assert.New(T)
-	var e error = NewAPIError(404, "")
+	var e error = NewAPIError(404, "", []byte{})
 	assert.True(IsNotFoundErr(e))
 	assert.False(IsNotFoundErr(nil))
 
@@ -78,5 +78,6 @@ func (ft *forbiddenTransport) RoundTrip(req *http.Request) (*http.Response, erro
 	// Create a new response with 403 status code
 	return nil, NewAPIError(
 		http.StatusForbidden,
-		"Enterprise license missing or expired")
+		"Enterprise license missing or expired",
+		[]byte(`{ "message": "Enterprise license missing or expired" }`))
 }
