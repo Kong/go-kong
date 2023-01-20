@@ -1,0 +1,42 @@
+name: 'Integration Test : Community Nightly'
+
+on:
+  push:
+    branches:
+    - 'main'
+    - 'release/*'
+  pull_request:
+    branches:
+    - '*'
+
+jobs:
+  test:
+    env:
+      KONG_IMAGE_REPO: "kong/kong"
+      KONG_IMAGE_TAG: "master-alpine"
+      KONG_ANONYMOUS_REPORTS: "off"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '^1.19'
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: actions/cache@v3.2.3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Setup Kong
+        run: make setup-kong
+      - name: Run tests
+        run: make test-coverage
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v3.1.1
+        with:
+          name: codecov-nightly
+          flags: nightly,integration,community
+          fail_ci_if_error: true
+

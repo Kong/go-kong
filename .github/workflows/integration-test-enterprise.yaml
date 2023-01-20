@@ -42,7 +42,7 @@ jobs:
         - '3.0.1.0'
         - '3.1.0.0'
     env:
-      KONG_VERSION: ${{ matrix.kong_version }}
+      KONG_IMAGE_TAG: ${{ matrix.kong_version }}
       KONG_ANONYMOUS_REPORTS: "off"
       KONG_ADMIN_TOKEN: kong
     runs-on: ubuntu-latest
