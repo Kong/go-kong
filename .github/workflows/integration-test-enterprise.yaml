@@ -84,6 +84,8 @@ jobs:
   test-enterprise-passed:
     runs-on: ubuntu-latest
     needs: test-enterprise
+    if: always()
     steps:
-    - name: integrations tests pased
-      run: echo all integrations tests passed
+    - name: Set workflow outcome
+      if: needs.test-enterprise.result == 'failure' || needs.test-enterprise.result == 'cancelled'
+      run: ${{ false }}
