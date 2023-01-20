@@ -35,5 +35,14 @@ func hasError(res *http.Response) error {
 	}
 
 	body, _ := io.ReadAll(res.Body) // TODO error in error?
-	return NewAPIError(res.StatusCode, messageFromBody(body), body)
+	return NewAPIError(res.StatusCode, messageFromBody(body))
+}
+
+func hasErrorRaw(res *http.Response) error {
+	if res.StatusCode >= 200 && res.StatusCode <= 399 {
+		return nil
+	}
+
+	body, _ := io.ReadAll(res.Body) // TODO error in error?
+	return NewAPIErrorWithRaw(res.StatusCode, messageFromBody(body), body)
 }

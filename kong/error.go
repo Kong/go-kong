@@ -13,11 +13,10 @@ type APIError struct {
 	raw      []byte
 }
 
-func NewAPIError(code int, msg string, raw []byte) *APIError {
+func NewAPIError(code int, msg string) *APIError {
 	return &APIError{
 		httpCode: code,
 		message:  msg,
-		raw:      raw,
 	}
 }
 
