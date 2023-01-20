@@ -1,0 +1,51 @@
+name: 'Integration Test : Enterprise Nightly'
+
+on:
+  push:
+    branches:
+    - 'main'
+    - 'release/*'
+  pull_request:
+    branches:
+    - '*'
+
+jobs:
+  test-enterprise:
+    continue-on-error: true
+    env:
+      KONG_ADMIN_TOKEN: kong
+      KONG_IMAGE_REPO: "kong/kong-gateway-internal"
+      KONG_IMAGE_TAG: "master-alpine"
+      KONG_ANONYMOUS_REPORTS: "off"
+      TEST_KONG_PULL_USERNAME: ${{ secrets.GHA_DOCKERHUB_PULL_USER }}
+      TEST_KONG_PULL_PASSWORD: ${{ secrets.GHA_KONG_ORG_DOCKERHUB_PUBLIC_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      # This will set KONG_LINCENSE_DATA environment variable.
+      - uses: Kong/kong-license@9fb64ad7be1ed2b121a70990783d7c0869e531d5
+        id: license_step
+        with:
+          password: ${{ secrets.PULP_PASSWORD }}
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '^1.19'
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: actions/cache@v3.2.3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Setup Kong
+        run: make setup-kong-ee
+      - name: Run tests
+        run: make test-coverage-enterprise
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v3.1.1
+        with:
+          name: codecov-enterprise-nightly
+          flags: enterprise-nightly,integration,enterprise
+          fail_ci_if_error: true
+
