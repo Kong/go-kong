@@ -34,7 +34,7 @@ func hasError(res *http.Response) error {
 		return nil
 	}
 
-	body, err := io.ReadAll(res.Body) // TODO error in error?
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return fmt.Errorf("failed to read error body: %w", err)
 	}
@@ -46,7 +46,7 @@ func hasErrorRaw(res *http.Response) error {
 		return nil
 	}
 
-	body, err := io.ReadAll(res.Body) // TODO error in error?
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return fmt.Errorf("failed to read error body: %w", err)
 	}
