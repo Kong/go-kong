@@ -47,6 +47,7 @@ jobs:
         run: make test-coverage
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v3.1.1
+        continue-on-error: true
         with:
           name: codecov-${{ matrix.kong_version }}
           flags: ${{ matrix.kong_version }},integration,community

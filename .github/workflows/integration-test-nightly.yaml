@@ -35,6 +35,7 @@ jobs:
         run: make test-coverage
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v3.1.1
+        continue-on-error: true
         with:
           name: codecov-nightly
           flags: nightly,integration,community
