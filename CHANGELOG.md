@@ -47,10 +47,11 @@
 
 ## [v0.36.0]
 
-> Release date: 2023/01/20
+> Release date: 2023/01/24
 
-- Added `NewAPIErrorWithRaw` error API, which returns a go-kong APIError along with the original raw error body.
+- Added `NewAPIErrorWithRaw()` to return a go-kong APIError along with the original raw error body.
   [#237](https://github.com/Kong/go-kong/pull/237)
+  [#267](https://github.com/Kong/go-kong/pull/267)
 
 ## [v0.35.0]
 

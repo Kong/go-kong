@@ -137,7 +137,7 @@ func TestHasErrorRaw(T *testing.T) {
 		},
 	} {
 		T.Run(tt.name, func(T *testing.T) {
-			got := hasError(&tt.response)
+			got := hasErrorRaw(&tt.response)
 			assert.Equal(T, tt.want, got)
 		})
 	}

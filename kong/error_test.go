@@ -78,5 +78,6 @@ func (ft *forbiddenTransport) RoundTrip(req *http.Request) (*http.Response, erro
 	// Create a new response with 403 status code
 	return nil, NewAPIError(
 		http.StatusForbidden,
-		"Enterprise license missing or expired")
+		"Enterprise license missing or expired",
+	)
 }
