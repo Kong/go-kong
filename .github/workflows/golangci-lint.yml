@@ -21,6 +21,6 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Setup golangci-lint
-        uses: golangci/golangci-lint-action@v3.3.1
+        uses: golangci/golangci-lint-action@v3.4.0
       - name: Verify Codegen
         run: make verify-codegen
