@@ -76,7 +76,7 @@ func TestConfigService(t *testing.T) {
 			b, err := json.Marshal(tt.config)
 			require.NoError(t, err)
 
-			if err := client.Configs.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true); (err != nil) != tt.wantErr {
+			if err, _ := client.Configs.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true); (err != nil) != tt.wantErr {
 				t.Errorf("Client.SendConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
