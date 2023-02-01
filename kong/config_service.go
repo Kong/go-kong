@@ -12,6 +12,7 @@ type AbstractConfigService interface {
 	// API endpoint using the provided reader which should contain the JSON
 	// serialized body that adheres to the configuration format specified at:
 	// https://docs.konghq.com/gateway/latest/production/deployment-topologies/db-less-and-declarative-config/#declarative-configuration-format
+	// It returns the response body and an error, if it encounters any.
 	ReloadDeclarativeRawConfig(ctx context.Context, config io.Reader, checkHash bool) ([]byte, error)
 }
 
@@ -22,6 +23,7 @@ type ConfigService service
 // API endpoint using the provided reader which should contain the JSON
 // serialized body that adheres to the configuration format specified at:
 // https://docs.konghq.com/gateway/latest/production/deployment-topologies/db-less-and-declarative-config/#declarative-configuration-format
+// It returns the response body and an error, if it encounters any.
 func (c *ConfigService) ReloadDeclarativeRawConfig(
 	ctx context.Context,
 	config io.Reader,
