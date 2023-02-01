@@ -76,9 +76,15 @@ func TestConfigService(t *testing.T) {
 			b, err := json.Marshal(tt.config)
 			require.NoError(t, err)
 
-			if _, err := client.Configs.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true); (err != nil) != tt.wantErr {
+			body, err := client.Configs.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("Client.SendConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
+			// this is somewhat untrue: network or HTTP-level failures _can_ result in a nil response body. however,
+			// none of our test cases should cause network or HTTP-level failures, so fail if they do occur. if this
+			// _does_ encounter such a failure, we need to investigate and either update tests or fix some upstream bug
+			// if it's not some transient issue with the testing environment
+			require.NotNilf(t, body, "body was nil; should never be nil")
 		})
 	}
 }
