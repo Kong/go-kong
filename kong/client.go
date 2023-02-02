@@ -238,7 +238,8 @@ func (c *Client) DoRAW(ctx context.Context, req *http.Request) (*http.Response, 
 func (c *Client) Do(ctx context.Context, req *http.Request,
 	v interface{},
 ) (*Response, error) {
-	resp, err := c.DoRAW(ctx, req)
+	// TODO https://github.com/Kong/go-kong/issues/273 clear this lint ignore
+	resp, err := c.DoRAW(ctx, req) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
