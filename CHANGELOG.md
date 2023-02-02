@@ -50,9 +50,14 @@
 
 > Release date: 2023/02/03
 
-- **Breaking change** to `ConfigService.ReloadDeclarativeRawConfig()`. Its
-  response signature is now `([]byte, error)`. The byte slice is the config
-  response body. The error is unchanged.
+- **Breaking change:** the `ConfigService` is now directly embedded in the
+  `kong.Client`. Configurations are collections of entities, not entities
+  themselves, so they do not fit with other go-kong services.
+- **Breaking change:** `ReloadDeclarativeRawConfig()` (formerly part of
+  `ConfigService`, now part of `kong.Client`) now has the response signature
+  `([]byte, error)` instead of `error`. The byte slice is the config response
+  body. The error is unchanged.
+  [#273](https://github.com/Kong/go-kong/pull/273)
 
 ## [v0.36.0]
 
