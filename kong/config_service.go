@@ -51,7 +51,7 @@ func (c *ConfigService) ReloadDeclarativeRawConfig(
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
 		b, err = io.ReadAll(resp.Body)
 		if err != nil {
-			return []byte{},
+			return nil,
 				fmt.Errorf(`failed posting new config to /config: got status code %d
 				(and failed to read the response body): %w`,
 					resp.StatusCode, err)
