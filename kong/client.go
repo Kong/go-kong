@@ -396,12 +396,12 @@ func (c *Client) ReloadDeclarativeRawConfig(
 	}
 	req, err := c.NewRequest("POST", "/config", sendConfigParams{CheckHash: checkHashI}, config)
 	if err != nil {
-		return []byte{}, fmt.Errorf("creating new HTTP request for /config: %w", err)
+		return nil, fmt.Errorf("creating new HTTP request for /config: %w", err)
 	}
 
 	resp, err := c.DoRAW(ctx, req)
 	if err != nil {
-		return []byte{}, fmt.Errorf("failed posting new config to /config: %w", err)
+		return nil, fmt.Errorf("failed posting new config to /config: %w", err)
 	}
 	defer resp.Body.Close()
 
