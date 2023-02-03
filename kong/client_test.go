@@ -280,13 +280,16 @@ func TestReloadDeclarativeRawConfig(t *testing.T) {
 			require.NoError(t, err)
 
 			body, err := client.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true, true)
-			stringBody := string(body)
-			if stringBody == "" {
-				t.Errorf("wat")
+			// We only get empty body when there's a transient network error or
+			// we fail to read the response body which shouldn't happen in tests.
+			assert.NotEmpty(t, string(body))
+
+			if tt.wantErr {
+				assert.Errorf(t, err, "Client.SendConfig() got unexpected error = %v", err)
+			} else {
+				assert.NoError(t, err)
 			}
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Client.SendConfig() error = %v, wantErr %v", err, tt.wantErr)
-			}
+
 			// this is somewhat untrue: network or HTTP-level failures _can_ result in a nil response body. however,
 			// none of our test cases should cause network or HTTP-level failures, so fail if they do occur. if this
 			// _does_ encounter such a failure, we need to investigate and either update tests or fix some upstream bug
