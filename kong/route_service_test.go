@@ -9,6 +9,8 @@ import (
 )
 
 func TestRoutesRoute(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -99,12 +101,13 @@ func TestRoutesRoute(T *testing.T) {
 }
 
 func TestRouteWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.1.0")
-	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	route := &Route{
 		Name:  String("key-auth"),
@@ -113,15 +116,17 @@ func TestRouteWithTags(T *testing.T) {
 	}
 
 	createdRoute, err := client.Routes.Create(defaultCtx, route)
-	assert.NoError(err)
-	assert.NotNil(createdRoute)
-	assert.Equal(StringSlice("tag1", "tag2"), createdRoute.Tags)
+	require.NoError(err)
+	require.NotNil(createdRoute)
+	require.Equal(StringSlice("tag1", "tag2"), createdRoute.Tags)
 
 	err = client.Routes.Delete(defaultCtx, createdRoute.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestCreateInRoute(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -160,12 +165,14 @@ func TestCreateInRoute(T *testing.T) {
 }
 
 func TestRouteListEndpoint(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	service := &Service{
 		Name: String("foo"),
@@ -175,8 +182,8 @@ func TestRouteListEndpoint(T *testing.T) {
 	}
 
 	createdService, err := client.Services.Create(defaultCtx, service)
-	assert.NoError(err)
-	assert.NotNil(createdService)
+	require.NoError(err)
+	require.NotNil(createdService)
 
 	// fixtures
 	routes := []*Route{
@@ -269,12 +276,14 @@ func compareRoutes(T *testing.T, expected, actual []*Route) bool {
 }
 
 func TestRouteWithHeaders(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.3.0")
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	route := &Route{
 		Name: String("route-by-header"),
@@ -285,8 +294,8 @@ func TestRouteWithHeaders(T *testing.T) {
 	}
 
 	createdRoute, err := client.Routes.Create(defaultCtx, route)
-	assert.NoError(err)
-	assert.NotNil(createdRoute)
+	require.NoError(err)
+	require.NotNil(createdRoute)
 	assert.Equal(StringSlice("tag1", "tag2"), createdRoute.Tags)
 	assert.Equal(map[string][]string{"foo": {"bar"}}, createdRoute.Headers)
 

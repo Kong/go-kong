@@ -9,6 +9,8 @@ import (
 )
 
 func TestHMACAuthCreate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -54,6 +56,8 @@ func TestHMACAuthCreate(T *testing.T) {
 }
 
 func TestHMACAuthCreateWithID(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -90,6 +94,8 @@ func TestHMACAuthCreateWithID(T *testing.T) {
 }
 
 func TestHMACAuthGet(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -139,6 +145,8 @@ func TestHMACAuthGet(T *testing.T) {
 }
 
 func TestHMACAuthUpdate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -184,6 +192,8 @@ func TestHMACAuthUpdate(T *testing.T) {
 }
 
 func TestHMACAuthDelete(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -223,6 +233,8 @@ func TestHMACAuthDelete(T *testing.T) {
 }
 
 func TestHMACAuthListMethods(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 

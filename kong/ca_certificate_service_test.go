@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -96,8 +97,11 @@ R+pHRocvtyc8EnkuMw6+jGHr
 )
 
 func TestCACertificatesService(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.3.0")
+
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -115,8 +119,8 @@ func TestCACertificatesService(T *testing.T) {
 	certificate.Cert = String(caCert1)
 	createdCertificate, err = client.CACertificates.Create(defaultCtx,
 		certificate)
-	assert.NoError(err)
-	assert.NotNil(createdCertificate)
+	require.NoError(err)
+	require.NotNil(createdCertificate)
 
 	certificate, err = client.CACertificates.Get(defaultCtx,
 		createdCertificate.ID)
@@ -149,8 +153,11 @@ func TestCACertificatesService(T *testing.T) {
 }
 
 func TestCACertificateWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.3.0")
+
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -163,8 +170,8 @@ func TestCACertificateWithTags(T *testing.T) {
 
 	createdCertificate, err := client.CACertificates.Create(defaultCtx,
 		certificate)
-	assert.NoError(err)
-	assert.NotNil(createdCertificate)
+	require.NoError(err)
+	require.NotNil(createdCertificate)
 	assert.Equal(StringSlice("tag1", "tag2"), createdCertificate.Tags)
 
 	err = client.CACertificates.Delete(defaultCtx, createdCertificate.ID)
@@ -172,8 +179,11 @@ func TestCACertificateWithTags(T *testing.T) {
 }
 
 func TestCACertificateListEndpoint(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.3.0")
+
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -203,9 +213,9 @@ func TestCACertificateListEndpoint(T *testing.T) {
 
 	certificatesFromKong, next, err := client.CACertificates.List(defaultCtx, nil)
 
-	assert.NoError(err)
-	assert.Nil(next)
-	assert.NotNil(certificatesFromKong)
+	require.NoError(err)
+	require.Nil(next)
+	require.NotNil(certificatesFromKong)
 	assert.Equal(3, len(certificatesFromKong))
 
 	// check if we see all certificates

@@ -74,7 +74,9 @@ func TestKeyService(T *testing.T) {
 }
 
 func TestKeyServiceWithSet(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=3.1.0")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -180,7 +182,9 @@ func TestKeyWithTags(T *testing.T) {
 }
 
 func TestKeyWithTagsWithSet(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=3.1.0")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -376,7 +380,9 @@ func TestKeyListWithTags(T *testing.T) {
 }
 
 func TestKeyListWithTagsWithSet(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=3.1.0")
+
 	assert := assert.New(T)
 	require := require.New(T)
 

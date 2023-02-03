@@ -9,7 +9,9 @@ import (
 )
 
 func TestKeySetService(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=3.1.0")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -55,12 +57,14 @@ func TestKeySetService(T *testing.T) {
 }
 
 func TestKeySetWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=3.1.0")
-	assert := assert.New(T)
+
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	keySet := &KeySet{
 		Name: String("foo"),
@@ -68,16 +72,18 @@ func TestKeySetWithTags(T *testing.T) {
 	}
 
 	createdKeySet, err := client.KeySets.Create(defaultCtx, keySet)
-	assert.NoError(err)
-	assert.NotNil(createdKeySet)
-	assert.Equal(StringSlice("tag1", "tag2"), createdKeySet.Tags)
+	require.NoError(err)
+	require.NotNil(createdKeySet)
+	require.Equal(StringSlice("tag1", "tag2"), createdKeySet.Tags)
 
 	err = client.KeySets.Delete(defaultCtx, createdKeySet.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestKeySetListWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=3.1.0")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
