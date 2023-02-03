@@ -386,15 +386,26 @@ func (c *Client) ReloadDeclarativeRawConfig(
 	ctx context.Context,
 	config io.Reader,
 	checkHash bool,
+	flattenErrors bool,
 ) ([]byte, error) {
 	type sendConfigParams struct {
-		CheckHash int `url:"check_hash"`
+		CheckHash     int `url:"check_hash"`
+		FlattenErrors int `url:"flatten_errors"`
 	}
 	var checkHashI int
 	if checkHash {
 		checkHashI = 1
 	}
-	req, err := c.NewRequest("POST", "/config", sendConfigParams{CheckHash: checkHashI}, config)
+	var flattenErrorsI int
+	if flattenErrors {
+		flattenErrorsI = 1
+	}
+	req, err := c.NewRequest(
+		"POST",
+		"/config",
+		sendConfigParams{CheckHash: checkHashI, FlattenErrors: flattenErrorsI},
+		config,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("creating new HTTP request for /config: %w", err)
 	}

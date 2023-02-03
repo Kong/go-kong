@@ -57,6 +57,10 @@
   `ConfigService`, now part of `kong.Client`) now has the response signature
   `([]byte, error)` instead of `error`. The byte slice is the config response
   body. The error is unchanged.
+- **Breaking change:** `ReloadDeclarativeRawConfig()` now requires a
+  `flattenErrors` boolean argument. When `true`, requests will include
+  `flatten_errors=1` in the query string, to activate the functionality added
+  in https://github.com/Kong/kong/pull/10161.
   [#273](https://github.com/Kong/go-kong/pull/273)
 
 ## [v0.36.0]

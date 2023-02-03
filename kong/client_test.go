@@ -279,7 +279,7 @@ func TestReloadDeclarativeRawConfig(t *testing.T) {
 			b, err := json.Marshal(tt.config)
 			require.NoError(t, err)
 
-			body, err := client.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true)
+			body, err := client.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true, true)
 			stringBody := string(body)
 			if stringBody == "" {
 				t.Errorf("wat")
