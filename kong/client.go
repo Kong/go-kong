@@ -405,15 +405,12 @@ func (c *Client) ReloadDeclarativeRawConfig(
 	}
 	defer resp.Body.Close()
 
-	var b []byte
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("could not read /config %d status response body: %w", resp.StatusCode, err)
+	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
-		b, err = io.ReadAll(resp.Body)
-		if err != nil {
-			return nil,
-				fmt.Errorf(`failed posting new config to /config: got status code %d
-				(and failed to read the response body): %w`,
-					resp.StatusCode, err)
-		}
+		return b, fmt.Errorf("failed posting new config to /config: got status code %d", resp.StatusCode)
 	}
 
 	return b, nil
