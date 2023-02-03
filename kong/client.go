@@ -389,8 +389,8 @@ func (c *Client) ReloadDeclarativeRawConfig(
 	flattenErrors bool,
 ) ([]byte, error) {
 	type sendConfigParams struct {
-		CheckHash     int `url:"check_hash"`
-		FlattenErrors int `url:"flatten_errors"`
+		CheckHash     int `url:"check_hash,omitempty"`
+		FlattenErrors int `url:"flatten_errors,omitempty"`
 	}
 	var checkHashI int
 	if checkHash {
