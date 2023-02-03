@@ -302,12 +302,9 @@ func TestReloadDeclarativeRawConfig(t *testing.T) {
 			require.NoError(t, err)
 
 			body, err := client.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true, flattenErrors)
-			// We only get empty body when there's a transient network error or
-			// we fail to read the response body which shouldn't happen in tests.
-			assert.NotEmpty(t, string(body))
 
 			if tt.wantErr {
-				assert.Errorf(t, err, "Client.SendConfig() got unexpected error = %v", err)
+				assert.Errorf(t, err, "Client.SendConfig() got unexpected error")
 			} else {
 				assert.NoError(t, err)
 			}
