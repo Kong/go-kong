@@ -11,6 +11,8 @@ import (
 )
 
 func TestConsumersService(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -67,12 +69,14 @@ func TestConsumersService(T *testing.T) {
 }
 
 func TestConsumerWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.1.0")
-	assert := assert.New(T)
+
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	consumer := &Consumer{
 		Username: String("foo"),
@@ -80,15 +84,17 @@ func TestConsumerWithTags(T *testing.T) {
 	}
 
 	createdConsumer, err := client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
-	assert.NotNil(createdConsumer)
-	assert.Equal(StringSlice("tag1", "tag2"), createdConsumer.Tags)
+	require.NoError(err)
+	require.NotNil(createdConsumer)
+	require.Equal(StringSlice("tag1", "tag2"), createdConsumer.Tags)
 
 	err = client.Consumers.Delete(defaultCtx, createdConsumer.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestConsumerListEndpoint(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	// Enterprise tests create an admin, which affects the list endpoints in peculiar ways. although the actual
 	// consumer and credential entities are hidden from the API they still affect pagination. Tests that check
 	// pagination behavior cannot check the same values on community and Enterprise. As such, we just don't run this
@@ -165,7 +171,9 @@ func TestConsumerListEndpoint(T *testing.T) {
 }
 
 func TestConsumerListWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.1.0")
+
 	assert := assert.New(T)
 	require := require.New(T)
 

@@ -93,7 +93,7 @@ function deploy_kong_dbless()
 
 function create_network()
 {
-  docker network inspect $NETWORK_NAME >/dev/null|| docker network create $NETWORK_NAME
+  docker network inspect $NETWORK_NAME 2>/dev/null >/dev/null || docker network create $NETWORK_NAME
 }
 
 while [[ $# -gt 0 ]]; do
@@ -113,8 +113,6 @@ while [[ $# -gt 0 ]]; do
     *)
   esac
 done
-
-set -x
 
 if [[ "${DBMODE}" == "off" ]]; then
   create_network

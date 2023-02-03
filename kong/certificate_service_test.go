@@ -254,6 +254,8 @@ StncqiK5F5CsWRrwQCpoNDkOAQE/l7QZgBzYrXw4vQ==
 )
 
 func TestCertificatesService(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -310,8 +312,11 @@ func TestCertificatesService(T *testing.T) {
 }
 
 func TestCertificateWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.1.0")
+
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	assert.NoError(err)
@@ -324,15 +329,17 @@ func TestCertificateWithTags(T *testing.T) {
 	}
 
 	createdCertificate, err := client.Certificates.Create(defaultCtx, certificate)
-	assert.NoError(err)
-	assert.NotNil(createdCertificate)
-	assert.Equal(StringSlice("tag1", "tag2"), createdCertificate.Tags)
+	require.NoError(err)
+	require.NotNil(createdCertificate)
+	require.Equal(StringSlice("tag1", "tag2"), createdCertificate.Tags)
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
 	assert.NoError(err)
 }
 
 func TestCertificateListEndpoint(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 

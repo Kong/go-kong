@@ -9,6 +9,8 @@ import (
 )
 
 func TestKeyAuthCreate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -51,6 +53,8 @@ func TestKeyAuthCreate(T *testing.T) {
 }
 
 func TestKeyAuthCreateWithID(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -85,6 +89,8 @@ func TestKeyAuthCreateWithID(T *testing.T) {
 }
 
 func TestKeyAuthGet(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -136,6 +142,8 @@ func TestKeyAuthGet(T *testing.T) {
 }
 
 func TestKeyAuthUpdate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -179,6 +187,8 @@ func TestKeyAuthUpdate(T *testing.T) {
 }
 
 func TestKeyAuthDelete(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -218,6 +228,8 @@ func TestKeyAuthDelete(T *testing.T) {
 }
 
 func TestKeyAuthListMethods(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -308,7 +320,9 @@ func TestKeyAuthListMethods(T *testing.T) {
 }
 
 func TestKeyAuthCreateWithTTL(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.4.0")
+
 	assert := assert.New(T)
 	require := require.New(T)
 

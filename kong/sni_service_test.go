@@ -9,6 +9,8 @@ import (
 )
 
 func TestSNIsCertificate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -73,27 +75,29 @@ func TestSNIsCertificate(T *testing.T) {
 }
 
 func TestSNIWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	fixtureCertificate, err := client.Certificates.Create(defaultCtx,
 		&Certificate{
 			Key:  String(key1),
 			Cert: String(cert1),
 		})
-	assert.NoError(err)
+	require.NoError(err)
 
 	createdSNI, err := client.SNIs.Create(defaultCtx, &SNI{
 		Name:        String("host1.com"),
 		Certificate: fixtureCertificate,
 		Tags:        StringSlice("tag1", "tag2"),
 	})
-	assert.NoError(err)
-	assert.NotNil(createdSNI)
+	require.NoError(err)
+	require.NotNil(createdSNI)
 	assert.Equal(StringSlice("tag1", "tag2"), createdSNI.Tags)
 
 	err = client.Certificates.Delete(defaultCtx, fixtureCertificate.ID)
@@ -101,6 +105,8 @@ func TestSNIWithTags(T *testing.T) {
 }
 
 func TestSNIListEndpoint(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 

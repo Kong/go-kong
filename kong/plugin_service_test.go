@@ -41,6 +41,8 @@ func TestPluginsServiceValidation(T *testing.T) {
 }
 
 func TestPluginsService(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -177,12 +179,14 @@ func TestPluginsService(T *testing.T) {
 }
 
 func TestPluginWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.1.0")
-	assert := assert.New(T)
+
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	plugin := &Plugin{
 		Name: String("key-auth"),
@@ -190,12 +194,12 @@ func TestPluginWithTags(T *testing.T) {
 	}
 
 	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
-	assert.NoError(err)
-	assert.NotNil(createdPlugin)
-	assert.Equal(StringSlice("tag1", "tag2"), createdPlugin.Tags)
+	require.NoError(err)
+	require.NotNil(createdPlugin)
+	require.Equal(StringSlice("tag1", "tag2"), createdPlugin.Tags)
 
 	err = client.Plugins.Delete(defaultCtx, createdPlugin.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestPluginWithOrdering(T *testing.T) {
@@ -275,6 +279,8 @@ func TestUnknownPlugin(T *testing.T) {
 }
 
 func TestPluginListEndpoint(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -354,6 +360,8 @@ func TestPluginListEndpoint(T *testing.T) {
 }
 
 func TestPluginListAllForEntityEndpoint(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 

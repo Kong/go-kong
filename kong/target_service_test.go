@@ -10,6 +10,8 @@ import (
 )
 
 func TestTargetsUpstream(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -64,6 +66,8 @@ func TestTargetsUpstream(T *testing.T) {
 }
 
 func TestTargetsUpdate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -108,25 +112,27 @@ func TestTargetsUpdate(T *testing.T) {
 }
 
 func TestTargetWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
 		Name: String("vhost.com"),
 	})
-	assert.NoError(err)
+	require.NoError(err)
 
 	createdTarget, err := client.Targets.Create(defaultCtx,
 		fixtureUpstream.ID, &Target{
 			Target: String("10.0.0.1:80"),
 			Tags:   StringSlice("tag1", "tag2"),
 		})
-	assert.NoError(err)
-	assert.NotNil(createdTarget)
+	require.NoError(err)
+	require.NotNil(createdTarget)
 	assert.Equal(StringSlice("tag1", "tag2"), createdTarget.Tags)
 
 	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
@@ -134,6 +140,8 @@ func TestTargetWithTags(T *testing.T) {
 }
 
 func TestTargetListEndpoint(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -229,6 +237,8 @@ func compareTargets(expected, actual []*Target) bool {
 }
 
 func TestTargetMarkHealthy(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	// TODO https://github.com/Kong/go-kong/issues/213 this does not yet work on 3.x
 	RunWhenKong(T, "<3.0.0")
 	assert := assert.New(T)
@@ -275,6 +285,8 @@ func TestTargetMarkHealthy(T *testing.T) {
 }
 
 func TestTargetMarkUnhealthy(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	// TODO https://github.com/Kong/go-kong/issues/213 this does not yet work on 3.x
 	RunWhenKong(T, "<3.0.0")
 	assert := assert.New(T)
