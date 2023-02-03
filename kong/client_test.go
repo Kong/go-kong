@@ -274,22 +274,15 @@ func TestReloadDeclarativeRawConfig(t *testing.T) {
 	// snippet is borrowed from RunWhenKong, to allow toggling that behavior only on or off depending on the version.
 	var flattenErrors bool
 	client, err := NewTestClient(nil, nil)
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
 	info, err := client.Root(defaultCtx)
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
 	version := VersionFromInfo(info)
 	currentVersion, err := ParseSemanticVersion(version)
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
 	r, err := NewRange(">=3.2.0")
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
+
 	if r(currentVersion) {
 		t.Log("Kong version >=3.2, enabling flattenErrors for ReloadDeclarativeRawConfig")
 		flattenErrors = true
