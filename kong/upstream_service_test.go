@@ -9,6 +9,8 @@ import (
 )
 
 func TestUpstreamsService(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -54,12 +56,14 @@ func TestUpstreamsService(T *testing.T) {
 }
 
 func TestUpstreamWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	upstream := &Upstream{
 		Name: String("key-auth"),
@@ -67,8 +71,8 @@ func TestUpstreamWithTags(T *testing.T) {
 	}
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
-	assert.NoError(err)
-	assert.NotNil(createdUpstream)
+	require.NoError(err)
+	require.NotNil(createdUpstream)
 	assert.Equal(StringSlice("tag1", "tag2"), createdUpstream.Tags)
 
 	err = client.Upstreams.Delete(defaultCtx, createdUpstream.ID)
@@ -77,6 +81,8 @@ func TestUpstreamWithTags(T *testing.T) {
 
 // regression test for #6
 func TestUpstreamWithActiveUnHealthyInterval(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -128,6 +134,8 @@ func TestUpstreamWithPassiveUnHealthyInterval(T *testing.T) {
 }
 
 func TestUpstreamWithPassiveHealthy(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -158,12 +166,14 @@ func TestUpstreamWithPassiveHealthy(T *testing.T) {
 }
 
 func TestUpstreamWithAlgorithm(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.3.0")
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	upstream := &Upstream{
 		Name:      String("upstream1"),
@@ -171,8 +181,8 @@ func TestUpstreamWithAlgorithm(T *testing.T) {
 	}
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
-	assert.NoError(err)
-	assert.NotNil(createdUpstream)
+	require.NoError(err)
+	require.NotNil(createdUpstream)
 	assert.Equal("least-connections", *createdUpstream.Algorithm)
 
 	err = client.Upstreams.Delete(defaultCtx, createdUpstream.ID)
@@ -180,6 +190,8 @@ func TestUpstreamWithAlgorithm(T *testing.T) {
 }
 
 func TestUpstreamListEndpoint(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -272,12 +284,14 @@ func compareUpstreams(T *testing.T, expected, actual []*Upstream) bool {
 }
 
 func TestUpstreamsWithHostHeader(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.4.0")
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	upstream := &Upstream{
 		Name:       String("upstream-with-host-header"),
@@ -285,8 +299,8 @@ func TestUpstreamsWithHostHeader(T *testing.T) {
 	}
 
 	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
-	assert.NoError(err)
-	assert.NotNil(createdUpstream)
+	require.NoError(err)
+	require.NotNil(createdUpstream)
 	assert.Equal("example.com", *createdUpstream.HostHeader)
 
 	err = client.Upstreams.Delete(defaultCtx, createdUpstream.ID)

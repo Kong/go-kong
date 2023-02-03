@@ -11,6 +11,11 @@ on:
 
 jobs:
   test:
+    strategy:
+      matrix:
+        dbmode:
+          - 'dbless'
+          - 'postgres'
     env:
       KONG_IMAGE_REPO: "kong/kong"
       KONG_IMAGE_TAG: "master-alpine"
@@ -30,7 +35,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Setup Kong
-        run: make setup-kong
+        run: make setup-kong-${{ matrix.dbmode }}
       - name: Run tests
         run: make test-coverage
       - name: Upload Code Coverage

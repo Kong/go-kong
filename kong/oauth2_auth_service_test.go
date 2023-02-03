@@ -9,6 +9,8 @@ import (
 )
 
 func TestOauth2CredentialCreate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -51,6 +53,8 @@ func TestOauth2CredentialCreate(T *testing.T) {
 }
 
 func TestOauth2CredentialCreateWithID(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -89,6 +93,8 @@ func TestOauth2CredentialCreateWithID(T *testing.T) {
 }
 
 func TestOauth2CredentialCreatePublicClientType(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -126,6 +132,8 @@ func TestOauth2CredentialCreatePublicClientType(T *testing.T) {
 }
 
 func TestOauth2CredentialGet(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -226,6 +234,8 @@ func TestOauth2CredentialUpdate(T *testing.T) {
 }
 
 func TestOauth2CredentialDelete(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -267,6 +277,8 @@ func TestOauth2CredentialDelete(T *testing.T) {
 }
 
 func TestOauth2CredentialListMethods(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 

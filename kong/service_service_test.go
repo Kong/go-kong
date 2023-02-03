@@ -9,6 +9,8 @@ import (
 )
 
 func TestServicesService(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -83,12 +85,15 @@ func TestServicesService(T *testing.T) {
 }
 
 func TestServiceWithTags(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	RunWhenKong(T, ">=1.1.0")
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	service := &Service{
 		Name: String("key-auth"),
@@ -97,8 +102,8 @@ func TestServiceWithTags(T *testing.T) {
 	}
 
 	createdService, err := client.Services.Create(defaultCtx, service)
-	assert.NoError(err)
-	assert.NotNil(createdService)
+	require.NoError(err)
+	require.NotNil(createdService)
 	assert.Equal(StringSlice("tag1", "tag2"), createdService.Tags)
 
 	err = client.Services.Delete(defaultCtx, createdService.ID)
@@ -106,6 +111,8 @@ func TestServiceWithTags(T *testing.T) {
 }
 
 func TestServiceListEndpoint(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -132,8 +139,8 @@ func TestServiceListEndpoint(T *testing.T) {
 	// create fixturs
 	for i := 0; i < len(services); i++ {
 		service, err := client.Services.Create(defaultCtx, services[i])
-		assert.NoError(err)
-		assert.NotNil(service)
+		require.NoError(err)
+		require.NotNil(service)
 		services[i] = service
 	}
 
@@ -195,20 +202,22 @@ func compareServices(T *testing.T, expected, actual []*Service) bool {
 }
 
 func TestServiceWithClientCert(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.3.0")
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	certificate := &Certificate{
 		Key:  String(key1),
 		Cert: String(cert1),
 	}
 	createdCertificate, err := client.Certificates.Create(defaultCtx, certificate)
-	assert.NoError(err)
-	assert.NotNil(createdCertificate)
+	require.NoError(err)
+	require.NotNil(createdCertificate)
 
 	service := &Service{
 		Name:              String("foo"),
@@ -218,8 +227,8 @@ func TestServiceWithClientCert(T *testing.T) {
 	}
 
 	createdService, err := client.Services.Create(defaultCtx, service)
-	assert.NoError(err)
-	assert.NotNil(createdService)
+	require.NoError(err)
+	require.NotNil(createdService)
 	assert.Equal(*createdCertificate.ID, *createdService.ClientCertificate.ID)
 
 	err = client.Services.Delete(defaultCtx, createdService.ID)

@@ -9,6 +9,8 @@ import (
 )
 
 func TestJWTCreate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -54,6 +56,8 @@ func TestJWTCreate(T *testing.T) {
 }
 
 func TestJWTCreateWithID(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -90,6 +94,8 @@ func TestJWTCreateWithID(T *testing.T) {
 }
 
 func TestJWTGet(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -138,6 +144,8 @@ func TestJWTGet(T *testing.T) {
 }
 
 func TestJWTUpdate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -180,6 +188,8 @@ func TestJWTUpdate(T *testing.T) {
 }
 
 func TestJWTDelete(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -217,6 +227,8 @@ func TestJWTDelete(T *testing.T) {
 }
 
 func TestJWTListMethods(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 

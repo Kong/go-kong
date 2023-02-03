@@ -9,6 +9,8 @@ import (
 )
 
 func TestACLGroupCreate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -52,6 +54,8 @@ func TestACLGroupCreate(T *testing.T) {
 }
 
 func TestACLGroupCreateWithID(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -85,6 +89,8 @@ func TestACLGroupCreateWithID(T *testing.T) {
 }
 
 func TestACLGroupGet(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -132,6 +138,8 @@ func TestACLGroupGet(T *testing.T) {
 }
 
 func TestACLGroupUpdate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -172,6 +180,8 @@ func TestACLGroupUpdate(T *testing.T) {
 }
 
 func TestACLGroupDelete(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -209,6 +219,8 @@ func TestACLGroupDelete(T *testing.T) {
 }
 
 func TestACLGroupListMethods(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 

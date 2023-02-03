@@ -9,6 +9,8 @@ import (
 )
 
 func TestBasicAuthCreate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -62,6 +64,8 @@ func TestBasicAuthCreate(T *testing.T) {
 }
 
 func TestBasicAuthCreateWithID(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -99,6 +103,8 @@ func TestBasicAuthCreateWithID(T *testing.T) {
 }
 
 func TestBasicAuthGet(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -150,6 +156,8 @@ func TestBasicAuthGet(T *testing.T) {
 }
 
 func TestBasicAuthUpdate(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -196,6 +204,8 @@ func TestBasicAuthUpdate(T *testing.T) {
 }
 
 func TestBasicAuthDelete(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -236,6 +246,8 @@ func TestBasicAuthDelete(T *testing.T) {
 }
 
 func TestBasicAuthListMethods(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	// Enterprise tests create an admin, which affects the list endpoints in peculiar ways. although the actual
 	// consumer and credential entities are hidden from the API they still affect pagination. Tests that check
 	// pagination behavior cannot check the same values on community and Enterprise. As such, we just don't run this

@@ -16,6 +16,8 @@ type RequiredFeatures struct {
 // This helper function can be used in tests to write version specific
 // tests for Kong.
 func RunWhenKong(t *testing.T, versionRange string) {
+	t.Helper()
+
 	client, err := NewTestClient(nil, nil)
 	if err != nil {
 		t.Error(err)
@@ -34,7 +36,7 @@ func RunWhenKong(t *testing.T, versionRange string) {
 		t.Error(err)
 	}
 	if !r(currentVersion) {
-		t.Skip()
+		t.Skipf("kong version %s not in range %s", version, versionRange)
 	}
 }
 
@@ -45,6 +47,8 @@ func RunWhenKong(t *testing.T, versionRange string) {
 // RBAC and RBAC is not enabled on Kong the test
 // will be skipped
 func RunWhenEnterprise(t *testing.T, versionRange string, required RequiredFeatures) {
+	t.Helper()
+
 	client, err := NewTestClient(nil, nil)
 	if err != nil {
 		t.Error(err)
@@ -60,19 +64,16 @@ func RunWhenEnterprise(t *testing.T, versionRange string, required RequiredFeatu
 	}
 
 	if !currentVersion.IsKongGatewayEnterprise() {
-		t.Log("non-Enterprise test Kong instance, skipping")
-		t.Skip()
+		t.Skip("non-Enterprise test Kong instance, skipping")
 	}
 	configuration := info["configuration"].(map[string]interface{})
 
 	if required.RBAC && configuration["rbac"].(string) != "on" {
-		t.Log("RBAC not enabled on test Kong instance, skipping")
-		t.Skip()
+		t.Skip("RBAC not enabled on test Kong instance, skipping")
 	}
 
 	if required.Portal && !configuration["portal"].(bool) {
-		t.Log("Portal not enabled on test Kong instance, skipping")
-		t.Skip()
+		t.Skip("Portal not enabled on test Kong instance, skipping")
 	}
 
 	r, err := NewRange(versionRange)
@@ -80,12 +81,14 @@ func RunWhenEnterprise(t *testing.T, versionRange string, required RequiredFeatu
 		t.Error(err)
 	}
 	if !r(currentVersion) {
-		t.Skip()
+		t.Skipf("kong version %s not in range %s", version, versionRange)
 	}
 }
 
 // SkipWhenEnterprise skips a test if the Kong version is an Enterprise version
 func SkipWhenEnterprise(t *testing.T) {
+	t.Helper()
+
 	client, err := NewTestClient(nil, nil)
 	if err != nil {
 		t.Error(err)
@@ -101,8 +104,7 @@ func SkipWhenEnterprise(t *testing.T) {
 	}
 
 	if currentVersion.IsKongGatewayEnterprise() {
-		t.Log("non-Enterprise test Kong instance, skipping")
-		t.Skip()
+		t.Skip("non-Enterprise test Kong instance, skipping")
 	}
 }
 
@@ -123,6 +125,8 @@ func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
 }
 
 func RunWhenDBMode(t *testing.T, dbmode string) {
+	t.Helper()
+
 	client, err := NewTestClient(nil, nil)
 	if err != nil {
 		t.Error(err)
@@ -134,29 +138,25 @@ func RunWhenDBMode(t *testing.T, dbmode string) {
 
 	config, ok := info["configuration"]
 	if !ok {
-		t.Logf("failed to find 'configuration' config key in kong configuration")
-		t.Skip()
+		t.Skip("failed to find 'configuration' config key in kong configuration")
 	}
 
 	configuration, ok := config.(map[string]any)
 	if !ok {
-		t.Logf("'configuration' key is not a map but %T", config)
-		t.Skip()
+		t.Skipf("'configuration' key is not a map but %T", config)
 	}
 
 	dbConfig, ok := configuration["database"]
 	if !ok {
-		t.Logf("failed to find 'database' config key in kong confiration")
-		t.Skip()
+		t.Skip("failed to find 'database' config key in kong confiration")
 	}
 
 	dbMode, ok := dbConfig.(string)
 	if !ok {
-		t.Logf("'database' config key is not a string but %T", dbConfig)
-		t.Skip()
+		t.Skipf("'database' config key is not a string but %T", dbConfig)
 	}
 
 	if dbMode != dbmode {
-		t.Skip()
+		t.Skipf("detected Kong running in dbmode:%q but requested dbmode:%q", dbMode, dbmode)
 	}
 }

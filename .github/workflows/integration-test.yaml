@@ -24,6 +24,9 @@ jobs:
         - '2.8.0'
         - '3.0.1'
         - '3.1.0'
+        dbmode:
+          - 'dbless'
+          - 'postgres'
     env:
       KONG_IMAGE_TAG: ${{ matrix.kong_version }}
       KONG_ANONYMOUS_REPORTS: "off"
@@ -42,7 +45,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Setup Kong
-        run: make setup-kong
+        run: make setup-kong-${{ matrix.dbmode }}
       - name: Run tests
         run: make test-coverage
       - name: Upload Code Coverage

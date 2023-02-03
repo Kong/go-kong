@@ -8,6 +8,8 @@ import (
 )
 
 func TestUpstreamNodeHealthService(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
