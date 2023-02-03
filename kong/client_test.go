@@ -268,6 +268,39 @@ func TestReloadDeclarativeRawConfig(t *testing.T) {
 		},
 	}
 
+	// POST /config actually interprets query string fields as additional fields within the config unless they're
+	// explicitly stripped by the API code (no idea why this behavior exists). Without stripping "flatten_errors" in
+	// https://github.com/Kong/kong/blob/master/kong/api/routes/config.lua#L71 Kong will actually reject configuration
+	// because it thinks "flatten_errors" is an actual (and invalid) field inside the config.
+	//
+	// This is the one test where we want version-dependent behavior, but only for one value within the test. We test
+	// config updates on all DB-less capable versions, but only set flattenErrors=true on 3.2+. To handle that, this
+	// snippet is borrowed from RunWhenKong, to allow toggling that behavior only on or off depending on the version.
+	var flattenErrors bool
+	client, err := NewTestClient(nil, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	info, err := client.Root(defaultCtx)
+	if err != nil {
+		t.Error(err)
+	}
+	version := VersionFromInfo(info)
+	currentVersion, err := ParseSemanticVersion(version)
+	if err != nil {
+		t.Error(err)
+	}
+	r, err := NewRange(">=3.2.0")
+	if err != nil {
+		t.Error(err)
+	}
+	if r(currentVersion) {
+		t.Log("Kong version >=3.2, enabling flattenErrors for ReloadDeclarativeRawConfig")
+		flattenErrors = true
+	} else {
+		t.Log("Kong version <3.2, disabling flattenErrors for ReloadDeclarativeRawConfig")
+	}
+
 	for _, tt := range tests {
 		client, err := NewTestClient(nil, nil)
 		require.NoError(t, err)
@@ -279,7 +312,7 @@ func TestReloadDeclarativeRawConfig(t *testing.T) {
 			b, err := json.Marshal(tt.config)
 			require.NoError(t, err)
 
-			body, err := client.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true, true)
+			body, err := client.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true, flattenErrors)
 			// We only get empty body when there's a transient network error or
 			// we fail to read the response body which shouldn't happen in tests.
 			assert.NotEmpty(t, string(body))
