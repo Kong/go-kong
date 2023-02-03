@@ -46,6 +46,10 @@ linters:
 
 issues:
   max-same-issues: 0
+  exclude-rules:
+  - linters:
+    - lll
+    source: "^\t*// "
 
 linters-settings:
   gomodguard:

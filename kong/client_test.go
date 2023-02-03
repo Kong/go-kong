@@ -1,7 +1,9 @@
 package kong
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"os"
 	"testing"
@@ -204,4 +206,114 @@ func TestBaseRootURL(t *testing.T) {
 
 		require.Equal(t, client.BaseRootURL(), "https://customkong2.com")
 	})
+}
+
+func TestReloadDeclarativeRawConfig(t *testing.T) {
+	RunWhenDBMode(t, "off")
+
+	tests := []struct {
+		name    string
+		config  Configuration
+		wantErr bool
+	}{
+		{
+			name: "basic config works",
+			config: Configuration{
+				"_format_version": "1.1",
+				"services": []Configuration{
+					{
+						"host":     "mockbin.com",
+						"port":     443,
+						"protocol": "https",
+						"routes": []Configuration{
+							{"paths": []string{"/"}},
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "missing _format_version fails",
+			config: Configuration{
+				"services": []Configuration{
+					{
+						"host":     "mockbin.com",
+						"port":     443,
+						"protocol": "https",
+						"routes": []Configuration{
+							{"paths": []string{"/"}},
+						},
+					},
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid config fails",
+			config: Configuration{
+				"dummy_key": []Configuration{
+					{
+						"host":     "mockbin.com",
+						"port":     443,
+						"protocol": "https",
+					},
+				},
+			},
+			wantErr: true,
+		},
+	}
+
+	// POST /config actually interprets query string fields as additional fields within the config unless they're
+	// explicitly stripped by the API code (no idea why this behavior exists). Without stripping "flatten_errors" in
+	// https://github.com/Kong/kong/blob/master/kong/api/routes/config.lua#L71 Kong will actually reject configuration
+	// because it thinks "flatten_errors" is an actual (and invalid) field inside the config.
+	//
+	// This is the one test where we want version-dependent behavior, but only for one value within the test. We test
+	// config updates on all DB-less capable versions, but only set flattenErrors=true on 3.2+. To handle that, this
+	// snippet is borrowed from RunWhenKong, to allow toggling that behavior only on or off depending on the version.
+	var flattenErrors bool
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	info, err := client.Root(defaultCtx)
+	require.NoError(t, err)
+	version := VersionFromInfo(info)
+	currentVersion, err := ParseSemanticVersion(version)
+	require.NoError(t, err)
+	r, err := NewRange(">=3.2.0")
+	require.NoError(t, err)
+
+	if r(currentVersion) {
+		t.Log("Kong version >=3.2, enabling flattenErrors for ReloadDeclarativeRawConfig")
+		flattenErrors = true
+	} else {
+		t.Log("Kong version <3.2, disabling flattenErrors for ReloadDeclarativeRawConfig")
+	}
+
+	for _, tt := range tests {
+		client, err := NewTestClient(nil, nil)
+		require.NoError(t, err)
+		require.NotNil(t, client)
+
+		tt := tt
+		t.Run("with_schema/"+tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			b, err := json.Marshal(tt.config)
+			require.NoError(t, err)
+
+			body, err := client.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true, flattenErrors)
+
+			if tt.wantErr {
+				assert.Errorf(t, err, "Client.SendConfig() got unexpected error")
+			} else {
+				assert.NoError(t, err)
+			}
+
+			// this is somewhat untrue: network or HTTP-level failures _can_ result in a nil response body. however,
+			// none of our test cases should cause network or HTTP-level failures, so fail if they do occur. if this
+			// _does_ encounter such a failure, we need to investigate and either update tests or fix some upstream bug
+			// if it's not some transient issue with the testing environment
+			require.NotNilf(t, body, "body was nil; should never be nil")
+		})
+	}
 }

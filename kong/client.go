@@ -39,7 +39,6 @@ type Client struct {
 	workspace               string       // Do not access directly. Use Workspace()/SetWorkspace().
 	workspaceLock           sync.RWMutex // Synchronizes access to workspace.
 	common                  service
-	Configs                 AbstractConfigService
 	ConsumerGroupConsumers  AbstractConsumerGroupConsumerService
 	ConsumerGroups          AbstractConsumerGroupService
 	Consumers               AbstractConsumerService
@@ -132,7 +131,6 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.baseRootURL = url.String()
 
 	kong.common.client = kong
-	kong.Configs = (*ConfigService)(&kong.common)
 	kong.ConsumerGroupConsumers = (*ConsumerGroupConsumerService)(&kong.common)
 	kong.ConsumerGroups = (*ConsumerGroupService)(&kong.common)
 	kong.Consumers = (*ConsumerService)(&kong.common)
@@ -238,6 +236,7 @@ func (c *Client) DoRAW(ctx context.Context, req *http.Request) (*http.Response, 
 func (c *Client) Do(ctx context.Context, req *http.Request,
 	v interface{},
 ) (*Response, error) {
+	// TODO https://github.com/Kong/go-kong/issues/273 clear this lint ignore
 	resp, err := c.DoRAW(ctx, req) //nolint:bodyclose
 	if err != nil {
 		return nil, err
@@ -376,4 +375,54 @@ func (c *Client) RootJSON(ctx context.Context) ([]byte, error) {
 
 func (c *Client) BaseRootURL() string {
 	return c.baseRootURL
+}
+
+// ReloadDeclarativeRawConfig sends out the specified config to configured Admin
+// API endpoint using the provided reader which should contain the JSON
+// serialized body that adheres to the configuration format specified at:
+// https://docs.konghq.com/gateway/latest/production/deployment-topologies/db-less-and-declarative-config/#declarative-configuration-format
+// It returns the response body and an error, if it encounters any.
+func (c *Client) ReloadDeclarativeRawConfig(
+	ctx context.Context,
+	config io.Reader,
+	checkHash bool,
+	flattenErrors bool,
+) ([]byte, error) {
+	type sendConfigParams struct {
+		CheckHash     int `url:"check_hash,omitempty"`
+		FlattenErrors int `url:"flatten_errors,omitempty"`
+	}
+	var checkHashI int
+	if checkHash {
+		checkHashI = 1
+	}
+	var flattenErrorsI int
+	if flattenErrors {
+		flattenErrorsI = 1
+	}
+	req, err := c.NewRequest(
+		"POST",
+		"/config",
+		sendConfigParams{CheckHash: checkHashI, FlattenErrors: flattenErrorsI},
+		config,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("creating new HTTP request for /config: %w", err)
+	}
+
+	resp, err := c.DoRAW(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed posting new config to /config: %w", err)
+	}
+	defer resp.Body.Close()
+
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("could not read /config %d status response body: %w", resp.StatusCode, err)
+	}
+	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
+		return b, fmt.Errorf("failed posting new config to /config: got status code %d and body %s", resp.StatusCode, b)
+	}
+
+	return b, nil
 }
