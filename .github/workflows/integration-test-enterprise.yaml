@@ -28,7 +28,7 @@ jobs:
     continue-on-error: true
     needs:
     - secret-available
-    if: needs.secret-available.outputs.ok == 'true'
+    if: needs.secret-available.outputs.ok
     strategy:
       matrix:
         kong_version:
@@ -53,7 +53,7 @@ jobs:
       # to override:
       # Warning: Skip output 'license' since it may contain secret.
       # on Github Actions when setting a job output.
-      - uses: Kong/kong-license@9fb64ad7be1ed2b121a70990783d7c0869e531d5
+      - uses: Kong/kong-license@master
         id: license_step
         with:
           password: ${{ secrets.PULP_PASSWORD }}
