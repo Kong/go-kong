@@ -3,11 +3,11 @@ name: 'Integration Test : Enterprise Nightly'
 on:
   push:
     branches:
-    - 'main'
-    - 'release/*'
+      - 'main'
+      - 'release/*'
   pull_request:
     branches:
-    - '*'
+      - '*'
 
 jobs:
   test-enterprise:
@@ -49,4 +49,3 @@ jobs:
           name: codecov-enterprise-nightly
           flags: enterprise-nightly,integration,enterprise
           fail_ci_if_error: true
-

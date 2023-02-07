@@ -3,11 +3,11 @@ name: 'Integration Test : Community Nightly'
 on:
   push:
     branches:
-    - 'main'
-    - 'release/*'
+      - 'main'
+      - 'release/*'
   pull_request:
     branches:
-    - '*'
+      - '*'
 
 jobs:
   test:
@@ -45,4 +45,3 @@ jobs:
           name: codecov-nightly
           flags: nightly,integration,community
           fail_ci_if_error: true
-

@@ -3,11 +3,11 @@ name: golangci-lint
 on:
   push:
     branches:
-    - 'main'
-    - 'release/*'
+      - 'main'
+      - 'release/*'
   pull_request:
     branches:
-    - '*'
+      - '*'
 
 jobs:
   golangci:
@@ -20,6 +20,9 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: go.mod
+      - uses: ibiqlik/action-yamllint@v3
+        with:
+          format: auto
       - name: Setup golangci-lint
         uses: golangci/golangci-lint-action@v3.4.0
       - name: Verify Codegen
