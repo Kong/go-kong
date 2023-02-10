@@ -9,3 +9,14 @@ type CACertificate struct {
 	CreatedAt  *int64    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Tags       []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
+
+// FriendlyName returns the endpoint key name or ID.
+func (c *CACertificate) FriendlyName() string {
+	if c.ID != nil {
+		return *c.ID
+	}
+	if c.Cert != nil {
+		return *c.Cert
+	}
+	return ""
+}
