@@ -19,7 +19,7 @@ type Plugin struct {
 	Tags         []*string       `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
-// KongPluginOrdering contains before or after instructions for plugin execution order
+// PluginOrdering contains before or after instructions for plugin execution order
 // +k8s:deepcopy-gen=true
 type PluginOrdering struct {
 	Before PluginOrderingPhase `json:"before,omitempty"`
