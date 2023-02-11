@@ -57,6 +57,7 @@ func TestPluginsService(T *testing.T) {
 	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
 	assert.NoError(err)
 	require.NotNil(createdPlugin)
+	require.Nil(createdPlugin.InstanceName)
 
 	plugin, err = client.Plugins.Get(defaultCtx, createdPlugin.ID)
 	assert.NoError(err)
@@ -176,6 +177,47 @@ func TestPluginsService(T *testing.T) {
 	assert.NotNil(createdPlugin.ID)
 
 	assert.NoError(client.Routes.Delete(defaultCtx, createdRoute.ID))
+}
+
+func TestPluginsWithInstanceNameService(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+	RunWhenKong(T, ">=3.2.0")
+
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	plugin := &Plugin{
+		Name:         String("key-auth"),
+		InstanceName: String("my-plugin"),
+	}
+
+	// create a plugin with instance_name
+	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
+	require.NoError(err)
+	require.NotNil(createdPlugin)
+	require.Equal(plugin.InstanceName, createdPlugin.InstanceName)
+
+	// get a plugin by instance_name
+	plugin, err = client.Plugins.Get(defaultCtx, createdPlugin.InstanceName)
+	require.NoError(err)
+	require.NotNil(plugin)
+	require.Equal(plugin.ID, createdPlugin.ID)
+	require.Equal(plugin.InstanceName, createdPlugin.InstanceName)
+
+	// update a plugin with instance_name
+	plugin.Config["key_in_body"] = true
+	plugin, err = client.Plugins.Update(defaultCtx, plugin)
+	require.NoError(err)
+	require.NotNil(plugin)
+	require.Equal(plugin.ID, createdPlugin.ID)
+	require.Equal(plugin.InstanceName, createdPlugin.InstanceName)
+	require.Equal(true, plugin.Config["key_in_body"])
+
+	// delete a plugin by instance_name
+	require.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.InstanceName))
 }
 
 func TestPluginWithTags(T *testing.T) {

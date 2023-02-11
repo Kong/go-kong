@@ -1379,6 +1379,11 @@ func (in *Plugin) DeepCopyInto(out *Plugin) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.InstanceName != nil {
+		in, out := &in.InstanceName, &out.InstanceName
+		*out = new(string)
+		**out = **in
+	}
 	if in.Route != nil {
 		in, out := &in.Route, &out.Route
 		*out = new(Route)

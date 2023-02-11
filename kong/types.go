@@ -348,18 +348,19 @@ func (in Configuration) DeepCopy() Configuration {
 // Read https://getkong.org/docs/0.13.x/admin-api/#Plugin-object
 // +k8s:deepcopy-gen=true
 type Plugin struct {
-	CreatedAt *int            `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	ID        *string         `json:"id,omitempty" yaml:"id,omitempty"`
-	Name      *string         `json:"name,omitempty" yaml:"name,omitempty"`
-	Route     *Route          `json:"route,omitempty" yaml:"route,omitempty"`
-	Service   *Service        `json:"service,omitempty" yaml:"service,omitempty"`
-	Consumer  *Consumer       `json:"consumer,omitempty" yaml:"consumer,omitempty"`
-	Config    Configuration   `json:"config,omitempty" yaml:"config,omitempty"`
-	Enabled   *bool           `json:"enabled,omitempty" yaml:"enabled,omitempty"`
-	RunOn     *string         `json:"run_on,omitempty" yaml:"run_on,omitempty"`
-	Ordering  *PluginOrdering `json:"ordering,omitempty" yaml:"ordering,omitempty"`
-	Protocols []*string       `json:"protocols,omitempty" yaml:"protocols,omitempty"`
-	Tags      []*string       `json:"tags,omitempty" yaml:"tags,omitempty"`
+	CreatedAt    *int            `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID           *string         `json:"id,omitempty" yaml:"id,omitempty"`
+	Name         *string         `json:"name,omitempty" yaml:"name,omitempty"`
+	InstanceName *string         `json:"instance_name,omitempty" yaml:"instance_name,omitempty"`
+	Route        *Route          `json:"route,omitempty" yaml:"route,omitempty"`
+	Service      *Service        `json:"service,omitempty" yaml:"service,omitempty"`
+	Consumer     *Consumer       `json:"consumer,omitempty" yaml:"consumer,omitempty"`
+	Config       Configuration   `json:"config,omitempty" yaml:"config,omitempty"`
+	Enabled      *bool           `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	RunOn        *string         `json:"run_on,omitempty" yaml:"run_on,omitempty"`
+	Ordering     *PluginOrdering `json:"ordering,omitempty" yaml:"ordering,omitempty"`
+	Protocols    []*string       `json:"protocols,omitempty" yaml:"protocols,omitempty"`
+	Tags         []*string       `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 // Enterprise Entities
