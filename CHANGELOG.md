@@ -49,7 +49,7 @@
 
 ## [v0.38.0]
 
-> Release date: TBD
+> Release date: 2023/02/13
 
 - Added `instance_name` to Plugin schema.
   [#280](https://github.com/Kong/go-kong/pull/280)
