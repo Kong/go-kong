@@ -15,7 +15,7 @@ go get github.com/kong/go-kong/kong
 
 ## Compatibility
 
-`go-kong` is compatible with Kong 1.x and 2.x.
+`go-kong` is compatible with Kong 2.x and 3.x.
 Semantic versioning is followed for versioning `go-kong`.
 
 ## Generators
