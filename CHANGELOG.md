@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.38.1](#v0381)
 - [v0.38.0](#v0380)
 - [v0.37.0](#v0370)
 - [v0.36.0](#v0360)
@@ -46,6 +47,15 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.38.0]
+
+> Release date: 2023/02/22
+
+- Omit response body from error when config push fails. The body can be quite
+  large and will result in massive logs downstream if included in the error.
+  The body is returned along with the error and downstream clients and log it
+  separately if they so desire.
 
 ## [v0.38.0]
 
@@ -692,6 +702,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.38.1]: https://github.com/Kong/go-kong/compare/v0.38.0...v0.38.1
 [v0.38.0]: https://github.com/Kong/go-kong/compare/v0.37.0...v0.38.0
 [v0.37.0]: https://github.com/Kong/go-kong/compare/v0.36.0...v0.37.0
 [v0.36.0]: https://github.com/Kong/go-kong/compare/v0.35.0...v0.36.0
