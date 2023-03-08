@@ -26,9 +26,7 @@ func (s *GraphqlRateLimitingCostDecorationService) Create(
 	method := "POST"
 
 	if costDeco.ID != nil {
-		// return nil, fmt.Errorf("can't specify an ID for creating new Cost Decoration")
-		queryPath = queryPath + "/" + *costDeco.ID
-		method = "PATCH"
+		return nil, fmt.Errorf("can't specify an ID for creating new Cost Decoration")
 	}
 	req, err := s.client.NewRequest(method, queryPath, nil, costDeco)
 	if err != nil {
