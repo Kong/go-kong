@@ -74,6 +74,8 @@ type Client struct {
 	Tags              AbstractTagService
 	Info              AbstractInfoService
 
+	GraphqlRateLimitingCostDecorations AbstractGraphqlRateLimitingCostDecorationService
+
 	Schemas AbstractSchemaService
 
 	logger         io.Writer
@@ -162,6 +164,8 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.JWTAuths = (*JWTAuthService)(&kong.common)
 	kong.MTLSAuths = (*MTLSAuthService)(&kong.common)
 	kong.ACLs = (*ACLService)(&kong.common)
+
+	kong.GraphqlRateLimitingCostDecorations = (*GraphqlRateLimitingCostDecorationService)(&kong.common)
 
 	kong.Schemas = (*SchemaService)(&kong.common)
 
