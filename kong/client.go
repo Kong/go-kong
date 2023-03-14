@@ -75,6 +75,7 @@ type Client struct {
 	Info              AbstractInfoService
 
 	GraphqlRateLimitingCostDecorations AbstractGraphqlRateLimitingCostDecorationService
+	DegraphqlRoutes                    AbstractDegraphqlRouteService
 
 	Schemas AbstractSchemaService
 
@@ -166,6 +167,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.ACLs = (*ACLService)(&kong.common)
 
 	kong.GraphqlRateLimitingCostDecorations = (*GraphqlRateLimitingCostDecorationService)(&kong.common)
+	kong.DegraphqlRoutes = (*DegraphqlRouteService)(&kong.common)
 
 	kong.Schemas = (*SchemaService)(&kong.common)
 

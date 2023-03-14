@@ -7,11 +7,17 @@ import (
 )
 
 type AbstractGraphqlRateLimitingCostDecorationService interface {
+	// Creates a cost decoration for the GraphQL rate-limiting plugin in Kong.
 	Create(ctx context.Context, costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
+	// Fetches a cost decoration for the GraphQL rate-limiting plugin from Kong.
 	Get(ctx context.Context, ID *string) (*GraphqlRateLimitingCostDecoration, error)
+	// UPdates a cost decoration for the GraphQL rate-limiting plugin in Kong.
 	Update(ctx context.Context, costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
+	// Deletes a cost decoration for the GraphQL rate-limiting plugin in Kong.
 	Delete(ctx context.Context, ID *string) error
+	// Retrieves a page of cost decorations for the GraphQL rate-limiting plugin in Kong.
 	List(ctx context.Context, opt *ListOpt) ([]*GraphqlRateLimitingCostDecoration, *ListOpt, error)
+	// Retrieves all decorations for the GraphQL rate-limiting plugin in Kong.
 	ListAll(ctx context.Context) ([]*GraphqlRateLimitingCostDecoration, error)
 }
 
