@@ -1,7 +1,7 @@
 package kong
 
 // Certificate represents a Certificate in Kong.
-// Read https://getkong.org/docs/0.14.x/admin-api/#certificate-object
+// Read https://docs.konghq.com/gateway/latest/admin-api/#certificate-object
 // +k8s:deepcopy-gen=true
 type Certificate struct {
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`

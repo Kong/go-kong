@@ -1,7 +1,7 @@
 package kong
 
 // Consumer represents a Consumer in Kong.
-// Read https://getkong.org/docs/0.13.x/admin-api/#consumer-object
+// Read https://docs.konghq.com/gateway/latest/admin-api/#consumer-object
 // +k8s:deepcopy-gen=true
 type Consumer struct {
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
