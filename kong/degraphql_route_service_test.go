@@ -42,6 +42,10 @@ func TestDegraphqlRouteService(t *testing.T) {
 		require.NotEmpty(t, *service.ID)
 		require.Equal(t, "foo2", *service.Name)
 
+		t.Cleanup(func() {
+			require.NoError(t, client.Services.Delete(defaultCtx, service.ID))
+		})
+
 		// create the route
 		route := &DegraphqlRoute{
 			Service: service,
@@ -101,10 +105,6 @@ func TestDegraphqlRouteService(t *testing.T) {
 		fetchedRoute, err = client.DegraphqlRoutes.Get(defaultCtx, service.Name, createdRoute.ID)
 		require.Error(t, err)
 		require.Nil(t, fetchedRoute)
-
-		// delete the service
-		err = client.Services.Delete(defaultCtx, service.ID)
-		require.NoError(t, err)
 	})
 }
 
@@ -129,6 +129,10 @@ func TestDegraphqlRouteList(t *testing.T) {
 	require.NotEmpty(t, *serviceA.ID)
 	require.Equal(t, "fooone", *serviceA.Name)
 
+	t.Cleanup(func() {
+		require.NoError(t, client.Services.Delete(defaultCtx, serviceA.ID))
+	})
+
 	// serviceB for the route
 	serviceB := &Service{
 		Name: String("foo2"),
@@ -142,6 +146,9 @@ func TestDegraphqlRouteList(t *testing.T) {
 	require.NotNil(t, serviceB)
 	require.NotEmpty(t, *serviceB.ID)
 	require.Equal(t, "foo2", *serviceB.Name)
+	t.Cleanup(func() {
+		require.NoError(t, client.Services.Delete(defaultCtx, serviceB.ID))
+	})
 
 	t.Run("add routes to a service, list them", func(t *testing.T) {
 		routeTemplates := []*DegraphqlRoute{
@@ -181,6 +188,11 @@ func TestDegraphqlRouteList(t *testing.T) {
 
 			*r = *createdRoute
 		}
+		t.Cleanup(func() {
+			for _, r := range routeTemplates {
+				require.NoError(t, client.DegraphqlRoutes.Delete(defaultCtx, r.Service.ID, r.ID))
+			}
+		})
 
 		sort.Sort(ByID(routeTemplates))
 
@@ -194,10 +206,6 @@ func TestDegraphqlRouteList(t *testing.T) {
 			require.Equal(t, *r.Service.ID, *routes[i].Service.ID)
 			require.Equal(t, *r.URI, *routes[i].URI)
 			require.Equal(t, *r.Query, *routes[i].Query)
-		}
-
-		for _, r := range routes {
-			require.NoError(t, client.DegraphqlRoutes.Delete(defaultCtx, r.Service.ID, r.ID))
 		}
 	})
 
@@ -239,46 +247,43 @@ func TestDegraphqlRouteList(t *testing.T) {
 
 			*r = *createdRoute
 		}
+		t.Cleanup(func() {
+			for _, r := range routeTemplates {
+				require.NoError(t, client.DegraphqlRoutes.Delete(defaultCtx, r.Service.ID, r.ID))
+			}
+		})
 
 		routeTemplatesA := []*DegraphqlRoute{routeTemplates[0], routeTemplates[3], routeTemplates[4]}
 		sort.Sort(ByID(routeTemplatesA))
 
 		routeTemplatesB := []*DegraphqlRoute{routeTemplates[1], routeTemplates[2]}
 		sort.Sort(ByID(routeTemplatesB))
-
 		{
-			routes, next, err := client.DegraphqlRoutes.List(defaultCtx, serviceA.Name, &ListOpt{})
+			routesA, next, err := client.DegraphqlRoutes.List(defaultCtx, serviceA.Name, &ListOpt{})
 			require.NoError(t, err)
 			require.Nil(t, next)
 
-			sort.Sort(ByID(routes))
+			sort.Sort(ByID(routesA))
 			for i, r := range routeTemplatesA {
-				require.Equal(t, *r.ID, *routes[i].ID)
-				require.Equal(t, *r.Service.ID, *routes[i].Service.ID)
-				require.Equal(t, *r.URI, *routes[i].URI)
-				require.Equal(t, *r.Query, *routes[i].Query)
+				require.Equal(t, *r.ID, *routesA[i].ID)
+				require.Equal(t, *r.Service.ID, *routesA[i].Service.ID)
+				require.Equal(t, *r.URI, *routesA[i].URI)
+				require.Equal(t, *r.Query, *routesA[i].Query)
 			}
 		}
 
 		{
-			routes, next, err := client.DegraphqlRoutes.List(defaultCtx, serviceB.Name, &ListOpt{})
+			routesB, next, err := client.DegraphqlRoutes.List(defaultCtx, serviceB.Name, &ListOpt{})
 			require.NoError(t, err)
 			require.Nil(t, next)
 
-			sort.Sort(ByID(routes))
+			sort.Sort(ByID(routesB))
 			for i, r := range routeTemplatesB {
-				require.Equal(t, *r.ID, *routes[i].ID)
-				require.Equal(t, *r.Service.ID, *routes[i].Service.ID)
-				require.Equal(t, *r.URI, *routes[i].URI)
-				require.Equal(t, *r.Query, *routes[i].Query)
+				require.Equal(t, *r.ID, *routesB[i].ID)
+				require.Equal(t, *r.Service.ID, *routesB[i].Service.ID)
+				require.Equal(t, *r.URI, *routesB[i].URI)
+				require.Equal(t, *r.Query, *routesB[i].Query)
 			}
-		}
-
-		for _, r := range routeTemplates {
-			require.NoError(t, client.DegraphqlRoutes.Delete(defaultCtx, r.Service.Name, r.ID))
 		}
 	})
-
-	require.NoError(t, client.Services.Delete(defaultCtx, serviceA.ID))
-	require.NoError(t, client.Services.Delete(defaultCtx, serviceB.ID))
 }

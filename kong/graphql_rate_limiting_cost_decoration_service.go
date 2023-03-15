@@ -126,7 +126,7 @@ func (s *GraphqlRateLimitingCostDecorationService) List(
 	if err != nil {
 		return nil, nil, err
 	}
-	var costDecos []*GraphqlRateLimitingCostDecoration
+	costDecos := make([]*GraphqlRateLimitingCostDecoration, 0, len(data))
 
 	for _, object := range data {
 		b, err := object.MarshalJSON()

@@ -23,6 +23,16 @@ type AbstractDegraphqlRouteService interface {
 
 type DegraphqlRouteService service
 
+func getServiceNameOrID(service *Service) *string {
+	if service == nil {
+		return nil
+	}
+	if service.Name != nil {
+		return service.Name
+	}
+	return service.ID
+}
+
 func (s *DegraphqlRouteService) fetchService(ctx context.Context, service *Service) (*Service, error) {
 	if service == nil || service.ID == nil || *service.ID == "" {
 		return nil, fmt.Errorf("invalid service in fetched DeGraphQL route")
@@ -33,18 +43,18 @@ func (s *DegraphqlRouteService) fetchService(ctx context.Context, service *Servi
 	return serviceService.Get(ctx, service.ID)
 }
 
+// Create creates a DeGraphQL route in Kong.
+// Note the Service must be specified.
 func (s *DegraphqlRouteService) Create(ctx context.Context, route *DegraphqlRoute) (*DegraphqlRoute, error) {
 	if route == nil {
 		return nil, fmt.Errorf("cannot create a nil route")
 	}
-	if route.Service == nil {
-		return nil, fmt.Errorf("cannot create a DeGraphQL route without a service")
-	}
-	if route.Service.Name == nil {
-		return nil, fmt.Errorf("cannot create a DeGraphQL route for a service without name")
+	serviceNameOrID := getServiceNameOrID(route.Service)
+	if serviceNameOrID == nil {
+		return nil, fmt.Errorf("cannot create a DeGraphQL route for a service without name or ID")
 	}
 
-	endpoint := fmt.Sprintf("/services/%s/degraphql/routes", *route.Service.Name)
+	endpoint := fmt.Sprintf("/services/%s/degraphql/routes", *serviceNameOrID)
 	req, err := s.client.NewRequest("POST", endpoint, nil, route)
 	if err != nil {
 		return nil, err
@@ -64,6 +74,7 @@ func (s *DegraphqlRouteService) Create(ctx context.Context, route *DegraphqlRout
 	return &createdRoute, nil
 }
 
+// Get returns an existing DeGraphQL route from Kong, given a Service and Route ID.
 func (s *DegraphqlRouteService) Get(
 	ctx context.Context,
 	serviceNameOrID *string,
@@ -96,6 +107,8 @@ func (s *DegraphqlRouteService) Get(
 	return &route, nil
 }
 
+// Update modifies an existing Degraphql route in Kong.
+// Note that the Service must be specified.
 func (s *DegraphqlRouteService) Update(ctx context.Context, route *DegraphqlRoute) (*DegraphqlRoute, error) {
 	if route == nil {
 		return nil, fmt.Errorf("cannot update a nil route")
@@ -103,11 +116,12 @@ func (s *DegraphqlRouteService) Update(ctx context.Context, route *DegraphqlRout
 	if isEmptyString(route.ID) {
 		return nil, fmt.Errorf("ID cannot be nil or empty for Update operation")
 	}
-	if route.Service == nil || route.Service.Name == nil {
+	serviceNameOrID := getServiceNameOrID(route.Service)
+	if serviceNameOrID == nil {
 		return nil, fmt.Errorf("cannot update a DeGraphQL route without a valid service")
 	}
 
-	endpoint := fmt.Sprintf("/services/%s/degraphql/routes/%s", *route.Service.Name, *route.ID)
+	endpoint := fmt.Sprintf("/services/%s/degraphql/routes/%s", *serviceNameOrID, *route.ID)
 	req, err := s.client.NewRequest("PATCH", endpoint, nil, route)
 	if err != nil {
 		return nil, err
@@ -127,6 +141,7 @@ func (s *DegraphqlRouteService) Update(ctx context.Context, route *DegraphqlRout
 	return &updatedRoute, nil
 }
 
+// Delete removes an existing DeGraphQL route from Kong given a Service and Route ID.
 func (s *DegraphqlRouteService) Delete(
 	ctx context.Context,
 	serviceNameOrID *string,
@@ -149,6 +164,8 @@ func (s *DegraphqlRouteService) Delete(
 	return err
 }
 
+// List returns a page of DeGraphQL routes from Kong,
+// all associated to the specified Service.
 func (s *DegraphqlRouteService) List(
 	ctx context.Context,
 	serviceNameOrID *string,
@@ -163,8 +180,8 @@ func (s *DegraphqlRouteService) List(
 	if err != nil {
 		return nil, nil, err
 	}
-	var routes []*DegraphqlRoute
 
+	routes := make([]*DegraphqlRoute, 0, len(data))
 	for _, object := range data {
 		b, err := object.MarshalJSON()
 		if err != nil {
@@ -181,7 +198,13 @@ func (s *DegraphqlRouteService) List(
 	return routes, next, nil
 }
 
-func (s *DegraphqlRouteService) ListAll(ctx context.Context, serviceNameOrID *string) ([]*DegraphqlRoute, error) {
+// ListAll fetches all DeGraphQL routes associated with the given Service present in Kong.
+// This method can take a while to pull all pages of content
+// if there are many items present
+func (s *DegraphqlRouteService) ListAll(
+	ctx context.Context,
+	serviceNameOrID *string,
+) ([]*DegraphqlRoute, error) {
 	var routes, data []*DegraphqlRoute
 	var err error
 	opt := &ListOpt{Size: pageSize}
