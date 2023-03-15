@@ -1,7 +1,7 @@
 package kong
 
 // Service represents a Service in Kong.
-// Read https://getkong.org/docs/0.13.x/admin-api/#Service-object
+// Read https://docs.konghq.com/gateway/latest/admin-api/#service-object
 // +k8s:deepcopy-gen=true
 type Service struct {
 	ClientCertificate *Certificate `json:"client_certificate,omitempty" yaml:"client_certificate,omitempty"`

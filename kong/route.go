@@ -1,7 +1,7 @@
 package kong
 
 // Route represents a Route in Kong.
-// Read https://getkong.org/docs/0.13.x/admin-api/#Route-object
+// Read https://docs.konghq.com/gateway/latest/admin-api/#route-object
 // +k8s:deepcopy-gen=true
 type Route struct {
 	CreatedAt     *int                `json:"created_at,omitempty" yaml:"created_at,omitempty"`

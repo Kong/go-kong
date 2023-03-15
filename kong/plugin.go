@@ -1,7 +1,7 @@
 package kong
 
 // Plugin represents a Plugin in Kong.
-// Read https://getkong.org/docs/0.13.x/admin-api/#Plugin-object
+// Read https://docs.konghq.com/gateway/latest/admin-api/#plugin-object
 // +k8s:deepcopy-gen=true
 type Plugin struct {
 	CreatedAt    *int            `json:"created_at,omitempty" yaml:"created_at,omitempty"`
