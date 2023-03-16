@@ -23,7 +23,8 @@ function create_network()
 }
 
 # Usage: waitKongAPI <waitPeriodSeconds>
-function waitKongAPI() {
+function waitKongAPI()
+{
   for try in {1..100}; do
     echo "waiting for Kong Admin API.."
     curl -f -LI $KONG_ADMIN_API -H kong-admin-token:$KONG_ADMIN_TOKEN && break;
