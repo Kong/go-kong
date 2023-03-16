@@ -44,7 +44,7 @@ jobs:
         with:
           password: ${{ secrets.PULP_PASSWORD }}
       - name: Setup go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: '^1.19'
       - name: Checkout repository
