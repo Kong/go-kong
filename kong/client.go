@@ -278,6 +278,9 @@ func (c *Client) Do(ctx context.Context, req *http.Request,
 	return response, err
 }
 
+// ErrorOrResponseError helps to handle the case where
+// there might not be a "hard" (connection) error but the
+// response itself represents an error.
 func ErrorOrResponseError(res *Response, err error) error {
 	if err != nil {
 		return err

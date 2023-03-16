@@ -127,11 +127,10 @@ func TestDegraphqlRouteList(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, serviceA)
 	require.NotEmpty(t, *serviceA.ID)
-	require.Equal(t, "fooone", *serviceA.Name)
-
 	t.Cleanup(func() {
 		require.NoError(t, client.Services.Delete(defaultCtx, serviceA.ID))
 	})
+	require.Equal(t, "fooone", *serviceA.Name)
 
 	// serviceB for the route
 	serviceB := &Service{
@@ -145,10 +144,10 @@ func TestDegraphqlRouteList(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, serviceB)
 	require.NotEmpty(t, *serviceB.ID)
-	require.Equal(t, "foo2", *serviceB.Name)
 	t.Cleanup(func() {
 		require.NoError(t, client.Services.Delete(defaultCtx, serviceB.ID))
 	})
+	require.Equal(t, "foo2", *serviceB.Name)
 
 	t.Run("add routes to a service, list them", func(t *testing.T) {
 		routeTemplates := []*DegraphqlRoute{
@@ -183,11 +182,13 @@ func TestDegraphqlRouteList(t *testing.T) {
 			createdRoute, err := client.DegraphqlRoutes.Create(defaultCtx, r)
 			require.NoError(t, err)
 			require.NotNil(t, createdRoute)
+
 			require.NotEmpty(t, *createdRoute.ID)
 			require.NotEmpty(t, createdRoute.Service.Name)
 
 			*r = *createdRoute
 		}
+
 		t.Cleanup(func() {
 			for _, r := range routeTemplates {
 				require.NoError(t, client.DegraphqlRoutes.Delete(defaultCtx, r.Service.ID, r.ID))

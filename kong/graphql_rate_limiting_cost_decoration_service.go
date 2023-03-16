@@ -28,13 +28,12 @@ func (s *GraphqlRateLimitingCostDecorationService) Create(
 	ctx context.Context,
 	costDeco *GraphqlRateLimitingCostDecoration,
 ) (*GraphqlRateLimitingCostDecoration, error) {
-	queryPath := "/graphql-rate-limiting-advanced/costs"
-	method := "POST"
+	const queryPath = "/graphql-rate-limiting-advanced/costs"
 
 	if costDeco.ID != nil {
 		return nil, fmt.Errorf("can't specify an ID for creating new Cost Decoration")
 	}
-	req, err := s.client.NewRequest(method, queryPath, nil, costDeco)
+	req, err := s.client.NewRequest("POST", queryPath, nil, costDeco)
 	if err != nil {
 		return nil, err
 	}
