@@ -22,6 +22,7 @@ function create_network()
   fi
 }
 
+# Usage: waitKongAPI <waitPeriodSeconds>
 function waitKongAPI() {
   for try in {1..100}; do
     echo "waiting for Kong Admin API.."
