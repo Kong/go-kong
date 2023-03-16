@@ -35,15 +35,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Setup go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
-      - uses: actions/cache@v3.3.1
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
       - name: Setup Kong
         run: make setup-kong-${{ matrix.dbmode }}
       - name: Run tests
