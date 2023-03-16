@@ -278,6 +278,16 @@ func (c *Client) Do(ctx context.Context, req *http.Request,
 	return response, err
 }
 
+func ErrorOrResponseError(res *Response, err error) error {
+	if err != nil {
+		return err
+	}
+	if res.StatusCode >= http.StatusBadRequest { // errors start at 400
+		return fmt.Errorf("unexpected response: %q", res.Status)
+	}
+	return nil
+}
+
 // SetDebugMode enables or disables logging of
 // the request to the logger set by SetLogger().
 // By default, debug logging is disabled.

@@ -40,7 +40,7 @@ func (s *GraphqlRateLimitingCostDecorationService) Create(
 	}
 
 	var createdCostDeco GraphqlRateLimitingCostDecoration
-	_, err = s.client.Do(ctx, req, &createdCostDeco)
+	err = ErrorOrResponseError(s.client.Do(ctx, req, &createdCostDeco))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (s *GraphqlRateLimitingCostDecorationService) Get(
 	}
 
 	var costDeco GraphqlRateLimitingCostDecoration
-	_, err = s.client.Do(ctx, req, &costDeco)
+	err = ErrorOrResponseError(s.client.Do(ctx, req, &costDeco))
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (s *GraphqlRateLimitingCostDecorationService) Update(
 	}
 
 	var updatedAPI GraphqlRateLimitingCostDecoration
-	_, err = s.client.Do(ctx, req, &updatedAPI)
+	err = ErrorOrResponseError(s.client.Do(ctx, req, &updatedAPI))
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func (s *GraphqlRateLimitingCostDecorationService) Delete(
 		return err
 	}
 
-	_, err = s.client.Do(ctx, req, nil)
+	err = ErrorOrResponseError(s.client.Do(ctx, req, nil))
 	return err
 }
 

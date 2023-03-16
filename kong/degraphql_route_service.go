@@ -61,7 +61,7 @@ func (s *DegraphqlRouteService) Create(ctx context.Context, route *DegraphqlRout
 	}
 
 	var createdRoute DegraphqlRoute
-	_, err = s.client.Do(ctx, req, &createdRoute)
+	err = ErrorOrResponseError(s.client.Do(ctx, req, &createdRoute))
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func (s *DegraphqlRouteService) Get(
 	}
 
 	var route DegraphqlRoute
-	_, err = s.client.Do(ctx, req, &route)
+	err = ErrorOrResponseError(s.client.Do(ctx, req, &route))
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func (s *DegraphqlRouteService) Update(ctx context.Context, route *DegraphqlRout
 	}
 
 	var updatedRoute DegraphqlRoute
-	_, err = s.client.Do(ctx, req, &updatedRoute)
+	err = ErrorOrResponseError(s.client.Do(ctx, req, &updatedRoute))
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +160,7 @@ func (s *DegraphqlRouteService) Delete(
 		return err
 	}
 
-	_, err = s.client.Do(ctx, req, nil)
+	err = ErrorOrResponseError(s.client.Do(ctx, req, nil))
 	return err
 }
 
