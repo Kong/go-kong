@@ -1,5 +1,11 @@
 name: golangci-lint
 
+concurrency:
+  # Run only for most recent commit in PRs but for all tags and commits on main
+  # Ref: https://docs.github.com/en/actions/using-jobs/using-concurrency
+  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -17,10 +23,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Setup go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
       - name: Setup golangci-lint
         uses: golangci/golangci-lint-action@v3.4.0
+        with:
+          # actions/setup-go@v4 introduced automatic cache handling so skip cache here
+          skip-cache: true
       - name: Verify Codegen
         run: make verify-codegen
