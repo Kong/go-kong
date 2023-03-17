@@ -74,6 +74,9 @@ type Client struct {
 	Tags              AbstractTagService
 	Info              AbstractInfoService
 
+	GraphqlRateLimitingCostDecorations AbstractGraphqlRateLimitingCostDecorationService
+	DegraphqlRoutes                    AbstractDegraphqlRouteService
+
 	Schemas AbstractSchemaService
 
 	logger         io.Writer
@@ -162,6 +165,9 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.JWTAuths = (*JWTAuthService)(&kong.common)
 	kong.MTLSAuths = (*MTLSAuthService)(&kong.common)
 	kong.ACLs = (*ACLService)(&kong.common)
+
+	kong.GraphqlRateLimitingCostDecorations = (*GraphqlRateLimitingCostDecorationService)(&kong.common)
+	kong.DegraphqlRoutes = (*DegraphqlRouteService)(&kong.common)
 
 	kong.Schemas = (*SchemaService)(&kong.common)
 
@@ -270,6 +276,19 @@ func (c *Client) Do(ctx context.Context, req *http.Request,
 		}
 	}
 	return response, err
+}
+
+// ErrorOrResponseError helps to handle the case where
+// there might not be a "hard" (connection) error but the
+// response itself represents an error.
+func ErrorOrResponseError(res *Response, err error) error {
+	if err != nil {
+		return err
+	}
+	if res.StatusCode >= http.StatusBadRequest { // errors start at 400
+		return fmt.Errorf("unexpected response: %q", res.Status)
+	}
+	return nil
 }
 
 // SetDebugMode enables or disables logging of
