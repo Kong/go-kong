@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.39.0](#v0390)
 - [v0.38.1](#v0381)
 - [v0.38.0](#v0380)
 - [v0.37.0](#v0370)
@@ -48,7 +49,14 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
-## [v0.38.0]
+## [v0.39.0]
+
+> Release date: 2023/03/17
+
+- feat: add GraphQL-RateLimiting-Advanced and DeGraphQL DAOs (#288)
+  [#288](https://github.com/Kong/go-kong/pull/288)
+
+## [v0.38.1]
 
 > Release date: 2023/02/22
 
@@ -702,6 +710,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.39.0]: https://github.com/Kong/go-kong/compare/v0.38.1...v0.39.0
 [v0.38.1]: https://github.com/Kong/go-kong/compare/v0.38.0...v0.38.1
 [v0.38.0]: https://github.com/Kong/go-kong/compare/v0.37.0...v0.38.0
 [v0.37.0]: https://github.com/Kong/go-kong/compare/v0.36.0...v0.37.0
