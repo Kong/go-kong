@@ -241,7 +241,8 @@ func (s *AdminService) ListWorkspaces(ctx context.Context,
 
 // ListRoles returns a slice of Kong RBAC roles associated with an Admin.
 func (s *AdminService) ListRoles(ctx context.Context,
-	emailOrID *string, opt *ListOpt,
+	emailOrID *string,
+	_ *ListOpt,
 ) ([]*RBACRole, error) {
 	endpoint := fmt.Sprintf("/admins/%v/roles", *emailOrID)
 	req, err := s.client.NewRequest("GET", endpoint, nil, nil)

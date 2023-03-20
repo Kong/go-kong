@@ -5,9 +5,6 @@ import (
 	"testing"
 )
 
-func TestConstructQueryString(t *testing.T) {
-}
-
 func Test_constructQueryString(t *testing.T) {
 	type args struct {
 		opt *ListOpt
