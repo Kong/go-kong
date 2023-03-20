@@ -74,7 +74,7 @@ func TestIsForbiddenErrE2E(T *testing.T) {
 
 type forbiddenTransport struct{}
 
-func (ft *forbiddenTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (ft *forbiddenTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
 	// Create a new response with 403 status code
 	return nil, NewAPIError(
 		http.StatusForbidden,
