@@ -1015,8 +1015,37 @@ func Test_fillConfigRecord(T *testing.T) {
 		expected Configuration
 	}{
 		{
-			name:   "fills defaults for all missing fields",
-			schema: gjson.Parse("{\"fields\":{\"config\":{\"type\":\"record\",\"fields\":[{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"required\":true}},{\"mappings\":{\"required\":false,\"type\":\"array\",\"elements\":{\"type\":\"record\",\"fields\":[{\"name\":{\"type\":\"string\",\"required\":false}},{\"nationality\":{\"type\":\"string\",\"required\":false}}]}}}]}}}"),
+			name: "fills defaults for all missing fields",
+			schema: gjson.Parse(`{
+				"fields": {
+					"config":
+						{
+							"type": "record",
+							"fields":[
+								{
+									"enabled":{
+										"type":"boolean",
+										"default":true,
+										"required":true
+									}
+								},
+								{
+									"mappings":{
+										"required":false,
+										"type":"array",
+										"elements":{
+											"type":"record",
+											"fields":[
+												{"name":{"type":"string","required":false}},
+												{"nationality":{"type":"string","required":false}}
+											]
+										}
+									}
+								}
+							]
+						}
+					}
+				}`),
 			config: Configuration{
 				"mappings": []interface{}{
 					map[string]interface{}{
