@@ -234,6 +234,9 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 					// an arbitrary map, field is already set.
 					return true
 				}
+			case []interface{}:
+				// a field of type array, need to set defaults if it has elements of type record
+				break
 			default:
 				// not a map, field is already set.
 				return true
@@ -248,6 +251,26 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 			newSubConfig := fillConfigRecord(value.Get(fname), subConfig.(map[string]interface{}))
 			res[fname] = map[string]interface{}(newSubConfig)
 			return true
+		}
+		if ftype.String() == "array" && config[fname] != nil {
+			if subConfigArray, ok := config[fname].([]interface{}); ok {
+				if len(subConfigArray) > 0 {
+					processedSubConfigArray := make([]interface{}, len(subConfigArray))
+
+					for i, configRecord := range subConfigArray {
+						if value.Get(fname).Get("elements.type").String() == "record" {
+							if configRecordMap, ok := configRecord.(map[string]interface{}); ok {
+								processedConfigRecord := fillConfigRecord(value.Get(fname).Get("elements"), configRecordMap)
+								processedSubConfigArray[i] = processedConfigRecord
+								continue
+							}
+						}
+						processedSubConfigArray[i] = configRecord
+					}
+					res[fname] = processedSubConfigArray
+					return true
+				}
+			}
 		}
 		value = value.Get(fname + ".default")
 		if value.Exists() {

@@ -12,6 +12,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tidwall/gjson"
 )
 
 func TestStringArrayToString(t *testing.T) {
@@ -994,6 +995,54 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 				t.Errorf(err.Error())
 			}
 			if diff := cmp.Diff(plugin, tc.expected); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func Test_fillConfigRecord(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.NoError(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		schema   gjson.Result
+		config   Configuration
+		expected Configuration
+	}{
+		{
+			name:   "fills defaults for all missing fields",
+			schema: gjson.Parse("{\"fields\":{\"config\":{\"type\":\"record\",\"fields\":[{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"required\":true}},{\"mappings\":{\"required\":false,\"type\":\"array\",\"elements\":{\"type\":\"record\",\"fields\":[{\"name\":{\"type\":\"string\",\"required\":false}},{\"nationality\":{\"type\":\"string\",\"required\":false}}]}}}]}}}"),
+			config: Configuration{
+				"mappings": []interface{}{
+					map[string]interface{}{
+						"nationality": "African",
+					},
+				},
+			},
+			expected: Configuration{
+				"enabled": true,
+				"mappings": []any{
+					Configuration{
+						"name":        nil,
+						"nationality": "African",
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			configSchema, err := getConfigSchema(tc.schema)
+			assert.NoError(err)
+			config := fillConfigRecord(configSchema, tc.config)
+			assert.NotNil(config)
+			if diff := cmp.Diff(config, tc.expected); diff != "" {
 				t.Errorf(diff)
 			}
 		})
