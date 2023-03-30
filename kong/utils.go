@@ -235,7 +235,7 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 					return true
 				}
 			case []interface{}:
-				// a field of type array, need to set defaults if it has elements of type record
+				// a field of type array, need to set defaults (if it has elements of type record)
 				break
 			default:
 				// not a map, field is already set.
@@ -252,24 +252,31 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 			res[fname] = map[string]interface{}(newSubConfig)
 			return true
 		}
-		if ftype.String() == "array" && config[fname] != nil {
-			if subConfigArray, ok := config[fname].([]interface{}); ok {
-				if len(subConfigArray) > 0 {
-					processedSubConfigArray := make([]interface{}, len(subConfigArray))
 
-					for i, configRecord := range subConfigArray {
-						if value.Get(fname).Get("elements.type").String() == "record" {
-							if configRecordMap, ok := configRecord.(map[string]interface{}); ok {
-								processedConfigRecord := fillConfigRecord(value.Get(fname).Get("elements"), configRecordMap)
-								processedSubConfigArray[i] = processedConfigRecord
-								continue
-							}
-						}
-						processedSubConfigArray[i] = configRecord
+		// Check if field is of type array of records (in Schema)
+		// If this array is non-nil and non-empty (in Config), go through all the records in this array and add defaults
+		// If the array has only primitives like string/number/boolean then the value is already set
+		// If the array is empty or nil, then no defaults need to be set for its elements
+		if ftype.String() == "array" &&
+			value.Get(fname).Get("elements.type").String() == "record" &&
+			config[fname] != nil {
+
+			// Check sub config is of type array and it is non-empty
+			if subConfigArray, ok := config[fname].([]interface{}); ok && len(subConfigArray) > 0 {
+				processedSubConfigArray := make([]interface{}, len(subConfigArray))
+
+				for i, configRecord := range subConfigArray {
+					// Check if element is of type record, if it is, set default values by recursively calling `fillConfigRecord`
+					if configRecordMap, ok := configRecord.(map[string]interface{}); ok {
+						processedConfigRecord := fillConfigRecord(value.Get(fname).Get("elements"), configRecordMap)
+						processedSubConfigArray[i] = processedConfigRecord
+						continue
 					}
-					res[fname] = processedSubConfigArray
-					return true
+					// Element not of type record, keep the value as is
+					processedSubConfigArray[i] = configRecord
 				}
+				res[fname] = processedSubConfigArray
+				return true
 			}
 		}
 		value = value.Get(fname + ".default")

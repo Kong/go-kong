@@ -1049,7 +1049,7 @@ func Test_fillConfigRecord(T *testing.T) {
 			config: Configuration{
 				"mappings": []interface{}{
 					map[string]interface{}{
-						"nationality": "African",
+						"nationality": "Ethiopian",
 					},
 				},
 			},
@@ -1058,7 +1058,7 @@ func Test_fillConfigRecord(T *testing.T) {
 				"mappings": []any{
 					Configuration{
 						"name":        nil,
-						"nationality": "African",
+						"nationality": "Ethiopian",
 					},
 				},
 			},
@@ -1072,6 +1072,68 @@ func Test_fillConfigRecord(T *testing.T) {
 			config := fillConfigRecord(configSchema, tc.config)
 			assert.NotNil(config)
 			if diff := cmp.Diff(config, tc.expected); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func Test_FillPluginsDefaults(T *testing.T) {
+	RunWhenKong(T, ">=2.6.0 <2.8.1")
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.NoError(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "fills defaults for all missing fields",
+			plugin: &Plugin{
+				Config: Configuration{
+					"metrics": []interface{}{
+						map[string]interface{}{
+							"name":      "response_size",
+							"stat_type": "histogram",
+						},
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"host":   "localhost",
+					"port":   float64(8125),
+					"prefix": "kong",
+					"metrics": []interface{}{
+						Configuration{
+							"name":                "response_size",
+							"stat_type":           "histogram",
+							"consumer_identifier": nil,
+							"sample_rate":         nil,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/statsd")
+			assert.NoError(err)
+			assert.NotNil(fullSchema)
+			if err := FillPluginsDefaults(plugin, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+			opts := cmpopts.IgnoreFields(*plugin,
+				"Protocols", "Enabled",
+			)
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
 				t.Errorf(diff)
 			}
 		})
