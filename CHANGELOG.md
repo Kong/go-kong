@@ -1,5 +1,8 @@
 # Table of Contents
 
+<<<<<<< HEAD
+=======
+- [v0.40.0](#v0400)
 - [v0.39.2](#v0392)
 - [v0.39.1](#v0391)
 - [v0.39.0](#v0390)
@@ -51,9 +54,16 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
-## [v0.39.2]
+## [v0.40.0]
 
 > Release date: 2023/04/06
+
+- Added support for the `/licenses` endpoint.
+  [#304](https://github.com/Kong/go-kong/pull/304)
+
+## [v0.39.2]
+
+> Release date: 2023/04/05
 
 This release reverts the fix from 0.39.1 while debugging [an
 issue](https://github.com/Kong/go-kong/issues/307) not originally caught in
@@ -727,7 +737,11 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+<<<<<<< HEAD
 [v0.39.2]: https://github.com/Kong/go-kong/compare/v0.39.1...v0.39.2
+=======
+[v0.40.0]: https://github.com/Kong/go-kong/compare/v0.39.1...v0.40.0
+>>>>>>> 59e462b (feat: support license endpoint)
 [v0.39.1]: https://github.com/Kong/go-kong/compare/v0.39.0...v0.39.1
 [v0.39.0]: https://github.com/Kong/go-kong/compare/v0.38.1...v0.39.0
 [v0.38.1]: https://github.com/Kong/go-kong/compare/v0.38.0...v0.38.1
