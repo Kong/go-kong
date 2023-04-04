@@ -52,6 +52,11 @@ issues:
     source: "^\t*// "
 
 linters-settings:
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/kong)
   gomodguard:
     blocked:
       modules:
