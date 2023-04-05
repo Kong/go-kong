@@ -11,9 +11,12 @@ import (
 
 func TestLicensesService(t *testing.T) {
 	RunWhenEnterprise(t, ">=2.3.0", RequiredFeatures{})
+	licenseString := os.Getenv("KONG_LICENSE_DATA")
+	if licenseString == "" {
+		t.Skip("KONG_LICENSE_DATA not set, skipping")
+	}
 	require := require.New(t)
 	assert := assert.New(t)
-	licenseString := os.Getenv("KONG_LICENSE_DATA")
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
