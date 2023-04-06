@@ -1139,3 +1139,102 @@ func Test_FillPluginsDefaults(T *testing.T) {
 		})
 	}
 }
+
+func Test_FillPluginsDefaults_RequestTransformer(T *testing.T) {
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.NoError(err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "fills defaults for all missing fields",
+			plugin: &Plugin{
+				Config: Configuration{
+					"add": map[string]interface{}{
+						"body": []any{},
+						"headers": []any{
+							"Knative-Serving-Namespace:e3ffeafd-b5fe-4f34-b2e4-af6f3d9fb417",
+							"Knative-Serving-Revision:helloworld-go-00001",
+						},
+						"querystring": []any{},
+					},
+					"append": map[string]interface{}{
+						"body":        []any{},
+						"headers":     []any{},
+						"querystring": []any{},
+					},
+					"http_method": nil,
+					"enabled":     true,
+					"id":          "0beef60e-e7e3-40f8-ac47-f6a10b931cee",
+					"name":        "request-transformer",
+					"protocols": []any{
+						"grpc",
+						"grpcs",
+						"http",
+						"https",
+					},
+					"service": map[string]interface{}{
+						"id":   "63295454-c41e-447e-bce5-d6b488f3866e",
+						"name": "30bc1240-ad84-4760-a469-763bce524191.helloworld-go-00001.80",
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"add": map[string]any{
+						"body": []any{},
+						"headers": []any{
+							"Knative-Serving-Namespace:e3ffeafd-b5fe-4f34-b2e4-af6f3d9fb417",
+							"Knative-Serving-Revision:helloworld-go-00001",
+						},
+						"querystring": []any{},
+					},
+					"append": map[string]interface{}{
+						"body":        []interface{}{},
+						"headers":     []interface{}{},
+						"querystring": []interface{}{},
+					},
+					"remove":      map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}},
+					"rename":      map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}},
+					"replace":     map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}, "uri": nil},
+					"http_method": nil,
+					"enabled":     true,
+					"id":          "0beef60e-e7e3-40f8-ac47-f6a10b931cee",
+					"name":        "request-transformer",
+					"protocols": []any{
+						"grpc",
+						"grpcs",
+						"http",
+						"https",
+					},
+					"service": map[string]interface{}{
+						"id":   "63295454-c41e-447e-bce5-d6b488f3866e",
+						"name": "30bc1240-ad84-4760-a469-763bce524191.helloworld-go-00001.80",
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/request-transformer")
+			assert.NoError(err)
+			assert.NotNil(fullSchema)
+			if err := FillPluginsDefaults(plugin, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
