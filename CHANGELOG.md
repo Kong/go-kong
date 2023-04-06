@@ -1,7 +1,5 @@
 # Table of Contents
 
-<<<<<<< HEAD
-=======
 - [v0.40.0](#v0400)
 - [v0.39.2](#v0392)
 - [v0.39.1](#v0391)
@@ -737,11 +735,8 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
-<<<<<<< HEAD
-[v0.39.2]: https://github.com/Kong/go-kong/compare/v0.39.1...v0.39.2
-=======
 [v0.40.0]: https://github.com/Kong/go-kong/compare/v0.39.1...v0.40.0
->>>>>>> 59e462b (feat: support license endpoint)
+[v0.39.2]: https://github.com/Kong/go-kong/compare/v0.39.1...v0.39.2
 [v0.39.1]: https://github.com/Kong/go-kong/compare/v0.39.0...v0.39.1
 [v0.39.0]: https://github.com/Kong/go-kong/compare/v0.38.1...v0.39.0
 [v0.38.1]: https://github.com/Kong/go-kong/compare/v0.38.0...v0.38.1
