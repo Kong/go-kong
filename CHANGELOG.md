@@ -54,7 +54,7 @@
 
 ## [v0.40.0]
 
-> Release date: 2023/04/06
+> Release date: 2023/04/07
 
 - Added support for the `/licenses` endpoint.
   [#304](https://github.com/Kong/go-kong/pull/304)
