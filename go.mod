@@ -8,7 +8,7 @@ retract (
 	// Contains https://github.com/Kong/go-kong/pull/302 which introduced
 	// a bug with filling the config defaults:
 	// https://github.com/Kong/go-kong/issues/307
-	v0.30.1
+	v0.39.1
 )
 
 require (
