@@ -1076,13 +1076,11 @@ func Test_fillConfigRecord(t *testing.T) {
 	}
 }
 
-func Test_FillPluginsDefaults(T *testing.T) {
+func Test_FillPluginsDefaults(t *testing.T) {
 	RunWhenKong(T, ">=2.6.0 <2.8.1")
-	assert := assert.New(T)
-
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	tests := []struct {
 		name     string
@@ -1120,14 +1118,12 @@ func Test_FillPluginsDefaults(T *testing.T) {
 	}
 
 	for _, tc := range tests {
-		T.Run(tc.name, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			plugin := tc.plugin
 			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/statsd")
-			assert.NoError(err)
-			assert.NotNil(fullSchema)
-			if err := FillPluginsDefaults(plugin, fullSchema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin,
 				"Protocols", "Enabled",
 			)
@@ -1138,12 +1134,10 @@ func Test_FillPluginsDefaults(T *testing.T) {
 	}
 }
 
-func Test_FillPluginsDefaults_RequestTransformer(T *testing.T) {
-	assert := assert.New(T)
-
+func Test_FillPluginsDefaults_RequestTransformer(t *testing.T) {
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	tests := []struct {
 		name     string
@@ -1221,14 +1215,12 @@ func Test_FillPluginsDefaults_RequestTransformer(T *testing.T) {
 	}
 
 	for _, tc := range tests {
-		T.Run(tc.name, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			plugin := tc.plugin
 			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/request-transformer")
-			assert.NoError(err)
-			assert.NotNil(fullSchema)
-			if err := FillPluginsDefaults(plugin, fullSchema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
 				t.Errorf(diff)
