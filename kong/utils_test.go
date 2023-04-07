@@ -1077,7 +1077,7 @@ func Test_fillConfigRecord(t *testing.T) {
 }
 
 func Test_FillPluginsDefaults(t *testing.T) {
-	RunWhenKong(T, ">=2.6.0 <2.8.1")
+	RunWhenKong(t, ">=2.6.0 <2.8.1")
 	client, err := NewTestClient(nil, nil)
 	require.NoError(t, err)
 	require.NotNil(t, client)
