@@ -15,7 +15,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-var StatsDSchema = `{
+const StatsDSchema = `{
 		"name" : "statsd",
 		"fields" : [
 			{
@@ -1205,10 +1205,6 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 }
 
 func Test_fillConfigRecord(t *testing.T) {
-	client, err := NewTestClient(nil, nil)
-	require.NoError(t, err)
-	require.NotNil(t, client)
-
 	tests := []struct {
 		name     string
 		schema   gjson.Result
