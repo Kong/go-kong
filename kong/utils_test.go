@@ -1064,11 +1064,11 @@ func Test_fillConfigRecord(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		T.Run(tc.name, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			configSchema, err := getConfigSchema(tc.schema)
-			assert.NoError(err)
+			require.NoError(t, err)
 			config := fillConfigRecord(configSchema, tc.config)
-			assert.NotNil(config)
+			require.NotNil(t, config)
 			if diff := cmp.Diff(config, tc.expected); diff != "" {
 				t.Errorf(diff)
 			}
