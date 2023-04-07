@@ -1002,11 +1002,9 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 }
 
 func Test_fillConfigRecord(t *testing.T) {
-	assert := assert.New(T)
-
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	tests := []struct {
 		name     string
