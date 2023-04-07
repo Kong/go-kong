@@ -15,8 +15,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-var (
-	StatsDSchema = `{
+var StatsDSchema = `{
 		"name" : "statsd",
 		"fields" : [
 			{
@@ -218,7 +217,6 @@ var (
 			}
 		]
 	}`
-)
 
 func TestStringArrayToString(t *testing.T) {
 	assert := assert.New(t)
