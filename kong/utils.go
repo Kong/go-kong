@@ -244,7 +244,9 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 				}
 			default:
 				// not a map, field is already set.
-				return true
+				if v != nil {
+					return true
+				}
 			}
 		}
 		ftype := value.Get(fname + ".type")

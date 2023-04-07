@@ -15,6 +15,211 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+var (
+	StatsDSchema = `{
+		"name" : "statsd",
+		"fields" : [
+			{
+				"config" : {
+					"type" : "record",
+					"fields": [
+						{
+							"host": {
+								"default": "localhost",
+								"type": "string"
+							}
+						},
+						{
+							"port": {
+								"between": [
+									0,
+									65535
+								],
+								"default": 8125,
+								"type": "integer"
+							}
+						},
+						{
+							"prefix": {
+								"default": "kong",
+								"type": "string"
+							}
+						},
+						{
+							"metrics": {
+								"default": [
+									{
+										"name": "request_count",
+										"sample_rate": 1,
+										"stat_type": "counter"
+									},
+									{
+										"name": "latency",
+										"stat_type": "timer"
+									},
+									{
+										"name": "request_size",
+										"stat_type": "timer"
+									},
+									{
+										"name": "status_count",
+										"sample_rate": 1,
+										"stat_type": "counter"
+									},
+									{
+										"name": "response_size",
+										"stat_type": "timer"
+									},
+									{
+										"consumer_identifier": "custom_id",
+										"name": "unique_users",
+										"stat_type": "set"
+									},
+									{
+										"consumer_identifier": "custom_id",
+										"name": "request_per_user",
+										"sample_rate": 1,
+										"stat_type": "counter"
+									},
+									{
+										"name": "upstream_latency",
+										"stat_type": "timer"
+									},
+									{
+										"name": "kong_latency",
+										"stat_type": "timer"
+									},
+									{
+										"consumer_identifier": "custom_id",
+										"name": "status_count_per_user",
+										"sample_rate": 1,
+										"stat_type": "counter"
+									}
+								],
+								"elements": {
+									"entity_checks": [
+										{
+											"conditional": {
+												"if_field": "name",
+												"if_match": {
+													"eq": "unique_users"
+												},
+												"then_field": "stat_type",
+												"then_match": {
+													"eq": "set"
+												}
+											}
+										},
+										{
+											"conditional": {
+												"if_field": "stat_type",
+												"if_match": {
+													"one_of": [
+														"counter",
+														"gauge"
+													]
+												},
+												"then_field": "sample_rate",
+												"then_match": {
+													"required": true
+												}
+											}
+										},
+										{
+											"conditional": {
+												"if_field": "name",
+												"if_match": {
+													"one_of": [
+														"status_count_per_user",
+														"request_per_user",
+														"unique_users"
+													]
+												},
+												"then_field": "consumer_identifier",
+												"then_match": {
+													"required": true
+												}
+											}
+										},
+										{
+											"conditional": {
+												"if_field": "name",
+												"if_match": {
+													"one_of": [
+														"status_count",
+														"status_count_per_user",
+														"request_per_user"
+													]
+												},
+												"then_field": "stat_type",
+												"then_match": {
+													"eq": "counter"
+												}
+											}
+										}
+									],
+									"fields": [
+										{
+											"name": {
+												"one_of": [
+													"kong_latency",
+													"latency",
+													"request_count",
+													"request_per_user",
+													"request_size",
+													"response_size",
+													"status_count",
+													"status_count_per_user",
+													"unique_users",
+													"upstream_latency"
+												],
+												"required": true,
+												"type": "string"
+											}
+										},
+										{
+											"stat_type": {
+												"one_of": [
+													"counter",
+													"gauge",
+													"histogram",
+													"meter",
+													"set",
+													"timer"
+												],
+												"required": true,
+												"type": "string"
+											}
+										},
+										{
+											"sample_rate": {
+												"gt": 0,
+												"type": "number"
+											}
+										},
+										{
+											"consumer_identifier": {
+												"one_of": [
+													"consumer_id",
+													"custom_id",
+													"username"
+												],
+												"type": "string"
+											}
+										}
+									],
+									"type": "record"
+								},
+								"type": "array"
+							}
+						}
+					]
+				}
+			}
+		]
+	}`
+)
+
 func TestStringArrayToString(t *testing.T) {
 	assert := assert.New(t)
 
@@ -1077,11 +1282,55 @@ func Test_fillConfigRecord(t *testing.T) {
 }
 
 func Test_FillPluginsDefaults(t *testing.T) {
-	RunWhenKong(t, ">=2.6.0 <2.8.1")
-	client, err := NewTestClient(nil, nil)
-	require.NoError(t, err)
-	require.NotNil(t, client)
-
+	defaultMetrics := []any{
+		map[string]any{
+			"name":        "request_count",
+			"sample_rate": float64(1),
+			"stat_type":   "counter",
+		},
+		map[string]any{
+			"name":      "latency",
+			"stat_type": "timer",
+		},
+		map[string]any{
+			"name":      "request_size",
+			"stat_type": "timer",
+		},
+		map[string]any{
+			"name":        "status_count",
+			"sample_rate": float64(1),
+			"stat_type":   "counter",
+		},
+		map[string]any{
+			"name":      "response_size",
+			"stat_type": "timer",
+		},
+		map[string]any{
+			"consumer_identifier": "custom_id",
+			"name":                "unique_users",
+			"stat_type":           "set",
+		},
+		map[string]any{
+			"consumer_identifier": "custom_id",
+			"name":                "request_per_user",
+			"sample_rate":         float64(1),
+			"stat_type":           "counter",
+		},
+		map[string]any{
+			"name":      "upstream_latency",
+			"stat_type": "timer",
+		},
+		map[string]any{
+			"name":      "kong_latency",
+			"stat_type": "timer",
+		},
+		map[string]any{
+			"consumer_identifier": "custom_id",
+			"name":                "status_count_per_user",
+			"sample_rate":         float64(1),
+			"stat_type":           "counter",
+		},
+	}
 	tests := []struct {
 		name     string
 		plugin   *Plugin
@@ -1115,14 +1364,49 @@ func Test_FillPluginsDefaults(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "fills defaults when empty array of records in config",
+			plugin: &Plugin{
+				Config: Configuration{
+					"metrics": []any{},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"host":    "localhost",
+					"port":    float64(8125),
+					"prefix":  "kong",
+					"metrics": defaultMetrics,
+				},
+			},
+		},
+		{
+			name: "fills defaults when nil array of records in config",
+			plugin: &Plugin{
+				Config: Configuration{
+					"metrics": nil,
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"host":    "localhost",
+					"port":    float64(8125),
+					"prefix":  "kong",
+					"metrics": defaultMetrics,
+				},
+			},
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			plugin := tc.plugin
-			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/statsd")
+
+			var fullSchema map[string]interface{}
+			err := json.Unmarshal([]byte(StatsDSchema), &fullSchema)
 			require.NoError(t, err)
 			require.NotNil(t, fullSchema)
+
 			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin,
 				"Protocols", "Enabled",
