@@ -1001,7 +1001,7 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 	}
 }
 
-func Test_fillConfigRecord(T *testing.T) {
+func Test_fillConfigRecord(t *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
