@@ -12,7 +12,211 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tidwall/gjson"
 )
+
+const StatsDSchema = `{
+		"name" : "statsd",
+		"fields" : [
+			{
+				"config" : {
+					"type" : "record",
+					"fields": [
+						{
+							"host": {
+								"default": "localhost",
+								"type": "string"
+							}
+						},
+						{
+							"port": {
+								"between": [
+									0,
+									65535
+								],
+								"default": 8125,
+								"type": "integer"
+							}
+						},
+						{
+							"prefix": {
+								"default": "kong",
+								"type": "string"
+							}
+						},
+						{
+							"metrics": {
+								"default": [
+									{
+										"name": "request_count",
+										"sample_rate": 1,
+										"stat_type": "counter"
+									},
+									{
+										"name": "latency",
+										"stat_type": "timer"
+									},
+									{
+										"name": "request_size",
+										"stat_type": "timer"
+									},
+									{
+										"name": "status_count",
+										"sample_rate": 1,
+										"stat_type": "counter"
+									},
+									{
+										"name": "response_size",
+										"stat_type": "timer"
+									},
+									{
+										"consumer_identifier": "custom_id",
+										"name": "unique_users",
+										"stat_type": "set"
+									},
+									{
+										"consumer_identifier": "custom_id",
+										"name": "request_per_user",
+										"sample_rate": 1,
+										"stat_type": "counter"
+									},
+									{
+										"name": "upstream_latency",
+										"stat_type": "timer"
+									},
+									{
+										"name": "kong_latency",
+										"stat_type": "timer"
+									},
+									{
+										"consumer_identifier": "custom_id",
+										"name": "status_count_per_user",
+										"sample_rate": 1,
+										"stat_type": "counter"
+									}
+								],
+								"elements": {
+									"entity_checks": [
+										{
+											"conditional": {
+												"if_field": "name",
+												"if_match": {
+													"eq": "unique_users"
+												},
+												"then_field": "stat_type",
+												"then_match": {
+													"eq": "set"
+												}
+											}
+										},
+										{
+											"conditional": {
+												"if_field": "stat_type",
+												"if_match": {
+													"one_of": [
+														"counter",
+														"gauge"
+													]
+												},
+												"then_field": "sample_rate",
+												"then_match": {
+													"required": true
+												}
+											}
+										},
+										{
+											"conditional": {
+												"if_field": "name",
+												"if_match": {
+													"one_of": [
+														"status_count_per_user",
+														"request_per_user",
+														"unique_users"
+													]
+												},
+												"then_field": "consumer_identifier",
+												"then_match": {
+													"required": true
+												}
+											}
+										},
+										{
+											"conditional": {
+												"if_field": "name",
+												"if_match": {
+													"one_of": [
+														"status_count",
+														"status_count_per_user",
+														"request_per_user"
+													]
+												},
+												"then_field": "stat_type",
+												"then_match": {
+													"eq": "counter"
+												}
+											}
+										}
+									],
+									"fields": [
+										{
+											"name": {
+												"one_of": [
+													"kong_latency",
+													"latency",
+													"request_count",
+													"request_per_user",
+													"request_size",
+													"response_size",
+													"status_count",
+													"status_count_per_user",
+													"unique_users",
+													"upstream_latency"
+												],
+												"required": true,
+												"type": "string"
+											}
+										},
+										{
+											"stat_type": {
+												"one_of": [
+													"counter",
+													"gauge",
+													"histogram",
+													"meter",
+													"set",
+													"timer"
+												],
+												"required": true,
+												"type": "string"
+											}
+										},
+										{
+											"sample_rate": {
+												"gt": 0,
+												"type": "number"
+											}
+										},
+										{
+											"consumer_identifier": {
+												"one_of": [
+													"consumer_id",
+													"custom_id",
+													"username"
+												],
+												"type": "string"
+											}
+										}
+									],
+									"type": "record"
+								},
+								"type": "array"
+							}
+						}
+					]
+				}
+			}
+		]
+	}`
 
 func TestStringArrayToString(t *testing.T) {
 	assert := assert.New(t)
@@ -994,6 +1198,309 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 				t.Errorf(err.Error())
 			}
 			if diff := cmp.Diff(plugin, tc.expected); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func Test_fillConfigRecord(t *testing.T) {
+	tests := []struct {
+		name     string
+		schema   gjson.Result
+		config   Configuration
+		expected Configuration
+	}{
+		{
+			name: "fills defaults for all missing fields",
+			schema: gjson.Parse(`{
+				"fields": {
+					"config":
+						{
+							"type": "record",
+							"fields":[
+								{
+									"enabled":{
+										"type":"boolean",
+										"default":true,
+										"required":true
+									}
+								},
+								{
+									"mappings":{
+										"required":false,
+										"type":"array",
+										"elements":{
+											"type":"record",
+											"fields":[
+												{"name":{"type":"string","required":false}},
+												{"nationality":{"type":"string","required":false}}
+											]
+										}
+									}
+								}
+							]
+						}
+					}
+				}`),
+			config: Configuration{
+				"mappings": []interface{}{
+					map[string]interface{}{
+						"nationality": "Ethiopian",
+					},
+				},
+			},
+			expected: Configuration{
+				"enabled": true,
+				"mappings": []any{
+					Configuration{
+						"name":        nil,
+						"nationality": "Ethiopian",
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			configSchema, err := getConfigSchema(tc.schema)
+			require.NoError(t, err)
+			config := fillConfigRecord(configSchema, tc.config)
+			require.NotNil(t, config)
+			if diff := cmp.Diff(config, tc.expected); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func Test_FillPluginsDefaults(t *testing.T) {
+	defaultMetrics := []any{
+		map[string]any{
+			"name":        "request_count",
+			"sample_rate": float64(1),
+			"stat_type":   "counter",
+		},
+		map[string]any{
+			"name":      "latency",
+			"stat_type": "timer",
+		},
+		map[string]any{
+			"name":      "request_size",
+			"stat_type": "timer",
+		},
+		map[string]any{
+			"name":        "status_count",
+			"sample_rate": float64(1),
+			"stat_type":   "counter",
+		},
+		map[string]any{
+			"name":      "response_size",
+			"stat_type": "timer",
+		},
+		map[string]any{
+			"consumer_identifier": "custom_id",
+			"name":                "unique_users",
+			"stat_type":           "set",
+		},
+		map[string]any{
+			"consumer_identifier": "custom_id",
+			"name":                "request_per_user",
+			"sample_rate":         float64(1),
+			"stat_type":           "counter",
+		},
+		map[string]any{
+			"name":      "upstream_latency",
+			"stat_type": "timer",
+		},
+		map[string]any{
+			"name":      "kong_latency",
+			"stat_type": "timer",
+		},
+		map[string]any{
+			"consumer_identifier": "custom_id",
+			"name":                "status_count_per_user",
+			"sample_rate":         float64(1),
+			"stat_type":           "counter",
+		},
+	}
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "fills defaults for all missing fields",
+			plugin: &Plugin{
+				Config: Configuration{
+					"metrics": []interface{}{
+						map[string]interface{}{
+							"name":      "response_size",
+							"stat_type": "histogram",
+						},
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"host":   "localhost",
+					"port":   float64(8125),
+					"prefix": "kong",
+					"metrics": []interface{}{
+						Configuration{
+							"name":                "response_size",
+							"stat_type":           "histogram",
+							"consumer_identifier": nil,
+							"sample_rate":         nil,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "fills defaults when empty array of records in config",
+			plugin: &Plugin{
+				Config: Configuration{
+					"metrics": []any{},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"host":    "localhost",
+					"port":    float64(8125),
+					"prefix":  "kong",
+					"metrics": defaultMetrics,
+				},
+			},
+		},
+		{
+			name: "fills defaults when nil array of records in config",
+			plugin: &Plugin{
+				Config: Configuration{
+					"metrics": nil,
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"host":    "localhost",
+					"port":    float64(8125),
+					"prefix":  "kong",
+					"metrics": defaultMetrics,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+
+			var fullSchema map[string]interface{}
+			err := json.Unmarshal([]byte(StatsDSchema), &fullSchema)
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+
+			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			opts := cmpopts.IgnoreFields(*plugin,
+				"Protocols", "Enabled",
+			)
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func Test_FillPluginsDefaults_RequestTransformer(t *testing.T) {
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "fills defaults for all missing fields",
+			plugin: &Plugin{
+				Config: Configuration{
+					"add": map[string]interface{}{
+						"body": []any{},
+						"headers": []any{
+							"Knative-Serving-Namespace:e3ffeafd-b5fe-4f34-b2e4-af6f3d9fb417",
+							"Knative-Serving-Revision:helloworld-go-00001",
+						},
+						"querystring": []any{},
+					},
+					"append": map[string]interface{}{
+						"body":        []any{},
+						"headers":     []any{},
+						"querystring": []any{},
+					},
+					"http_method": nil,
+					"enabled":     true,
+					"id":          "0beef60e-e7e3-40f8-ac47-f6a10b931cee",
+					"name":        "request-transformer",
+					"protocols": []any{
+						"grpc",
+						"grpcs",
+						"http",
+						"https",
+					},
+					"service": map[string]interface{}{
+						"id":   "63295454-c41e-447e-bce5-d6b488f3866e",
+						"name": "30bc1240-ad84-4760-a469-763bce524191.helloworld-go-00001.80",
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"add": map[string]any{
+						"body": []any{},
+						"headers": []any{
+							"Knative-Serving-Namespace:e3ffeafd-b5fe-4f34-b2e4-af6f3d9fb417",
+							"Knative-Serving-Revision:helloworld-go-00001",
+						},
+						"querystring": []any{},
+					},
+					"append": map[string]interface{}{
+						"body":        []interface{}{},
+						"headers":     []interface{}{},
+						"querystring": []interface{}{},
+					},
+					"remove":      map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}},
+					"rename":      map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}},
+					"replace":     map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}, "uri": nil},
+					"http_method": nil,
+					"enabled":     true,
+					"id":          "0beef60e-e7e3-40f8-ac47-f6a10b931cee",
+					"name":        "request-transformer",
+					"protocols": []any{
+						"grpc",
+						"grpcs",
+						"http",
+						"https",
+					},
+					"service": map[string]interface{}{
+						"id":   "63295454-c41e-447e-bce5-d6b488f3866e",
+						"name": "30bc1240-ad84-4760-a469-763bce524191.helloworld-go-00001.80",
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/request-transformer")
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
 				t.Errorf(diff)
 			}
 		})
