@@ -658,6 +658,38 @@ func TestFillPluginDefaults(T *testing.T) {
 				Enabled:   Bool(false),
 			},
 		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			p := tc.plugin
+			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, p.Name)
+			assert.NoError(err)
+			assert.NotNil(fullSchema)
+			if err := FillPluginsDefaults(p, fullSchema); err != nil {
+				t.Errorf(err.Error())
+			}
+
+			if diff := cmp.Diff(p, tc.expected); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+// TestFillPluginDefaultsArbitraryMap is split from TestFillPluginDefaults due to a version compatibility issue
+func TestFillPluginDefaultsArbitraryMap(T *testing.T) {
+	RunWhenKong(T, ">=2.3.0")
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(T, err)
+	require.NotNil(T, client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
 		{
 			name: "nested config with arbitrary map field",
 			plugin: &Plugin{
@@ -696,13 +728,16 @@ func TestFillPluginDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			p := tc.plugin
 			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, p.Name)
-			assert.NoError(err)
-			assert.NotNil(fullSchema)
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
 			if err := FillPluginsDefaults(p, fullSchema); err != nil {
 				t.Errorf(err.Error())
 			}
 
-			if diff := cmp.Diff(p, tc.expected); diff != "" {
+			// the log plugins are the only plugins that use the typedefs.lua_code type in their schema
+			// https://github.com/Kong/kong/commit/9df893f6aff98cd51f27f1c27fa30fdcf13fcf48 changes a number of other
+			// fields for 3.3, so this test only checks the relevant field to avoid needing a version split
+			if diff := cmp.Diff(p.Config["custom_fields_by_lua"], tc.expected.Config["custom_fields_by_lua"]); diff != "" {
 				t.Errorf(diff)
 			}
 		})
