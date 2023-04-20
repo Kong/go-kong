@@ -109,13 +109,13 @@ func newIDGeneratorFor(entityPluralName string) idGenerator {
 	return idGenerator{namespace: entityTypeNamespace}
 }
 
-// idFillable is a type constraint for entities that can be filled with an ID.
-type idFillable interface {
+// IDFillable is a type constraint for entities that can be filled with an ID.
+type IDFillable interface {
 	FillID() error
 }
 
 // idGeneratorFor returns the ID generator for the given entity type.
-func idGeneratorFor(entity idFillable) (idGenerator, error) {
+func idGeneratorFor(entity IDFillable) (idGenerator, error) {
 	generator, ok := _idGenerators[reflect.TypeOf(entity).Elem()]
 	if !ok {
 		// This should never happen, as the map is initialized with all supported entity types.

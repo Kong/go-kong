@@ -8,15 +8,11 @@ import (
 	"github.com/kong/go-kong/kong"
 )
 
-type idFillable interface {
-	FillID() error
-}
-
 type fillEntityIDTestCase struct {
 	name   string
-	entity idFillable
+	entity kong.IDFillable
 
-	assertEntity func(t *testing.T, entity idFillable)
+	assertEntity func(t *testing.T, entity kong.IDFillable)
 	expectErr    bool
 }
 
@@ -43,7 +39,7 @@ func TestFillEntityID(t *testing.T) {
 			entity: &kong.Service{
 				Name: kong.String("some.service.name"),
 			},
-			assertEntity: func(t *testing.T, e idFillable) {
+			assertEntity: func(t *testing.T, e kong.IDFillable) {
 				svc := e.(*kong.Service)
 				require.NotNil(t, svc.ID)
 				const expectedID = "d9bee1f8-db6e-5a37-9281-fd4aca16dc00"
@@ -71,7 +67,7 @@ func TestFillEntityID(t *testing.T) {
 			entity: &kong.Route{
 				Name: kong.String("some.service.name"),
 			},
-			assertEntity: func(t *testing.T, e idFillable) {
+			assertEntity: func(t *testing.T, e kong.IDFillable) {
 				route := e.(*kong.Route)
 				require.NotNil(t, route.ID)
 
@@ -100,7 +96,7 @@ func TestFillEntityID(t *testing.T) {
 			entity: &kong.Consumer{
 				Username: kong.String("some.username"),
 			},
-			assertEntity: func(t *testing.T, e idFillable) {
+			assertEntity: func(t *testing.T, e kong.IDFillable) {
 				consumer := e.(*kong.Consumer)
 				require.NotNil(t, consumer.ID)
 
