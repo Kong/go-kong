@@ -550,11 +550,10 @@ func TestFillPluginDefaults(T *testing.T) {
 	// not all Enterprise versions.
 	SkipWhenEnterprise(T)
 	RunWhenKong(T, ">=2.3.0")
-	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(T, err)
+	require.NotNil(T, client)
 
 	tests := []struct {
 		name     string
@@ -664,11 +663,9 @@ func TestFillPluginDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			p := tc.plugin
 			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, p.Name)
-			assert.NoError(err)
-			assert.NotNil(fullSchema)
-			if err := FillPluginsDefaults(p, fullSchema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+			require.NoError(t, FillPluginsDefaults(p, fullSchema))
 
 			if diff := cmp.Diff(p, tc.expected); diff != "" {
 				t.Errorf(diff)
@@ -730,9 +727,7 @@ func TestFillPluginDefaultsArbitraryMap(T *testing.T) {
 			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, p.Name)
 			require.NoError(t, err)
 			require.NotNil(t, fullSchema)
-			if err := FillPluginsDefaults(p, fullSchema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, FillPluginsDefaults(p, fullSchema))
 
 			// the log plugins are the only plugins that use the typedefs.lua_code type in their schema
 			// https://github.com/Kong/kong/commit/9df893f6aff98cd51f27f1c27fa30fdcf13fcf48 changes a number of other
