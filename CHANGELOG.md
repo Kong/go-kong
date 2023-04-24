@@ -52,6 +52,14 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
+## [v0.41.0]
+
+> Release date: TBD
+
+- Added `FillID` method for `Service`, `Route` and `Consumer` entities. It allows
+  setting a deterministic ID to an entity.
+  [#299](https://github.com/Kong/go-kong/pull/299)
+
 ## [v0.40.0]
 
 > Release date: 2023/04/07
