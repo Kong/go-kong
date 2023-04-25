@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.41.0](#v0410)
 - [v0.40.0](#v0400)
 - [v0.39.2](#v0392)
 - [v0.39.1](#v0391)
@@ -54,7 +55,7 @@
 
 ## [v0.41.0]
 
-> Release date: TBD
+> Release date: 2023/04/25
 
 - Added `FillID` method for `Service`, `Route` and `Consumer` entities. It allows
   setting a deterministic ID to an entity.
@@ -743,6 +744,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.41.0]: https://github.com/Kong/go-kong/compare/v0.40.0...v0.41.0
 [v0.40.0]: https://github.com/Kong/go-kong/compare/v0.39.2...v0.40.0
 [v0.39.2]: https://github.com/Kong/go-kong/compare/v0.39.1...v0.39.2
 [v0.39.1]: https://github.com/Kong/go-kong/compare/v0.39.0...v0.39.1
