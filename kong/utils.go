@@ -247,6 +247,10 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 				if v != nil {
 					return true
 				}
+				ftype := value.Get(fname + ".type").String()
+				if ftype != "record" && ftype != "array" {
+					return true
+				}
 			}
 		}
 		ftype := value.Get(fname + ".type")
