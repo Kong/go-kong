@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -64,6 +65,34 @@ func TestHasError(T *testing.T) {
 			want: &APIError{
 				httpCode: 404,
 				message:  "<failed to parse response body: invalid character 'T' looking for beginning of value>",
+			},
+		},
+		{
+			name: "code 429 with retry-after header",
+			response: http.Response{
+				StatusCode: http.StatusTooManyRequests,
+				Body:       io.NopCloser(strings.NewReader("")),
+				Header: map[string][]string{
+					"Retry-After": {"123"},
+				},
+			},
+			want: &APIError{
+				httpCode: http.StatusTooManyRequests,
+				message:  "<failed to parse response body: unexpected end of JSON input>",
+				details: ErrTooManyRequestsDetails{
+					RetryAfter: time.Second * 123,
+				},
+			},
+		},
+		{
+			name: "code 429 with no retry-after header",
+			response: http.Response{
+				StatusCode: http.StatusTooManyRequests,
+				Body:       io.NopCloser(strings.NewReader("")),
+			},
+			want: &APIError{
+				httpCode: http.StatusTooManyRequests,
+				message:  "<failed to parse response body: unexpected end of JSON input>",
 			},
 		},
 	} {

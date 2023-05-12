@@ -258,7 +258,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request,
 
 	response := newResponse(resp)
 
-	///check for API errors
+	// check for API errors
 	if err = hasError(resp); err != nil {
 		return response, err
 	}

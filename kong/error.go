@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 // APIError is used for Kong Admin API errors.
@@ -11,6 +12,7 @@ type APIError struct {
 	httpCode int
 	message  string
 	raw      []byte
+	details  any
 }
 
 func NewAPIError(code int, msg string) *APIError {
@@ -42,6 +44,18 @@ func (e *APIError) Raw() []byte {
 	return e.raw
 }
 
+// Details returns optional details that might be relevant for proper
+// handling of the APIError on the caller side.
+func (e *APIError) Details() any {
+	return e.details
+}
+
+// SetDetails allows setting optional details that might be relevant
+// for proper handling of the APIError on the caller side.
+func (e *APIError) SetDetails(details any) {
+	e.details = details
+}
+
 // IsNotFoundErr returns true if the error or it's cause is
 // a 404 response from Kong.
 func IsNotFoundErr(e error) bool {
@@ -60,4 +74,11 @@ func IsForbiddenErr(e error) bool {
 		return apiErr.httpCode == http.StatusForbidden
 	}
 	return false
+}
+
+// ErrTooManyRequestsDetails is expected to be available under APIError.Details()
+// when the API returns status code 429 (Too many requests) and a `Retry-After` header
+// is set.
+type ErrTooManyRequestsDetails struct {
+	RetryAfter time.Duration
 }
