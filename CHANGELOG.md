@@ -58,12 +58,12 @@
 > Release date: TBD
 
 - Added `Details` and `SetDetails` methods to `APIError` struct to enable
-  propagating status-specific details in there.  
+  propagating status-specific details in there.
   Introduced `ErrTooManyRequestsDetails` struct that's going to be available
-  as an `APIError`'s `Details` when Admin API returns status code 429 along 
-  with a `Retry-After` header. That should be useful for handling rate limiting 
+  as an `APIError`'s `Details` when Admin API returns status code 429 along
+  with a `Retry-After` header. That should be useful for handling rate limiting
   on an application level.
-
+  [#323](https://github.com/Kong/go-kong/pull/323)
 
 ## [v0.41.0]
 
