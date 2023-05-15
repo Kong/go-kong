@@ -40,15 +40,3 @@ func hasError(res *http.Response) error {
 	}
 	return NewAPIError(res.StatusCode, messageFromBody(body))
 }
-
-func hasErrorRaw(res *http.Response) error {
-	if res.StatusCode >= 200 && res.StatusCode <= 399 {
-		return nil
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read error body: %w", err)
-	}
-	return NewAPIErrorWithRaw(res.StatusCode, messageFromBody(body), body)
-}
