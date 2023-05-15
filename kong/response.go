@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 // Response is a Kong Admin API response. It wraps http.Response.
@@ -38,5 +40,36 @@ func hasError(res *http.Response) error {
 	if err != nil {
 		return fmt.Errorf("failed to read error body: %w", err)
 	}
-	return NewAPIError(res.StatusCode, messageFromBody(body))
+
+	apiErr := NewAPIError(res.StatusCode, messageFromBody(body))
+	if details, ok := extractErrDetails(res); ok {
+		apiErr.SetDetails(details)
+	}
+
+	return apiErr
+}
+
+func extractErrDetails(res *http.Response) (any, bool) {
+	switch res.StatusCode {
+	case http.StatusTooManyRequests:
+		return extractErrTooManyRequestsDetails(res)
+	}
+
+	return nil, false
+}
+
+func extractErrTooManyRequestsDetails(res *http.Response) (ErrTooManyRequestsDetails, bool) {
+	const (
+		base    = 10
+		bitSize = 64
+	)
+	if retryAfter := res.Header.Get("Retry-After"); retryAfter != "" {
+		if sleep, err := strconv.ParseInt(retryAfter, base, bitSize); err == nil {
+			return ErrTooManyRequestsDetails{
+				RetryAfter: time.Second * time.Duration(sleep),
+			}, true
+		}
+	}
+
+	return ErrTooManyRequestsDetails{}, false
 }
