@@ -76,7 +76,7 @@ func (s *PluginService) GetFullSchema(ctx context.Context,
 
 // GetSchema retrieves the config schema of a plugin
 //
-// Deprecated: Use GetPluginSchema instead
+// Deprecated: Use GetFullSchema instead
 func (s *PluginService) GetSchema(ctx context.Context,
 	pluginName *string,
 ) (Schema, error) {
