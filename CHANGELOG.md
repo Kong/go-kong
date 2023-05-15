@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.42.0](#v0420)
 - [v0.41.0](#v0410)
 - [v0.40.0](#v0400)
 - [v0.39.2](#v0392)
@@ -53,9 +54,9 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
-## Unreleased
+## [v0.42.0] 
 
-> Release date: TBD
+> Release date: 2023/05/15
 
 - Added `Details` and `SetDetails` methods to `APIError` struct to enable
   propagating status-specific details in there.
@@ -756,6 +757,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.42.0]: https://github.com/Kong/go-kong/compare/v0.41.0...v0.42.0
 [v0.41.0]: https://github.com/Kong/go-kong/compare/v0.40.0...v0.41.0
 [v0.40.0]: https://github.com/Kong/go-kong/compare/v0.39.2...v0.40.0
 [v0.39.2]: https://github.com/Kong/go-kong/compare/v0.39.1...v0.39.2
