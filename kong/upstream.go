@@ -21,6 +21,7 @@ type Upstream struct {
 	HashFallbackQueryArg   *string      `json:"hash_fallback_query_arg,omitempty" yaml:"hash_fallback_query_arg,omitempty"` //nolint:lll
 	HashOnURICapture       *string      `json:"hash_on_uri_capture,omitempty" yaml:"hash_on_uri_capture,omitempty"`
 	HashFallbackURICapture *string      `json:"hash_fallback_uri_capture,omitempty" yaml:"hash_fallback_uri_capture,omitempty"` //nolint:lll
+	UseSrvName             *bool        `json:"use_srv_name,omitempty" yaml:"use_srv_name,omitempty"`
 	Tags                   []*string    `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
@@ -62,8 +63,9 @@ type ActiveHealthcheck struct {
 	HTTPSVerifyCertificate *bool   `json:"https_verify_certificate,omitempty" yaml:"https_verify_certificate,omitempty"`
 	Type                   *string `json:"type,omitempty" yaml:"type,omitempty"`
 	// +kubebuilder:validation:Minimum=0
-	Timeout   *int       `json:"timeout,omitempty" yaml:"timeout,omitempty"`
-	Unhealthy *Unhealthy `json:"unhealthy,omitempty" yaml:"unhealthy,omitempty"`
+	Timeout   *int                `json:"timeout,omitempty" yaml:"timeout,omitempty"`
+	Unhealthy *Unhealthy          `json:"unhealthy,omitempty" yaml:"unhealthy,omitempty"`
+	Headers   map[string][]string `json:"headers,omitempty" yaml:"headers,omitempty"`
 }
 
 // PassiveHealthcheck configures passive checks around

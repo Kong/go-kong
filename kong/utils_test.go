@@ -766,8 +766,11 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 				t.Errorf(err.Error())
 			}
 			// Ignore fields to make tests pass despite small differences across releases.
-			opts := cmpopts.IgnoreFields(Healthcheck{}, "Threshold")
-			if diff := cmp.Diff(u, tc.expected, opts); diff != "" {
+			opts := []cmp.Option{
+				cmpopts.IgnoreFields(Healthcheck{}, "Threshold"),
+				cmpopts.IgnoreFields(Upstream{}, "UseSrvName"),
+			}
+			if diff := cmp.Diff(u, tc.expected, opts...); diff != "" {
 				t.Errorf(diff)
 			}
 		})
