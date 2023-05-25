@@ -54,7 +54,14 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
-## [v0.42.0] 
+## Unreleased
+
+> Release date: TBD
+
+- Added missing `use_srv_name` and `healthchecks.active.headers` to `Upstream` entity.
+  [#331](https://github.com/Kong/go-kong/pull/331)
+
+## [v0.42.0]
 
 > Release date: 2023/05/15
 

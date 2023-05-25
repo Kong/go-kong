@@ -111,6 +111,21 @@ func (in *ActiveHealthcheck) DeepCopyInto(out *ActiveHealthcheck) {
 		*out = new(Unhealthy)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.Headers != nil {
+		in, out := &in.Headers, &out.Headers
+		*out = make(map[string][]string, len(*in))
+		for key, val := range *in {
+			var outVal []string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				in, out := &val, &outVal
+				*out = make([]string, len(*in))
+				copy(*out, *in)
+			}
+			(*out)[key] = outVal
+		}
+	}
 	return
 }
 
@@ -2416,6 +2431,11 @@ func (in *Upstream) DeepCopyInto(out *Upstream) {
 	if in.HashFallbackURICapture != nil {
 		in, out := &in.HashFallbackURICapture, &out.HashFallbackURICapture
 		*out = new(string)
+		**out = **in
+	}
+	if in.UseSrvName != nil {
+		in, out := &in.UseSrvName, &out.UseSrvName
+		*out = new(bool)
 		**out = **in
 	}
 	if in.Tags != nil {

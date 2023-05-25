@@ -79,6 +79,60 @@ func TestUpstreamWithTags(T *testing.T) {
 	assert.NoError(err)
 }
 
+func TestUpstreamWithUseSrvName(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+	RunWhenKong(T, ">=3.1.0")
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	upstream := &Upstream{
+		Name:       String("key-auth"),
+		UseSrvName: Bool(true),
+	}
+
+	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
+	require.NoError(err)
+	require.NotNil(createdUpstream)
+	assert.Equal(upstream.UseSrvName, createdUpstream.UseSrvName)
+
+	err = client.Upstreams.Delete(defaultCtx, createdUpstream.ID)
+	assert.NoError(err)
+}
+
+func TestUpstreamWithActiveHealthcheckHeaders(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+	RunWhenKong(T, ">=3.0.0")
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	upstream := &Upstream{
+		Name: String("key-auth"),
+		Healthchecks: &Healthcheck{
+			Active: &ActiveHealthcheck{
+				Headers: map[string][]string{
+					"foo": {"bar"},
+				},
+			},
+		},
+	}
+
+	createdUpstream, err := client.Upstreams.Create(defaultCtx, upstream)
+	require.NoError(err)
+	require.NotNil(createdUpstream)
+	assert.Equal(upstream.Healthchecks.Active.Headers, createdUpstream.Healthchecks.Active.Headers)
+
+	err = client.Upstreams.Delete(defaultCtx, createdUpstream.ID)
+	assert.NoError(err)
+}
+
 // regression test for #6
 func TestUpstreamWithActiveUnHealthyInterval(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
