@@ -1511,6 +1511,7 @@ func Test_FillPluginsDefaults_RequestTransformer(t *testing.T) {
 }
 
 func Test_FillPluginsDefaults_Acme(t *testing.T) {
+	RunWhenKong(t, ">=2.6.0")
 	client, err := NewTestClient(nil, nil)
 	require.NoError(t, err)
 	require.NotNil(t, client)
@@ -1592,7 +1593,7 @@ func Test_FillPluginsDefaults_Acme(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, fullSchema)
 			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
-			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols", "storage_config", "allow_any_domain", "enable_ipv4_common_name", "preferred_chain", "rsa_key_size")
+			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
 				t.Errorf(diff)
 			}
