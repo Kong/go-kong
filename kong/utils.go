@@ -250,7 +250,9 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 			}
 		}
 		ftype := value.Get(fname + ".type")
-		if ftype.String() == "record" {
+		frequired := value.Get(fname + ".required")
+		// Recursively fill defaults only if the field is either required or a subconfig is provided
+		if ftype.String() == "record" && (config[fname] != nil || (frequired.Exists() && frequired.Bool())) {
 			subConfig := config[fname]
 			if subConfig == nil {
 				subConfig = make(map[string]interface{})

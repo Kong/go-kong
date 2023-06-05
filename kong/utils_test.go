@@ -1509,3 +1509,93 @@ func Test_FillPluginsDefaults_RequestTransformer(t *testing.T) {
 		})
 	}
 }
+
+func Test_FillPluginsDefaults_Acme(t *testing.T) {
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "fills defaults for all missing fields",
+			plugin: &Plugin{
+				Config: Configuration{
+					"account_email": "email@email.com",
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"account_email":           "email@email.com",
+					"account_key":             nil,
+					"allow_any_domain":        false,
+					"api_uri":                 "https://acme-v02.api.letsencrypt.org/directory",
+					"cert_type":               "rsa",
+					"domains":                 nil,
+					"eab_hmac_key":            nil,
+					"eab_kid":                 nil,
+					"enable_ipv4_common_name": true,
+					"fail_backoff_minutes":    5.0,
+					"preferred_chain":         nil,
+					"renew_threshold_days":    14.0,
+					"rsa_key_size":            4096.0,
+					"storage":                 "shm",
+					"storage_config": map[string]any{
+						"consul": map[string]any{
+							"host":    nil,
+							"https":   bool(false),
+							"kv_path": nil,
+							"port":    nil,
+							"timeout": nil,
+							"token":   nil,
+						},
+						"kong": map[string]any{},
+						"redis": map[string]any{
+							"auth":            nil,
+							"database":        nil,
+							"host":            nil,
+							"namespace":       "",
+							"port":            nil,
+							"ssl":             false,
+							"ssl_server_name": nil,
+							"ssl_verify":      false,
+						},
+						"shm": map[string]any{"shm_name": "kong"},
+						"vault": map[string]any{
+							"auth_method":     "token",
+							"auth_path":       nil,
+							"auth_role":       nil,
+							"host":            nil,
+							"https":           false,
+							"jwt_path":        nil,
+							"kv_path":         nil,
+							"port":            nil,
+							"timeout":         nil,
+							"tls_server_name": nil,
+							"tls_verify":      true,
+							"token":           nil,
+						},
+					},
+					"tos_accepted": false,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/acme")
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
