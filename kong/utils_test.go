@@ -218,6 +218,455 @@ const StatsDSchema = `{
 		]
 	}`
 
+// TestSchemaSetType (
+const TestSchemaSetType = `{
+	"fields": [{
+		"config": {
+			"type": "record",
+			"fields": [{
+				"bootstrap_servers": {
+					"default": [
+						{
+							"host": "127.0.0.1",
+							"port": 42
+						}
+					],
+					"elements": {
+						"fields": [{
+								"host": {
+									"required": true,
+									"type": "string"
+								}
+							},
+							{
+								"port": {
+									"between": [
+										0,
+										65535
+									],
+									"required": true,
+									"type": "integer",
+									"default": 42
+								}
+							}
+						],
+						"type": "record"
+					},
+					"type": "set"
+				}
+			}]
+		}
+	}]
+}`
+
+const AcmeSchema = `{
+    "fields": [
+        {
+            "consumer": {
+                "type": "foreign",
+                "eq": null,
+                "reference": "consumers"
+            }
+        },
+        {
+            "service": {
+                "type": "foreign",
+                "eq": null,
+                "reference": "services"
+            }
+        },
+        {
+            "route": {
+                "type": "foreign",
+                "eq": null,
+                "reference": "routes"
+            }
+        },
+        {
+            "protocols": {
+                "elements": {
+                    "one_of": [
+                        "grpc",
+                        "grpcs",
+                        "http",
+                        "https"
+                    ],
+                    "type": "string"
+                },
+                "required": true,
+                "default": [
+                    "grpc",
+                    "grpcs",
+                    "http",
+                    "https"
+                ],
+                "type": "set"
+            }
+        },
+        {
+            "config": {
+                "required": true,
+                "fields": [
+                    {
+                        "account_email": {
+                            "referenceable": true,
+                            "type": "string",
+                            "match": "%w*%p*@+%w*%.?%w*",
+                            "required": true,
+                            "encrypted": true
+                        }
+                    },
+                    {
+                        "account_key": {
+                            "required": false,
+                            "fields": [
+                                {
+                                    "key_id": {
+                                        "type": "string",
+                                        "required": true
+                                    }
+                                },
+                                {
+                                    "key_set": {
+                                        "type": "string"
+                                    }
+                                }
+                            ],
+                            "type": "record"
+                        }
+                    },
+                    {
+                        "api_uri": {
+                            "default": "https://acme-v02.api.letsencrypt.org/directory",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "tos_accepted": {
+                            "default": false,
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "eab_kid": {
+                            "referenceable": true,
+                            "encrypted": true,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "eab_hmac_key": {
+                            "referenceable": true,
+                            "encrypted": true,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "cert_type": {
+                            "one_of": [
+                                "rsa",
+                                "ecc"
+                            ],
+                            "default": "rsa",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "rsa_key_size": {
+                            "one_of": [
+                                2048,
+                                3072,
+                                4096
+                            ],
+                            "default": 4096,
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "renew_threshold_days": {
+                            "default": 14,
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "domains": {
+                            "elements": {
+                                "match_any": {
+                                    "patterns": [
+                                        "^%*%.",
+                                        "%.%*$",
+                                        "^[^*]*$"
+                                    ],
+                                    "err": "invalid wildcard: must be placed at leftmost or rightmost label"
+                                },
+                                "match_all": [
+                                    {
+                                        "pattern": "^[^*]*%*?[^*]*$",
+                                        "err": "invalid wildcard: must have at most one wildcard"
+                                    }
+                                ],
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "allow_any_domain": {
+                            "default": false,
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "fail_backoff_minutes": {
+                            "default": 5,
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "storage": {
+                            "one_of": [
+                                "kong",
+                                "shm",
+                                "redis",
+                                "consul",
+                                "vault"
+                            ],
+                            "default": "shm",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "storage_config": {
+                            "required": true,
+                            "fields": [
+                                {
+                                    "shm": {
+                                        "required": true,
+                                        "fields": [
+                                            {
+                                                "shm_name": {
+                                                    "default": "kong",
+                                                    "type": "string"
+                                                }
+                                            }
+                                        ],
+                                        "type": "record"
+                                    }
+                                },
+                                {
+                                    "kong": {
+                                        "required": true,
+                                        "fields": [],
+                                        "type": "record"
+                                    }
+                                },
+                                {
+                                    "redis": {
+                                        "required": true,
+                                        "fields": [
+                                            {
+                                                "host": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            {
+                                                "port": {
+                                                    "between": [
+                                                        0,
+                                                        65535
+                                                    ],
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            {
+                                                "database": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            {
+                                                "auth": {
+                                                    "referenceable": true,
+                                                    "type": "string"
+                                                }
+                                            },
+                                            {
+                                                "ssl": {
+                                                    "required": true,
+                                                    "default": false,
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            {
+                                                "ssl_verify": {
+                                                    "required": true,
+                                                    "default": false,
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            {
+                                                "ssl_server_name": {
+                                                    "type": "string",
+                                                    "required": false
+                                                }
+                                            },
+                                            {
+                                                "namespace": {
+                                                    "len_min": 0,
+                                                    "required": true,
+                                                    "default": "",
+                                                    "type": "string"
+                                                }
+                                            }
+                                        ],
+                                        "type": "record"
+                                    }
+                                },
+                                {
+                                    "consul": {
+                                        "required": true,
+                                        "fields": [
+                                            {
+                                                "https": {
+                                                    "default": false,
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            {
+                                                "host": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            {
+                                                "port": {
+                                                    "between": [
+                                                        0,
+                                                        65535
+                                                    ],
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            {
+                                                "kv_path": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            {
+                                                "timeout": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            {
+                                                "token": {
+                                                    "referenceable": true,
+                                                    "type": "string"
+                                                }
+                                            }
+                                        ],
+                                        "type": "record"
+                                    }
+                                },
+                                {
+                                    "vault": {
+                                        "required": true,
+                                        "fields": [
+                                            {
+                                                "https": {
+                                                    "default": false,
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            {
+                                                "host": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            {
+                                                "port": {
+                                                    "between": [
+                                                        0,
+                                                        65535
+                                                    ],
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            {
+                                                "kv_path": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            {
+                                                "timeout": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            {
+                                                "token": {
+                                                    "referenceable": true,
+                                                    "type": "string"
+                                                }
+                                            },
+                                            {
+                                                "tls_verify": {
+                                                    "default": true,
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            {
+                                                "tls_server_name": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            {
+                                                "auth_method": {
+                                                    "one_of": [
+                                                        "token",
+                                                        "kubernetes"
+                                                    ],
+                                                    "default": "token",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            {
+                                                "auth_path": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            {
+                                                "auth_role": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            {
+                                                "jwt_path": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        ],
+                                        "type": "record"
+                                    }
+                                }
+                            ],
+                            "type": "record"
+                        }
+                    },
+                    {
+                        "preferred_chain": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "enable_ipv4_common_name": {
+                            "default": true,
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "type": "record"
+            }
+        }
+    ]
+}`
+
 func TestStringArrayToString(t *testing.T) {
 	assert := assert.New(t)
 
@@ -1499,6 +1948,308 @@ func Test_FillPluginsDefaults_RequestTransformer(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			plugin := tc.plugin
 			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/request-transformer")
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func Test_FillPluginsDefaults_SetType(t *testing.T) {
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "does not fill defaults when provided",
+			plugin: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []interface{}{
+						map[string]interface{}{
+							"host": "192.168.2.100",
+							"port": float64(3500),
+						},
+						map[string]any{
+							"host": "192.168.2.101",
+							"port": float64(3500),
+						},
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []interface{}{
+						Configuration{
+							"host": "192.168.2.100",
+							"port": float64(3500),
+						},
+						Configuration{
+							"host": "192.168.2.101",
+							"port": float64(3500),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "fills defaults for all missing fields",
+			plugin: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []interface{}{
+						map[string]interface{}{
+							"host": "127.0.0.1",
+						},
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []interface{}{
+						Configuration{
+							"host": "127.0.0.1",
+							"port": float64(42),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "fills defaults when empty set of records in config",
+			plugin: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []any{},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []any{
+						map[string]any{
+							"host": "127.0.0.1",
+							"port": float64(42),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "fills defaults when nil set of records in config",
+			plugin: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": nil,
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []any{
+						map[string]any{
+							"host": "127.0.0.1",
+							"port": float64(42),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+
+			var fullSchema map[string]interface{}
+			err := json.Unmarshal([]byte(TestSchemaSetType), &fullSchema)
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+
+			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			opts := cmpopts.IgnoreFields(*plugin,
+				"Protocols", "Enabled",
+			)
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func Test_FillPluginsDefaults_Acme(t *testing.T) {
+	RunWhenKong(t, "==3.3.0")
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "fills defaults for all missing fields",
+			plugin: &Plugin{
+				Config: Configuration{
+					"account_email": "email@email.com",
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"account_email":           "email@email.com",
+					"account_key":             nil,
+					"allow_any_domain":        false,
+					"api_uri":                 "https://acme-v02.api.letsencrypt.org/directory",
+					"cert_type":               "rsa",
+					"domains":                 nil,
+					"eab_hmac_key":            nil,
+					"eab_kid":                 nil,
+					"enable_ipv4_common_name": true,
+					"fail_backoff_minutes":    5.0,
+					"preferred_chain":         nil,
+					"renew_threshold_days":    14.0,
+					"rsa_key_size":            4096.0,
+					"storage":                 "shm",
+					"storage_config": map[string]any{
+						"consul": map[string]any{
+							"host":    nil,
+							"https":   bool(false),
+							"kv_path": nil,
+							"port":    nil,
+							"timeout": nil,
+							"token":   nil,
+						},
+						"kong": map[string]any{},
+						"redis": map[string]any{
+							"auth":            nil,
+							"database":        nil,
+							"host":            nil,
+							"namespace":       "",
+							"port":            nil,
+							"ssl":             false,
+							"ssl_server_name": nil,
+							"ssl_verify":      false,
+						},
+						"shm": map[string]any{"shm_name": "kong"},
+						"vault": map[string]any{
+							"auth_method":     "token",
+							"auth_path":       nil,
+							"auth_role":       nil,
+							"host":            nil,
+							"https":           false,
+							"jwt_path":        nil,
+							"kv_path":         nil,
+							"port":            nil,
+							"timeout":         nil,
+							"tls_server_name": nil,
+							"tls_verify":      true,
+							"token":           nil,
+						},
+					},
+					"tos_accepted": false,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/acme")
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func Test_FillPluginsDefaults_Zipkin(t *testing.T) {
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "fills defaults for all missing fields",
+			plugin: &Plugin{
+				Config: Configuration{},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"account_email":           nil,
+					"account_key":             nil,
+					"allow_any_domain":        bool(false),
+					"api_uri":                 string("https://acme-v02.api.letsencrypt.org/directory"),
+					"cert_type":               string("rsa"),
+					"domains":                 nil,
+					"eab_hmac_key":            nil,
+					"eab_kid":                 nil,
+					"enable_ipv4_common_name": bool(true),
+					"fail_backoff_minutes":    float64(5),
+					"preferred_chain":         nil,
+					"renew_threshold_days":    float64(14),
+					"rsa_key_size":            float64(4096),
+					"storage":                 string("shm"),
+					"storage_config": map[string]any{
+						"consul": map[string]any{
+							"host":    nil,
+							"https":   bool(false),
+							"kv_path": nil,
+							"port":    nil,
+							"timeout": nil,
+							"token":   nil,
+						},
+						"kong": map[string]any{},
+						"redis": map[string]any{
+							"auth":            nil,
+							"database":        nil,
+							"host":            nil,
+							"namespace":       string(""),
+							"port":            nil,
+							"ssl":             bool(false),
+							"ssl_server_name": nil,
+							"ssl_verify":      bool(false),
+						},
+						"shm": map[string]any{"shm_name": string("kong")},
+						"vault": map[string]any{
+							"auth_method":     string("token"),
+							"auth_path":       nil,
+							"auth_role":       nil,
+							"host":            nil,
+							"https":           bool(false),
+							"jwt_path":        nil,
+							"kv_path":         nil,
+							"port":            nil,
+							"timeout":         nil,
+							"tls_server_name": nil,
+							"tls_verify":      bool(true),
+							"token":           nil,
+						},
+					},
+					"tos_accepted": bool(false),
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+			var fullSchema map[string]interface{}
+			err := json.Unmarshal([]byte(AcmeSchema), &fullSchema)
+
 			require.NoError(t, err)
 			require.NotNil(t, fullSchema)
 			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
