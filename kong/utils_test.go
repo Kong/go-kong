@@ -218,6 +218,47 @@ const StatsDSchema = `{
 		]
 	}`
 
+// TestSchemaSetType (
+const TestSchemaSetType = `{
+	"fields": [{
+		"config": {
+			"type": "record",
+			"fields": [{
+				"bootstrap_servers": {
+					"default": [
+						{
+							"host": "127.0.0.1",
+							"port": 42
+						}
+					],
+					"elements": {
+						"fields": [{
+								"host": {
+									"required": true,
+									"type": "string"
+								}
+							},
+							{
+								"port": {
+									"between": [
+										0,
+										65535
+									],
+									"required": true,
+									"type": "integer",
+									"default": 42
+								}
+							}
+						],
+						"type": "record"
+					},
+					"type": "set"
+				}
+			}]
+		}
+	}]
+}`
+
 func TestStringArrayToString(t *testing.T) {
 	assert := assert.New(t)
 
@@ -1503,6 +1544,127 @@ func Test_FillPluginsDefaults_RequestTransformer(t *testing.T) {
 			require.NotNil(t, fullSchema)
 			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func Test_FillPluginsDefaults_SetType(t *testing.T) {
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "does not fill defaults when provided",
+			plugin: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []interface{}{
+						map[string]interface{}{
+							"host": "192.168.2.100",
+							"port": float64(3500),
+						},
+						map[string]any{
+							"host": "192.168.2.101",
+							"port": float64(3500),
+						},
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []interface{}{
+						Configuration{
+							"host": "192.168.2.100",
+							"port": float64(3500),
+						},
+						Configuration{
+							"host": "192.168.2.101",
+							"port": float64(3500),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "fills defaults for all missing fields",
+			plugin: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []interface{}{
+						map[string]interface{}{
+							"host": "127.0.0.1",
+						},
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []interface{}{
+						Configuration{
+							"host": "127.0.0.1",
+							"port": float64(42),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "fills defaults when empty set of records in config",
+			plugin: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []any{},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []any{
+						map[string]any{
+							"host": "127.0.0.1",
+							"port": float64(42),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "fills defaults when nil set of records in config",
+			plugin: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": nil,
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"bootstrap_servers": []any{
+						map[string]any{
+							"host": "127.0.0.1",
+							"port": float64(42),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+
+			var fullSchema map[string]interface{}
+			err := json.Unmarshal([]byte(TestSchemaSetType), &fullSchema)
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+
+			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			opts := cmpopts.IgnoreFields(*plugin,
+				"Protocols", "Enabled",
+			)
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
 				t.Errorf(diff)
 			}
