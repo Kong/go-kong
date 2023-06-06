@@ -266,7 +266,8 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 		// If this array is non-nil and non-empty (in Config), go through all the records in this array and add defaults
 		// If the array has only primitives like string/number/boolean then the value is already set
 		// If the array is empty or nil, then no defaults need to be set for its elements
-		if ftype.String() == "array" {
+		// The same logic should be applied if field is of type set of records (in Schema)
+		if ftype.String() == "array" || ftype.String() == "set" {
 			if value.Get(fname).Get("elements.type").String() == "record" {
 				if config[fname] != nil {
 					// Check sub config is of type array and it is non-empty
