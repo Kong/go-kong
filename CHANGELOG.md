@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.43.0](#v0430)
 - [v0.42.0](#v0420)
 - [v0.41.0](#v0410)
 - [v0.40.0](#v0400)
@@ -58,8 +59,18 @@
 
 > Release date: TBD
 
-- Added missing `use_srv_name` and `healthchecks.active.headers` to `Upstream` entity.
+Nothing yet.
+
+## [v0.43.0]
+
+> Release date: 2023/06/06
+
+- Added missing `use_srv_name` and `healthchecks.active.headers` to `Upstream`
+  entity.
   [#331](https://github.com/Kong/go-kong/pull/331)
+- Fix regressions when filling defaults for set and record schema types.
+  [#333](https://github.com/Kong/go-kong/pull/333)
+  [#336](https://github.com/Kong/go-kong/pull/336)
 
 ## [v0.42.0]
 
@@ -72,6 +83,9 @@
   with a `Retry-After` header. That should be useful for handling rate limiting
   on an application level.
   [#323](https://github.com/Kong/go-kong/pull/323)
+- Use modern schema retrieval function for plugin schema retrieval. This
+  provides compatibility with upcoming Kong releases.
+  [#326](https://github.com/Kong/go-kong/pull/326)
 
 ## [v0.41.0]
 
@@ -764,6 +778,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.43.0]: https://github.com/Kong/go-kong/compare/v0.42.0...v0.43.0
 [v0.42.0]: https://github.com/Kong/go-kong/compare/v0.41.0...v0.42.0
 [v0.41.0]: https://github.com/Kong/go-kong/compare/v0.40.0...v0.41.0
 [v0.40.0]: https://github.com/Kong/go-kong/compare/v0.39.2...v0.40.0
