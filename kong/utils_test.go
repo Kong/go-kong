@@ -2081,7 +2081,6 @@ func Test_FillPluginsDefaults_SetType(t *testing.T) {
 }
 
 func Test_FillPluginsDefaults_Acme(t *testing.T) {
-	RunWhenKong(t, "==3.3.0")
 	client, err := NewTestClient(nil, nil)
 	require.NoError(t, err)
 	require.NotNil(t, client)
