@@ -23,5 +23,6 @@ _testmain.go
 *.exe
 *.test
 *.prof
+bin/
 
 # for this repo only
