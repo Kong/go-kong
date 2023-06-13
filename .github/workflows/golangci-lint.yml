@@ -27,7 +27,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Setup golangci-lint
-        uses: golangci/golangci-lint-action@v3.4.0
+        uses: golangci/golangci-lint-action@v3.6.0
         with:
           # actions/setup-go@v4 introduced automatic cache handling so skip cache here
           skip-cache: true
