@@ -1656,6 +1656,54 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 	}
 }
 
+const fillConfigRecordTestSchema = `{
+	"fields": {
+		"config": {
+			"type": "record",
+			"fields": [
+				{
+					"enabled": {
+						"type": "boolean",
+						"default": true,
+						"required": true
+					}
+				},
+				{
+					"mappings": {
+						"required": false,
+						"type": "array",
+						"elements": {
+							"type": "record",
+							"fields": [
+								{
+									"name": {
+										"type": "string",
+										"required": false
+									}
+								},
+								{
+									"nationality": {
+										"type": "string",
+										"required": false
+									}
+								}
+							]
+						}
+					}
+				},
+				{
+					"empty_record": {
+						"type": "record",
+						"required": true,
+						"fields": []
+					}
+				}
+			]
+		}
+	}
+}
+`
+
 func Test_fillConfigRecord(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -1664,40 +1712,11 @@ func Test_fillConfigRecord(t *testing.T) {
 		expected Configuration
 	}{
 		{
-			name: "fills defaults for all missing fields",
-			schema: gjson.Parse(`{
-				"fields": {
-					"config":
-						{
-							"type": "record",
-							"fields":[
-								{
-									"enabled":{
-										"type":"boolean",
-										"default":true,
-										"required":true
-									}
-								},
-								{
-									"mappings":{
-										"required":false,
-										"type":"array",
-										"elements":{
-											"type":"record",
-											"fields":[
-												{"name":{"type":"string","required":false}},
-												{"nationality":{"type":"string","required":false}}
-											]
-										}
-									}
-								}
-							]
-						}
-					}
-				}`),
+			name:   "fills defaults for all missing fields",
+			schema: gjson.Parse(fillConfigRecordTestSchema),
 			config: Configuration{
-				"mappings": []interface{}{
-					map[string]interface{}{
+				"mappings": []any{
+					map[string]any{
 						"nationality": "Ethiopian",
 					},
 				},
@@ -1710,6 +1729,29 @@ func Test_fillConfigRecord(t *testing.T) {
 						"nationality": "Ethiopian",
 					},
 				},
+				"empty_record": map[string]any{},
+			},
+		},
+		{
+			name:   "handle empty array as nil for a record field",
+			schema: gjson.Parse(fillConfigRecordTestSchema),
+			config: Configuration{
+				"mappings": []any{
+					map[string]any{
+						"nationality": "Ethiopian",
+					},
+				},
+				"empty_record": map[string]any{},
+			},
+			expected: Configuration{
+				"enabled": true,
+				"mappings": []any{
+					Configuration{
+						"name":        nil,
+						"nationality": "Ethiopian",
+					},
+				},
+				"empty_record": map[string]any{},
 			},
 		},
 	}
