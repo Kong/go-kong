@@ -1715,8 +1715,8 @@ func Test_fillConfigRecord(t *testing.T) {
 			name:   "fills defaults for all missing fields",
 			schema: gjson.Parse(fillConfigRecordTestSchema),
 			config: Configuration{
-				"mappings": []interface{}{
-					map[string]interface{}{
+				"mappings": []any{
+					map[string]any{
 						"nationality": "Ethiopian",
 					},
 				},
@@ -1736,12 +1736,12 @@ func Test_fillConfigRecord(t *testing.T) {
 			name:   "handle empty array as nil for a record field",
 			schema: gjson.Parse(fillConfigRecordTestSchema),
 			config: Configuration{
-				"mappings": []interface{}{
-					map[string]interface{}{
+				"mappings": []any{
+					map[string]any{
 						"nationality": "Ethiopian",
 					},
 				},
-				"empty_record": []interface{}{},
+				"empty_record": map[string]any{},
 			},
 			expected: Configuration{
 				"enabled": true,
