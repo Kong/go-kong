@@ -253,11 +253,19 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 		frequired := value.Get(fname + ".required")
 		// Recursively fill defaults only if the field is either required or a subconfig is provided
 		if ftype.String() == "record" && (config[fname] != nil || (frequired.Exists() && frequired.Bool())) {
+			var fieldConfig Configuration
 			subConfig := config[fname]
-			if subConfig == nil {
-				subConfig = make(map[string]interface{})
+			switch subConfig.(type) {
+			case nil, []interface{}:
+				// We can encounter an empty array here due to an incorrect yaml
+				// setting or an empty subconfig (like acme.storage_config.kong).
+				// This should be treated as nil case.
+				// TODO: https://konghq.atlassian.net/browse/KOKO-1125
+				fieldConfig = make(map[string]interface{})
+			default:
+				fieldConfig = subConfig.(map[string]interface{})
 			}
-			newSubConfig := fillConfigRecord(value.Get(fname), subConfig.(map[string]interface{}))
+			newSubConfig := fillConfigRecord(value.Get(fname), fieldConfig)
 			res[fname] = map[string]interface{}(newSubConfig)
 			return true
 		}
