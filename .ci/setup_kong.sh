@@ -4,7 +4,7 @@ set -e
 
 source $(dirname "$0")/_common.sh
 
-KONG_IMAGE=${KONG_IMAGE_REPO:-kong}:${KONG_IMAGE_TAG:-3.1.1}
+KONG_IMAGE=${KONG_IMAGE_REPO:-kong}:${KONG_IMAGE_TAG:-3.3}
 NETWORK_NAME=kong-test
 
 PG_CONTAINER_NAME=pg
