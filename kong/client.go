@@ -240,44 +240,54 @@ func (c *Client) DoRAW(ctx context.Context, req *http.Request) (*http.Response, 
 	return resp, err
 }
 
-// Do executes an HTTP request and returns a kong.Response
-func (c *Client) Do(ctx context.Context, req *http.Request,
+// Do executes an HTTP request and returns a Response.
+//
+// The caller can optionally provide v parameter, which when provided will contain
+// the response body. Do supports wither an io.Writer (which will contain the
+// response body verbatim) or anything else which the body should be unmarshalled
+// into.
+func (c *Client) Do(
+	ctx context.Context,
+	req *http.Request,
 	v interface{},
 ) (*Response, error) {
-	// TODO https://github.com/Kong/go-kong/issues/273 clear this lint ignore
-	resp, err := c.DoRAW(ctx, req) //nolint:bodyclose
+	resp, err := c.DoRAW(ctx, req)
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
-	// log the response
-	err = c.logResponse(resp)
-	if err != nil {
+	if err = c.logResponse(resp); err != nil {
 		return nil, err
 	}
 
 	response := newResponse(resp)
 
-	// check for API errors
+	// Check for API errors.
+	// If an error status code was returned, then parse the body and create
+	// an API Error out of it.
 	if err = hasError(resp); err != nil {
 		return response, err
 	}
 
-	// response
 	if v != nil {
-		if writer, ok := v.(io.Writer); ok {
-			_, err = io.Copy(writer, resp.Body)
+		switch v := v.(type) {
+		case io.Writer:
+			_, err = io.Copy(v, resp.Body)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("failed copying response body: %w", err)
 			}
-		} else {
+			return response, nil
+		default:
 			err = json.NewDecoder(resp.Body).Decode(v)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("failed decoding response body: %w", err)
 			}
+			return response, nil
 		}
 	}
-	return response, err
+
+	return response, nil
 }
 
 // ErrorOrResponseError helps to handle the case where

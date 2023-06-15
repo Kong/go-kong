@@ -61,6 +61,13 @@
 
 - Fix: handle empty array as nil when filling record defaults
   [#345](https://github.com/Kong/go-kong/pull/345)
+- Fix leaking response body from `Client.Do()`. From now on `kong.Response` does
+  not contain the `http.Response` field which was in fact leaking the implementation
+  detail. It now contains the response headers, status and status code.
+  If users want to get the response body they can still provide the `v` parameter
+  to `Do()` to get the body unmarshalled into it (or copied into it if an `io.Writer`
+  was to be provided).
+  [#348](https://github.com/Kong/go-kong/pull/348)
 
 ## [v0.43.0]
 

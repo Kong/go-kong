@@ -9,14 +9,20 @@ import (
 	"time"
 )
 
-// Response is a Kong Admin API response. It wraps http.Response.
+// Response is a Kong Admin API response.
+// It contains the response headers, status and status code.
 type Response struct {
-	*http.Response
-	// other Kong specific fields
+	Header     http.Header
+	Status     string
+	StatusCode int
 }
 
 func newResponse(res *http.Response) *Response {
-	return &Response{Response: res}
+	return &Response{
+		Header:     res.Header,
+		Status:     res.Status,
+		StatusCode: res.StatusCode,
+	}
 }
 
 func messageFromBody(b []byte) string {
