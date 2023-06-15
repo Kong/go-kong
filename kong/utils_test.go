@@ -1656,43 +1656,52 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 	}
 }
 
-var fillConfigRecordTestSchema = `{
-				"fields": {
-					"config":
-						{
+const fillConfigRecordTestSchema = `{
+	"fields": {
+		"config": {
+			"type": "record",
+			"fields": [
+				{
+					"enabled": {
+						"type": "boolean",
+						"default": true,
+						"required": true
+					}
+				},
+				{
+					"mappings": {
+						"required": false,
+						"type": "array",
+						"elements": {
 							"type": "record",
-							"fields":[
+							"fields": [
 								{
-									"enabled":{
-										"type":"boolean",
-										"default":true,
-										"required":true
+									"name": {
+										"type": "string",
+										"required": false
 									}
 								},
 								{
-									"mappings":{
-										"required":false,
-										"type":"array",
-										"elements":{
-											"type":"record",
-											"fields":[
-												{"name":{"type":"string","required":false}},
-												{"nationality":{"type":"string","required":false}}
-											]
-										}
+									"nationality": {
+										"type": "string",
+										"required": false
 									}
-								},
-								{
-									"empty_record": {
-										"type": "record",
-										"required": true,
-										"fields":[]
-									},
-								},
+								}
 							]
 						}
 					}
+				},
+				{
+					"empty_record": {
+						"type": "record",
+						"required": true,
+						"fields": []
+					}
 				}
+			]
+		}
+	}
+}
 `
 
 func Test_fillConfigRecord(t *testing.T) {
