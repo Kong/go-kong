@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.44.0](#v0440)
 - [v0.43.0](#v0430)
 - [v0.42.0](#v0420)
 - [v0.41.0](#v0410)
@@ -57,7 +58,7 @@
 
 ## Unreleased
 
-## [v0.43.0]
+## [v0.44.0]
 
 > Release date: 2023/06/22
 
@@ -788,6 +789,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.44.0]: https://github.com/Kong/go-kong/compare/v0.43.0...v0.44.0
 [v0.43.0]: https://github.com/Kong/go-kong/compare/v0.42.0...v0.43.0
 [v0.42.0]: https://github.com/Kong/go-kong/compare/v0.41.0...v0.42.0
 [v0.41.0]: https://github.com/Kong/go-kong/compare/v0.40.0...v0.41.0
