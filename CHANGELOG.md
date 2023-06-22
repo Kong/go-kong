@@ -57,7 +57,9 @@
 
 ## Unreleased
 
-> Release date: TBD
+## [v0.43.0]
+
+> Release date: 2023/06/22
 
 - Fix: handle empty array as nil when filling record defaults
   [#345](https://github.com/Kong/go-kong/pull/345)
