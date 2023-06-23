@@ -739,6 +739,122 @@ func TestFillPluginDefaultsArbitraryMap(T *testing.T) {
 	}
 }
 
+func TestPluginsWithConsumerGroup(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+	RunWhenEnterprise(T, ">=3.4.0", RequiredFeatures{})
+
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	assert.NoError(err)
+	assert.NotNil(client)
+
+	// create consumer group
+	cg := &ConsumerGroup{
+		Name: String("foo"),
+	}
+	createdCG, err := client.ConsumerGroups.Create(defaultCtx, cg)
+	require.NoError(err)
+	assert.NotNil(createdCG)
+
+	plugin := &Plugin{
+		Name: String("rate-limiting-advanced"),
+		Config: Configuration{
+			"limit":       []interface{}{5},
+			"window_size": []interface{}{30},
+		},
+		ConsumerGroup: &ConsumerGroup{
+			ID: createdCG.ID,
+		},
+	}
+
+	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
+	assert.NoError(err)
+	require.NotNil(createdPlugin)
+	require.Nil(createdPlugin.InstanceName)
+
+	plugin, err = client.Plugins.Get(defaultCtx, createdPlugin.ID)
+	assert.NoError(err)
+	assert.NotNil(plugin)
+	assert.Equal(plugin.ConsumerGroup.ID, createdCG.ID)
+
+	assert.NoError(client.ConsumerGroups.Delete(defaultCtx, createdCG.ID))
+	// assert the plugin was cascade deleted
+	plugin, err = client.Plugins.Get(defaultCtx, createdPlugin.ID)
+	assert.Nil(plugin)
+	assert.True(IsNotFoundErr(err))
+
+	// create another consumer group
+	cg = &ConsumerGroup{
+		Name: String("bar"),
+	}
+	createdCG, err = client.ConsumerGroups.Create(defaultCtx, cg)
+	require.NoError(err)
+	assert.NotNil(createdCG)
+
+	id := uuid.NewString()
+	pluginForCG := &Plugin{
+		Name: String("request-transformer"),
+		ID:   String(id),
+	}
+
+	createdPlugin, err = client.Plugins.CreateForConsumerGroup(defaultCtx, createdCG.Name, pluginForCG)
+	assert.NoError(err)
+	assert.NotNil(createdPlugin)
+	assert.Equal(createdPlugin.ConsumerGroup.ID, createdCG.ID)
+
+	assert.NoError(client.ConsumerGroups.Delete(defaultCtx, createdCG.ID))
+	// assert the plugin was cascade deleted
+	plugin, err = client.Plugins.Get(defaultCtx, createdPlugin.ID)
+	assert.Nil(plugin)
+	assert.True(IsNotFoundErr(err))
+
+	// create another consumer group
+	cg = &ConsumerGroup{
+		Name: String("baz"),
+	}
+	createdCG, err = client.ConsumerGroups.Create(defaultCtx, cg)
+	require.NoError(err)
+	assert.NotNil(createdCG)
+
+	plugins := []*Plugin{
+		{
+			Name:          String("request-transformer"),
+			ConsumerGroup: createdCG,
+		},
+		{
+			Name: String("rate-limiting-advanced"),
+			Config: Configuration{
+				"limit":       []interface{}{5},
+				"window_size": []interface{}{30},
+			},
+			ConsumerGroup: createdCG,
+		},
+	}
+
+	// create fixturs
+	for i := 0; i < len(plugins); i++ {
+		plugin, err := client.Plugins.Create(defaultCtx, plugins[i])
+		assert.NoError(err)
+		assert.NotNil(plugin)
+		plugins[i] = plugin
+	}
+
+	pluginsFromKong, err := client.Plugins.ListAllForConsumerGroups(defaultCtx, createdCG.ID)
+	assert.NoError(err)
+	assert.NotNil(pluginsFromKong)
+	assert.Equal(2, len(pluginsFromKong))
+
+	assert.NoError(client.ConsumerGroups.Delete(defaultCtx, createdCG.ID))
+	// assert the plugins were cascade deleted
+	for _, plugin := range plugins {
+		res, err := client.Plugins.Get(defaultCtx, plugin.ID)
+		assert.Nil(res)
+		assert.True(IsNotFoundErr(err))
+	}
+}
+
 func comparePlugins(T *testing.T, expected, actual []*Plugin) bool {
 	var expectedNames, actualNames []string
 	for _, plugin := range expected {

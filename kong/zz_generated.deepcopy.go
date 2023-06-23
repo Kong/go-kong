@@ -1555,6 +1555,11 @@ func (in *Plugin) DeepCopyInto(out *Plugin) {
 		*out = new(Consumer)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.ConsumerGroup != nil {
+		in, out := &in.ConsumerGroup, &out.ConsumerGroup
+		*out = new(ConsumerGroup)
+		(*in).DeepCopyInto(*out)
+	}
 	out.Config = in.Config.DeepCopy()
 	if in.Enabled != nil {
 		in, out := &in.Enabled, &out.Enabled
