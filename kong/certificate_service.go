@@ -78,7 +78,7 @@ func (s *CertificateService) Update(ctx context.Context,
 	certificate *Certificate,
 ) (*Certificate, error) {
 	if isEmptyString(certificate.ID) {
-		return nil, fmt.Errorf("ID cannot be nil for Update op           eration")
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
 	endpoint := fmt.Sprintf("/certificates/%v", *certificate.ID)
