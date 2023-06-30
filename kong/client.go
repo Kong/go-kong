@@ -3,6 +3,7 @@ package kong
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -355,6 +356,30 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 		return nil, err
 	}
 	return &s, nil
+}
+
+// Config gets the specified config from the configured Admin API endpoint
+// and should contain the JSON serialized body that adheres to the configuration
+// format specified at:
+// https://docs.konghq.com/gateway/latest/production/deployment-topologies/db-less-and-declarative-config/#declarative-configuration-format
+// It returns the response body and an error, if it encounters any.
+func (c *Client) Config(ctx context.Context) ([]byte, error) {
+	req, err := c.NewRequest("GET", "/config", nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var configWrapper map[string]string
+	_, err = c.Do(ctx, req, &configWrapper)
+	if err != nil {
+		return nil, err
+	}
+	config, ok := configWrapper["config"]
+	if !ok {
+		return nil, errors.New("config field not found in GET /config response body")
+	}
+
+	return []byte(config), nil
 }
 
 // Root returns the response of GET request on root of Admin API (GET / or /kong with a workspace).

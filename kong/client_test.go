@@ -10,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v2"
 )
 
 func TestNewTestClient(t *testing.T) {
@@ -30,6 +31,22 @@ func TestKongStatus(T *testing.T) {
 	status, err := client.Status(defaultCtx)
 	assert.NoError(err)
 	assert.NotNil(status)
+}
+
+func TestKongConfig(t *testing.T) {
+	RunWhenDBMode(t, "off")
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	config, err := client.Config(defaultCtx)
+	require.NoError(t, err)
+	require.NotNil(t, config)
+
+	var configStruct map[string]any
+	require.NoError(t, yaml.Unmarshal(config, &configStruct))
+	require.Contains(t, configStruct, "_format_version")
+	require.Contains(t, configStruct, "_transform")
 }
 
 func TestRoot(T *testing.T) {
