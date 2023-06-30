@@ -58,6 +58,11 @@
 
 ## Unreleased
 
+> Release date: TBD
+
+- Added `Client.Config` handler, that can be used to obtain Kong's config.
+  [#354](https://github.com/Kong/go-kong/pull/354)
+
 ## [v0.44.0]
 
 > Release date: 2023/06/22
