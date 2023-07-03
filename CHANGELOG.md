@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.45.0](#v0450)
 - [v0.44.0](#v0440)
 - [v0.43.0](#v0430)
 - [v0.42.0](#v0420)
@@ -59,6 +60,10 @@
 ## Unreleased
 
 > Release date: TBD
+
+## [v0.45.0]
+
+> Release date: 2023/07/03
 
 - Added `Client.Config` handler, that can be used to obtain Kong's config.
   [#354](https://github.com/Kong/go-kong/pull/354)
@@ -794,6 +799,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.45.0]: https://github.com/Kong/go-kong/compare/v0.44.0...v0.45.0
 [v0.44.0]: https://github.com/Kong/go-kong/compare/v0.43.0...v0.44.0
 [v0.43.0]: https://github.com/Kong/go-kong/compare/v0.42.0...v0.43.0
 [v0.42.0]: https://github.com/Kong/go-kong/compare/v0.41.0...v0.42.0
