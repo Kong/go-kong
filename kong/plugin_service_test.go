@@ -778,6 +778,13 @@ func TestPluginsWithConsumerGroup(T *testing.T) {
 	assert.NoError(err)
 	assert.NotNil(plugin)
 	assert.Equal(plugin.ConsumerGroup.ID, createdCG.ID)
+	assert.Equal("sliding", plugin.Config["window_type"])
+
+	createdPlugin.Config["window_type"] = "fixed"
+	updatedPlugin, err := client.Plugins.UpdateForConsumerGroup(defaultCtx, createdCG.Name, createdPlugin)
+	assert.NoError(err)
+	assert.NotNil(createdPlugin)
+	assert.Equal("fixed", updatedPlugin.Config["window_type"])
 
 	assert.NoError(client.ConsumerGroups.Delete(defaultCtx, createdCG.ID))
 	// assert the plugin was cascade deleted

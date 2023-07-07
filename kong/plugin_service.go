@@ -26,6 +26,8 @@ type AbstractPluginService interface {
 	UpdateForService(ctx context.Context, serviceIDorName *string, plugin *Plugin) (*Plugin, error)
 	// UpdateForRoute updates a Plugin in Kong for a service
 	UpdateForRoute(ctx context.Context, routeIDorName *string, plugin *Plugin) (*Plugin, error)
+	// UpdateForConsumerGrou updates a Plugin in Kong for a consumer-group
+	UpdateForConsumerGroup(ctx context.Context, cgIDorName *string, plugin *Plugin) (*Plugin, error)
 	// Delete deletes a Plugin in Kong
 	Delete(ctx context.Context, usernameOrID *string) error
 	// DeleteForService deletes a Plugin in Kong
@@ -164,6 +166,10 @@ func (s *PluginService) CreateForRoute(ctx context.Context,
 func (s *PluginService) CreateForConsumerGroup(ctx context.Context,
 	cgIDorName *string, plugin *Plugin,
 ) (*Plugin, error) {
+	if plugin == nil {
+		return nil, fmt.Errorf("plugin cannot be nil")
+	}
+
 	queryPath := "/plugins"
 	method := "POST"
 
@@ -239,6 +245,24 @@ func (s *PluginService) UpdateForRoute(ctx context.Context,
 	}
 
 	endpoint := fmt.Sprintf("/routes/%v/plugins/%v", *routeIDorName, *plugin.ID)
+	return s.sendRequest(ctx, plugin, endpoint, "PATCH")
+}
+
+// UpdateForConsumerGroup updates a Plugin in Kong at Consumer Group level.
+func (s *PluginService) UpdateForConsumerGroup(ctx context.Context,
+	cgIDorName *string, plugin *Plugin,
+) (*Plugin, error) {
+	if plugin == nil {
+		return nil, fmt.Errorf("plugin cannot be nil")
+	}
+	if isEmptyString(plugin.ID) {
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
+	}
+	if isEmptyString(cgIDorName) {
+		return nil, fmt.Errorf("cgIDorName cannot be nil")
+	}
+
+	endpoint := fmt.Sprintf("/consumer_groups/%v/plugins/%v", *cgIDorName, *plugin.ID)
 	return s.sendRequest(ctx, plugin, endpoint, "PATCH")
 }
 
