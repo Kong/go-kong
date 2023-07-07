@@ -747,8 +747,8 @@ func TestPluginsWithConsumerGroup(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	// create consumer group
 	cg := &ConsumerGroup{
@@ -844,7 +844,7 @@ func TestPluginsWithConsumerGroup(T *testing.T) {
 	pluginsFromKong, err := client.Plugins.ListAllForConsumerGroups(defaultCtx, createdCG.ID)
 	assert.NoError(err)
 	assert.NotNil(pluginsFromKong)
-	assert.Equal(2, len(pluginsFromKong))
+	assert.Len(pluginsFromKong, 2)
 
 	assert.NoError(client.ConsumerGroups.Delete(defaultCtx, createdCG.ID))
 	// assert the plugins were cascade deleted

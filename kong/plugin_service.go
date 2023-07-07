@@ -419,7 +419,7 @@ func (s *PluginService) ListAllForRoute(ctx context.Context,
 	return s.listAllByPath(ctx, "/routes/"+*routeID+"/plugins")
 }
 
-// ListAllForConsumerGroups fetches all Plugins in Kong enabled for a consumer grou.
+// ListAllForConsumerGroups fetches all Plugins in Kong enabled for a consumer group.
 func (s *PluginService) ListAllForConsumerGroups(ctx context.Context,
 	cgID *string,
 ) ([]*Plugin, error) {
