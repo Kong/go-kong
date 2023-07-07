@@ -61,6 +61,9 @@
 
 > Release date: TBD
 
+- Added support for scoping plugins to consumer-groups.
+  [#352](https://github.com/Kong/go-kong/pull/352)
+
 ## [v0.45.0]
 
 > Release date: 2023/07/03

@@ -16,6 +16,8 @@ type AbstractPluginService interface {
 	CreateForService(ctx context.Context, serviceIDorName *string, plugin *Plugin) (*Plugin, error)
 	// CreateForRoute creates a Plugin in Kong.
 	CreateForRoute(ctx context.Context, routeIDorName *string, plugin *Plugin) (*Plugin, error)
+	// CreateForConsumerGroup creates a Plugin in Kong.
+	CreateForConsumerGroup(ctx context.Context, cgIDorName *string, plugin *Plugin) (*Plugin, error)
 	// Get fetches a Plugin in Kong.
 	Get(ctx context.Context, usernameOrID *string) (*Plugin, error)
 	// Update updates a Plugin in Kong
@@ -24,6 +26,8 @@ type AbstractPluginService interface {
 	UpdateForService(ctx context.Context, serviceIDorName *string, plugin *Plugin) (*Plugin, error)
 	// UpdateForRoute updates a Plugin in Kong for a service
 	UpdateForRoute(ctx context.Context, routeIDorName *string, plugin *Plugin) (*Plugin, error)
+	// UpdateForConsumerGrou updates a Plugin in Kong for a consumer-group
+	UpdateForConsumerGroup(ctx context.Context, cgIDorName *string, plugin *Plugin) (*Plugin, error)
 	// Delete deletes a Plugin in Kong
 	Delete(ctx context.Context, usernameOrID *string) error
 	// DeleteForService deletes a Plugin in Kong
@@ -40,6 +44,8 @@ type AbstractPluginService interface {
 	ListAllForService(ctx context.Context, serviceIDorName *string) ([]*Plugin, error)
 	// ListAllForRoute fetches all Plugins in Kong enabled for a service.
 	ListAllForRoute(ctx context.Context, routeID *string) ([]*Plugin, error)
+	// ListAllForConsumerGroups fetches all Plugins in Kong enabled for a consumer group.
+	ListAllForConsumerGroups(ctx context.Context, cgID *string) ([]*Plugin, error)
 	// Validate validates a Plugin against its schema
 	Validate(ctx context.Context, plugin *Plugin) (bool, string, error)
 	// GetSchema retrieves the config schema of a plugin.
@@ -153,6 +159,31 @@ func (s *PluginService) CreateForRoute(ctx context.Context,
 	return s.sendRequest(ctx, plugin, fmt.Sprintf("/routes/%v"+queryPath, *routeIDorName), method)
 }
 
+// CreateForConsumerGroup creates a Plugin in Kong at ConsumerGroup level.
+// If an ID is specified, it will be used to
+// create a plugin in Kong, otherwise an ID
+// is auto-generated.
+func (s *PluginService) CreateForConsumerGroup(ctx context.Context,
+	cgIDorName *string, plugin *Plugin,
+) (*Plugin, error) {
+	if plugin == nil {
+		return nil, fmt.Errorf("plugin cannot be nil")
+	}
+
+	queryPath := "/plugins"
+	method := "POST"
+
+	if plugin.ID != nil {
+		queryPath = queryPath + "/" + *plugin.ID
+		method = "PUT"
+	}
+	if isEmptyString(cgIDorName) {
+		return nil, fmt.Errorf("cgIDorName cannot be nil")
+	}
+
+	return s.sendRequest(ctx, plugin, fmt.Sprintf("/consumer_groups/%v"+queryPath, *cgIDorName), method)
+}
+
 // Get fetches a Plugin in Kong.
 func (s *PluginService) Get(ctx context.Context,
 	usernameOrID *string,
@@ -214,6 +245,24 @@ func (s *PluginService) UpdateForRoute(ctx context.Context,
 	}
 
 	endpoint := fmt.Sprintf("/routes/%v/plugins/%v", *routeIDorName, *plugin.ID)
+	return s.sendRequest(ctx, plugin, endpoint, "PATCH")
+}
+
+// UpdateForConsumerGroup updates a Plugin in Kong at Consumer Group level.
+func (s *PluginService) UpdateForConsumerGroup(ctx context.Context,
+	cgIDorName *string, plugin *Plugin,
+) (*Plugin, error) {
+	if plugin == nil {
+		return nil, fmt.Errorf("plugin cannot be nil")
+	}
+	if isEmptyString(plugin.ID) {
+		return nil, fmt.Errorf("ID cannot be nil for Update operation")
+	}
+	if isEmptyString(cgIDorName) {
+		return nil, fmt.Errorf("cgIDorName cannot be nil")
+	}
+
+	endpoint := fmt.Sprintf("/consumer_groups/%v/plugins/%v", *cgIDorName, *plugin.ID)
 	return s.sendRequest(ctx, plugin, endpoint, "PATCH")
 }
 
@@ -392,6 +441,16 @@ func (s *PluginService) ListAllForRoute(ctx context.Context,
 		return nil, fmt.Errorf("routeID cannot be nil")
 	}
 	return s.listAllByPath(ctx, "/routes/"+*routeID+"/plugins")
+}
+
+// ListAllForConsumerGroups fetches all Plugins in Kong enabled for a consumer group.
+func (s *PluginService) ListAllForConsumerGroups(ctx context.Context,
+	cgID *string,
+) ([]*Plugin, error) {
+	if isEmptyString(cgID) {
+		return nil, fmt.Errorf("cgID cannot be nil")
+	}
+	return s.listAllByPath(ctx, "/consumer_groups/"+*cgID+"/plugins")
 }
 
 func (s *PluginService) sendRequest(ctx context.Context, plugin *Plugin, endpoint, method string) (*Plugin, error) {
