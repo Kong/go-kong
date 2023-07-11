@@ -119,8 +119,8 @@ func TestPluginsService(T *testing.T) {
 	createdPlugin.Config["anonymous"] = "false"
 	updatedPlugin, err := client.Plugins.UpdateForService(defaultCtx, createdService.Name, createdPlugin)
 	assert.NoError(err)
-	assert.NotNil(createdPlugin)
-	assert.Equal(id, *createdPlugin.ID)
+	assert.NotNil(updatedPlugin)
+	assert.Equal(id, *updatedPlugin.ID)
 	assert.Equal("false", updatedPlugin.Config["anonymous"])
 
 	err = client.Plugins.DeleteForService(defaultCtx, createdService.Name, updatedPlugin.ID)
@@ -343,7 +343,7 @@ func TestPluginListEndpoint(T *testing.T) {
 		},
 	}
 
-	// create fixturs
+	// create fixtures
 	for i := 0; i < len(plugins); i++ {
 		schema, err := client.Plugins.GetFullSchema(defaultCtx, plugins[i].Name)
 		assert.NoError(err)
@@ -493,8 +493,6 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	assert.Equal(len(plugins), len(pluginsFromKong))
 
 	// check if we see all plugins
-	assert.True(comparePlugins(T, plugins, pluginsFromKong))
-
 	assert.True(comparePlugins(T, plugins, pluginsFromKong))
 
 	pluginsFromKong, err = client.Plugins.ListAll(defaultCtx)
@@ -842,7 +840,7 @@ func TestPluginsWithConsumerGroup(T *testing.T) {
 		},
 	}
 
-	// create fixturs
+	// create fixtures
 	for i := 0; i < len(plugins); i++ {
 		plugin, err := client.Plugins.Create(defaultCtx, plugins[i])
 		assert.NoError(err)
