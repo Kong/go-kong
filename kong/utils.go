@@ -42,6 +42,12 @@ func Float64(f float64) *float64 {
 	return &f
 }
 
+// JSONRawMessage returns a pointer to a json.RawMessage
+func JSONRawMessage(s string) *json.RawMessage {
+	j := json.RawMessage(s)
+	return &j
+}
+
 func isEmptyString(s *string) bool {
 	return s == nil || strings.TrimSpace(*s) == ""
 }
