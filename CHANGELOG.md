@@ -59,7 +59,9 @@
 
 ## Unreleased
 
-> Release date: TBD
+## [v0.46.0]
+
+> Release date: 2023/07/17
 
 - Added method `FillID()` method for Consumer Group.
   [#357](https://github.com/Kong/go-kong/pull/357)
@@ -180,7 +182,7 @@ tests.
 - **Breaking change:** `ReloadDeclarativeRawConfig()` now requires a
   `flattenErrors` boolean argument. When `true`, requests will include
   `flatten_errors=1` in the query string, to activate the functionality added
-  in https://github.com/Kong/kong/pull/10161.
+  in <https://github.com/Kong/kong/pull/10161>.
   [#273](https://github.com/Kong/go-kong/pull/273)
 
 ## [v0.36.0]
@@ -804,6 +806,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.46.0]: https://github.com/Kong/go-kong/compare/v0.45.0...v0.46.0
 [v0.45.0]: https://github.com/Kong/go-kong/compare/v0.44.0...v0.45.0
 [v0.44.0]: https://github.com/Kong/go-kong/compare/v0.43.0...v0.44.0
 [v0.43.0]: https://github.com/Kong/go-kong/compare/v0.42.0...v0.43.0
