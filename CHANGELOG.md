@@ -61,7 +61,9 @@
 
 > Release date: TBD
 
-- Added support for scoping plugins to consumer-groups.
+- Added method `FillID()` method for Consumer Group.
+  [#357](https://github.com/Kong/go-kong/pull/357)
+- Added support for scoping plugins to Consumer Groups.
   [#352](https://github.com/Kong/go-kong/pull/352)
 
 ## [v0.45.0]
