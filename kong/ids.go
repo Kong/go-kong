@@ -79,6 +79,30 @@ func (c *Consumer) FillID() error {
 	return nil
 }
 
+// FillID fills the ID of an entity. It is a no-op if the entity already has an ID.
+// ID is generated in a deterministic way using UUIDv5. The UUIDv5 namespace is different for each entity type.
+// The name used to generate the ID for ConsumerGroup is ConsumerGroup.Name.
+func (cg *ConsumerGroup) FillID() error {
+	if cg == nil {
+		return fmt.Errorf("consumer group is nil")
+	}
+	if cg.ID != nil {
+		// ID already set, do nothing.
+		return nil
+	}
+	if cg.Name == nil || *cg.Name == "" {
+		return fmt.Errorf("consumer group name is required")
+	}
+
+	gen, err := idGeneratorFor(cg)
+	if err != nil {
+		return fmt.Errorf("could not get id generator: %w", err)
+	}
+
+	cg.ID = gen.buildIDFor(*cg.Name)
+	return nil
+}
+
 var (
 	// _kongEntitiesNamespace is the UUIDv5 namespace used to generate IDs for Kong entities.
 	_kongEntitiesNamespace = uuid.MustParse("fd02801f-0957-4a15-a55a-c8d9606f30b5")
@@ -88,9 +112,10 @@ var (
 	// names for that purpose.
 	// See https://github.com/Kong/kong/blob/master/kong/db/schema/others/declarative_config.lua for reference.
 	_idGenerators = map[reflect.Type]idGenerator{
-		reflect.TypeOf(Service{}):  newIDGeneratorFor("services"),
-		reflect.TypeOf(Route{}):    newIDGeneratorFor("routes"),
-		reflect.TypeOf(Consumer{}): newIDGeneratorFor("consumers"),
+		reflect.TypeOf(Service{}):       newIDGeneratorFor("services"),
+		reflect.TypeOf(Route{}):         newIDGeneratorFor("routes"),
+		reflect.TypeOf(Consumer{}):      newIDGeneratorFor("consumers"),
+		reflect.TypeOf(ConsumerGroup{}): newIDGeneratorFor("consumergroups"),
 	}
 )
 

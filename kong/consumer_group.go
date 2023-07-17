@@ -44,12 +44,12 @@ type ConsumerGroupPlugin struct {
 }
 
 // FriendlyName returns the endpoint key name or ID.
-func (s *ConsumerGroup) FriendlyName() string {
-	if s.Name != nil {
-		return *s.Name
+func (cg *ConsumerGroup) FriendlyName() string {
+	if cg.Name != nil {
+		return *cg.Name
 	}
-	if s.ID != nil {
-		return *s.ID
+	if cg.ID != nil {
+		return *cg.ID
 	}
 	return ""
 }

@@ -104,6 +104,35 @@ func TestFillEntityID(t *testing.T) {
 				require.Equal(t, expectedID, *consumer.ID, "ID should be deterministic")
 			},
 		},
+		// Consumer Group
+		{
+			name:      "consumer group nil pointer",
+			entity:    (*kong.ConsumerGroup)(nil),
+			expectErr: true,
+		},
+		{
+			name:      "consumer group with nil name",
+			entity:    &kong.ConsumerGroup{},
+			expectErr: true,
+		},
+		{
+			name:      "consumer group with empty name",
+			entity:    &kong.ConsumerGroup{Name: kong.String("")},
+			expectErr: true,
+		},
+		{
+			name: "consumer group with name",
+			entity: &kong.ConsumerGroup{
+				Name: kong.String("some.consumer.group"),
+			},
+			assertEntity: func(t *testing.T, e kong.IDFillable) {
+				cg := e.(*kong.ConsumerGroup)
+				require.NotNil(t, cg.ID)
+
+				const expectedID = "e5643801-37c6-5d04-9d3f-c1c84c747e90"
+				require.Equal(t, expectedID, *cg.ID, "ID should be deterministic")
+			},
+		},
 	}
 
 	for _, tc := range testCases {
