@@ -17,7 +17,7 @@ require (
 	github.com/kong/semver/v4 v4.0.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/stretchr/testify v1.8.4
-	github.com/tidwall/gjson v1.15.0
+	github.com/tidwall/gjson v1.16.0
 	k8s.io/code-generator v0.27.4
 	sigs.k8s.io/yaml v1.3.0
 )
