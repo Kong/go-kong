@@ -97,6 +97,7 @@ func TestHasError(T *testing.T) {
 		},
 	} {
 		T.Run(tt.name, func(T *testing.T) {
+			tt := tt
 			got := hasError(&tt.response)
 			assert.Equal(T, tt.want, got)
 		})
