@@ -34,6 +34,7 @@ function deploy_kong_postgres()
     -e "KONG_ADMIN_GUI_AUTH=basic-auth" \
     -e "KONG_ENFORCE_RBAC=on" \
     -e "KONG_PORTAL=on" \
+    -e "KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR}" \
     -p 8000:8000 \
     -p 8443:8443 \
     -p 127.0.0.1:8001:8001 \

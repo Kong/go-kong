@@ -75,7 +75,9 @@ func TestVaultsService(t *testing.T) {
 	require.Equal(id, *createdVault.ID)
 	require.Equal("aws", *createdVault.Name)
 	require.Equal("aws vault for secrets", *createdVault.Description)
-	require.Equal(Configuration{"region": "us-east-2"}, createdVault.Config)
+	region, ok := createdVault.Config["region"]
+	require.Equal(true, ok)
+	require.Equal("us-east-2", region)
 
 	err = client.Vaults.Delete(defaultCtx, createdVault.ID)
 	require.NoError(err)

@@ -37,6 +37,24 @@ jobs:
     if: needs.secret-available.outputs.ok
     strategy:
       matrix:
+        # Skip explicitly to avoid spawning many unecessary jobs,
+        # since expressions router is supported for Kong >= 3.0.
+        # Option router_flavor is ignored for Kong < 3.0.
+        exclude:
+          - kong_version: '2.2'
+            router_flavor: 'expressions'
+          - kong_version: '2.3'
+            router_flavor: 'expressions'
+          - kong_version: '2.4'
+            router_flavor: 'expressions'
+          - kong_version: '2.5'
+            router_flavor: 'expressions'
+          - kong_version: '2.6'
+            router_flavor: 'expressions'
+          - kong_version: '2.7'
+            router_flavor: 'expressions'
+          - kong_version: '2.8'
+            router_flavor: 'expressions'
         router_flavor:
           - 'traditional_compatible'
           - 'expressions'
@@ -52,6 +70,7 @@ jobs:
         - '3.1'
         - '3.2'
         - '3.3'
+        - '3.4'
     env:
       KONG_ROUTER_FLAVOR: ${{ matrix.router_flavor }}
       KONG_IMAGE_TAG: ${{ matrix.kong_version }}

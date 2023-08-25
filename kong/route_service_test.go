@@ -11,6 +11,7 @@ import (
 
 func TestRoutesRoute(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
+	SkipWhenKongRouterFlavor(T, Expressions)
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -104,6 +105,8 @@ func TestRoutesRoute(T *testing.T) {
 func TestRouteWithTags(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.1.0")
+	SkipWhenKongRouterFlavor(T, Expressions)
+
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -127,6 +130,7 @@ func TestRouteWithTags(T *testing.T) {
 
 func TestCreateInRoute(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
+	SkipWhenKongRouterFlavor(T, Expressions)
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -167,6 +171,7 @@ func TestCreateInRoute(T *testing.T) {
 
 func TestRouteListEndpoint(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
+	SkipWhenKongRouterFlavor(T, Expressions)
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -279,6 +284,8 @@ func compareRoutes(T *testing.T, expected, actual []*Route) bool {
 func TestRouteWithHeaders(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.3.0")
+	SkipWhenKongRouterFlavor(T, Expressions)
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -307,6 +314,7 @@ func TestRouteWithHeaders(T *testing.T) {
 func TestRoutesValidation(T *testing.T) {
 	RunWhenKong(T, ">=3.0.0")
 	SkipWhenKongRouterFlavor(T, Traditional, TraditionalCompatible)
+
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)

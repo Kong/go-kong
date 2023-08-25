@@ -154,7 +154,7 @@ func SkipWhenKongRouterFlavor(t *testing.T, flavor ...RouterFlavor) {
 	}
 	for _, f := range flavor {
 		if RouterFlavor(routerFlavor) == f {
-			t.Skipf("detected Kong running with router flavor:%q but requested router flavor:%q", routerFlavor, f)
+			t.Skipf("router flavor:%q skipping", f)
 		}
 	}
 }
