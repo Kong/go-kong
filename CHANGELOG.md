@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.47.0](#v0470)
 - [v0.46.0](#v0460)
 - [v0.45.0](#v0450)
 - [v0.44.0](#v0440)
@@ -59,6 +60,13 @@
 - [0.1.0](#010)
 
 ## Unreleased
+
+## [v0.47.0]
+
+> Release date: 2023/08/25
+
+- Added method `Validate` to `RouteService`
+  [#368](https://github.com/Kong/go-kong/pull/368)
 
 ## [v0.46.0]
 

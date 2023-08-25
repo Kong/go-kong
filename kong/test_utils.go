@@ -1,6 +1,7 @@
 package kong
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"testing"
@@ -127,6 +128,39 @@ func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
 func RunWhenDBMode(t *testing.T, dbmode string) {
 	t.Helper()
 
+	dbMode, err := getKongConfigValue(t, "database")
+	if err != nil {
+		t.Skip(err.Error())
+	}
+	if dbMode != dbmode {
+		t.Skipf("detected Kong running in dbmode:%q but requested dbmode:%q", dbMode, dbmode)
+	}
+}
+
+type RouterFlavor string
+
+const (
+	Traditional           RouterFlavor = "traditional"
+	TraditionalCompatible RouterFlavor = "traditional_compatible"
+	Expressions           RouterFlavor = "expressions"
+)
+
+func SkipWhenKongRouterFlavor(t *testing.T, flavor ...RouterFlavor) {
+	t.Helper()
+
+	routerFlavor, err := getKongConfigValue(t, "router_flavor")
+	if err != nil {
+		t.Skip(err.Error())
+	}
+	for _, f := range flavor {
+		if RouterFlavor(routerFlavor) == f {
+			t.Skipf("detected Kong running with router flavor:%q but requested router flavor:%q", routerFlavor, f)
+		}
+	}
+}
+
+func getKongConfigValue(t *testing.T, key string) (string, error) {
+	t.Helper()
 	client, err := NewTestClient(nil, nil)
 	if err != nil {
 		t.Error(err)
@@ -138,25 +172,17 @@ func RunWhenDBMode(t *testing.T, dbmode string) {
 
 	config, ok := info["configuration"]
 	if !ok {
-		t.Skip("failed to find 'configuration' config key in kong configuration")
+		return "", fmt.Errorf("failed to find %q config key in kong configuration", key)
 	}
 
 	configuration, ok := config.(map[string]any)
 	if !ok {
-		t.Skipf("'configuration' key is not a map but %T", config)
+		return "", fmt.Errorf("%q key is not a map but %T", key, config)
 	}
 
-	dbConfig, ok := configuration["database"]
+	value, ok := configuration[key].(string)
 	if !ok {
-		t.Skip("failed to find 'database' config key in kong confiration")
+		return "", fmt.Errorf("failed to find %q config key in kong configuration", key)
 	}
-
-	dbMode, ok := dbConfig.(string)
-	if !ok {
-		t.Skipf("'database' config key is not a string but %T", dbConfig)
-	}
-
-	if dbMode != dbmode {
-		t.Skipf("detected Kong running in dbmode:%q but requested dbmode:%q", dbMode, dbmode)
-	}
+	return value, nil
 }

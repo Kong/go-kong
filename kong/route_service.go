@@ -3,7 +3,9 @@ package kong
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"net/http"
 )
 
 // AbstractRouteService handles routes in Kong.
@@ -24,6 +26,8 @@ type AbstractRouteService interface {
 	ListAll(ctx context.Context) ([]*Route, error)
 	// ListForService fetches a list of Routes in Kong associated with a service.
 	ListForService(ctx context.Context, serviceNameOrID *string, opt *ListOpt) ([]*Route, *ListOpt, error)
+	// Validate validates a Route against its schema (checks validity of provided regex too).
+	Validate(ctx context.Context, route *Route) (bool, string, error)
 }
 
 // RouteService handles routes in Kong.
@@ -207,4 +211,20 @@ func (s *RouteService) ListForService(ctx context.Context,
 	}
 
 	return routes, next, nil
+}
+
+// Validate validates a Route against its schema (checks validity of provided regex too).
+func (s *RouteService) Validate(ctx context.Context, route *Route) (bool, string, error) {
+	req, err := s.client.NewRequest(http.MethodPost, "/schemas/routes/validate", nil, &route)
+	if err != nil {
+		return false, "", err
+	}
+	if _, err := s.client.Do(ctx, req, nil); err != nil {
+		apiErr := &APIError{}
+		if ok := errors.As(err, &apiErr); !ok || apiErr.Code() != http.StatusBadRequest {
+			return false, "", err
+		}
+		return false, apiErr.message, nil
+	}
+	return true, "", nil
 }

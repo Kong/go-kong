@@ -35,7 +35,11 @@ jobs:
         dbmode:
           - 'dbless'
           - 'postgres'
+        router_flavor:
+          - 'traditional_compatible'
+          - 'expressions'
     env:
+      KONG_ROUTER_FLAVOR: ${{ matrix.router_flavor }}
       KONG_IMAGE_TAG: ${{ matrix.kong_version }}
       KONG_ANONYMOUS_REPORTS: "off"
     runs-on: ubuntu-latest

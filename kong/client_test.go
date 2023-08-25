@@ -227,7 +227,7 @@ func TestBaseRootURL(t *testing.T) {
 
 func TestReloadDeclarativeRawConfig(t *testing.T) {
 	RunWhenDBMode(t, "off")
-
+	SkipWhenKongRouterFlavor(t, Expressions)
 	tests := []struct {
 		name    string
 		config  Configuration

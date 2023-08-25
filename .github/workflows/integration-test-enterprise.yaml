@@ -37,6 +37,9 @@ jobs:
     if: needs.secret-available.outputs.ok
     strategy:
       matrix:
+        router_flavor:
+          - 'traditional_compatible'
+          - 'expressions'
         kong_version:
         - '2.2'
         - '2.3'
@@ -50,6 +53,7 @@ jobs:
         - '3.2'
         - '3.3'
     env:
+      KONG_ROUTER_FLAVOR: ${{ matrix.router_flavor }}
       KONG_IMAGE_TAG: ${{ matrix.kong_version }}
       KONG_ANONYMOUS_REPORTS: "off"
       KONG_ADMIN_TOKEN: kong

@@ -31,11 +31,17 @@ jobs:
         fi
 
   test-enterprise:
+    strategy:
+      matrix:
+        router_flavor:
+          - 'traditional_compatible'
+          - 'expressions'
     continue-on-error: true
     needs:
     - secret-available
     if: needs.secret-available.outputs.ok
     env:
+      KONG_ROUTER_FLAVOR: ${{ matrix.router_flavor }}
       KONG_ADMIN_TOKEN: kong
       KONG_IMAGE_REPO: "kong/kong-gateway-internal"
       KONG_IMAGE_TAG: "master-alpine"

@@ -1,6 +1,7 @@
 package kong
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -301,4 +302,51 @@ func TestRouteWithHeaders(T *testing.T) {
 
 	err = client.Routes.Delete(defaultCtx, createdRoute.ID)
 	assert.NoError(err)
+}
+
+func TestRoutesValidation(T *testing.T) {
+	RunWhenKong(T, ">=3.0.0")
+	SkipWhenKongRouterFlavor(T, Traditional, TraditionalCompatible)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	const errMsgStart = "schema violation (Router Expression failed validation:"
+	for _, tC := range []struct {
+		name         string
+		route        *Route
+		valid        bool
+		msgStartWith string
+	}{
+		{
+			name: "invalid expression - nonexisting LHS field",
+			route: &Route{
+				Expression: String("net.foo == 3000"),
+			},
+			msgStartWith: errMsgStart,
+		},
+		{
+			name: "invalid expression - invalid regex",
+			route: &Route{
+				Expression: String(`lower(http.path) ~ "pref~[[[[[ix"`),
+			},
+			msgStartWith: errMsgStart,
+		},
+		{
+			name: "valid expression",
+			route: &Route{
+				Expression: String(`lower(http.path) ^= "/prefix/"`),
+			},
+			valid: true,
+		},
+	} {
+		T.Run(tC.name, func(t *testing.T) {
+			ok, msg, err := client.Routes.Validate(defaultCtx, tC.route)
+			require.NoError(err)
+			require.Equal(tC.valid, ok)
+			require.True(strings.HasPrefix(msg, tC.msgStartWith))
+		})
+	}
 }

@@ -861,6 +861,7 @@ func Test_requestWithHeaders(t *testing.T) {
 }
 
 func TestFillRoutesDefaults(T *testing.T) {
+	SkipWhenKongRouterFlavor(T, Expressions)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

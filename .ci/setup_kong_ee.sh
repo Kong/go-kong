@@ -7,6 +7,8 @@ source $(dirname "$0")/_common.sh
 KONG_IMAGE=${KONG_IMAGE_REPO:-kong/kong-gateway}:${KONG_IMAGE_TAG:-3.3}
 NETWORK_NAME=kong-test
 
+KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR:-'traditional_compatible'}
+
 PG_CONTAINER_NAME=pg
 DATABASE_USER=kong
 DATABASE_NAME=kong
@@ -44,6 +46,7 @@ function deploy_kong_ee()
     -e "KONG_ENFORCE_RBAC=on" \
     -e "KONG_PORTAL=on" \
     -e "KONG_ADMIN_GUI_SESSION_CONF={}" \
+    -e "KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR}" \
     -p 8000:8000 \
     -p 8443:8443 \
     -p 8001:8001 \
