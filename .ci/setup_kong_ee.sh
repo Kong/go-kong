@@ -4,7 +4,7 @@ set -e
 
 source $(dirname "$0")/_common.sh
 
-KONG_IMAGE=${KONG_IMAGE_REPO:-kong/kong-gateway}:${KONG_IMAGE_TAG:-3.3}
+KONG_IMAGE=${KONG_IMAGE_REPO:-kong/kong-gateway}:${KONG_IMAGE_TAG:-3.4}
 NETWORK_NAME=kong-test
 
 KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR:-'traditional_compatible'}
