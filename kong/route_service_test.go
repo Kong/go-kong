@@ -311,7 +311,7 @@ func TestRouteWithHeaders(T *testing.T) {
 	assert.NoError(err)
 }
 
-func TestRoutesValidation(T *testing.T) {
+func TestRoutesValidationExpressions(T *testing.T) {
 	RunWhenKong(T, ">=3.0.0")
 	SkipWhenKongRouterFlavor(T, Traditional, TraditionalCompatible)
 
@@ -354,7 +354,79 @@ func TestRoutesValidation(T *testing.T) {
 			ok, msg, err := client.Routes.Validate(defaultCtx, tC.route)
 			require.NoError(err)
 			require.Equal(tC.valid, ok)
-			require.True(strings.HasPrefix(msg, tC.msgStartWith))
+			if !ok {
+				require.NotEmpty(tC.msgStartWith)
+				require.True(strings.HasPrefix(msg, tC.msgStartWith))
+			}
+		})
+	}
+}
+
+func TestRoutesValidationTraditionalCompatible(T *testing.T) {
+	RunWhenKong(T, ">=3.0.0")
+	SkipWhenKongRouterFlavor(T, Traditional, Expressions)
+
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	var (
+		validPath    = String("/prefix/")
+		validRegex   = String("~/payment/(docs|health)$")
+		invalidRegex = String("~/payment/(docs|health))")
+	)
+	for _, tC := range []struct {
+		name         string
+		route        *Route
+		valid        bool
+		msgStartWith string
+	}{
+		{
+			name: "valid path - prefix",
+			route: &Route{
+				Paths: []*string{validPath},
+			},
+			valid: true,
+		},
+		{
+			name: "valid path - regex",
+			route: &Route{
+				Paths: []*string{validRegex},
+			},
+			valid: true,
+		},
+		{
+			name: "multiple valid paths - prefix and regex",
+			route: &Route{
+				Paths: []*string{validPath, validRegex},
+			},
+			valid: true,
+		},
+		{
+			name: "invalid path - invalid regex (unmatched parentheses)",
+			route: &Route{
+				Paths: []*string{invalidRegex},
+			},
+			msgStartWith: "schema violation (paths.1: invalid regex:",
+		},
+		{
+			name: "multiple paths - one path with invalid regex",
+			route: &Route{
+				Paths: []*string{validPath, invalidRegex, String("/foo")},
+			},
+			msgStartWith: "schema violation (paths.2: invalid regex:",
+		},
+	} {
+		T.Run(tC.name, func(t *testing.T) {
+			ok, msg, err := client.Routes.Validate(defaultCtx, tC.route)
+			require.NoError(err)
+			require.Equal(tC.valid, ok)
+			if !ok {
+				require.NotEmpty(tC.msgStartWith)
+				require.True(strings.HasPrefix(msg, tC.msgStartWith))
+			}
 		})
 	}
 }
