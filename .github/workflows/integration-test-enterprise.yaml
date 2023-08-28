@@ -37,7 +37,7 @@ jobs:
     if: needs.secret-available.outputs.ok
     strategy:
       matrix:
-        # Skip explicitly to avoid spawning many unecessary jobs,
+        # Skip explicitly to avoid spawning many unnecessary jobs,
         # since expressions router is supported for Kong >= 3.0.
         # Option router_flavor is ignored for Kong < 3.0.
         exclude:
