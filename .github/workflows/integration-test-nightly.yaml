@@ -22,7 +22,11 @@ jobs:
         dbmode:
           - 'dbless'
           - 'postgres'
+        router_flavor:
+          - 'traditional_compatible'
+          - 'expressions'
     env:
+      KONG_ROUTER_FLAVOR: ${{ matrix.router_flavor }}
       KONG_IMAGE_REPO: "kong/kong"
       KONG_IMAGE_TAG: "master-alpine"
       KONG_ANONYMOUS_REPORTS: "off"
@@ -45,4 +49,3 @@ jobs:
           name: codecov-nightly
           flags: nightly,integration,community
           fail_ci_if_error: true
-

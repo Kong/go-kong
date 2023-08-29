@@ -1,6 +1,7 @@
 package kong
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -10,6 +11,7 @@ import (
 
 func TestRoutesRoute(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
+	SkipWhenKongRouterFlavor(T, Expressions)
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -103,6 +105,8 @@ func TestRoutesRoute(T *testing.T) {
 func TestRouteWithTags(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.1.0")
+	SkipWhenKongRouterFlavor(T, Expressions)
+
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -126,6 +130,7 @@ func TestRouteWithTags(T *testing.T) {
 
 func TestCreateInRoute(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
+	SkipWhenKongRouterFlavor(T, Expressions)
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -166,6 +171,7 @@ func TestCreateInRoute(T *testing.T) {
 
 func TestRouteListEndpoint(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
+	SkipWhenKongRouterFlavor(T, Expressions)
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -278,6 +284,8 @@ func compareRoutes(T *testing.T, expected, actual []*Route) bool {
 func TestRouteWithHeaders(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=1.3.0")
+	SkipWhenKongRouterFlavor(T, Expressions)
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -301,4 +309,124 @@ func TestRouteWithHeaders(T *testing.T) {
 
 	err = client.Routes.Delete(defaultCtx, createdRoute.ID)
 	assert.NoError(err)
+}
+
+func TestRoutesValidationExpressions(T *testing.T) {
+	RunWhenKong(T, ">=3.0.0")
+	SkipWhenKongRouterFlavor(T, Traditional, TraditionalCompatible)
+
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	const errMsgStart = "schema violation (Router Expression failed validation:"
+	for _, tC := range []struct {
+		name         string
+		route        *Route
+		valid        bool
+		msgStartWith string
+	}{
+		{
+			name: "invalid expression - nonexisting LHS field",
+			route: &Route{
+				Expression: String("net.foo == 3000"),
+			},
+			msgStartWith: errMsgStart,
+		},
+		{
+			name: "invalid expression - invalid regex",
+			route: &Route{
+				Expression: String(`lower(http.path) ~ "pref~[[[[[ix"`),
+			},
+			msgStartWith: errMsgStart,
+		},
+		{
+			name: "valid expression",
+			route: &Route{
+				Expression: String(`lower(http.path) ^= "/prefix/"`),
+			},
+			valid: true,
+		},
+	} {
+		T.Run(tC.name, func(t *testing.T) {
+			ok, msg, err := client.Routes.Validate(defaultCtx, tC.route)
+			require.NoError(err)
+			require.Equal(tC.valid, ok)
+			if !ok {
+				require.NotEmpty(tC.msgStartWith)
+				require.True(strings.HasPrefix(msg, tC.msgStartWith))
+			}
+		})
+	}
+}
+
+func TestRoutesValidationTraditionalCompatible(T *testing.T) {
+	RunWhenKong(T, ">=3.0.0")
+	SkipWhenKongRouterFlavor(T, Traditional, Expressions)
+
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	var (
+		validPath    = String("/prefix/")
+		validRegex   = String("~/payment/(docs|health)$")
+		invalidRegex = String("~/payment/(docs|health))")
+	)
+	for _, tC := range []struct {
+		name         string
+		route        *Route
+		valid        bool
+		msgStartWith string
+	}{
+		{
+			name: "valid path - prefix",
+			route: &Route{
+				Paths: []*string{validPath},
+			},
+			valid: true,
+		},
+		{
+			name: "valid path - regex",
+			route: &Route{
+				Paths: []*string{validRegex},
+			},
+			valid: true,
+		},
+		{
+			name: "multiple valid paths - prefix and regex",
+			route: &Route{
+				Paths: []*string{validPath, validRegex},
+			},
+			valid: true,
+		},
+		{
+			name: "invalid path - invalid regex (unmatched parentheses)",
+			route: &Route{
+				Paths: []*string{invalidRegex},
+			},
+			msgStartWith: "schema violation (paths.1: invalid regex:",
+		},
+		{
+			name: "multiple paths - one path with invalid regex",
+			route: &Route{
+				Paths: []*string{validPath, invalidRegex, String("/foo")},
+			},
+			msgStartWith: "schema violation (paths.2: invalid regex:",
+		},
+	} {
+		T.Run(tC.name, func(t *testing.T) {
+			ok, msg, err := client.Routes.Validate(defaultCtx, tC.route)
+			require.NoError(err)
+			require.Equal(tC.valid, ok)
+			if !ok {
+				require.NotEmpty(tC.msgStartWith)
+				require.True(strings.HasPrefix(msg, tC.msgStartWith))
+			}
+		})
+	}
 }

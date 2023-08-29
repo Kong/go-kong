@@ -10,6 +10,7 @@ import (
 
 func TestServicesService(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
+	SkipWhenKongRouterFlavor(T, Expressions)
 
 	assert := assert.New(T)
 	require := require.New(T)

@@ -42,6 +42,7 @@ func TestPluginsServiceValidation(T *testing.T) {
 
 func TestPluginsService(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
+	SkipWhenKongRouterFlavor(T, Expressions)
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -403,6 +404,7 @@ func TestPluginListEndpoint(T *testing.T) {
 
 func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
+	SkipWhenKongRouterFlavor(T, Expressions)
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -474,7 +476,7 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 		},
 	}
 
-	// create fixturs
+	// create fixtures
 	for i := 0; i < len(plugins); i++ {
 		schema, err := client.Plugins.GetFullSchema(defaultCtx, plugins[i].Name)
 		assert.NoError(err)
