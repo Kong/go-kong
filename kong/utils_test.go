@@ -2212,3 +2212,136 @@ func Test_FillPluginsDefaults_Acme(t *testing.T) {
 		})
 	}
 }
+
+const NonEmptyDefaultArrayFieldSchema = `{
+    "fields": [
+        {
+            "protocols": {
+                "default": [
+                    "grpc",
+                    "grpcs",
+                    "http",
+                    "https"
+                ],
+                "elements": {
+                    "len_min": 1,
+                    "one_of": [
+                        "grpc",
+                        "grpcs",
+                        "http",
+                        "https"
+                    ],
+                    "required": true,
+                    "type": "string"
+                },
+                "required": true,
+                "type": "set"
+            }
+        },
+        {
+            "config": {
+                "fields": [
+                    {
+                        "issuer": {
+                            "required": true,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "login_tokens": {
+                            "default": [
+                                "id_token"
+                            ],
+                            "elements": {
+                                "one_of": [
+                                    "id_token",
+                                    "access_token",
+                                    "refresh_token",
+                                    "tokens",
+                                    "introspection"
+                                ],
+                                "type": "string"
+                            },
+                            "required": false,
+                            "type": "array"
+                        }
+                    }
+                ],
+                "type": "record"
+            }
+        }
+    ]
+}`
+
+func Test_FillPluginsDefaults_NonEmptyDefaultArrayField(t *testing.T) {
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "not setting login_tokens should be overwritten by default value",
+			plugin: &Plugin{
+				Config: Configuration{
+					"issuer": "https://accounts.google.com",
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"issuer":       "https://accounts.google.com",
+					"login_tokens": []any{"id_token"},
+				},
+			},
+		},
+		{
+			name: "setting empty array for login_tokens should not be overwritten by default value",
+			plugin: &Plugin{
+				Config: Configuration{
+					"issuer":       "https://accounts.google.com",
+					"login_tokens": []any{},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"issuer":       "https://accounts.google.com",
+					"login_tokens": []any{},
+				},
+			},
+		},
+		{
+			name: "setting non-empty login_tokens should not be overwritten by default value",
+			plugin: &Plugin{
+				Config: Configuration{
+					"issuer":       "https://accounts.google.com",
+					"login_tokens": []any{"access_token", "refresh_token"},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"issuer":       "https://accounts.google.com",
+					"login_tokens": []any{"access_token", "refresh_token"},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+			var fullSchema map[string]interface{}
+			require.NoError(t, json.Unmarshal([]byte(NonEmptyDefaultArrayFieldSchema), &fullSchema))
+
+			require.NotNil(t, fullSchema)
+			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}

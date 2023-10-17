@@ -61,6 +61,10 @@
 
 ## Unreleased
 
+- Fix a bug preventing users to set fields to emtpy arrays when
+  a default for those fields exist.
+  [#374](https://github.com/Kong/go-kong/pull/374)
+
 ## [v0.47.0]
 
 > Release date: 2023/08/29
