@@ -236,9 +236,8 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 				}
 			case []interface{}:
 				if value.Get(fname).Get("elements.type").String() != "record" &&
-					config[fname] != nil &&
-					len(config[fname].([]interface{})) > 0 {
-					// Non empty array with elements which are not of type record
+					config[fname] != nil {
+					// Non nil array with elements which are not of type record
 					// this means field is already set
 					return true
 				}
