@@ -2330,12 +2330,12 @@ func Test_FillPluginsDefaults_NonEmptyDefaultArrayField(t *testing.T) {
 	}
 
 	for _, tc := range tests {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			plugin := tc.plugin
 			var fullSchema map[string]interface{}
-			err := json.Unmarshal([]byte(NonEmptyDefaultArrayFieldSchema), &fullSchema)
+			require.NoError(t, json.Unmarshal([]byte(NonEmptyDefaultArrayFieldSchema), &fullSchema))
 
-			require.NoError(t, err)
 			require.NotNil(t, fullSchema)
 			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
