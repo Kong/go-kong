@@ -1976,7 +1976,7 @@ func (in *Route) DeepCopyInto(out *Route) {
 	}
 	if in.Priority != nil {
 		in, out := &in.Priority, &out.Priority
-		*out = new(int)
+		*out = new(uint64)
 		**out = **in
 	}
 	if in.Protocols != nil {
