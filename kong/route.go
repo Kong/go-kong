@@ -14,7 +14,7 @@ type Route struct {
 	Paths         []*string           `json:"paths,omitempty" yaml:"paths,omitempty"`
 	PathHandling  *string             `json:"path_handling,omitempty" yaml:"path_handling,omitempty"`
 	PreserveHost  *bool               `json:"preserve_host,omitempty" yaml:"preserve_host,omitempty"`
-	Priority      *int                `json:"priority,omitempty" yaml:"priority,omitempty"`
+	Priority      *uint64             `json:"priority,omitempty" yaml:"priority,omitempty"`
 	Protocols     []*string           `json:"protocols,omitempty" yaml:"protocols,omitempty"`
 	RegexPriority *int                `json:"regex_priority,omitempty" yaml:"regex_priority,omitempty"`
 	Service       *Service            `json:"service,omitempty" yaml:"service,omitempty"`

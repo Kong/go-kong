@@ -32,6 +32,11 @@ func Int(i int) *int {
 	return &i
 }
 
+// Uint64 returns a pointer to i.
+func Uint64(i uint64) *uint64 {
+	return &i
+}
+
 // Float64 returns a pointer to f.
 func Float64(f float64) *float64 {
 	return &f

@@ -159,6 +159,18 @@ func SkipWhenKongRouterFlavor(t *testing.T, flavor ...RouterFlavor) {
 	}
 }
 
+func RunWhenKongRouterFlavor(t *testing.T, flavor RouterFlavor) {
+	t.Helper()
+
+	routerFlavor, err := getKongConfigValue(t, "router_flavor")
+	if err != nil {
+		t.Skip(err.Error())
+	}
+	if RouterFlavor(routerFlavor) != flavor {
+		t.Skipf("router flavor:%q, expecting %q, skipping", routerFlavor, flavor)
+	}
+}
+
 func getKongConfigValue(t *testing.T, key string) (string, error) {
 	t.Helper()
 	client, err := NewTestClient(nil, nil)

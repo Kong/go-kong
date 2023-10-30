@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.48.0](#v0480)
 - [v0.47.0](#v0470)
 - [v0.46.0](#v0460)
 - [v0.45.0](#v0450)
@@ -59,9 +60,13 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
-## Unreleased
+## [v0.48.0]
 
-- Fix a bug preventing users to set fields to emtpy arrays when
+> Release date: 2023/10/30
+
+- `Route`'s `priority` field type is changed from `int` to `uint64`.
+  [#378](https://github.com/Kong/go-kong/pull/378)
+- Fix a bug preventing users to set fields to empty arrays when
   a default for those fields exist.
   [#374](https://github.com/Kong/go-kong/pull/374)
 

@@ -128,6 +128,71 @@ func TestRouteWithTags(T *testing.T) {
 	require.NoError(err)
 }
 
+func TestCreateExpressionRoutes(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+	RunWhenKongRouterFlavor(T, Expressions)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(T, err)
+	require.NotNil(T, client)
+
+	for _, tc := range []struct {
+		name   string
+		route  *Route
+		valid  bool
+		assert func(t *testing.T, route *Route)
+	}{
+		{
+			name: "route with expression and high priority",
+			route: &Route{
+				Expression: String(`http.path == "/"`),
+				Priority:   Uint64(33820977671045),
+			},
+			valid: true,
+			assert: func(t *testing.T, route *Route) {
+				assert.Equal(t, `http.path == "/"`, *route.Expression)
+				assert.Equal(t, uint64(33820977671045), *route.Priority)
+			},
+		},
+		{
+			name: "route with expression and priority of 1",
+			route: &Route{
+				Expression: String(`http.path == "/"`),
+				Priority:   Uint64(1),
+			},
+			valid: true,
+			assert: func(t *testing.T, route *Route) {
+				assert.Equal(t, `http.path == "/"`, *route.Expression)
+				assert.Equal(t, uint64(1), *route.Priority)
+			},
+		},
+		// TODO: this fails now because Gateway returns priority in scientific notation:
+		// failed decoding response body: json: cannot unmarshal number 3.3820977671045e+15 into Go struct field Route.priority of type int64
+		// Ref: https://konghq.atlassian.net/browse/FTI-5515
+		// {
+		// 	route: &Route{
+		// 		Expression: String(`lower(http.path) ^= "/"`),
+		// 		Priority:   Int64(3382097767104500),
+		// 	},
+		// 	valid: true,
+		// },
+	} {
+		T.Run(tc.name, func(T *testing.T) {
+			createdRoute, err := client.Routes.Create(defaultCtx, tc.route)
+			if tc.valid {
+				assert.NoError(T, err)
+				require.NotNil(T, createdRoute)
+				T.Cleanup(func() {
+					assert.NoError(T, client.Routes.Delete(defaultCtx, createdRoute.ID))
+				})
+				tc.assert(T, createdRoute)
+			} else {
+				assert.Error(T, err)
+			}
+		})
+	}
+}
+
 func TestCreateInRoute(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 	SkipWhenKongRouterFlavor(T, Expressions)
@@ -346,6 +411,14 @@ func TestRoutesValidationExpressions(T *testing.T) {
 			name: "valid expression",
 			route: &Route{
 				Expression: String(`lower(http.path) ^= "/prefix/"`),
+			},
+			valid: true,
+		},
+		{
+			name: "valid expression with priority",
+			route: &Route{
+				Expression: String(`lower(http.path) ^= "/prefix/"`),
+				Priority:   Uint64(3382097767104500),
 			},
 			valid: true,
 		},
