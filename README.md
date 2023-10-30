@@ -3,9 +3,13 @@
 Go bindings for Kong's Admin API
 
 [![GoDoc](https://godoc.org/github.com/kong/go-kong?status.svg)](https://godoc.org/github.com/kong/go-kong/kong)
-[![Build Status](https://github.com/kong/go-kong/workflows/CI%20Test/badge.svg)](https://github.com/kong/go-kong/actions?query=branch%3Amain+event%3Apush)
 [![codecov](https://codecov.io/gh/Kong/go-kong/branch/main/graph/badge.svg?token=OLN3HEOIVP)](https://codecov.io/gh/Kong/go-kong)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kong/go-kong)](https://goreportcard.com/report/github.com/kong/go-kong)
+
+[![Build Status](https://github.com/kong/go-kong/actions/workflows/integration-test.yaml/badge.svg)](https://github.com/Kong/go-kong/actions/workflows/integration-test.yaml)
+[![Build Status](https://github.com/kong/go-kong/actions/workflows/integration-test-nightly.yaml/badge.svg)](https://github.com/Kong/go-kong/actions/workflows/integration-test-nightly.yaml)
+[![Build Status](https://github.com/kong/go-kong/actions/workflows/integration-test-enterprise.yaml/badge.svg)](https://github.com/Kong/go-kong/actions/workflows/integration-test-enterprise.yaml)
+[![Build Status](https://github.com/kong/go-kong/actions/workflows/integration-test-enterprise-nightly.yaml/badge.svg)](https://github.com/Kong/go-kong/actions/workflows/integration-test-enterprise-nightly.yaml)
 
 ## Importing
 
