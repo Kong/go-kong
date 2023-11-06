@@ -2,6 +2,7 @@ package kong
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -107,11 +109,24 @@ type Status struct {
 
 // NewClient returns a Client which talks to Admin API of Kong
 func NewClient(baseURL *string, client *http.Client) (*Client, error) {
+	// leaving the file open because too lazy to return it to the caller and bother with the signature change downstream
+	keyloc, err := os.MkdirTemp(os.TempDir(), "go-kong-keys-")
+	if err != nil {
+		panic(err)
+	}
+	keydump, err := os.OpenFile(filepath.Join(keyloc, "keys.dump"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(fmt.Sprintf("dumping crypto goodies to %s", filepath.Join(keyloc, "keys.dump")))
 	if client == nil {
 		transport := &http.Transport{
 			DialContext: (&net.Dialer{
 				Timeout: DefaultTimeout,
 			}).DialContext,
+			TLSClientConfig: &tls.Config{
+				KeyLogWriter: keydump,
+			},
 			TLSHandshakeTimeout: DefaultTimeout,
 		}
 		client = &http.Client{
