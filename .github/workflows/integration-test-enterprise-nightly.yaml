@@ -55,6 +55,7 @@ jobs:
         id: license_step
         with:
           password: ${{ secrets.PULP_PASSWORD }}
+          op-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Setup go
