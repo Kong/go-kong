@@ -23,13 +23,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Setup go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
       - name: Setup golangci-lint
         uses: golangci/golangci-lint-action@v3.7.0
         with:
-          # actions/setup-go@v4 introduced automatic cache handling so skip cache here
+          # actions/setup-go@v5 introduced automatic cache handling so skip cache here
           skip-cache: true
       - name: Verify Codegen
         run: make verify-codegen
