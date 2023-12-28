@@ -103,6 +103,30 @@ func (cg *ConsumerGroup) FillID() error {
 	return nil
 }
 
+// FillID fills the ID of an entity. It is a no-op if the entity already has an ID.
+// ID is generated in a deterministic way using UUIDv5. The UUIDv5 namespace is different for each entity type.
+// The name used to generate the ID for Vault is Vault.Prefix.
+func (v *Vault) FillID() error {
+	if v == nil {
+		return fmt.Errorf("vault is nil")
+	}
+	if v.ID != nil && *v.ID != "" {
+		// ID already set, do nothing.
+		return nil
+	}
+	if v.Prefix == nil || *v.Prefix == "" {
+		return fmt.Errorf("vault prefix is required")
+	}
+
+	gen, err := idGeneratorFor(v)
+	if err != nil {
+		return fmt.Errorf("could not get id generator: %w", err)
+	}
+
+	v.ID = gen.buildIDFor(*v.Prefix)
+	return nil
+}
+
 var (
 	// _kongEntitiesNamespace is the UUIDv5 namespace used to generate IDs for Kong entities.
 	_kongEntitiesNamespace = uuid.MustParse("fd02801f-0957-4a15-a55a-c8d9606f30b5")
@@ -116,6 +140,7 @@ var (
 		reflect.TypeOf(Route{}):         newIDGeneratorFor("routes"),
 		reflect.TypeOf(Consumer{}):      newIDGeneratorFor("consumers"),
 		reflect.TypeOf(ConsumerGroup{}): newIDGeneratorFor("consumergroups"),
+		reflect.TypeOf(Vault{}):         newIDGeneratorFor("vaults"),
 	}
 )
 

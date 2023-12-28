@@ -133,6 +133,38 @@ func TestFillEntityID(t *testing.T) {
 				require.Equal(t, expectedID, *cg.ID, "ID should be deterministic")
 			},
 		},
+		// Vault
+		{
+			name:      "vault with nil pointer",
+			entity:    (*kong.Vault)(nil),
+			expectErr: true,
+		},
+		{
+			name:      "vault with nil prefix",
+			entity:    &kong.Vault{},
+			expectErr: true,
+		},
+		{
+			name: "vault with empty prefix",
+			entity: &kong.Vault{
+				Name: kong.String(""),
+			},
+			expectErr: true,
+		},
+		{
+			name: "vault with prefix",
+			entity: &kong.Vault{
+				Name:   kong.String("env"),
+				Prefix: kong.String("test-env"),
+			},
+			assertEntity: func(t *testing.T, e kong.IDFillable) {
+				v := e.(*kong.Vault)
+				require.NotNil(t, v.ID)
+
+				const expectedID = "837665c3-856f-5ca2-9db4-52a1cf8a32be"
+				require.Equal(t, expectedID, *v.ID, "ID should be deterministic")
+			},
+		},
 	}
 
 	for _, tc := range testCases {
