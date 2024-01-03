@@ -64,6 +64,8 @@
 
 - Added `Validate` method in vault service to validate vaults.
   [#392](https://github.com/Kong/go-kong/pull/392)
+- Added `FillID()` method for vault.
+  [#391](https://github.com/Kong/go-kong/pull/391)
 
 ## [v0.48.0]
 

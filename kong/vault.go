@@ -14,12 +14,12 @@ type Vault struct {
 }
 
 // FriendlyName returns the endpoint key prefix or ID.
-func (s *Vault) FriendlyName() string {
-	if s.Prefix != nil {
-		return *s.Prefix
+func (v *Vault) FriendlyName() string {
+	if v.Prefix != nil {
+		return *v.Prefix
 	}
-	if s.ID != nil {
-		return *s.ID
+	if v.ID != nil {
+		return *v.ID
 	}
 	return ""
 }
