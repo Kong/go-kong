@@ -110,11 +110,11 @@ func (v *Vault) FillID() error {
 	if v == nil {
 		return fmt.Errorf("vault is nil")
 	}
-	if v.ID != nil && *v.ID != "" {
+	if v.ID != nil && len(*v.ID) > 0 {
 		// ID already set, do nothing.
 		return nil
 	}
-	if v.Prefix == nil || *v.Prefix == "" {
+	if v.Prefix == nil || len(*v.Prefix) == 0 {
 		return fmt.Errorf("vault prefix is required")
 	}
 
