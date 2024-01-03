@@ -3,7 +3,9 @@ package kong
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"net/http"
 )
 
 // AbstractVaultService handles Vaults in Kong.
@@ -20,6 +22,8 @@ type AbstractVaultService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*Vault, *ListOpt, error)
 	// ListAll fetches all Vaults in Kong.
 	ListAll(ctx context.Context) ([]*Vault, error)
+	// Validate validates a Vault against its schema.
+	Validate(ctx context.Context, vault *Vault) (bool, string, error)
 }
 
 // VaultService handles Vaults in Kong.
@@ -151,4 +155,24 @@ func (s *VaultService) ListAll(ctx context.Context) ([]*Vault, error) {
 		vaults = append(vaults, data...)
 	}
 	return vaults, nil
+}
+
+// Validate validates a vault against its schema.
+// returns validate result (passed/failed) and the message from the schema validation service if validation fails.
+// returns a non-nil error if failed to call the schema validation service.
+func (s *VaultService) Validate(ctx context.Context, vault *Vault) (bool, string, error) {
+	const endpoint = "/schemas/vaults/validate"
+	req, err := s.client.NewRequest(http.MethodPost, endpoint, nil, vault)
+	if err != nil {
+		return false, "", err
+	}
+	if _, err := s.client.Do(ctx, req, nil); err != nil {
+
+		var apiErr *APIError
+		if ok := errors.As(err, &apiErr); !ok || apiErr.Code() != http.StatusBadRequest {
+			return false, "", err
+		}
+		return false, apiErr.message, nil
+	}
+	return true, "", nil
 }

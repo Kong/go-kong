@@ -60,6 +60,11 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
+## Unreleased
+
+- Added `Validate` method in vault service to validate vaults.
+  [#392](https://github.com/Kong/go-kong/pull/392)
+
 ## [v0.48.0]
 
 > Release date: 2023/10/30
