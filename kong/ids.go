@@ -104,7 +104,8 @@ func (cg *ConsumerGroup) FillID() error {
 }
 
 // FillID fills the ID of an entity. It is a no-op if the entity already has an ID.
-// ID is generated in a deterministic way using UUIDv5. The UUIDv5 namespace is different for each entity type.
+// ID is generated in a deterministic way using UUIDv5.
+// The UUIDv5 namespace being used for generation is separate from other namespaces used for generating IDs for other types.
 // The name used to generate the ID for Vault is Vault.Prefix.
 func (v *Vault) FillID() error {
 	if v == nil {
