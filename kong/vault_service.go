@@ -157,27 +157,22 @@ func (s *VaultService) ListAll(ctx context.Context) ([]*Vault, error) {
 	return vaults, nil
 }
 
+// Validate validates a vault against its schema.
+// returns validate result (passed/failed) and the message from the schema validation service if validation fails.
+// returns a non-nil error if failed to call the schema validation service.
 func (s *VaultService) Validate(ctx context.Context, vault *Vault) (bool, string, error) {
-	endpoint := "/schemas/vaults/validate"
-	req, err := s.client.NewRequest("POST", endpoint, nil, vault)
+	const endpoint = "/schemas/vaults/validate"
+	req, err := s.client.NewRequest(http.MethodPost, endpoint, nil, vault)
 	if err != nil {
 		return false, "", err
 	}
-	resp, err := s.client.Do(ctx, req, nil)
-	if err != nil {
-		if resp == nil {
+	if _, err := s.client.Do(ctx, req, nil); err != nil {
+
+		var apiErr *APIError
+		if ok := errors.As(err, &apiErr); !ok || apiErr.Code() != http.StatusBadRequest {
 			return false, "", err
 		}
-
-		if resp.StatusCode == http.StatusBadRequest {
-			var apiError *APIError
-			ok := errors.As(err, &apiError)
-			if !ok {
-				return false, "", err
-			}
-			return false, apiError.message, nil
-		}
-		return false, "", err
+		return false, apiErr.message, nil
 	}
-	return resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK, "", nil
+	return true, "", nil
 }
