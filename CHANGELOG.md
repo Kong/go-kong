@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.49.0](#v0490)
 - [v0.48.0](#v0480)
 - [v0.47.0](#v0470)
 - [v0.46.0](#v0460)
@@ -60,7 +61,9 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
-## Unreleased
+## [v0.49.0]
+
+> Release date: 2024/01/04
 
 - Added `Validate` method in vault service to validate vaults.
   [#392](https://github.com/Kong/go-kong/pull/392)
