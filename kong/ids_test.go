@@ -9,9 +9,9 @@ import (
 )
 
 type fillEntityIDTestCase struct {
-	name   string
-	entity kong.IDFillable
-
+	name         string
+	entity       kong.IDFillable
+	workspace    string
 	assertEntity func(t *testing.T, entity kong.IDFillable)
 	expectErr    bool
 }
@@ -104,6 +104,20 @@ func TestFillEntityID(t *testing.T) {
 				require.Equal(t, expectedID, *consumer.ID, "ID should be deterministic")
 			},
 		},
+		{
+			name: "consumer with username and workspace",
+			entity: &kong.Consumer{
+				Username: kong.String("some.username"),
+			},
+			workspace: "ws.1",
+			assertEntity: func(t *testing.T, e kong.IDFillable) {
+				consumer := e.(*kong.Consumer)
+				require.NotNil(t, consumer.ID)
+
+				const expectedID = "4701c235-f7f0-51ee-8782-0d8e145d6771"
+				require.Equal(t, expectedID, *consumer.ID, "ID should be deterministic")
+			},
+		},
 		// Consumer Group
 		{
 			name:      "consumer group nil pointer",
@@ -173,7 +187,7 @@ func TestFillEntityID(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := tc.entity.FillID()
+			err := tc.entity.FillID(tc.workspace)
 			if tc.expectErr {
 				require.Error(t, err)
 				return
