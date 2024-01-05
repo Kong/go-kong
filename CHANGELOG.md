@@ -61,6 +61,15 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
+## [v0.50.0]
+
+> Release date: TBD
+
+- Added `workspace` parameter to `FillID` method of entities to avoid entities
+  with same key in different workspaces to have the same ID, which is unique
+  cross all workspaces.
+  [#395](https://github.com/Kong/go-kong/pull/395)
+
 ## [v0.49.0]
 
 > Release date: 2024/01/04

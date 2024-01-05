@@ -10,7 +10,7 @@ import (
 // FillID fills the ID of an entity. It is a no-op if the entity already has an ID.
 // ID is generated in a deterministic way using UUIDv5. The UUIDv5 namespace is different for each entity type.
 // The name used to generate the ID for Service is Service.Name.
-func (s *Service) FillID() error {
+func (s *Service) FillID(workspace string) error {
 	if s == nil {
 		return fmt.Errorf("service is nil")
 	}
@@ -27,14 +27,14 @@ func (s *Service) FillID() error {
 		return fmt.Errorf("could not get id generator: %w", err)
 	}
 
-	s.ID = gen.buildIDFor(*s.Name)
+	s.ID = gen.buildIDFor(workspace, *s.Name)
 	return nil
 }
 
 // FillID fills the ID of an entity. It is a no-op if the entity already has an ID.
 // ID is generated in a deterministic way using UUIDv5. The UUIDv5 namespace is different for each entity type.
 // The name used to generate the ID for Route is Route.Name.
-func (r *Route) FillID() error {
+func (r *Route) FillID(workspace string) error {
 	if r == nil {
 		return fmt.Errorf("route is nil")
 	}
@@ -51,14 +51,14 @@ func (r *Route) FillID() error {
 		return fmt.Errorf("could not get id generator: %w", err)
 	}
 
-	r.ID = gen.buildIDFor(*r.Name)
+	r.ID = gen.buildIDFor(workspace, *r.Name)
 	return nil
 }
 
 // FillID fills the ID of an entity. It is a no-op if the entity already has an ID.
 // ID is generated in a deterministic way using UUIDv5. The UUIDv5 namespace is different for each entity type.
 // The name used to generate the ID for Consumer is Consumer.Username.
-func (c *Consumer) FillID() error {
+func (c *Consumer) FillID(workspace string) error {
 	if c == nil {
 		return fmt.Errorf("consumer is nil")
 	}
@@ -75,14 +75,14 @@ func (c *Consumer) FillID() error {
 		return fmt.Errorf("could not get id generator: %w", err)
 	}
 
-	c.ID = gen.buildIDFor(*c.Username)
+	c.ID = gen.buildIDFor(workspace, *c.Username)
 	return nil
 }
 
 // FillID fills the ID of an entity. It is a no-op if the entity already has an ID.
 // ID is generated in a deterministic way using UUIDv5. The UUIDv5 namespace is different for each entity type.
 // The name used to generate the ID for ConsumerGroup is ConsumerGroup.Name.
-func (cg *ConsumerGroup) FillID() error {
+func (cg *ConsumerGroup) FillID(workspace string) error {
 	if cg == nil {
 		return fmt.Errorf("consumer group is nil")
 	}
@@ -99,7 +99,7 @@ func (cg *ConsumerGroup) FillID() error {
 		return fmt.Errorf("could not get id generator: %w", err)
 	}
 
-	cg.ID = gen.buildIDFor(*cg.Name)
+	cg.ID = gen.buildIDFor(workspace, *cg.Name)
 	return nil
 }
 
@@ -107,7 +107,7 @@ func (cg *ConsumerGroup) FillID() error {
 // ID is generated in a deterministic way using UUIDv5.
 // The UUIDv5 namespace being used for generation is separate from other namespaces used for generating IDs for other types.
 // The name used to generate the ID for Vault is Vault.Prefix.
-func (v *Vault) FillID() error {
+func (v *Vault) FillID(workspace string) error {
 	if v == nil {
 		return fmt.Errorf("vault is nil")
 	}
@@ -124,7 +124,7 @@ func (v *Vault) FillID() error {
 		return fmt.Errorf("could not get id generator: %w", err)
 	}
 
-	v.ID = gen.buildIDFor(*v.Prefix)
+	v.ID = gen.buildIDFor(workspace, *v.Prefix)
 	return nil
 }
 
@@ -149,8 +149,12 @@ type idGenerator struct {
 	namespace uuid.UUID
 }
 
-func (g idGenerator) buildIDFor(entityKey string) *string {
-	id := uuid.NewSHA1(g.namespace, []byte(entityKey)).String()
+func (g idGenerator) buildIDFor(workspace string, entityKey string) *string {
+	key := entityKey
+	if len(workspace) > 0 {
+		key = workspace + "/" + key
+	}
+	id := uuid.NewSHA1(g.namespace, []byte(key)).String()
 	return &id
 }
 
@@ -162,7 +166,7 @@ func newIDGeneratorFor(entityPluralName string) idGenerator {
 
 // IDFillable is a type constraint for entities that can be filled with an ID.
 type IDFillable interface {
-	FillID() error
+	FillID(workspace string) error
 }
 
 // idGeneratorFor returns the ID generator for the given entity type.
