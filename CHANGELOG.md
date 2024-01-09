@@ -63,7 +63,7 @@
 
 ## [v0.50.0]
 
-> Release date: TBD
+> Release date: 2024/01/09
 
 - Added `workspace` parameter to `FillID` method of entities to avoid entities
   with same key in different workspaces to have the same ID, which is unique
