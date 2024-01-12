@@ -68,7 +68,10 @@ func hasError(res *http.Response) error {
 }
 
 func extractErrDetails(res *http.Response, body []byte) (any, bool) {
-	// firstly deal with certain status code.
+	// Firstly extract `details` field from response.
+	if detailsFromRespBody := detailsFromBodyDetailsField(body); detailsFromRespBody != nil {
+		return detailsFromRespBody, true
+	}
 	switch res.StatusCode {
 	case http.StatusTooManyRequests:
 		return extractErrTooManyRequestsDetails(res)
