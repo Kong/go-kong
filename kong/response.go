@@ -37,6 +37,18 @@ func messageFromBody(b []byte) string {
 	return s.Message
 }
 
+// detailsFromBodyDetailsField extract details from body if the response body contains a "details" field.
+// Used for extracting details from response from Konnect APIs when error happens.
+func detailsFromBodyDetailsField(b []byte) any {
+	s := struct {
+		Details any `json:"details"`
+	}{}
+	if err := json.Unmarshal(b, &s); err != nil {
+		return nil
+	}
+	return s.Details
+}
+
 func hasError(res *http.Response) error {
 	if res.StatusCode >= 200 && res.StatusCode <= 399 {
 		return nil
@@ -48,14 +60,18 @@ func hasError(res *http.Response) error {
 	}
 
 	apiErr := NewAPIError(res.StatusCode, messageFromBody(body))
-	if details, ok := extractErrDetails(res); ok {
+	if details, ok := extractErrDetails(res, body); ok {
 		apiErr.SetDetails(details)
 	}
 
 	return apiErr
 }
 
-func extractErrDetails(res *http.Response) (any, bool) {
+func extractErrDetails(res *http.Response, body []byte) (any, bool) {
+	// Firstly extract `details` field from response.
+	if detailsFromRespBody := detailsFromBodyDetailsField(body); detailsFromRespBody != nil {
+		return detailsFromRespBody, true
+	}
 	switch res.StatusCode {
 	case http.StatusTooManyRequests:
 		return extractErrTooManyRequestsDetails(res)

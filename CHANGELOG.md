@@ -62,6 +62,12 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
+## Unreleased
+
+- Added extract of `details` field in response when CRUD API fails to extract
+  details from Konnect APIs.
+  [#399](https://github.com/Kong/go-kong/pull/399)
+
 ## [v0.50.0]
 
 > Release date: 2024/01/09
