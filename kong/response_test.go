@@ -68,6 +68,23 @@ func TestHasError(T *testing.T) {
 			},
 		},
 		{
+			name: "code 400 and has array of objects in 'details' in response",
+			response: http.Response{
+				StatusCode: 400,
+				Body:       io.NopCloser(strings.NewReader(`{"message":"validation failed","details":[{"type":"ERROR_TYPE_FIELD","field":"config.key"}]}`)),
+			},
+			want: &APIError{
+				httpCode: 400,
+				message:  "validation failed",
+				details: []any{
+					map[string]any{
+						"type":  "ERROR_TYPE_FIELD",
+						"field": "config.key",
+					},
+				},
+			},
+		},
+		{
 			name: "code 429 with retry-after header",
 			response: http.Response{
 				StatusCode: http.StatusTooManyRequests,
