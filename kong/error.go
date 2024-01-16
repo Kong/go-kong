@@ -31,7 +31,10 @@ func NewAPIErrorWithRaw(code int, msg string, raw []byte) *APIError {
 }
 
 func (e *APIError) Error() string {
-	return fmt.Sprintf("HTTP status %d (message: %q)", e.httpCode, e.message)
+	if e.details == nil {
+		return fmt.Sprintf("HTTP status %d (message: %q)", e.httpCode, e.message)
+	}
+	return fmt.Sprintf("HTTP status %d (message: %q; details: %v)", e.httpCode, e.message, e.details)
 }
 
 // Code returns the HTTP status code for the error.
