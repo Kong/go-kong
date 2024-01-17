@@ -65,8 +65,10 @@
 ## Unreleased
 
 - Added extract of `details` field in response when CRUD API fails to extract
-  details from Konnect APIs.
+  details from Konnect APIs, and include `details` field in return value of
+  `Error()` method in `APIError`.
   [#399](https://github.com/Kong/go-kong/pull/399)
+  [#400](https://github.com/Kong/go-kong/pull/400)
 
 ## [v0.50.0]
 
