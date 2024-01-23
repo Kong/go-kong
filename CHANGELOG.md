@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.51.0](#v0510)
 - [v0.50.0](#v0500)
 - [v0.49.0](#v0490)
 - [v0.48.0](#v0480)
@@ -62,7 +63,9 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
-## Unreleased
+## [v0.51.0]
+
+> Release date: 2024/01/23
 
 - Added extract of `details` field in response when CRUD API fails to extract
   details from Konnect APIs.
