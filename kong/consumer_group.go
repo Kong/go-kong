@@ -41,6 +41,7 @@ type ConsumerGroupPlugin struct {
 	CreatedAt     *int64         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Config        Configuration  `json:"config,omitempty" yaml:"config,omitempty"`
 	ConsumerGroup *ConsumerGroup `json:"consumer_group,omitempty" yaml:"consumer_group,omitempty"`
+	ConfigSource  *string        `json:"_config,omitempty" yaml:"_config,omitempty"`
 }
 
 // FriendlyName returns the endpoint key name or ID.
