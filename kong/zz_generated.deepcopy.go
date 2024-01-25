@@ -580,6 +580,11 @@ func (in *ConsumerGroupPlugin) DeepCopyInto(out *ConsumerGroupPlugin) {
 		*out = new(ConsumerGroup)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.ConfigSource != nil {
+		in, out := &in.ConfigSource, &out.ConfigSource
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 
