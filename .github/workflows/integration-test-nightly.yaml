@@ -17,6 +17,7 @@ on:
 
 jobs:
   test:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     strategy:
       matrix:
         dbmode:
