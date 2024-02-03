@@ -17,6 +17,7 @@ on:
 
 jobs:
   secret-available:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     outputs:
       ok: ${{ steps.exists.outputs.ok }}
     runs-on: ubuntu-latest
@@ -31,6 +32,7 @@ jobs:
         fi
 
   test-enterprise:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     continue-on-error: true
     needs:
     - secret-available
@@ -109,6 +111,7 @@ jobs:
           fail_ci_if_error: true
 
   test-enterprise-passed:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     runs-on: ubuntu-latest
     needs: test-enterprise
     if: always()
