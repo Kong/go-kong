@@ -29,12 +29,12 @@ type AbstractWorkspaceService interface {
 	// of the entity that was added to the workspace.
 	//
 	// Deprecated: Kong 2.x removed this endpoint.
-	AddEntities(ctx context.Context, workspaceNameOrID *string, entityIds *string) (*[]map[string]interface{}, error)
+	AddEntities(ctx context.Context, workspaceNameOrID *string, entityIDs *string) (*[]map[string]interface{}, error)
 	// DeleteEntities deletes entity ids given as a a comma delimited string
 	// to a given workspace in Kong.
 	//
 	// Deprecated: Kong 2.x removed this endpoint.
-	DeleteEntities(ctx context.Context, workspaceNameOrID *string, entityIds *string) error
+	DeleteEntities(ctx context.Context, workspaceNameOrID *string, entityIDs *string) error
 	// ListEntities fetches a list of all workspace entities in Kong.
 	//
 	// Deprecated: Kong 2.x removed this endpoint.
@@ -210,17 +210,17 @@ func (s *WorkspaceService) ListAll(ctx context.Context) ([]*Workspace, error) {
 //
 // Deprecated: Kong 2.x removed this endpoint.
 func (s *WorkspaceService) AddEntities(ctx context.Context,
-	workspaceNameOrID *string, entityIds *string,
+	workspaceNameOrID *string, entityIDs *string,
 ) (*[]map[string]interface{}, error) {
-	if entityIds == nil {
-		return nil, fmt.Errorf("entityIds cannot be nil")
+	if entityIDs == nil {
+		return nil, fmt.Errorf("entityIDs cannot be nil")
 	}
 
 	endpoint := fmt.Sprintf("/workspaces/%v/entities", *workspaceNameOrID)
 	var entities struct {
 		Entities *string `json:"entities,omitempty"`
 	}
-	entities.Entities = entityIds
+	entities.Entities = entityIDs
 
 	req, err := s.client.NewRequest("POST", endpoint, nil, entities)
 	if err != nil {
@@ -241,17 +241,17 @@ func (s *WorkspaceService) AddEntities(ctx context.Context,
 //
 // Deprecated: Kong 2.x removed this endpoint.
 func (s *WorkspaceService) DeleteEntities(ctx context.Context,
-	workspaceNameOrID *string, entityIds *string,
+	workspaceNameOrID *string, entityIDs *string,
 ) error {
-	if entityIds == nil {
-		return fmt.Errorf("entityIds cannot be nil")
+	if entityIDs == nil {
+		return fmt.Errorf("entityIDs cannot be nil")
 	}
 
 	endpoint := fmt.Sprintf("/workspaces/%v/entities", *workspaceNameOrID)
 	var entities struct {
 		Entities *string `json:"entities,omitempty"`
 	}
-	entities.Entities = entityIds
+	entities.Entities = entityIDs
 
 	req, err := s.client.NewRequest("DELETE", endpoint, nil, entities)
 	if err != nil {
