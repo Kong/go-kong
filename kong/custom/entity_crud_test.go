@@ -95,7 +95,7 @@ func TestEntityCRUDDefinition(t *testing.T) {
 func TestEntityCRUDUnmarshal(t *testing.T) {
 	assert := assert.New(t)
 
-	t.Run("unmarshal JSON into EntityCRUDDefinition", func(t *testing.T) {
+	t.Run("unmarshal JSON into EntityCRUDDefinition", func(_ *testing.T) {
 		bytes := []byte(`{
 			"name": "name",
 			"crud": "crud-path",
@@ -109,7 +109,7 @@ func TestEntityCRUDUnmarshal(t *testing.T) {
 		assert.Equal("primary-key", def.PrimaryKey)
 	})
 
-	t.Run("unmarshal YAML into EntityCRUDDefinition", func(t *testing.T) {
+	t.Run("unmarshal YAML into EntityCRUDDefinition", func(_ *testing.T) {
 		var def EntityCRUDDefinition
 		bytes := []byte(`
 name: "name"
