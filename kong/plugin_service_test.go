@@ -1,6 +1,7 @@
 package kong
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -559,9 +560,30 @@ func TestFillPluginDefaults(T *testing.T) {
 		name     string
 		plugin   *Plugin
 		expected *Plugin
+		version  string
 	}{
 		{
-			name: "no config no protocols",
+			name:    "no config no protocols",
+			version: ">=3.7.0",
+			plugin: &Plugin{
+				Name:  String("basic-auth"),
+				RunOn: String("test"),
+			},
+			expected: &Plugin{
+				Name:  String("basic-auth"),
+				RunOn: String("test"),
+				Config: Configuration{
+					"anonymous":        nil,
+					"hide_credentials": false,
+					"realm":            "service",
+				},
+				Protocols: []*string{String("grpc"), String("grpcs"), String("http"), String("https")},
+				Enabled:   Bool(true),
+			},
+		},
+		{
+			name:    "no config no protocols",
+			version: "<3.7.0",
 			plugin: &Plugin{
 				Name:  String("basic-auth"),
 				RunOn: String("test"),
@@ -578,7 +600,34 @@ func TestFillPluginDefaults(T *testing.T) {
 			},
 		},
 		{
-			name: "partial config no protocols",
+			name:    "partial config no protocols",
+			version: ">=3.7.0",
+			plugin: &Plugin{
+				Name: String("basic-auth"),
+				Consumer: &Consumer{
+					ID: String("3bb9a73c-a467-11ec-b909-0242ac120002"),
+				},
+				Config: Configuration{
+					"hide_credentials": true,
+				},
+			},
+			expected: &Plugin{
+				Name: String("basic-auth"),
+				Consumer: &Consumer{
+					ID: String("3bb9a73c-a467-11ec-b909-0242ac120002"),
+				},
+				Config: Configuration{
+					"anonymous":        nil,
+					"hide_credentials": true,
+					"realm":            "service",
+				},
+				Protocols: []*string{String("grpc"), String("grpcs"), String("http"), String("https")},
+				Enabled:   Bool(true),
+			},
+		},
+		{
+			name:    "partial config no protocols",
+			version: "<3.7.0",
 			plugin: &Plugin{
 				Name: String("basic-auth"),
 				Consumer: &Consumer{
@@ -660,7 +709,16 @@ func TestFillPluginDefaults(T *testing.T) {
 	}
 
 	for _, tc := range tests {
-		T.Run(tc.name, func(t *testing.T) {
+		name := tc.name
+		if tc.version != "" {
+			name = fmt.Sprintf("%s (kong %s)", name, tc.version)
+		}
+
+		T.Run(name, func(t *testing.T) {
+			if tc.version != "" {
+				RunWhenKong(t, tc.version)
+			}
+
 			p := tc.plugin
 			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, p.Name)
 			require.NoError(t, err)

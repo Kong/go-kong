@@ -105,7 +105,7 @@ func SkipWhenEnterprise(t *testing.T) {
 	}
 
 	if currentVersion.IsKongGatewayEnterprise() {
-		t.Skip("non-Enterprise test Kong instance, skipping")
+		t.Skip("Enterprise test Kong instance, skipping")
 	}
 }
 
