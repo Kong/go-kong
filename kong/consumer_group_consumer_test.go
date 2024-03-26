@@ -98,12 +98,12 @@ func TestConsumerGroupConsumersListEndpoint(t *testing.T) {
 	consumerGroupConsumersFromKong, err := client.ConsumerGroupConsumers.ListAll(defaultCtx, cg.Name)
 	require.NoError(t, err)
 	assert.NotNil(consumerGroupConsumersFromKong)
-	assert.Equal(3, len(consumerGroupConsumersFromKong.Consumers))
+	assert.Equal(3, len(consumerGroupConsumersFromKong))
 
 	// check if we see all consumer groups
-	assert.True(compareConsumers(consumers, consumerGroupConsumersFromKong.Consumers))
+	assert.True(compareConsumers(consumers, consumerGroupConsumersFromKong))
 
-	for i := 0; i < len(consumerGroupConsumersFromKong.Consumers); i++ {
+	for i := 0; i < len(consumerGroupConsumersFromKong); i++ {
 		assert.NoError(client.Consumers.Delete(defaultCtx, consumers[i].ID))
 	}
 

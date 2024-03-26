@@ -44,7 +44,7 @@ jobs:
       KONG_ROUTER_FLAVOR: ${{ matrix.router_flavor }}
       KONG_ADMIN_TOKEN: kong
       KONG_IMAGE_REPO: "kong/kong-gateway-internal"
-      KONG_IMAGE_TAG: "master-alpine"
+      KONG_IMAGE_TAG: "master"
       KONG_ANONYMOUS_REPORTS: "off"
       TEST_KONG_PULL_USERNAME: ${{ secrets.GHA_DOCKERHUB_PULL_USER }}
       TEST_KONG_PULL_PASSWORD: ${{ secrets.GHA_KONG_ORG_DOCKERHUB_PUBLIC_TOKEN }}

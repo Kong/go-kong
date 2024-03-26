@@ -1,5 +1,7 @@
 #!/bin/bash
 
+readonly DOCKER_LABEL=com.konghq.deck.ci=1
+
 # Usage: waitContainer "PostgreSQL" 5432 0.2
 function waitContainer()
 {
@@ -9,7 +11,7 @@ function waitContainer()
 
   for try in {1..100}; do
     echo "waiting for ${container}.."
-    nc localhost ${port} && break;
+    nc localhost ${port} </dev/null && break;
     sleep ${sleep_time}
   done
 }
@@ -18,7 +20,8 @@ function create_network()
 {
   # create docker network if it doesn't exist
   if [[ -z $(docker network ls --filter name=${NETWORK_NAME} -q) ]]; then
-    docker network create ${NETWORK_NAME}
+    docker network create "${NETWORK_NAME}" \
+        --label "$DOCKER_LABEL"
   fi
 }
 
@@ -41,6 +44,7 @@ function deploy_pg()
     -e "POSTGRES_USER=$DATABASE_USER" \
     -e "POSTGRES_DB=$DATABASE_NAME" \
     -e "POSTGRES_PASSWORD=$KONG_DB_PASSWORD" \
+    --label "$DOCKER_LABEL" \
     postgres:9.6
 
   waitContainer "PostgreSQL" 5432 0.2
@@ -56,6 +60,7 @@ function perform_migrations()
       -e "KONG_PG_PASSWORD=$KONG_DB_PASSWORD" \
       -e "KONG_PASSWORD=$KONG_DB_PASSWORD" \
       -e "KONG_LICENSE_DATA=$KONG_LICENSE_DATA" \
+        --label "$DOCKER_LABEL" \
       $KONG_IMAGE kong migrations bootstrap && break
   done
 }

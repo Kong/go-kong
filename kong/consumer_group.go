@@ -54,3 +54,8 @@ func (cg *ConsumerGroup) FriendlyName() string {
 	}
 	return ""
 }
+
+type consumerGroupConsumers struct {
+	Consumers []*Consumer `json:"consumers,omitempty" yaml:"consumers,omitempty"`
+	Data      []*Consumer `json:"data,omitempty" yaml:"data,omitempty"`
+}

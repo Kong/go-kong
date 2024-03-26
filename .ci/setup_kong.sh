@@ -14,6 +14,7 @@ DATABASE_USER=kong
 DATABASE_NAME=kong
 KONG_DB_PASSWORD=kong
 KONG_PG_HOST=pg
+KONG_WASM_FILTERS_PATH=$PWD/assets/filters
 
 GATEWAY_CONTAINER_NAME=kong
 
@@ -32,13 +33,18 @@ function deploy_kong_postgres()
     -e "KONG_ADMIN_ERROR_LOG=/dev/stderr" \
     -e "KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl" \
     -e "KONG_ADMIN_GUI_AUTH=basic-auth" \
+    -e "KONG_ADMIN_GUI_SESSION_CONF={}" \
     -e "KONG_ENFORCE_RBAC=on" \
     -e "KONG_PORTAL=on" \
     -e "KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR}" \
+    -e "KONG_WASM=on" \
+    -e "KONG_WASM_FILTERS_PATH=/wasm/filters" \
+    -v "$KONG_WASM_FILTERS_PATH:/wasm/filters:ro" \
     -p 8000:8000 \
     -p 8443:8443 \
     -p 127.0.0.1:8001:8001 \
     -p 127.0.0.1:8444:8444 \
+    --label "$DOCKER_LABEL" \
     $KONG_IMAGE
   waitContainer "Kong" 8001 0.2
 }
@@ -57,10 +63,14 @@ function deploy_kong_dbless()
     -e "KONG_ENFORCE_RBAC=on" \
     -e "KONG_PORTAL=on" \
     -e "KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR}" \
+    -e "KONG_WASM=on" \
+    -e "KONG_WASM_FILTERS_PATH=/wasm/filters" \
+    -v "$KONG_WASM_FILTERS_PATH:/wasm/filters:ro" \
     -p 8000:8000 \
     -p 8443:8443 \
     -p 127.0.0.1:8001:8001 \
     -p 127.0.0.1:8444:8444 \
+    --label "$DOCKER_LABEL" \
     $KONG_IMAGE
   waitContainer "Kong" 8001 0.2
 }

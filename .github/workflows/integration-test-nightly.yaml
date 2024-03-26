@@ -28,7 +28,7 @@ jobs:
     env:
       KONG_ROUTER_FLAVOR: ${{ matrix.router_flavor }}
       KONG_IMAGE_REPO: "kong/kong"
-      KONG_IMAGE_TAG: "master-alpine"
+      KONG_IMAGE_TAG: "master"
       KONG_ANONYMOUS_REPORTS: "off"
     runs-on: ubuntu-latest
     steps:

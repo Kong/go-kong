@@ -1,6 +1,7 @@
 package kong
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -119,8 +120,8 @@ func TestPluginsService(T *testing.T) {
 	createdPlugin.Config["anonymous"] = "false"
 	updatedPlugin, err := client.Plugins.UpdateForService(defaultCtx, createdService.Name, createdPlugin)
 	assert.NoError(err)
-	assert.NotNil(createdPlugin)
-	assert.Equal(id, *createdPlugin.ID)
+	assert.NotNil(updatedPlugin)
+	assert.Equal(id, *updatedPlugin.ID)
 	assert.Equal("false", updatedPlugin.Config["anonymous"])
 
 	err = client.Plugins.DeleteForService(defaultCtx, createdService.Name, updatedPlugin.ID)
@@ -343,7 +344,7 @@ func TestPluginListEndpoint(T *testing.T) {
 		},
 	}
 
-	// create fixturs
+	// create fixtures
 	for i := 0; i < len(plugins); i++ {
 		schema, err := client.Plugins.GetFullSchema(defaultCtx, plugins[i].Name)
 		assert.NoError(err)
@@ -495,8 +496,6 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	// check if we see all plugins
 	assert.True(comparePlugins(T, plugins, pluginsFromKong))
 
-	assert.True(comparePlugins(T, plugins, pluginsFromKong))
-
 	pluginsFromKong, err = client.Plugins.ListAll(defaultCtx)
 	assert.NoError(err)
 	assert.NotNil(pluginsFromKong)
@@ -561,9 +560,30 @@ func TestFillPluginDefaults(T *testing.T) {
 		name     string
 		plugin   *Plugin
 		expected *Plugin
+		version  string
 	}{
 		{
-			name: "no config no protocols",
+			name:    "no config no protocols",
+			version: ">=3.7.0",
+			plugin: &Plugin{
+				Name:  String("basic-auth"),
+				RunOn: String("test"),
+			},
+			expected: &Plugin{
+				Name:  String("basic-auth"),
+				RunOn: String("test"),
+				Config: Configuration{
+					"anonymous":        nil,
+					"hide_credentials": false,
+					"realm":            "service",
+				},
+				Protocols: []*string{String("grpc"), String("grpcs"), String("http"), String("https")},
+				Enabled:   Bool(true),
+			},
+		},
+		{
+			name:    "no config no protocols",
+			version: "<3.7.0",
 			plugin: &Plugin{
 				Name:  String("basic-auth"),
 				RunOn: String("test"),
@@ -580,7 +600,34 @@ func TestFillPluginDefaults(T *testing.T) {
 			},
 		},
 		{
-			name: "partial config no protocols",
+			name:    "partial config no protocols",
+			version: ">=3.7.0",
+			plugin: &Plugin{
+				Name: String("basic-auth"),
+				Consumer: &Consumer{
+					ID: String("3bb9a73c-a467-11ec-b909-0242ac120002"),
+				},
+				Config: Configuration{
+					"hide_credentials": true,
+				},
+			},
+			expected: &Plugin{
+				Name: String("basic-auth"),
+				Consumer: &Consumer{
+					ID: String("3bb9a73c-a467-11ec-b909-0242ac120002"),
+				},
+				Config: Configuration{
+					"anonymous":        nil,
+					"hide_credentials": true,
+					"realm":            "service",
+				},
+				Protocols: []*string{String("grpc"), String("grpcs"), String("http"), String("https")},
+				Enabled:   Bool(true),
+			},
+		},
+		{
+			name:    "partial config no protocols",
+			version: "<3.7.0",
 			plugin: &Plugin{
 				Name: String("basic-auth"),
 				Consumer: &Consumer{
@@ -662,7 +709,16 @@ func TestFillPluginDefaults(T *testing.T) {
 	}
 
 	for _, tc := range tests {
-		T.Run(tc.name, func(t *testing.T) {
+		name := tc.name
+		if tc.version != "" {
+			name = fmt.Sprintf("%s (kong %s)", name, tc.version)
+		}
+
+		T.Run(name, func(t *testing.T) {
+			if tc.version != "" {
+				RunWhenKong(t, tc.version)
+			}
+
 			p := tc.plugin
 			fullSchema, err := client.Plugins.GetFullSchema(defaultCtx, p.Name)
 			require.NoError(t, err)
@@ -842,7 +898,7 @@ func TestPluginsWithConsumerGroup(T *testing.T) {
 		},
 	}
 
-	// create fixturs
+	// create fixtures
 	for i := 0; i < len(plugins); i++ {
 		plugin, err := client.Plugins.Create(defaultCtx, plugins[i])
 		assert.NoError(err)
