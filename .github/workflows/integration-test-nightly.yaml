@@ -37,7 +37,7 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v5
         with:
-          go-version: '^1.19'
+          go-version-file: go.mod
       - name: Setup Kong
         run: make setup-kong-${{ matrix.dbmode }}
       - name: Run tests

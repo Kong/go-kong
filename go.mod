@@ -1,6 +1,8 @@
 module github.com/kong/go-kong
 
-go 1.19
+go 1.21
+
+toolchain go1.22.1
 
 replace github.com/imdario/mergo v0.3.12 => github.com/Kong/mergo v0.3.13
 

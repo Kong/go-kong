@@ -38,6 +38,7 @@ type Client struct {
 	client                  *http.Client
 	baseRootURL             string
 	workspace               string       // Do not access directly. Use Workspace()/SetWorkspace().
+	UserAgent               string       // User-Agent for the client.
 	workspaceLock           sync.RWMutex // Synchronizes access to workspace.
 	common                  service
 	ConsumerGroupConsumers  AbstractConsumerGroupConsumerService
@@ -252,6 +253,10 @@ func (c *Client) Do(
 	req *http.Request,
 	v interface{},
 ) (*Response, error) {
+	if c.UserAgent != "" && req != nil {
+		req.Header.Add("User-Agent", c.UserAgent)
+	}
+
 	resp, err := c.DoRAW(ctx, req)
 	if err != nil {
 		return nil, err

@@ -423,7 +423,7 @@ func TestRoutesValidationExpressions(T *testing.T) {
 			valid: true,
 		},
 	} {
-		T.Run(tC.name, func(t *testing.T) {
+		T.Run(tC.name, func(_ *testing.T) {
 			ok, msg, err := client.Routes.Validate(defaultCtx, tC.route)
 			require.NoError(err)
 			require.Equal(tC.valid, ok)
@@ -492,7 +492,7 @@ func TestRoutesValidationTraditionalCompatible(T *testing.T) {
 			msgStartWith: "schema violation (paths.2: invalid regex:",
 		},
 	} {
-		T.Run(tC.name, func(t *testing.T) {
+		T.Run(tC.name, func(_ *testing.T) {
 			ok, msg, err := client.Routes.Validate(defaultCtx, tC.route)
 			require.NoError(err)
 			require.Equal(tC.valid, ok)
