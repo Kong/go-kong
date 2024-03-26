@@ -6,24 +6,24 @@ package kong
 type Route struct {
 	CreatedAt     *int                `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Expression    *string             `json:"expression,omitempty" yaml:"expression,omitempty"`
-	Hosts         []*string           `json:"hosts,omitempty" yaml:"hosts,omitempty"`
+	Hosts         []*string           `json:"hosts" yaml:"hosts"`
 	Headers       map[string][]string `json:"headers,omitempty" yaml:"headers,omitempty"`
 	ID            *string             `json:"id,omitempty" yaml:"id,omitempty"`
 	Name          *string             `json:"name,omitempty" yaml:"name,omitempty"`
-	Methods       []*string           `json:"methods,omitempty" yaml:"methods,omitempty"`
-	Paths         []*string           `json:"paths,omitempty" yaml:"paths,omitempty"`
+	Methods       []*string           `json:"methods" yaml:"methods"`
+	Paths         []*string           `json:"paths" yaml:"paths"`
 	PathHandling  *string             `json:"path_handling,omitempty" yaml:"path_handling,omitempty"`
 	PreserveHost  *bool               `json:"preserve_host,omitempty" yaml:"preserve_host,omitempty"`
 	Priority      *uint64             `json:"priority,omitempty" yaml:"priority,omitempty"`
-	Protocols     []*string           `json:"protocols,omitempty" yaml:"protocols,omitempty"`
+	Protocols     []*string           `json:"protocols" yaml:"protocols"`
 	RegexPriority *int                `json:"regex_priority,omitempty" yaml:"regex_priority,omitempty"`
 	Service       *Service            `json:"service,omitempty" yaml:"service,omitempty"`
 	StripPath     *bool               `json:"strip_path,omitempty" yaml:"strip_path,omitempty"`
 	UpdatedAt     *int                `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	SNIs          []*string           `json:"snis,omitempty" yaml:"snis,omitempty"`
-	Sources       []*CIDRPort         `json:"sources,omitempty" yaml:"sources,omitempty"`
-	Destinations  []*CIDRPort         `json:"destinations,omitempty" yaml:"destinations,omitempty"`
-	Tags          []*string           `json:"tags,omitempty" yaml:"tags,omitempty"`
+	SNIs          []*string           `json:"snis" yaml:"snis"`
+	Sources       []*CIDRPort         `json:"sources" yaml:"sources"`
+	Destinations  []*CIDRPort         `json:"destinations" yaml:"destinations"`
+	Tags          []*string           `json:"tags" yaml:"tags"`
 
 	HTTPSRedirectStatusCode *int `json:"https_redirect_status_code,omitempty" yaml:"https_redirect_status_code,omitempty"`
 
