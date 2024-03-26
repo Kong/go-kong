@@ -17,6 +17,7 @@ on:
 
 jobs:
   golangci:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     name: lint
     runs-on: ubuntu-latest
     steps:
