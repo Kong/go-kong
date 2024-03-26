@@ -206,7 +206,7 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 	res := config.DeepCopy()
 	value := schema.Get("fields")
 
-	value.ForEach(func(key, value gjson.Result) bool {
+	value.ForEach(func(_, value gjson.Result) bool {
 		// get the key name
 		ms := value.Map()
 		fname := ""
@@ -427,7 +427,7 @@ func flattenJSONSchema(value gjson.Result) Schema {
 func flattenLuaSchema(value gjson.Result) Schema {
 	results := Schema{}
 
-	value.ForEach(func(key, value gjson.Result) bool {
+	value.ForEach(func(_, value gjson.Result) bool {
 		// get the key name
 		ms := value.Map()
 		fname := ""

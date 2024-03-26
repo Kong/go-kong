@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.52.0](#v0520)
 - [v0.51.0](#v0510)
 - [v0.50.0](#v0500)
 - [v0.49.0](#v0490)
@@ -62,6 +63,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.52.0]
+
+> Release date: 2024/03/26
+
+- Allow configuration of `User-Agent` for the client.
+  [#427](https://github.com/Kong/go-kong/pull/427)
 
 ## [v0.51.0]
 
