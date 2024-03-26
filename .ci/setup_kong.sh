@@ -33,6 +33,7 @@ function deploy_kong_postgres()
     -e "KONG_ADMIN_ERROR_LOG=/dev/stderr" \
     -e "KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl" \
     -e "KONG_ADMIN_GUI_AUTH=basic-auth" \
+    -e "KONG_ADMIN_GUI_SESSION_CONF={}" \
     -e "KONG_ENFORCE_RBAC=on" \
     -e "KONG_PORTAL=on" \
     -e "KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR}" \
@@ -43,6 +44,7 @@ function deploy_kong_postgres()
     -p 8443:8443 \
     -p 127.0.0.1:8001:8001 \
     -p 127.0.0.1:8444:8444 \
+    --label "$DOCKER_LABEL" \
     $KONG_IMAGE
   waitContainer "Kong" 8001 0.2
 }
@@ -68,6 +70,7 @@ function deploy_kong_dbless()
     -p 8443:8443 \
     -p 127.0.0.1:8001:8001 \
     -p 127.0.0.1:8444:8444 \
+    --label "$DOCKER_LABEL" \
     $KONG_IMAGE
   waitContainer "Kong" 8001 0.2
 }
