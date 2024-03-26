@@ -59,6 +59,7 @@ function deploy_kong_ee()
     -p 8445:8445 \
     -p 8003:8003 \
     -p 8004:8004 \
+    --label "$DOCKER_LABEL" \
     $KONG_IMAGE
 }
 

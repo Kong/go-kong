@@ -53,6 +53,10 @@ setup-kong-postgres:
 setup-kong-ee:
 	bash .ci/setup_kong_ee.sh
 
+.PHONY: teardown
+teardown:
+	bash .ci/teardown.sh
+
 .PHONY: test-coverage-enterprise
 test-coverage-enterprise:
 	go test -tags=enterprise -race -v -count=1 -coverprofile=coverage.out.tmp ./...
