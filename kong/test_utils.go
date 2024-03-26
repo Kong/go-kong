@@ -41,6 +41,22 @@ func RunWhenKong(t *testing.T, versionRange string) {
 	}
 }
 
+// shouldGet returns d[k], cast to type V.
+// if absent or the wrong type, fails the test instead of panic.
+func shouldGet[V any](t *testing.T, d map[string]any, k string) V {
+	v, ok := d[k]
+	if !ok {
+		t.Errorf("item '%s' not found", k)
+	}
+
+	v2, ok := v.(V)
+	if !ok {
+		t.Errorf("item '%s': expected type %T, found %T %v", k, v2, v, v)
+	}
+
+	return v2
+}
+
 // RunWhenEnterprise skips a test if the version
 // of Kong running is not enterprise edition. Skips
 // the current test if the version of Kong doesn't
@@ -67,13 +83,13 @@ func RunWhenEnterprise(t *testing.T, versionRange string, required RequiredFeatu
 	if !currentVersion.IsKongGatewayEnterprise() {
 		t.Skip("non-Enterprise test Kong instance, skipping")
 	}
-	configuration := info["configuration"].(map[string]interface{})
+	configuration := shouldGet[map[string]interface{}](t, info, "configuration")
 
-	if required.RBAC && configuration["rbac"].(string) != "on" {
+	if required.RBAC && shouldGet[string](t, configuration, "rbac") != "on" {
 		t.Skip("RBAC not enabled on test Kong instance, skipping")
 	}
 
-	if required.Portal && !configuration["portal"].(bool) {
+	if required.Portal && !shouldGet[bool](t, configuration, "portal") {
 		t.Skip("Portal not enabled on test Kong instance, skipping")
 	}
 
