@@ -85,6 +85,7 @@ type Client struct {
 	logger         io.Writer
 	debug          bool
 	CustomEntities AbstractCustomEntityService
+	headers        http.Header
 
 	custom.Registry
 }
@@ -193,6 +194,21 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	return kong, nil
 }
 
+// NewClientWithHeaders a Client which talks to Admin API of Kong that supports setting
+// the specified headers on each request. This differs from HTTPClientWithHeaders in that the headers
+// are set without modifying the underlying http.Client. This makes this Client suitable for shared
+// http.Clients that can't have their Transport modified.
+func NewClientWithHeaders(baseURL *string, client *http.Client, headers http.Header) (*Client, error) {
+	c, err := NewClient(baseURL, client)
+	if err != nil {
+		return c, err
+	}
+
+	c.headers = headers
+
+	return c, nil
+}
+
 // SetWorkspace sets the Kong Enteprise workspace in the client.
 // Calling this function with an empty string resets the workspace to default workspace.
 func (c *Client) SetWorkspace(workspace string) {
@@ -255,6 +271,14 @@ func (c *Client) Do(
 ) (*Response, error) {
 	if c.UserAgent != "" && req != nil {
 		req.Header.Add("User-Agent", c.UserAgent)
+	}
+
+	if len(c.headers) != 0 {
+		for k, v := range c.headers {
+			for _, vals := range v {
+				req.Header.Add(k, vals)
+			}
+		}
 	}
 
 	resp, err := c.DoRAW(ctx, req)
