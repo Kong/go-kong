@@ -21,6 +21,19 @@ func TestNewTestClient(t *testing.T) {
 	assert.NotNil(err)
 }
 
+func TestNewTestClientWithHeaders(t *testing.T) {
+	assert := assert.New(t)
+
+	headers := http.Header{
+		"Key1": []string{"val1", "val2"},
+	}
+
+	client, err := NewTestClientWithHeaders(nil, nil, headers)
+	assert.NoError(err)
+	assert.NotNil(client)
+	assert.Equal(headers, client.headers)
+}
+
 func TestKongStatus(T *testing.T) {
 	assert := assert.New(T)
 
@@ -78,19 +91,36 @@ func TestRootJSON(T *testing.T) {
 func TestDo(T *testing.T) {
 	testcases := []struct {
 		name           string
-		httpClientFunc func() *http.Client
+		kongClientFunc func(headers http.Header) (*Client, error)
+		headers        http.Header
 	}{
 		{
-			name:           "nil http.Client",
-			httpClientFunc: func() *http.Client { return nil },
+			name: "nil http.Client",
+			kongClientFunc: func(_ http.Header) (*Client, error) {
+				return NewTestClient(nil, nil)
+			},
 		},
 		{
-			name:           "default/uninitialized http.Client",
-			httpClientFunc: func() *http.Client { return &http.Client{} },
+			name: "default/uninitialized http.Client",
+			kongClientFunc: func(_ http.Header) (*Client, error) {
+				return NewTestClient(nil, &http.Client{})
+			},
 		},
 		{
-			name:           "default/uninitialized http.Client with HTTPClientWithHeaders",
-			httpClientFunc: func() *http.Client { return HTTPClientWithHeaders(&http.Client{}, nil) },
+			name: "default/uninitialized http.Client with HTTPClientWithHeaders",
+			kongClientFunc: func(_ http.Header) (*Client, error) {
+				return NewTestClient(nil, HTTPClientWithHeaders(&http.Client{}, nil))
+			},
+		},
+		{
+			name: "default http.Client and custom headers",
+			kongClientFunc: func(headers http.Header) (*Client, error) {
+				return NewTestClientWithHeaders(nil, &http.Client{}, headers)
+			},
+			headers: http.Header{
+				"Key1": []string{"val1", "val2"},
+				"Key2": []string{"val3"},
+			},
 		},
 	}
 
@@ -101,7 +131,7 @@ func TestDo(T *testing.T) {
 			assert := assert.New(T)
 			require := require.New(T)
 
-			client, err := NewTestClient(nil, tc.httpClientFunc())
+			client, err := tc.kongClientFunc(tc.headers)
 			require.NoError(err)
 			require.NotNil(client)
 
@@ -112,6 +142,7 @@ func TestDo(T *testing.T) {
 			assert.True(IsNotFoundErr(err), "got %v", err)
 			require.NotNil(resp)
 			assert.Equal(404, resp.StatusCode)
+			assertHeadersExist(T, req, tc.headers)
 
 			req, err = client.NewRequest("POST", "/", nil, nil)
 			assert.NoError(err)
@@ -120,6 +151,7 @@ func TestDo(T *testing.T) {
 			require.NotNil(err)
 			require.NotNil(resp)
 			assert.Equal(405, resp.StatusCode)
+			assertHeadersExist(T, req, tc.headers)
 		})
 	}
 }
@@ -332,5 +364,14 @@ func TestReloadDeclarativeRawConfig(t *testing.T) {
 			// if it's not some transient issue with the testing environment
 			require.NotNilf(t, body, "body was nil; should never be nil")
 		})
+	}
+}
+
+func assertHeadersExist(t *testing.T, request *http.Request, headers http.Header) {
+	for k, v := range headers {
+		assert.Contains(t, request.Header, k)
+		for _, val := range v {
+			assert.Contains(t, request.Header.Values(k), val)
+		}
 	}
 }
