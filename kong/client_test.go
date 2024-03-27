@@ -78,19 +78,36 @@ func TestRootJSON(T *testing.T) {
 func TestDo(T *testing.T) {
 	testcases := []struct {
 		name           string
-		httpClientFunc func() *http.Client
+		kongClientFunc func(headers http.Header) (*Client, error)
+		headers        http.Header
 	}{
 		{
-			name:           "nil http.Client",
-			httpClientFunc: func() *http.Client { return nil },
+			name: "nil http.Client",
+			kongClientFunc: func(_ http.Header) (*Client, error) {
+				return NewTestClient(nil, nil)
+			},
 		},
 		{
-			name:           "default/uninitialized http.Client",
-			httpClientFunc: func() *http.Client { return &http.Client{} },
+			name: "default/uninitialized http.Client",
+			kongClientFunc: func(_ http.Header) (*Client, error) {
+				return NewTestClient(nil, &http.Client{})
+			},
 		},
 		{
-			name:           "default/uninitialized http.Client with HTTPClientWithHeaders",
-			httpClientFunc: func() *http.Client { return HTTPClientWithHeaders(&http.Client{}, nil) },
+			name: "default/uninitialized http.Client with HTTPClientWithHeaders",
+			kongClientFunc: func(_ http.Header) (*Client, error) {
+				return NewTestClient(nil, HTTPClientWithHeaders(&http.Client{}, nil))
+			},
+		},
+		{
+			name: "default http.Client and custom headers",
+			kongClientFunc: func(headers http.Header) (*Client, error) {
+				return NewTestClientWithHeaders(nil, &http.Client{}, headers)
+			},
+			headers: http.Header{
+				"key1": []string{"val1", "val2"},
+				"key2": []string{"val3"},
+			},
 		},
 	}
 
@@ -101,7 +118,7 @@ func TestDo(T *testing.T) {
 			assert := assert.New(T)
 			require := require.New(T)
 
-			client, err := NewTestClient(nil, tc.httpClientFunc())
+			client, err := tc.kongClientFunc(tc.headers)
 			require.NoError(err)
 			require.NotNil(client)
 
@@ -113,6 +130,15 @@ func TestDo(T *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(404, resp.StatusCode)
 
+			if len(tc.headers) != 0 {
+				for k, v := range tc.headers {
+					assert.Contains(T, req.Header, k)
+					for _, val := range v {
+						assert.Contains(T, req.Header.Values(k), val)
+					}
+				}
+			}
+
 			req, err = client.NewRequest("POST", "/", nil, nil)
 			assert.NoError(err)
 			require.NotNil(req)
@@ -120,6 +146,15 @@ func TestDo(T *testing.T) {
 			require.NotNil(err)
 			require.NotNil(resp)
 			assert.Equal(405, resp.StatusCode)
+
+			if len(tc.headers) != 0 {
+				for k, v := range tc.headers {
+					assert.Contains(T, req.Header, k)
+					for _, val := range v {
+						assert.Contains(T, req.Header.Values(k), val)
+					}
+				}
+			}
 		})
 	}
 }
