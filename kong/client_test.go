@@ -21,17 +21,17 @@ func TestNewTestClient(t *testing.T) {
 	assert.NotNil(err)
 }
 
-func TestNewTestClientWithHeaders(t *testing.T) {
+func TestNewTestClientWithOptions(t *testing.T) {
 	assert := assert.New(t)
 
-	headers := http.Header{
-		"Key1": []string{"val1", "val2"},
+	doer := func(_ context.Context, _ *http.Client, _ *http.Request) (*http.Response, error) {
+		return nil, nil
 	}
 
-	client, err := NewTestClientWithHeaders(nil, nil, headers)
+	client, err := NewTestClientWithOptions(nil, nil, WithDoer(doer))
 	assert.NoError(err)
 	assert.NotNil(client)
-	assert.Equal(headers, client.headers)
+	assert.NotNil(doer)
 }
 
 func TestKongStatus(T *testing.T) {
@@ -90,36 +90,52 @@ func TestRootJSON(T *testing.T) {
 
 func TestDo(T *testing.T) {
 	testcases := []struct {
-		name           string
-		kongClientFunc func(headers http.Header) (*Client, error)
-		headers        http.Header
+		name              string
+		kongClientFunc    func() (*Client, error)
+		requestAssertions func(t *testing.T, req *http.Request)
 	}{
 		{
 			name: "nil http.Client",
-			kongClientFunc: func(_ http.Header) (*Client, error) {
+			kongClientFunc: func() (*Client, error) {
 				return NewTestClient(nil, nil)
 			},
 		},
 		{
 			name: "default/uninitialized http.Client",
-			kongClientFunc: func(_ http.Header) (*Client, error) {
+			kongClientFunc: func() (*Client, error) {
 				return NewTestClient(nil, &http.Client{})
 			},
 		},
 		{
 			name: "default/uninitialized http.Client with HTTPClientWithHeaders",
-			kongClientFunc: func(_ http.Header) (*Client, error) {
+			kongClientFunc: func() (*Client, error) {
 				return NewTestClient(nil, HTTPClientWithHeaders(&http.Client{}, nil))
 			},
 		},
 		{
-			name: "default http.Client and custom headers",
-			kongClientFunc: func(headers http.Header) (*Client, error) {
-				return NewTestClientWithHeaders(nil, &http.Client{}, headers)
+			name: "default http.Client and custom doer",
+			kongClientFunc: func() (*Client, error) {
+				httpClient := &http.Client{}
+
+				doer := func(_ context.Context, httpClient *http.Client, req *http.Request) (*http.Response, error) {
+					req.Header.Add("Doer", "doer")
+
+					return httpClient.Do(req)
+				}
+
+				return NewTestClientWithOptions(
+					nil,
+					httpClient,
+					WithDoer(doer),
+				)
 			},
-			headers: http.Header{
-				"Key1": []string{"val1", "val2"},
-				"Key2": []string{"val3"},
+			requestAssertions: func(t *testing.T, req *http.Request) {
+				headers := http.Header{
+					"Doer": []string{"doer"},
+				}
+
+				assert.NotNil(t, req)
+				assertHeadersExist(t, req, headers)
 			},
 		},
 	}
@@ -131,7 +147,7 @@ func TestDo(T *testing.T) {
 			assert := assert.New(T)
 			require := require.New(T)
 
-			client, err := tc.kongClientFunc(tc.headers)
+			client, err := tc.kongClientFunc()
 			require.NoError(err)
 			require.NotNil(client)
 
@@ -142,7 +158,10 @@ func TestDo(T *testing.T) {
 			assert.True(IsNotFoundErr(err), "got %v", err)
 			require.NotNil(resp)
 			assert.Equal(404, resp.StatusCode)
-			assertHeadersExist(T, req, tc.headers)
+
+			if tc.requestAssertions != nil {
+				tc.requestAssertions(T, req)
+			}
 
 			req, err = client.NewRequest("POST", "/", nil, nil)
 			assert.NoError(err)
@@ -151,7 +170,10 @@ func TestDo(T *testing.T) {
 			require.NotNil(err)
 			require.NotNil(resp)
 			assert.Equal(405, resp.StatusCode)
-			assertHeadersExist(T, req, tc.headers)
+
+			if tc.requestAssertions != nil {
+				tc.requestAssertions(T, req)
+			}
 		})
 	}
 }

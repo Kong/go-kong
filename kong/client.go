@@ -30,6 +30,10 @@ type service struct {
 	client *Client
 }
 
+type Doer func(ctx context.Context, client *http.Client, req *http.Request) (*http.Response, error)
+
+type Option func(c *Client)
+
 var defaultCtx = context.Background()
 
 // Client talks to the Admin API or control plane of a
@@ -85,7 +89,7 @@ type Client struct {
 	logger         io.Writer
 	debug          bool
 	CustomEntities AbstractCustomEntityService
-	headers        http.Header
+	doer           Doer
 
 	custom.Registry
 }
@@ -105,6 +109,12 @@ type Status struct {
 		TotalRequests       int `json:"total_requests"`
 	} `json:"server"`
 	ConfigurationHash string `json:"configuration_hash,omitempty" yaml:"configuration_hash,omitempty"`
+}
+
+func WithDoer(doer Doer) Option {
+	return func(c *Client) {
+		c.doer = doer
+	}
 }
 
 // NewClient returns a Client which talks to Admin API of Kong
@@ -194,17 +204,16 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	return kong, nil
 }
 
-// NewClientWithHeaders a Client which talks to Admin API of Kong that supports setting
-// the specified headers on each request. This differs from HTTPClientWithHeaders in that the headers
-// are set without modifying the underlying http.Client. This makes this Client suitable for shared
-// http.Clients that can't have their Transport modified.
-func NewClientWithHeaders(baseURL *string, client *http.Client, headers http.Header) (*Client, error) {
+// NewClientWithOptions configures a new client and applies any options specified in opts.
+func NewClientWithOptions(baseURL *string, client *http.Client, opts ...Option) (*Client, error) {
 	c, err := NewClient(baseURL, client)
 	if err != nil {
 		return c, err
 	}
 
-	c.headers = headers
+	for _, o := range opts {
+		o(c)
+	}
 
 	return c, nil
 }
@@ -273,15 +282,19 @@ func (c *Client) Do(
 		req.Header.Add("User-Agent", c.UserAgent)
 	}
 
-	if len(c.headers) != 0 {
-		for k, v := range c.headers {
-			for _, vals := range v {
-				req.Header.Add(k, vals)
-			}
+	// Ideally this would just be an if-else that calls either c.doer or c.DoRaw,
+	// but that hit a bug with bodyclose https://github.com/timakin/bodyclose/issues/21.
+	// Once that bug is fixed this can be simplified.
+	var do func(ctx context.Context, req *http.Request) (*http.Response, error)
+	if c.doer != nil {
+		do = func(ctx context.Context, req *http.Request) (*http.Response, error) {
+			return c.doer(ctx, c.client, req)
 		}
+	} else {
+		do = c.DoRAW
 	}
 
-	resp, err := c.DoRAW(ctx, req)
+	resp, err := do(ctx, req)
 	if err != nil {
 		return nil, err
 	}

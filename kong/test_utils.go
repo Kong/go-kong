@@ -125,7 +125,7 @@ func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
 	return NewClient(baseURL, client)
 }
 
-func NewTestClientWithHeaders(baseURL *string, client *http.Client, headers http.Header) (*Client, error) {
+func NewTestClientWithOptions(baseURL *string, client *http.Client, opts ...Option) (*Client, error) {
 	if value, exists := os.LookupEnv("KONG_ADMIN_TOKEN"); exists && value != "" {
 		c := &http.Client{}
 		defaultTransport := http.DefaultTransport.(*http.Transport)
@@ -136,9 +136,9 @@ func NewTestClientWithHeaders(baseURL *string, client *http.Client, headers http
 			},
 			rt: defaultTransport,
 		}
-		return NewClientWithHeaders(baseURL, c, headers)
+		return NewClientWithOptions(baseURL, c, opts...)
 	}
-	return NewClientWithHeaders(baseURL, client, headers)
+	return NewClientWithOptions(baseURL, client, opts...)
 }
 
 func RunWhenDBMode(t *testing.T, dbmode string) {
