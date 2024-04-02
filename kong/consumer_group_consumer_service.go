@@ -13,7 +13,7 @@ type AbstractConsumerGroupConsumerService interface {
 	// Delete deletes a ConsumerGroupConsumer in Kong
 	Delete(ctx context.Context, consumerGroupNameOrID *string, consumerNameOrID *string) error
 	// ListAll fetches all ConsumerGroup's Consumers in Kong.
-	ListAll(ctx context.Context, consumerGroupNameOrID *string) (*ConsumerGroupObject, error)
+	ListAll(ctx context.Context, consumerGroupNameOrID *string) ([]*Consumer, error)
 }
 
 // ConsumerGroupService handles ConsumerGroup in Kong.
@@ -77,7 +77,7 @@ func (s *ConsumerGroupConsumerService) Delete(ctx context.Context,
 // List fetches a list all of ConsumerGroup's consumers in Kong.
 func (s *ConsumerGroupConsumerService) ListAll(
 	ctx context.Context, consumerGroupNameOrID *string,
-) (*ConsumerGroupObject, error) {
+) ([]*Consumer, error) {
 	if isEmptyString(consumerGroupNameOrID) {
 		return nil, fmt.Errorf("consumerGroupNameOrID cannot be nil for ListAll operation")
 	}
@@ -89,11 +89,24 @@ func (s *ConsumerGroupConsumerService) ListAll(
 		return nil, err
 	}
 
-	var cg ConsumerGroupObject
+	var cg consumerGroupConsumers
 	_, err = s.client.Do(ctx, req, &cg)
 	if err != nil {
 		return nil, err
 	}
 
-	return &cg, nil
+	var consumers []*Consumer
+
+	// See https://github.com/Kong/kong-ee/pull/6421
+	if cg.Consumers != nil {
+		// Kong < 3.5
+		consumers = cg.Consumers
+	} else if cg.Data != nil {
+		// Kong >= 3.5
+		consumers = cg.Data
+	} else {
+		consumers = make([]*Consumer, 0)
+	}
+
+	return consumers, nil
 }

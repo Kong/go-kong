@@ -69,6 +69,7 @@ type Client struct {
 	Keys                    AbstractKeyService
 	KeySets                 AbstractKeySetService
 	Licenses                AbstractLicenseService
+	FilterChains            AbstractFilterChainService
 
 	credentials       abstractCredentialService
 	KeyAuths          AbstractKeyAuthService
@@ -172,6 +173,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.Keys = (*KeyService)(&kong.common)
 	kong.KeySets = (*KeySetService)(&kong.common)
 	kong.Licenses = (*LicenseService)(&kong.common)
+	kong.FilterChains = (*FilterChainService)(&kong.common)
 
 	kong.credentials = (*credentialService)(&kong.common)
 	kong.KeyAuths = (*KeyAuthService)(&kong.common)

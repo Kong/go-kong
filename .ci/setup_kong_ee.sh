@@ -4,7 +4,7 @@ set -e
 
 source $(dirname "$0")/_common.sh
 
-KONG_IMAGE=${KONG_IMAGE_REPO:-kong/kong-gateway}:${KONG_IMAGE_TAG:-3.4}
+KONG_IMAGE=${KONG_IMAGE_REPO:-kong/kong-gateway}:${KONG_IMAGE_TAG:-3.6}
 NETWORK_NAME=kong-test
 
 KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR:-'traditional_compatible'}
@@ -14,6 +14,7 @@ DATABASE_USER=kong
 DATABASE_NAME=kong
 KONG_DB_PASSWORD=kong
 KONG_PG_HOST=pg
+KONG_WASM_FILTERS_PATH=$PWD/assets/filters
 
 GATEWAY_CONTAINER_NAME=kong
 
@@ -47,6 +48,9 @@ function deploy_kong_ee()
     -e "KONG_PORTAL=on" \
     -e "KONG_ADMIN_GUI_SESSION_CONF={}" \
     -e "KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR}" \
+    -e "KONG_WASM=on" \
+    -e "KONG_WASM_FILTERS_PATH=/wasm/filters" \
+    -v "$KONG_WASM_FILTERS_PATH:/wasm/filters:ro" \
     -p 8000:8000 \
     -p 8443:8443 \
     -p 8001:8001 \
@@ -55,6 +59,7 @@ function deploy_kong_ee()
     -p 8445:8445 \
     -p 8003:8003 \
     -p 8004:8004 \
+    --label "$DOCKER_LABEL" \
     $KONG_IMAGE
 }
 
