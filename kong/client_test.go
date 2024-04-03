@@ -21,19 +21,6 @@ func TestNewTestClient(t *testing.T) {
 	assert.NotNil(err)
 }
 
-func TestNewTestClientWithOptions(t *testing.T) {
-	assert := assert.New(t)
-
-	doer := func(_ context.Context, _ *http.Client, _ *http.Request) (*http.Response, error) {
-		return nil, nil
-	}
-
-	client, err := NewTestClientWithOptions(nil, nil, WithDoer(doer))
-	assert.NoError(err)
-	assert.NotNil(client)
-	assert.NotNil(doer)
-}
-
 func TestKongStatus(T *testing.T) {
 	assert := assert.New(T)
 
@@ -123,11 +110,13 @@ func TestDo(T *testing.T) {
 					return httpClient.Do(req)
 				}
 
-				return NewTestClientWithOptions(
-					nil,
-					httpClient,
-					WithDoer(doer),
-				)
+				client, err := NewTestClient(nil, httpClient)
+				if err != nil {
+					return client, err
+				}
+
+				return client.SetDoer(doer), nil
+
 			},
 			requestAssertions: func(t *testing.T, req *http.Request) {
 				headers := http.Header{

@@ -30,9 +30,8 @@ type service struct {
 	client *Client
 }
 
+// Doer is the function signature for a Client request dispatcher.
 type Doer func(ctx context.Context, client *http.Client, req *http.Request) (*http.Response, error)
-
-type Option func(c *Client)
 
 var defaultCtx = context.Background()
 
@@ -110,12 +109,6 @@ type Status struct {
 		TotalRequests       int `json:"total_requests"`
 	} `json:"server"`
 	ConfigurationHash string `json:"configuration_hash,omitempty" yaml:"configuration_hash,omitempty"`
-}
-
-func WithDoer(doer Doer) Option {
-	return func(c *Client) {
-		c.doer = doer
-	}
 }
 
 // NewClient returns a Client which talks to Admin API of Kong
@@ -206,18 +199,15 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	return kong, nil
 }
 
-// NewClientWithOptions configures a new client and applies any options specified in opts.
-func NewClientWithOptions(baseURL *string, client *http.Client, opts ...Option) (*Client, error) {
-	c, err := NewClient(baseURL, client)
-	if err != nil {
-		return c, err
-	}
+// SetDoer sets a Doer implementation to be used for custom request dispatching.
+func (c *Client) SetDoer(doer Doer) *Client {
+	c.doer = doer
+	return c
+}
 
-	for _, o := range opts {
-		o(c)
-	}
-
-	return c, nil
+// Doer returns the Doer used by this client.
+func (c *Client) Doer() Doer {
+	return c.doer
 }
 
 // SetWorkspace sets the Kong Enteprise workspace in the client.
@@ -275,6 +265,9 @@ func (c *Client) DoRAW(ctx context.Context, req *http.Request) (*http.Response, 
 // the response body. Do supports wither an io.Writer (which will contain the
 // response body verbatim) or anything else which the body should be unmarshalled
 // into.
+//
+// By default, Do() calls DoRaw() to send the request and return the response before unmarshalling, logging,
+// and error handling. The Client's WithDoer() method allows overriding this to inject custom behavior.
 func (c *Client) Do(
 	ctx context.Context,
 	req *http.Request,
@@ -284,19 +277,15 @@ func (c *Client) Do(
 		req.Header.Add("User-Agent", c.UserAgent)
 	}
 
-	// Ideally this would just be an if-else that calls either c.doer or c.DoRaw,
-	// but that hit a bug with bodyclose https://github.com/timakin/bodyclose/issues/21.
-	// Once that bug is fixed this can be simplified.
-	var do func(ctx context.Context, req *http.Request) (*http.Response, error)
+	var resp *http.Response
+	var err error
+
 	if c.doer != nil {
-		do = func(ctx context.Context, req *http.Request) (*http.Response, error) {
-			return c.doer(ctx, c.client, req)
-		}
+		resp, err = c.doer(ctx, c.client, req)
 	} else {
-		do = c.DoRAW
+		resp, err = c.DoRAW(ctx, req)
 	}
 
-	resp, err := do(ctx, req)
 	if err != nil {
 		return nil, err
 	}
