@@ -17,6 +17,7 @@ on:
 
 jobs:
   test:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     strategy:
       matrix:
         # Skip explicitly to avoid spawning many unnecessary jobs,
@@ -89,6 +90,7 @@ jobs:
           fail_ci_if_error: true
 
   test-passed:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     runs-on: ubuntu-latest
     needs: test
     if: always()
