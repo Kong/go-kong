@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.54.0](#v0540)
 - [v0.53.0](#v0530)
 - [v0.52.0](#v0520)
 - [v0.51.0](#v0510)
@@ -64,6 +65,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.54.0]
+
+> Release date: 2024/04/03
+
+- Allow overriding Client request dispatch function.
+  [#430](https://github.com/Kong/go-kong/pull/430)
 
 ## [v0.53.0]
 
@@ -869,6 +877,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.54.0]: https://github.com/Kong/go-kong/compare/v0.53.0...v0.54.0
 [v0.53.0]: https://github.com/Kong/go-kong/compare/v0.52.0...v0.53.0
 [v0.52.0]: https://github.com/Kong/go-kong/compare/v0.51.0...v0.52.0
 [v0.51.0]: https://github.com/Kong/go-kong/compare/v0.50.0...v0.51.0
