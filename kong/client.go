@@ -30,6 +30,9 @@ type service struct {
 	client *Client
 }
 
+// Doer is the function signature for a Client request dispatcher.
+type Doer func(ctx context.Context, client *http.Client, req *http.Request) (*http.Response, error)
+
 var defaultCtx = context.Background()
 
 // Client talks to the Admin API or control plane of a
@@ -86,6 +89,7 @@ type Client struct {
 	logger         io.Writer
 	debug          bool
 	CustomEntities AbstractCustomEntityService
+	doer           Doer
 
 	custom.Registry
 }
@@ -195,6 +199,17 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	return kong, nil
 }
 
+// SetDoer sets a Doer implementation to be used for custom request dispatching.
+func (c *Client) SetDoer(doer Doer) *Client {
+	c.doer = doer
+	return c
+}
+
+// Doer returns the Doer used by this client.
+func (c *Client) Doer() Doer {
+	return c.doer
+}
+
 // SetWorkspace sets the Kong Enteprise workspace in the client.
 // Calling this function with an empty string resets the workspace to default workspace.
 func (c *Client) SetWorkspace(workspace string) {
@@ -250,6 +265,9 @@ func (c *Client) DoRAW(ctx context.Context, req *http.Request) (*http.Response, 
 // the response body. Do supports wither an io.Writer (which will contain the
 // response body verbatim) or anything else which the body should be unmarshalled
 // into.
+//
+// By default, Do() calls DoRaw() to send the request and return the response before unmarshalling, logging,
+// and error handling. The Client's WithDoer() method allows overriding this to inject custom behavior.
 func (c *Client) Do(
 	ctx context.Context,
 	req *http.Request,
@@ -259,7 +277,15 @@ func (c *Client) Do(
 		req.Header.Add("User-Agent", c.UserAgent)
 	}
 
-	resp, err := c.DoRAW(ctx, req)
+	var resp *http.Response
+	var err error
+
+	if c.doer != nil {
+		resp, err = c.doer(ctx, c.client, req) //nolint:bodyclose
+	} else {
+		resp, err = c.DoRAW(ctx, req) //nolint:bodyclose
+	}
+
 	if err != nil {
 		return nil, err
 	}
