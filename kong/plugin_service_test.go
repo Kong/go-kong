@@ -564,7 +564,7 @@ func TestFillPluginDefaults(T *testing.T) {
 	}{
 		{
 			name:    "no config no protocols",
-			version: ">=3.7.0",
+			version: ">=3.6.0",
 			plugin: &Plugin{
 				Name:  String("basic-auth"),
 				RunOn: String("test"),
@@ -575,7 +575,9 @@ func TestFillPluginDefaults(T *testing.T) {
 				Config: Configuration{
 					"anonymous":        nil,
 					"hide_credentials": false,
-					"realm":            "service",
+					// NOTE: realm has been introduced in 3.6 basic auth schema
+					// https://docs.konghq.com/hub/kong-inc/basic-auth/changelog/#kong-gateway-36x
+					"realm": "service",
 				},
 				Protocols: []*string{String("grpc"), String("grpcs"), String("http"), String("https")},
 				Enabled:   Bool(true),
@@ -583,7 +585,7 @@ func TestFillPluginDefaults(T *testing.T) {
 		},
 		{
 			name:    "no config no protocols",
-			version: "<3.7.0",
+			version: "<3.6.0",
 			plugin: &Plugin{
 				Name:  String("basic-auth"),
 				RunOn: String("test"),
@@ -601,7 +603,7 @@ func TestFillPluginDefaults(T *testing.T) {
 		},
 		{
 			name:    "partial config no protocols",
-			version: ">=3.7.0",
+			version: ">=3.6.0",
 			plugin: &Plugin{
 				Name: String("basic-auth"),
 				Consumer: &Consumer{
@@ -619,7 +621,9 @@ func TestFillPluginDefaults(T *testing.T) {
 				Config: Configuration{
 					"anonymous":        nil,
 					"hide_credentials": true,
-					"realm":            "service",
+					// NOTE: realm has been introduced in 3.6 basic auth schema
+					// https://docs.konghq.com/hub/kong-inc/basic-auth/changelog/#kong-gateway-36x
+					"realm": "service",
 				},
 				Protocols: []*string{String("grpc"), String("grpcs"), String("http"), String("https")},
 				Enabled:   Bool(true),
@@ -627,7 +631,7 @@ func TestFillPluginDefaults(T *testing.T) {
 		},
 		{
 			name:    "partial config no protocols",
-			version: "<3.7.0",
+			version: "<3.6.0",
 			plugin: &Plugin{
 				Name: String("basic-auth"),
 				Consumer: &Consumer{
