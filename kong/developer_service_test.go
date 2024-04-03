@@ -9,7 +9,8 @@ import (
 
 func TestDevelopersService(T *testing.T) {
 	RunWhenEnterprise(T, ">=0.33.0", RequiredFeatures{Portal: true})
-	RunWhenEnterprise(T, "<3.7.0", RequiredFeatures{Portal: true})
+	// NOTE: Developer Portal is not available in Kong < 3.5.0. Requires special config/license to enable.
+	RunWhenEnterprise(T, "<3.5.0", RequiredFeatures{Portal: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -80,7 +81,8 @@ func TestDevelopersService(T *testing.T) {
 
 func TestDeveloperListEndpoint(T *testing.T) {
 	RunWhenEnterprise(T, ">=0.33.0", RequiredFeatures{Portal: true})
-	RunWhenEnterprise(T, "<3.7.0", RequiredFeatures{Portal: true})
+	// NOTE: Developer Portal is not available in Kong < 3.5.0. Requires special config/license to enable.
+	RunWhenEnterprise(T, "<3.5.0", RequiredFeatures{Portal: true})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

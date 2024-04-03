@@ -5,41 +5,47 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeveloperRoleService(T *testing.T) {
 	RunWhenEnterprise(T, ">=0.33.0", RequiredFeatures{Portal: true})
-	RunWhenEnterprise(T, "<3.7.0", RequiredFeatures{Portal: true})
+	// NOTE: Developer Portal is not available in Kong < 3.5.0. Requires special config/license to enable.
+	RunWhenEnterprise(T, "<3.5.0", RequiredFeatures{Portal: true})
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	testWs, err := NewTestWorkspace(client, "default")
-	assert.NoError(err)
-	assert.NoError(testWs.UpdateConfig(map[string]interface{}{"portal": true}))
+	require.NoError(err)
+	T.Cleanup(func() {
+		assert.NoError(testWs.Reset())
+	})
 
+	require.NoError(testWs.UpdateConfig(map[string]interface{}{"portal": true}))
 	role := &DeveloperRole{
 		Name: String("roleA"),
 	}
 
 	createdRole, err := client.DeveloperRoles.Create(defaultCtx, role)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdRole)
 
 	role, err = client.DeveloperRoles.Get(defaultCtx, createdRole.ID)
-	assert.NoError(err)
-	assert.NotNil(role)
+	require.NoError(err)
+	require.NotNil(role)
 
 	role.Comment = String("new comment")
 	role, err = client.DeveloperRoles.Update(defaultCtx, role)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(role)
 	assert.Equal("roleA", *role.Name)
 
 	err = client.DeveloperRoles.Delete(defaultCtx, createdRole.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -49,28 +55,32 @@ func TestDeveloperRoleService(T *testing.T) {
 	}
 
 	createdRole, err = client.DeveloperRoles.Create(defaultCtx, role)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdRole)
 	assert.Equal(id, *createdRole.ID)
 
 	err = client.DeveloperRoles.Delete(defaultCtx, createdRole.ID)
-	assert.NoError(err)
-
-	assert.NoError(testWs.Reset())
+	require.NoError(err)
 }
 
 func TestDeveloperRoleServiceList(T *testing.T) {
 	RunWhenEnterprise(T, ">=0.33.0", RequiredFeatures{Portal: true})
-	RunWhenEnterprise(T, "<3.7.0", RequiredFeatures{Portal: true})
+	// NOTE: Developer Portal is not available in Kong < 3.5.0. Requires special config/license to enable.
+	RunWhenEnterprise(T, "<3.5.0", RequiredFeatures{Portal: true})
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	testWs, err := NewTestWorkspace(client, "default")
-	assert.NoError(err)
-	assert.NoError(testWs.UpdateConfig(map[string]interface{}{"portal": true}))
+	require.NoError(err)
+	T.Cleanup(func() {
+		assert.NoError(testWs.Reset())
+	})
+
+	require.NoError(testWs.UpdateConfig(map[string]interface{}{"portal": true}))
 
 	roleA := &DeveloperRole{
 		Name: String("roleA"),
@@ -80,36 +90,41 @@ func TestDeveloperRoleServiceList(T *testing.T) {
 	}
 
 	createdRoleA, err := client.DeveloperRoles.Create(defaultCtx, roleA)
-	assert.NoError(err)
+	require.NoError(err)
+	T.Cleanup(func() {
+		assert.NoError(client.DeveloperRoles.Delete(defaultCtx, createdRoleA.ID))
+	})
+
 	createdRoleB, err := client.DeveloperRoles.Create(defaultCtx, roleB)
-	assert.NoError(err)
+	require.NoError(err)
+	T.Cleanup(func() {
+		assert.NoError(client.DeveloperRoles.Delete(defaultCtx, createdRoleB.ID))
+	})
 
 	roles, next, err := client.DeveloperRoles.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(roles)
-	assert.Equal(2, len(roles))
-
-	err = client.DeveloperRoles.Delete(defaultCtx, createdRoleA.ID)
-	assert.NoError(err)
-	err = client.DeveloperRoles.Delete(defaultCtx, createdRoleB.ID)
-	assert.NoError(err)
-
-	assert.NoError(testWs.Reset())
+	assert.Len(roles, 2)
 }
 
 func TestDeveloperRoleListEndpoint(T *testing.T) {
 	RunWhenEnterprise(T, ">=0.33.0", RequiredFeatures{Portal: true})
-	RunWhenEnterprise(T, "<3.7.0", RequiredFeatures{Portal: true})
+	// NOTE: Developer Portal is not available in Kong < 3.5.0. Requires special config/license to enable.
+	RunWhenEnterprise(T, "<3.5.0", RequiredFeatures{Portal: true})
 	assert := assert.New(T)
+	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	testWs, err := NewTestWorkspace(client, "default")
-	assert.NoError(err)
-	assert.NoError(testWs.UpdateConfig(map[string]interface{}{"portal": true}))
+	require.NoError(err)
+	T.Cleanup(func() {
+		assert.NoError(testWs.Reset())
+	})
+	require.NoError(testWs.UpdateConfig(map[string]interface{}{"portal": true}))
 
 	// fixtures
 	roles := []*DeveloperRole{
@@ -127,13 +142,17 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 	// create fixturs
 	for i := 0; i < len(roles); i++ {
 		role, err := client.DeveloperRoles.Create(defaultCtx, roles[i])
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(role)
+		T.Cleanup(func() {
+			id := *role.ID
+			assert.NoError(client.DeveloperRoles.Delete(defaultCtx, &id))
+		})
 		roles[i] = role
 	}
 
 	rolesFromKong, next, err := client.DeveloperRoles.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(rolesFromKong)
 	assert.Equal(3, len(rolesFromKong))
@@ -146,7 +165,7 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 
 	// first page
 	page1, next, err := client.DeveloperRoles.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
 	assert.Equal(1, len(page1))
@@ -155,7 +174,7 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 	// last page
 	next.Size = 2
 	page2, next, err := client.DeveloperRoles.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
 	assert.Equal(2, len(page2))
@@ -164,15 +183,9 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 	assert.True(compareDeveloperRoles(roles, rolesFromKong))
 
 	roles, err = client.DeveloperRoles.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(roles)
 	assert.Equal(3, len(roles))
-
-	for i := 0; i < len(roles); i++ {
-		assert.NoError(client.DeveloperRoles.Delete(defaultCtx, roles[i].ID))
-	}
-
-	assert.NoError(testWs.Reset())
 }
 
 func compareDeveloperRoles(expected, actual []*DeveloperRole) bool {

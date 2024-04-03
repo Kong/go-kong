@@ -211,6 +211,7 @@ func getConfigSchema(schema gjson.Result) (gjson.Result, error) {
 func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 	res := config.DeepCopy()
 	value := schema.Get("fields")
+	defaultRecordValue := schema.Get("default")
 
 	value.ForEach(func(_, value gjson.Result) bool {
 		// get the key name
@@ -308,7 +309,15 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 				}
 			}
 		}
-		value = value.Get(fname + ".default")
+
+		// Check if the record has a default value for the specified field.
+		// If so, use it. If not, fall back to the default value of the field itself.
+		if defaultRecordValue.Exists() && defaultRecordValue.Get(fname).Exists() {
+			value = defaultRecordValue.Get(fname)
+		} else {
+			value = value.Get(fname + ".default")
+		}
+
 		if value.Exists() {
 			res[fname] = value.Value()
 		} else {

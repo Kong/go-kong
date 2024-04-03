@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.53.0](#v0530)
 - [v0.52.0](#v0520)
 - [v0.51.0](#v0510)
 - [v0.50.0](#v0500)
@@ -63,6 +64,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.53.0]
+
+> Release date: 
+
+- Support record-level default schema values.
+  [#431](https://github.com/Kong/go-kong/pull/431)
 
 ## [v0.52.0]
 
@@ -861,6 +869,8 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.53.0]: https://github.com/Kong/go-kong/compare/v0.52.0...v0.53.0
+[v0.52.0]: https://github.com/Kong/go-kong/compare/v0.51.0...v0.52.0
 [v0.51.0]: https://github.com/Kong/go-kong/compare/v0.50.0...v0.51.0
 [v0.50.0]: https://github.com/Kong/go-kong/compare/v0.49.0...v0.50.0
 [v0.49.0]: https://github.com/Kong/go-kong/compare/v0.48.0...v0.49.0

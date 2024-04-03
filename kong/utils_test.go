@@ -667,6 +667,91 @@ const AcmeSchema = `{
     ]
 }`
 
+const defaultRecordSchema = `{
+	"fields": [
+			{
+					"config": {
+							"fields": [
+									{
+											"endpoint": {
+													"description": "endpoint",
+													"referenceable": true,
+													"required": true,
+													"type": "string"
+											}
+									},
+									{
+											"queue": {
+													"default": {
+															"max_batch_size": 200
+													},
+													"fields": [
+															{
+																	"max_batch_size": {
+																			"between": [
+																					1,
+																					1000000
+																			],
+																			"default": 1,
+																			"type": "integer"
+																	}
+															},
+															{
+																	"max_coalescing_delay": {
+																			"between": [
+																					0,
+																					3600
+																			],
+																			"default": 1,
+																			"type": "number"
+																	}
+															}
+													],
+													"required": true,
+													"type": "record"
+											}
+									},
+									{
+											"propagation": {
+													"default": {
+															"default_format": "w3c"
+													},
+													"fields": [
+															{
+																	"extract": {
+																			"elements": {
+																					"one_of": [
+																							"w3c",
+																							"b3"
+																					],
+																					"type": "string"
+																			},
+																			"type": "array"
+																	}
+															},
+															{
+																	"default_format": {
+																			"one_of": [
+																					"w3c",
+																					"b3"
+																			],
+																			"required": true,
+																			"type": "string"
+																	}
+															}
+													],
+													"required": true,
+													"type": "record"
+											}
+									}
+							],
+							"required": true,
+							"type": "record"
+					}
+			}
+	]
+}`
+
 func TestStringArrayToString(t *testing.T) {
 	assert := assert.New(t)
 
@@ -2203,6 +2288,81 @@ func Test_FillPluginsDefaults_Acme(t *testing.T) {
 			err := json.Unmarshal([]byte(AcmeSchema), &fullSchema)
 
 			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func Test_FillPluginsDefaults_DefaultRecord(t *testing.T) {
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "record defaults take precedence over fields defaults",
+			plugin: &Plugin{
+				Config: Configuration{
+					"endpoint": "http://test.test:4317",
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"endpoint": "http://test.test:4317",
+					"propagation": map[string]interface{}{
+						"default_format": string("w3c"), // from record defaults
+						"extract":        nil,           // from field defaults
+					},
+					"queue": map[string]interface{}{
+						"max_batch_size":       float64(200), // from record defaults
+						"max_coalescing_delay": float64(1),   // from field defaults
+					},
+				},
+			},
+		},
+		{
+			name: "configured values take precedence over record defaults",
+			plugin: &Plugin{
+				Config: Configuration{
+					"endpoint": "http://test.test:4317",
+					"propagation": map[string]interface{}{
+						"default_format": "b3",
+					},
+					"queue": map[string]interface{}{
+						"max_batch_size": 123,
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"endpoint": "http://test.test:4317",
+					"propagation": map[string]interface{}{
+						"default_format": string("b3"),
+						"extract":        nil, // from field defaults
+					},
+					"queue": map[string]interface{}{
+						"max_batch_size":       float64(123),
+						"max_coalescing_delay": float64(1), // from field defaults
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+			var fullSchema map[string]interface{}
+			require.NoError(t, json.Unmarshal([]byte(defaultRecordSchema), &fullSchema))
 			require.NotNil(t, fullSchema)
 			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
