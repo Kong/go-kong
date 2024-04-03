@@ -281,9 +281,9 @@ func (c *Client) Do(
 	var err error
 
 	if c.doer != nil {
-		resp, err = c.doer(ctx, c.client, req)
+		resp, err = c.doer(ctx, c.client, req) //nolint:bodyclose
 	} else {
-		resp, err = c.DoRAW(ctx, req)
+		resp, err = c.DoRAW(ctx, req) //nolint:bodyclose
 	}
 
 	if err != nil {

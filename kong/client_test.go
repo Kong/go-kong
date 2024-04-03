@@ -116,7 +116,6 @@ func TestDo(T *testing.T) {
 				}
 
 				return client.SetDoer(doer), nil
-
 			},
 			requestAssertions: func(t *testing.T, req *http.Request) {
 				headers := http.Header{
