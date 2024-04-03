@@ -106,7 +106,7 @@ func TestDo(T *testing.T) {
 			require.NotNil(client)
 
 			req, err := client.NewRequest("GET", "/does-not-exist", nil, nil)
-			assert.NoError(err)
+			require.NoError(err)
 			require.NotNil(req)
 			resp, err := client.Do(context.Background(), req, nil)
 			assert.True(IsNotFoundErr(err), "got %v", err)
@@ -114,7 +114,7 @@ func TestDo(T *testing.T) {
 			assert.Equal(404, resp.StatusCode)
 
 			req, err = client.NewRequest("POST", "/", nil, nil)
-			assert.NoError(err)
+			require.NoError(err)
 			require.NotNil(req)
 			resp, err = client.Do(context.Background(), req, nil)
 			require.NotNil(err)
