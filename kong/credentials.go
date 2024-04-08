@@ -28,6 +28,7 @@ type BasicAuth struct {
 	Username  *string   `json:"username,omitempty" yaml:"username,omitempty"`
 	Password  *string   `json:"password,omitempty" yaml:"password,omitempty"`
 	Tags      []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	SkipHash  *bool     `json:"_skip_hash,omitempty" yaml:"_skip_hash,omitempty"`
 }
 
 func (c BasicAuth) id() *string {

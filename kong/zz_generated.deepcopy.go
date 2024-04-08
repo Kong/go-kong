@@ -279,6 +279,11 @@ func (in *BasicAuth) DeepCopyInto(out *BasicAuth) {
 			}
 		}
 	}
+	if in.SkipHash != nil {
+		in, out := &in.SkipHash, &out.SkipHash
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 

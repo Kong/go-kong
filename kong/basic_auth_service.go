@@ -9,11 +9,11 @@ import (
 type AbstractBasicAuthService interface {
 	// Create creates a basic-auth credential in Kong
 	// is auto-generated.
-	Create(ctx context.Context, consumerUsernameOrID *string, basicAuth *BasicAuth) (*BasicAuth, error)
+	Create(ctx context.Context, consumerUsernameOrID *string, basicAuth *BasicAuthSkipHash) (*BasicAuth, error)
 	// Get fetches a basic-auth credential from Kong.
 	Get(ctx context.Context, consumerUsernameOrID, usernameOrID *string) (*BasicAuth, error)
 	// Update updates a basic-auth credential in Kong
-	Update(ctx context.Context, consumerUsernameOrID *string, basicAuth *BasicAuth) (*BasicAuth, error)
+	Update(ctx context.Context, consumerUsernameOrID *string, basicAuth *BasicAuthSkipHash) (*BasicAuth, error)
 	// Delete deletes a basic-auth credential in Kong
 	Delete(ctx context.Context, consumerUsernameOrID, usernameOrID *string) error
 	// List fetches a list of basic-auth credentials in Kong.
@@ -28,15 +28,36 @@ type AbstractBasicAuthService interface {
 // BasicAuthService handles basic-auth credentials in Kong.
 type BasicAuthService service
 
+type BasicAuthSkipHash struct {
+	Consumer  *Consumer `json:"consumer,omitempty" yaml:"consumer,omitempty"`
+	CreatedAt *int      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
+	Username  *string   `json:"username,omitempty" yaml:"username,omitempty"`
+	Password  *string   `json:"password,omitempty" yaml:"password,omitempty"`
+	Tags      []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	SkipHash  *bool     `json:"_skip_hash,omitempty" yaml:"_skip_hash,omitempty"`
+}
+
 // Create creates a basic-auth credential in Kong
 // If an ID is specified, it will be used to
 // create a basic-auth in Kong, otherwise an ID
 // is auto-generated.
 func (s *BasicAuthService) Create(ctx context.Context,
-	consumerUsernameOrID *string, basicAuth *BasicAuth,
+	consumerUsernameOrID *string, basicAuth *BasicAuthSkipHash,
 ) (*BasicAuth, error) {
+	var skipHash bool
+	if basicAuth.SkipHash != nil {
+		skipHash = *basicAuth.SkipHash
+	}
+	newBasicAuth := &BasicAuth{
+		Consumer: basicAuth.Consumer,
+		ID:       basicAuth.ID,
+		Password: basicAuth.Password,
+		Username: basicAuth.Username,
+		Tags:     basicAuth.Tags,
+	}
 	cred, err := s.client.credentials.Create(ctx, "basic-auth",
-		consumerUsernameOrID, basicAuth)
+		consumerUsernameOrID, newBasicAuth, skipHash)
 	if err != nil {
 		return nil, err
 	}
@@ -71,10 +92,23 @@ func (s *BasicAuthService) Get(ctx context.Context,
 
 // Update updates a basic-auth credential in Kong
 func (s *BasicAuthService) Update(ctx context.Context,
-	consumerUsernameOrID *string, basicAuth *BasicAuth,
+	consumerUsernameOrID *string, basicAuth *BasicAuthSkipHash,
 ) (*BasicAuth, error) {
+	var skipHash bool
+	if basicAuth.SkipHash != nil {
+		skipHash = *basicAuth.SkipHash
+		basicAuth.SkipHash = nil
+	}
+
+	newBasicAuth := &BasicAuth{
+		Consumer: basicAuth.Consumer,
+		ID:       basicAuth.ID,
+		Password: basicAuth.Password,
+		Username: basicAuth.Username,
+		Tags:     basicAuth.Tags,
+	}
 	cred, err := s.client.credentials.Update(ctx, "basic-auth",
-		consumerUsernameOrID, basicAuth)
+		consumerUsernameOrID, newBasicAuth, skipHash)
 	if err != nil {
 		return nil, err
 	}

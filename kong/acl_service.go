@@ -35,7 +35,7 @@ func (s *ACLService) Create(ctx context.Context,
 	consumerUsernameOrID *string, aclGroup *ACLGroup,
 ) (*ACLGroup, error) {
 	cred, err := s.client.credentials.Create(ctx, "acl",
-		consumerUsernameOrID, aclGroup)
+		consumerUsernameOrID, aclGroup, false)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (s *ACLService) Update(ctx context.Context,
 	consumerUsernameOrID *string, aclGroup *ACLGroup,
 ) (*ACLGroup, error) {
 	cred, err := s.client.credentials.Update(ctx, "acl",
-		consumerUsernameOrID, aclGroup)
+		consumerUsernameOrID, aclGroup, false)
 	if err != nil {
 		return nil, err
 	}

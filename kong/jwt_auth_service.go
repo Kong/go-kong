@@ -35,7 +35,7 @@ func (s *JWTAuthService) Create(ctx context.Context,
 	consumerUsernameOrID *string, jwtAuth *JWTAuth,
 ) (*JWTAuth, error) {
 	cred, err := s.client.credentials.Create(ctx, "jwt-auth",
-		consumerUsernameOrID, jwtAuth)
+		consumerUsernameOrID, jwtAuth, false)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (s *JWTAuthService) Update(ctx context.Context,
 	consumerUsernameOrID *string, jwtAuth *JWTAuth,
 ) (*JWTAuth, error) {
 	cred, err := s.client.credentials.Update(ctx, "jwt-auth",
-		consumerUsernameOrID, jwtAuth)
+		consumerUsernameOrID, jwtAuth, false)
 	if err != nil {
 		return nil, err
 	}

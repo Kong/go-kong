@@ -36,7 +36,7 @@ func (s *Oauth2Service) Create(ctx context.Context,
 	oauth2Cred *Oauth2Credential,
 ) (*Oauth2Credential, error) {
 	cred, err := s.client.credentials.Create(ctx, "oauth2",
-		consumerUsernameOrID, oauth2Cred)
+		consumerUsernameOrID, oauth2Cred, false)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (s *Oauth2Service) Update(ctx context.Context,
 	oauth2Cred *Oauth2Credential,
 ) (*Oauth2Credential, error) {
 	cred, err := s.client.credentials.Update(ctx, "oauth2",
-		consumerUsernameOrID, oauth2Cred)
+		consumerUsernameOrID, oauth2Cred, false)
 	if err != nil {
 		return nil, err
 	}

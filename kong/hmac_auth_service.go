@@ -35,7 +35,7 @@ func (s *HMACAuthService) Create(ctx context.Context,
 	consumerUsernameOrID *string, hmacAuth *HMACAuth,
 ) (*HMACAuth, error) {
 	cred, err := s.client.credentials.Create(ctx, "hmac-auth",
-		consumerUsernameOrID, hmacAuth)
+		consumerUsernameOrID, hmacAuth, false)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (s *HMACAuthService) Update(ctx context.Context,
 	consumerUsernameOrID *string, hmacAuth *HMACAuth,
 ) (*HMACAuth, error) {
 	cred, err := s.client.credentials.Update(ctx, "hmac-auth",
-		consumerUsernameOrID, hmacAuth)
+		consumerUsernameOrID, hmacAuth, false)
 	if err != nil {
 		return nil, err
 	}
