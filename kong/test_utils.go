@@ -67,7 +67,10 @@ func RunWhenEnterprise(t *testing.T, versionRange string, required RequiredFeatu
 	if !currentVersion.IsKongGatewayEnterprise() {
 		t.Skip("non-Enterprise test Kong instance, skipping")
 	}
-	configuration := info["configuration"].(map[string]interface{})
+	configuration, ok := info["configuration"].(map[string]interface{})
+	if !ok {
+		t.Errorf("failed to cast 'configuration' to map[string]interface{}")
+	}
 
 	if required.RBAC && configuration["rbac"].(string) != "on" {
 		t.Skip("RBAC not enabled on test Kong instance, skipping")
