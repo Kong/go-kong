@@ -69,7 +69,7 @@ func RunWhenEnterprise(t *testing.T, versionRange string, required RequiredFeatu
 	}
 	configuration, ok := info["configuration"].(map[string]interface{})
 	if !ok {
-		t.Errorf("Failed to cast 'configuration' to map[string]interface{}.")
+		t.Errorf("failed to cast 'configuration' to map[string]interface{}.")
 	}
 
 	if required.RBAC && configuration["rbac"].(string) != "on" {
