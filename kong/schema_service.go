@@ -7,13 +7,31 @@ import (
 	"net/http"
 )
 
+// EntityType describes a type of Kong entity.
+type EntityType string
+
+// Defition of constants for standard types of Kong entities.
+const (
+	EntityTypeServices       EntityType = "services"
+	EntityTypeRoutes         EntityType = "routes"
+	EntityTypeUpstreams      EntityType = "upstreams"
+	EntityTypeTargets        EntityType = "targets"
+	EntityTypePlugins        EntityType = "plugins"
+	EntityTypeConsumers      EntityType = "consumers"
+	EntityTypeConsumerGroups EntityType = "consumer_groups"
+	EntityTypeSNIs           EntityType = "snis"
+	EntityTypeCertificates   EntityType = "certificates"
+	EntityTypeCACertificates EntityType = "ca_certificates"
+	EntityTypeTags           EntityType = "tags"
+)
+
 // AbstractSchemaService handles schemas in Kong.
 type AbstractSchemaService interface {
 	// Get fetches an entity schema from Kong.
 	Get(ctx context.Context, entity string) (Schema, error)
 	// Validate validates an arbitrary entity in Kong.
-	// Used for custom entities, or entities that does not have a Validate method in the corresponding service.
-	Validate(ctx context.Context, entityType string, entity interface{}) (bool, string, error)
+	// Used for custom entities, or entities that do not have a Validate method in the corresponding service.
+	Validate(ctx context.Context, entityType EntityType, entity interface{}) (bool, string, error)
 }
 
 // SchemaService handles schemas in Kong.
@@ -39,7 +57,7 @@ func (s *SchemaService) Get(ctx context.Context, entity string) (Schema, error) 
 }
 
 // Validate validates an arbitrary entity in Kong.
-func (s *SchemaService) Validate(ctx context.Context, entityType string, entity interface{}) (bool, string, error) {
+func (s *SchemaService) Validate(ctx context.Context, entityType EntityType, entity interface{}) (bool, string, error) {
 	endpoint := fmt.Sprintf("/schemas/%s/validate", entityType)
 	req, err := s.client.NewRequest("POST", endpoint, nil, entity)
 	if err != nil {

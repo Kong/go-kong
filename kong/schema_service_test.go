@@ -40,13 +40,13 @@ func TestSchemaServiceValidate(t *testing.T) {
 
 	testCases := []struct {
 		name       string
-		entityType string
+		entityType EntityType
 		entity     any
 		valid      bool
 	}{
 		{
 			name:       "valid service should pass the validation",
-			entityType: "services",
+			entityType: EntityTypeServices,
 			entity: &Service{
 				Name: String("test.service"),
 				Host: String("foo.com"),
@@ -55,7 +55,7 @@ func TestSchemaServiceValidate(t *testing.T) {
 		},
 		{
 			name:       "invalid service (invalid protocol) should fail the validation",
-			entityType: "services",
+			entityType: EntityTypeServices,
 			entity: &Service{
 				Name:     String("test.service"),
 				Host:     String("foo.com"),
