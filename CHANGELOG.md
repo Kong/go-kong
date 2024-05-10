@@ -66,6 +66,12 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
+## Unreleased
+
+- Add `Validate` method in `SchemaService` to validate arbitrary type of Kong
+  entities.
+  [#443](https://github.com/Kong/go-kong/pull/443)
+
 ## [v0.54.0]
 
 > Release date: 2024/04/03
