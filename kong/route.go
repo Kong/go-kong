@@ -42,6 +42,14 @@ type Route struct {
 	ResponseBuffering *bool `json:"response_buffering,omitempty" yaml:"response_buffering,omitempty"`
 }
 
+const (
+	// maxRoutePriorityBits is the maximum number of bits that can be used in `priority` field of route.
+	maxRoutePriorityBits = 46
+	// MaxRoutePriority is the maximum value can be used in `priority` field of routes when Kong gateway runs expression router.
+	// Kong gateway 3.7 has limited it to 2^46-1 .
+	MaxRoutePriority = (1 << maxRoutePriorityBits) - 1
+)
+
 // CIDRPort represents a set of CIDR and a port.
 // +k8s:deepcopy-gen=true
 type CIDRPort struct {

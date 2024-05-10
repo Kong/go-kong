@@ -418,7 +418,7 @@ func TestRoutesValidationExpressions(T *testing.T) {
 			name: "valid expression with priority",
 			route: &Route{
 				Expression: String(`lower(http.path) ^= "/prefix/"`),
-				Priority:   Uint64(3382097767104500),
+				Priority:   Uint64(MaxRoutePriority),
 			},
 			valid: true,
 		},
