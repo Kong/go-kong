@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.55.0](#v0550)
 - [v0.54.0](#v0540)
 - [v0.53.0](#v0530)
 - [v0.52.0](#v0520)
@@ -66,7 +67,9 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
-## Unreleased
+## [v0.55.0]
+
+> Release date: 2024/05/14
 
 - Add `Validate` method in `SchemaService` to validate arbitrary type of Kong
   entities.
@@ -883,6 +886,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.55.0]: https://github.com/Kong/go-kong/compare/v0.54.0...v0.55.0
 [v0.54.0]: https://github.com/Kong/go-kong/compare/v0.53.0...v0.54.0
 [v0.53.0]: https://github.com/Kong/go-kong/compare/v0.52.0...v0.53.0
 [v0.52.0]: https://github.com/Kong/go-kong/compare/v0.51.0...v0.52.0
