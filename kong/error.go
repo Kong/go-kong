@@ -76,6 +76,26 @@ func IsForbiddenErr(e error) bool {
 	return false
 }
 
+// IsMethodNotAllowedErr returns true if the error or its cause is
+// a 405 response from Kong.
+func IsMethodNotAllowedErr(e error) bool {
+	var apiErr *APIError
+	if errors.As(e, &apiErr) {
+		return apiErr.httpCode == http.StatusMethodNotAllowed
+	}
+	return false
+}
+
+// IsBadRequestErr returns true if the error or its cause is
+// a 400 response from Kong.
+func IsBadRequestErr(e error) bool {
+	var apiErr *APIError
+	if errors.As(e, &apiErr) {
+		return apiErr.httpCode == http.StatusBadRequest
+	}
+	return false
+}
+
 // ErrTooManyRequestsDetails is expected to be available under APIError.Details()
 // when the API returns status code 429 (Too many requests) and a `Retry-After` header
 // is set.

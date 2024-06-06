@@ -51,12 +51,24 @@ func TestAPIError_Code(T *testing.T) {
 	assert.True(kongErr.Code() == 404)
 }
 
+type errorTransport struct {
+	code    int
+	message string
+}
+
+func (et *errorTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
+	return nil, NewAPIError(et.code, et.message)
+}
+
 func TestIsForbiddenErrE2E(T *testing.T) {
 	assert := assert.New(T)
 
 	// Create the http client with a custom transport
 	// always returning a 403
-	forbiddenTransport := &forbiddenTransport{}
+	forbiddenTransport := &errorTransport{
+		code:    http.StatusForbidden,
+		message: "Enterprise license missing or expired",
+	}
 	httpClient := &http.Client{
 		Transport: forbiddenTransport,
 	}
@@ -72,12 +84,50 @@ func TestIsForbiddenErrE2E(T *testing.T) {
 	assert.True(IsForbiddenErr(err))
 }
 
-type forbiddenTransport struct{}
+func TestIsMethodNotAllowedErrE2E(T *testing.T) {
+	assert := assert.New(T)
 
-func (ft *forbiddenTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
-	// Create a new response with 403 status code
-	return nil, NewAPIError(
-		http.StatusForbidden,
-		"Enterprise license missing or expired",
-	)
+	// Create the http client with a custom transport
+	// always returning a 405
+	methodNotAllowedTransport := &errorTransport{
+		code:    http.StatusMethodNotAllowed,
+		message: "Method Not Allowed",
+	}
+	httpClient := &http.Client{
+		Transport: methodNotAllowedTransport,
+	}
+	// if KONG_ADMIN_TOKEN is set, a different custom transport would be used
+	T.Setenv("KONG_ADMIN_TOKEN", "")
+
+	client, err := NewTestClient(nil, httpClient)
+	require.NoError(T, err)
+	require.NotNil(T, client)
+
+	_, err = client.Consumers.ListAll(defaultCtx)
+	require.Error(T, err)
+	assert.True(IsMethodNotAllowedErr(err))
+}
+
+func TestIsBadRequestErrE2E(T *testing.T) {
+	assert := assert.New(T)
+
+	// Create the http client with a custom transport
+	// always returning a 405
+	badRequestTransport := &errorTransport{
+		code:    http.StatusBadRequest,
+		message: "Bad Request",
+	}
+	httpClient := &http.Client{
+		Transport: badRequestTransport,
+	}
+	// if KONG_ADMIN_TOKEN is set, a different custom transport would be used
+	T.Setenv("KONG_ADMIN_TOKEN", "")
+
+	client, err := NewTestClient(nil, httpClient)
+	require.NoError(T, err)
+	require.NotNil(T, client)
+
+	_, err = client.Consumers.ListAll(defaultCtx)
+	require.Error(T, err)
+	assert.True(IsBadRequestErr(err))
 }
