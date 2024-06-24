@@ -67,6 +67,14 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
+## [v0.56.0]
+
+> Release date: 2024/06/25
+
+- `ReloadDeclarativeRawConfig` now returns `APIError` when it retrieves a valid 
+  HTTP response, allowing inspection of the response status code.
+  [#452](https://github.com/Kong/go-kong/pull/452)
+
 ## [v0.55.0]
 
 > Release date: 2024/05/14

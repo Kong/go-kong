@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"os"
 	"testing"
@@ -363,7 +364,8 @@ func TestReloadDeclarativeRawConfig(t *testing.T) {
 			body, err := client.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true, flattenErrors)
 
 			if tt.wantErr {
-				assert.Errorf(t, err, "Client.SendConfig() got unexpected error")
+				assert.Error(t, err)
+				require.IsType(t, err, &APIError{}, "expected APIError")
 			} else {
 				assert.NoError(t, err)
 			}
@@ -375,6 +377,20 @@ func TestReloadDeclarativeRawConfig(t *testing.T) {
 			require.NotNilf(t, body, "body was nil; should never be nil")
 		})
 	}
+}
+
+func TestReloadDeclarativeRawConfig_NetworkErrorDoesntReturnAPIError(t *testing.T) {
+	RunWhenDBMode(t, "off")
+	SkipWhenKongRouterFlavor(t, Expressions)
+
+	// Point to a non-reachable URL so that we get a network error.
+	client, err := NewClient(String("http://non-reachable.url"), nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	_, err = client.ReloadDeclarativeRawConfig(context.Background(), bytes.NewReader([]byte("dummy-config")), true, true)
+	require.Error(t, err)
+	require.False(t, errors.Is(err, &APIError{}), "expected error to not be an APIError")
 }
 
 func assertHeadersExist(t *testing.T, request *http.Request, headers http.Header) {
