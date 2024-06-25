@@ -470,13 +470,13 @@ func (c *Client) BaseRootURL() string {
 // API endpoint using the provided reader which should contain the JSON
 // serialized body that adheres to the configuration format specified at:
 // https://docs.konghq.com/gateway/latest/production/deployment-topologies/db-less-and-declarative-config/#declarative-configuration-format
-// It returns the response body and an error, if it encounters any.
+// It returns APIError with a response body in case it receives a valid HTTP response with <200 or >=400 status codes.
 func (c *Client) ReloadDeclarativeRawConfig(
 	ctx context.Context,
 	config io.Reader,
 	checkHash bool,
 	flattenErrors bool,
-) ([]byte, error) {
+) error {
 	type sendConfigParams struct {
 		CheckHash     int `url:"check_hash,omitempty"`
 		FlattenErrors int `url:"flatten_errors,omitempty"`
@@ -496,22 +496,22 @@ func (c *Client) ReloadDeclarativeRawConfig(
 		config,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("creating new HTTP request for /config: %w", err)
+		return fmt.Errorf("creating new HTTP request for /config: %w", err)
 	}
 
 	resp, err := c.DoRAW(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("failed posting new config to /config: %w", err)
+		return fmt.Errorf("failed posting new config to /config: %w", err)
 	}
 	defer resp.Body.Close()
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("could not read /config %d status response body: %w", resp.StatusCode, err)
+		return fmt.Errorf("could not read /config %d status response body: %w", resp.StatusCode, err)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
-		return b, NewAPIErrorWithRaw(resp.StatusCode, "failed posting new config to /config", b)
+		return NewAPIErrorWithRaw(resp.StatusCode, "failed posting new config to /config", b)
 	}
 
-	return b, nil
+	return nil
 }

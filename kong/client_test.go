@@ -361,20 +361,16 @@ func TestReloadDeclarativeRawConfig(t *testing.T) {
 			b, err := json.Marshal(tt.config)
 			require.NoError(t, err)
 
-			body, err := client.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true, flattenErrors)
+			err = client.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true, flattenErrors)
 
 			if tt.wantErr {
 				assert.Error(t, err)
-				require.IsType(t, err, &APIError{}, "expected APIError")
+				apiErr := &APIError{}
+				assert.True(t, errors.As(err, &apiErr))
+				assert.NotEmpty(t, apiErr.Raw(), "expected non-empty response body in APIError")
 			} else {
 				assert.NoError(t, err)
 			}
-
-			// this is somewhat untrue: network or HTTP-level failures _can_ result in a nil response body. however,
-			// none of our test cases should cause network or HTTP-level failures, so fail if they do occur. if this
-			// _does_ encounter such a failure, we need to investigate and either update tests or fix some upstream bug
-			// if it's not some transient issue with the testing environment
-			require.NotNilf(t, body, "body was nil; should never be nil")
 		})
 	}
 }
@@ -388,7 +384,7 @@ func TestReloadDeclarativeRawConfig_NetworkErrorDoesntReturnAPIError(t *testing.
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
-	_, err = client.ReloadDeclarativeRawConfig(context.Background(), bytes.NewReader([]byte("dummy-config")), true, true)
+	err = client.ReloadDeclarativeRawConfig(context.Background(), bytes.NewReader([]byte("dummy-config")), true, true)
 	require.Error(t, err)
 	require.False(t, errors.Is(err, &APIError{}), "expected error to not be an APIError")
 }
