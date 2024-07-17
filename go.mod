@@ -12,6 +12,7 @@ replace github.com/imdario/mergo v0.3.12 => github.com/Kong/mergo v0.3.13
 retract v0.39.1
 
 require (
+	github.com/Masterminds/semver v1.5.0
 	github.com/google/go-cmp v0.6.0
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.6.0

@@ -11,6 +11,8 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"regexp"
+	"strings"
 	"sync"
 	"time"
 
@@ -18,7 +20,14 @@ import (
 )
 
 const (
+	// ref: https://docs.konghq.com/gateway/latest/production/networking/default-ports/
+	// defaultBaseURL is the endpoint for admin API
 	defaultBaseURL = "http://localhost:8001"
+	// defaultStatusURL is the endpoint for status API
+	// By default, the Status API listens on 127.0.0.1
+	// If you need to request it from elsewhere,
+	// please modify the `KONG_STATUS_LISTEN` environment variable of Gateway.
+	defaultStatusURL = "http://localhost:8007"
 	// DefaultTimeout is the timeout used for network connections and requests
 	// including TCP, TLS and HTTP layers.
 	DefaultTimeout = 60 * time.Second
@@ -40,6 +49,7 @@ var defaultCtx = context.Background()
 type Client struct {
 	client                  *http.Client
 	baseRootURL             string
+	statusURL               string
 	workspace               string       // Do not access directly. Use Workspace()/SetWorkspace().
 	UserAgent               string       // User-Agent for the client.
 	workspaceLock           sync.RWMutex // Synchronizes access to workspace.
@@ -111,8 +121,39 @@ type Status struct {
 	ConfigurationHash string `json:"configuration_hash,omitempty" yaml:"configuration_hash,omitempty"`
 }
 
-// NewClient returns a Client which talks to Admin API of Kong
-func NewClient(baseURL *string, client *http.Client) (*Client, error) {
+type StatusMessage struct {
+	Message string `json:"message"`
+}
+
+type RequestOptions struct {
+	BaseURL   *string
+	StatusURL *string
+}
+
+func parseStatusListen(listen string) string {
+	re := regexp.MustCompile(`^([\w\.:]+)\s*(.*)?`)
+	matches := re.FindStringSubmatch(listen)
+
+	if len(matches) == 0 {
+		return ""
+	}
+
+	address := matches[1]
+	extraParams := matches[2]
+
+	// use http protocol by default
+	protocol := "http://"
+
+	// if the listen address contains ssl, use https protocol
+	if strings.Contains(extraParams, "ssl") {
+		protocol = "https://"
+	}
+
+	return fmt.Sprintf("%s%s", protocol, address)
+}
+
+// NewClientWithOpts returns a Client which talks to Kong's Admin API and Status API.
+func NewClientWithOpts(requestOpts RequestOptions, client *http.Client) (*Client, error) {
 	if client == nil {
 		transport := &http.Transport{
 			DialContext: (&net.Dialer{
@@ -128,18 +169,36 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong := new(Client)
 	kong.client = client
 	var rootURL string
-	if baseURL != nil {
-		rootURL = *baseURL
+	if requestOpts.BaseURL != nil {
+		rootURL = *requestOpts.BaseURL
 	} else if urlFromEnv := os.Getenv("KONG_ADMIN_URL"); urlFromEnv != "" {
 		rootURL = urlFromEnv
 	} else {
 		rootURL = defaultBaseURL
 	}
-	url, err := url.ParseRequestURI(rootURL)
+	parsedRootURL, err := url.ParseRequestURI(rootURL)
 	if err != nil {
 		return nil, fmt.Errorf("parsing URL: %w", err)
 	}
-	kong.baseRootURL = url.String()
+	kong.baseRootURL = parsedRootURL.String()
+
+	var statusURL string
+	if requestOpts.StatusURL != nil {
+		statusURL = *requestOpts.StatusURL
+	} else if listenFromEnv := os.Getenv("KONG_STATUS_LISTEN"); listenFromEnv != "" {
+		// KONG_STATUS_LISTEN supports the configuration formats of Kong/Nginx.
+		// Only the most commonly used format is handled here.
+		// TODO: Support more formats.
+		// https://github.com/Kong/kong/blob/2384d2e129d223010fb8a4bb686afb028dca972f/kong.conf.default#L643-L663
+		statusURL = parseStatusListen(listenFromEnv)
+	} else {
+		statusURL = defaultStatusURL
+	}
+	parsedStatusURL, err := url.ParseRequestURI(statusURL)
+	if err != nil {
+		return nil, fmt.Errorf("parsing statusURL: %w", err)
+	}
+	kong.statusURL = parsedStatusURL.String()
 
 	kong.common.client = kong
 	kong.ConsumerGroupConsumers = (*ConsumerGroupConsumerService)(&kong.common)
@@ -197,6 +256,11 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	}
 	kong.logger = os.Stderr
 	return kong, nil
+}
+
+// NewClient returns a Client which talks to Admin API of Kong
+func NewClient(baseURL *string, client *http.Client) (*Client, error) {
+	return NewClientWithOpts(RequestOptions{BaseURL: baseURL}, client)
 }
 
 // SetDoer sets a Doer implementation to be used for custom request dispatching.
@@ -389,6 +453,21 @@ func (c *Client) Status(ctx context.Context) (*Status, error) {
 		return nil, err
 	}
 	return &s, nil
+}
+
+// Ready returns 200 only after the Kong node has configured itself and is ready to start proxying traffic.
+func (c *Client) Ready(ctx context.Context) (*StatusMessage, error) {
+	req, err := http.NewRequest("GET", c.statusURL+"/status/ready", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var sm StatusMessage
+	_, err = c.Do(ctx, req, &sm)
+	if err != nil {
+		return nil, err
+	}
+	return &sm, nil
 }
 
 // Config gets the specified config from the configured Admin API endpoint

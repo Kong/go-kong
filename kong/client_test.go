@@ -9,6 +9,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/Masterminds/semver"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"sigs.k8s.io/yaml"
@@ -32,6 +33,53 @@ func TestKongStatus(T *testing.T) {
 	status, err := client.Status(defaultCtx)
 	assert.NoError(err)
 	assert.NotNil(status)
+}
+
+func TestKongReady(t *testing.T) {
+	kongImageTag := os.Getenv("KONG_IMAGE_TAG")
+	if kongImageTag == "" {
+		t.Skip("KONG_IMAGE_TAG environment variable is not set")
+	}
+
+	currentVersion, err := semver.NewVersion(kongImageTag)
+	if err != nil {
+		// We have set the KONG_IMAGE_TAG env var to master when running the test for nightly builds.
+		if kongImageTag != "master" {
+			t.Fatalf("Failed to parse KONG_IMAGE_TAG: %v", err)
+		}
+	} else {
+
+		// This API was only made available since Kong v3.3.
+		// ref: https://docs.konghq.com/gateway/api/status/latest/#/default/get_status_ready
+		minVersion, err := semver.NewVersion("3.3")
+		if err != nil {
+			t.Fatalf("Failed to parse the minimum required version: %v", err)
+		}
+
+		// Compare the versions and skip the test if the current version is less than the minimum version
+		if currentVersion.LessThan(minVersion) {
+			t.Skipf("Skipping test because KONG_IMAGE_TAG %s is less than 3.3", kongImageTag)
+		}
+	}
+
+	assert := assert.New(t)
+
+	client, err := NewTestClientWithOpts(RequestOptions{
+		BaseURL:   String("http://localhost:8001"),
+		StatusURL: String("http://localhost:8100"),
+	}, nil)
+	assert.NoError(err)
+	assert.NotNil(client)
+
+	sm, err := client.Ready(defaultCtx)
+	if err != nil {
+		// for dbless mode, the ready endpoint returns 503
+		assert.Equal("HTTP status 503 (message: \"no configuration available (empty configuration present)\")", err.Error())
+		assert.Nil(sm)
+	} else {
+		// for db-mode, the ready endpoint returns 200
+		assert.Equal("ready", sm.Message)
+	}
 }
 
 func TestKongConfig(t *testing.T) {

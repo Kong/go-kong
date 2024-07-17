@@ -112,6 +112,16 @@ func SkipWhenEnterprise(t *testing.T) {
 	}
 }
 
+func NewTestClientWithOpts(opts RequestOptions, client *http.Client) (*Client, error) {
+	return NewClientWithOpts(
+		RequestOptions{
+			BaseURL:   opts.BaseURL,
+			StatusURL: opts.StatusURL,
+		},
+		client,
+	)
+}
+
 func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
 	if value, exists := os.LookupEnv("KONG_ADMIN_TOKEN"); exists && value != "" {
 		c := &http.Client{}
