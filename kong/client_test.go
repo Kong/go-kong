@@ -63,13 +63,16 @@ func TestKongReady(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
-	client, err := NewTestClientWithOpts(RequestOptions{
-		BaseURL:   String("http://localhost:8001"),
-		StatusURL: String("http://localhost:8100"),
-	}, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	client, err := NewTestClientWithOpts(
+		RequestOptions{
+			BaseURL:   String("http://localhost:8001"),
+			StatusURL: String("http://localhost:8100"),
+		}, nil,
+	)
+	require.NoError(err)
+	require.NotNil(client)
 
 	sm, err := client.Ready(defaultCtx)
 	if err != nil {

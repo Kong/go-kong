@@ -20,11 +20,11 @@ import (
 )
 
 const (
-	// ref: https://docs.konghq.com/gateway/latest/production/networking/default-ports/
-	// defaultBaseURL is the endpoint for admin API
+	// defaultBaseURL is the endpoint for admin API.
+	// ref: https://docs.konghq.com/gateway/latest/production/networking/default-ports/	
 	defaultBaseURL = "http://localhost:8001"
 	// defaultStatusURL is the endpoint for status API
-	// By default, the Status API listens on 127.0.0.1
+	// By default, the Status API listens on localhost.
 	// If you need to request it from elsewhere,
 	// please modify the `KONG_STATUS_LISTEN` environment variable of Gateway.
 	defaultStatusURL = "http://localhost:8007"
