@@ -208,6 +208,27 @@ func getConfigSchema(schema gjson.Result) (gjson.Result, error) {
 	return schema, fmt.Errorf("no 'config' field found in schema")
 }
 
+// traverseConfigMap recursively traverses a plugin config
+// and returns the value at the specified path.
+// The path is represented as a slice of strings, where each string is a key in the map.
+//
+// If the path is empty, nil is returned.
+//
+// If the path cannot be fully traversed (e.g., a non-existent key is encountered),
+// this function returns nil and an appropriate error.
+//
+// This function can be helpful to fetch the nested config value from a backward translation
+// path provided with deprecated fields.
+//
+// Example usage:
+//
+//	configMap := map[string]interface{}{
+//		"foo": map[string]interface{}{
+//			"bar": 42,
+//		},
+//	}
+//	value, err := traverseConfigMap(configMap, []string{"foo", "bar"})
+//	// value comes 42 here
 func traverseConfigMap(currentConfigMap map[string]interface{}, path []string) (interface{}, error) {
 	if len(path) == 0 {
 		return nil, nil
@@ -228,6 +249,16 @@ func traverseConfigMap(currentConfigMap map[string]interface{}, path []string) (
 	}
 }
 
+// backfillResultConfigMap recursively traverses a nested Configuration struct
+// and sets the value at the specified path to the provided configValue.
+// The path is represented as a slice of strings, where each string is a key
+// in the nested map[string]interface{} fields of the Configuration struct.
+//
+// If the path cannot be fully traversed (e.g., a non-existent key is encountered),
+// this function returns an appropriate error.
+//
+// An example usage here is when for a plugin redis_port is changed, we can change
+// redis.port from the config struct too.
 func backfillResultConfigMap(res Configuration, path []string, configValue interface{}) error {
 	// Traverse the map to the second-to-last level
 	for i, p := range path {
@@ -239,7 +270,7 @@ func backfillResultConfigMap(res Configuration, path []string, configValue inter
 		// Traverse to the next level
 		next, ok := res[p].(map[string]interface{})
 		if !ok {
-			return fmt.Errorf("backward_translation path incorrect")
+			return fmt.Errorf("backward_translation path %q incorrect", p)
 		}
 		res = next
 	}
@@ -409,6 +440,8 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 		}
 
 		if deprecatedFieldValue != nil {
+			// This block attempts to fill defaults for deprecated fields.
+			// Thus, not erroring out here, as it is not vital.
 			_ = backfillResultConfigMap(res, configPathForBackwardTranslation, deprecatedFieldValue)
 			return true
 		}
