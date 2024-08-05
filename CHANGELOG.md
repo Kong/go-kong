@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.57.1](#v0571)
 - [v0.57.0](#v0570)
 - [v0.56.0](#v0560)
 - [v0.55.0](#v0550)
@@ -68,6 +69,15 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.57.1]
+
+> Release date: 2024/08/05
+
+- Fill default values for shorthand_fields in plugin configuration. 
+  If values are passed for shorthand_fields, they are retained and 
+  nested configuration is backfilled with shorthand_field values. 
+  [#458](https://github.com/Kong/go-kong/pull/458)
 
 ## [v0.57.0]
 
@@ -905,6 +915,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.57.1]: https://github.com/Kong/go-kong/compare/v0.57.0...v0.57.1
 [v0.57.0]: https://github.com/Kong/go-kong/compare/v0.56.0...v0.57.0
 [v0.56.0]: https://github.com/Kong/go-kong/compare/v0.55.0...v0.56.0
 [v0.55.0]: https://github.com/Kong/go-kong/compare/v0.54.0...v0.55.0
