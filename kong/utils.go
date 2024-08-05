@@ -208,12 +208,53 @@ func getConfigSchema(schema gjson.Result) (gjson.Result, error) {
 	return schema, fmt.Errorf("no 'config' field found in schema")
 }
 
+func traverseConfigMap(currentConfigMap map[string]interface{}, path []string) (interface{}, error) {
+	if len(path) == 0 {
+		return nil, nil
+	}
+
+	pathElement := path[0]
+	value, ok := currentConfigMap[pathElement]
+	if !ok {
+		return nil, fmt.Errorf("key %q not found in map", pathElement)
+	}
+
+	switch v := value.(type) {
+	case map[string]interface{}:
+		// Traversing the map recursively, dissecting the path each time
+		return traverseConfigMap(v, path[1:])
+	default:
+		return v, nil
+	}
+}
+
+func backfillResultConfigMap(res Configuration, path []string, configValue interface{}) error {
+	// Traverse the map to the second-to-last level
+	for i, p := range path {
+		if i == len(path)-1 {
+			// Last element in the path, update the value
+			res[p] = configValue
+			return nil
+		}
+		// Traverse to the next level
+		next, ok := res[p].(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("backward_translation path incorrect")
+		}
+		res = next
+	}
+
+	return nil
+}
+
 func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 	res := config.DeepCopy()
-	value := schema.Get("fields")
+	configFields := schema.Get("fields")
+	// Fetch deprecated fields
+	shortHandFields := schema.Get("shorthand_fields")
 	defaultRecordValue := schema.Get("default")
 
-	value.ForEach(func(_, value gjson.Result) bool {
+	configFields.ForEach(func(_, value gjson.Result) bool {
 		// get the key name
 		ms := value.Map()
 		fname := ""
@@ -324,6 +365,63 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 			// if no default exists, set an explicit nil
 			res[fname] = nil
 		}
+		return true
+	})
+
+	// Filling defaults for deprecated fields
+	// Required for deck sync/diff inorder
+	// Otherwise, users keep seeing updates in these fields despite of no change
+	shortHandFields.ForEach(func(_, value gjson.Result) bool {
+		ms := value.Map()
+		fname := ""
+		for k := range ms {
+			fname = k
+			break
+		}
+
+		var deprecatedFieldValue interface{}
+
+		// check if key is already set in the config
+		if v, ok := config[fname]; ok {
+			if v != nil {
+				// This config's value should be retained.
+				// Also, the resul config 'res' may have a different value for some nested fields than this.
+				// As per current conventions, shorthand fields take priority when different values are present
+				// in equivalent shorthand configs and normal nested configs.
+				// Backfilling nested configs to reduce inconsistencies.
+				deprecatedFieldValue = v
+			}
+		}
+
+		// Using path provided in backwards translation to get
+		// the defaults for deprecated fields from the already formed default config
+		backwardTranslation := value.Get(fname + ".translate_backwards")
+
+		if !backwardTranslation.Exists() {
+			// This block attempts to fill defaults for deprecated fields.
+			// Thus, not erroring out here, as it is not vital.
+			return true
+		}
+
+		var configPathForBackwardTranslation []string
+		for _, value := range backwardTranslation.Array() {
+			configPathForBackwardTranslation = append(configPathForBackwardTranslation, value.Str)
+		}
+
+		if deprecatedFieldValue != nil {
+			_ = backfillResultConfigMap(res, configPathForBackwardTranslation, deprecatedFieldValue)
+			return true
+		}
+
+		configValue, err := traverseConfigMap(res, configPathForBackwardTranslation)
+		if err != nil {
+			// This block attempts to fill defaults for deprecated fields.
+			// Thus, not erroring out here, as it is not vital.
+			return true
+		}
+
+		res[fname] = configValue
+
 		return true
 	})
 
