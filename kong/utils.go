@@ -416,7 +416,7 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 		if v, ok := config[fname]; ok {
 			if v != nil {
 				// This config's value should be retained.
-				// Also, the resul config 'res' may have a different value for some nested fields than this.
+				// Also, the result config 'res' may have a different value for some nested fields than this.
 				// As per current conventions, shorthand fields take priority when different values are present
 				// in equivalent shorthand configs and normal nested configs.
 				// Backfilling nested configs to reduce inconsistencies.
@@ -434,7 +434,7 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 			return true
 		}
 
-		var configPathForBackwardTranslation []string
+		configPathForBackwardTranslation := make([]string, 0, len(backwardTranslation.Array()))
 		for _, value := range backwardTranslation.Array() {
 			configPathForBackwardTranslation = append(configPathForBackwardTranslation, value.Str)
 		}
