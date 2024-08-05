@@ -1855,6 +1855,162 @@ func Test_fillConfigRecord(t *testing.T) {
 	}
 }
 
+const fillConfigRecordTestSchemaWithShorthandFields = `{
+	"fields": {
+		"config": {
+			"type": "record",
+			"shorthand_fields": [
+				{
+					"redis_port": {
+						"translate_backwards": [
+							"redis",
+							"port"
+						],
+						"type": "integer"
+					}
+				},
+				{
+					"redis_host": {
+						"translate_backwards": [
+							"redis",
+							"host"
+						],
+						"type": "string"
+					}
+				}
+			],
+			"fields": [
+				{
+					"enabled": {
+						"type": "boolean",
+						"default": true,
+						"required": true
+					}
+				},
+				{
+					"mappings": {
+						"required": false,
+						"type": "array",
+						"elements": {
+							"type": "record",
+							"fields": [
+								{
+									"name": {
+										"type": "string",
+										"required": false
+									}
+								},
+								{
+									"nationality": {
+										"type": "string",
+										"required": false
+									}
+								}
+							]
+						}
+					}
+				},
+				{
+					"empty_record": {
+						"type": "record",
+						"required": true,
+						"fields": []
+					}
+				},
+				{
+					"redis": {
+						"required": true,
+						"description": "Redis configuration",
+						"type": "record",
+						"fields": [
+							{
+								"host": {
+									"type": "string"
+								}
+							},
+							{
+								"port": {
+									"default": 6379,
+									"type": "integer"
+								}
+							}
+						]
+					}
+				}
+			]
+		}
+	}
+}
+`
+
+func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
+	tests := []struct {
+		name     string
+		schema   gjson.Result
+		config   Configuration
+		expected Configuration
+	}{
+		{
+			name:   "fills defaults for all missing fields",
+			schema: gjson.Parse(fillConfigRecordTestSchemaWithShorthandFields),
+			config: Configuration{
+				"mappings": []any{
+					map[string]any{
+						"nationality": "Ethiopian",
+					},
+				},
+			},
+			expected: Configuration{
+				"enabled": true,
+				"mappings": []any{
+					Configuration{
+						"name":        nil,
+						"nationality": "Ethiopian",
+					},
+				},
+				"empty_record": map[string]any{},
+				"redis": map[string]interface{}{
+					"host": nil,
+					"port": float64(6379),
+				},
+				"redis_port": float64(6379),
+				"redis_host": nil,
+			},
+		},
+		{
+			name:   "backfills nested fields if shorthand field values are changed",
+			schema: gjson.Parse(fillConfigRecordTestSchemaWithShorthandFields),
+			config: Configuration{
+				"redis_host": "localhost",
+				"redis_port": float64(8000),
+			},
+			expected: Configuration{
+				"enabled":      true,
+				"mappings":     nil,
+				"empty_record": map[string]any{},
+				"redis": map[string]interface{}{
+					"host": "localhost",
+					"port": float64(8000),
+				},
+				"redis_port": float64(8000),
+				"redis_host": "localhost",
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			configSchema, err := getConfigSchema(tc.schema)
+			require.NoError(t, err)
+			config := fillConfigRecord(configSchema, tc.config)
+			require.NotNil(t, config)
+			if diff := cmp.Diff(config, tc.expected); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
 func Test_FillPluginsDefaults(t *testing.T) {
 	defaultMetrics := []any{
 		map[string]any{
