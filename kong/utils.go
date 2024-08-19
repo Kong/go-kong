@@ -393,8 +393,8 @@ func fillConfigRecord(schema gjson.Result, config Configuration) Configuration {
 		if value.Exists() {
 			res[fname] = value.Value()
 		} else {
-			// if no default exists, set an explicit nil
-			res[fname] = nil
+			// if no default exists, remove the field
+			delete(res, fname)
 		}
 		return true
 	})

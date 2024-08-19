@@ -573,7 +573,6 @@ func TestFillPluginDefaults(T *testing.T) {
 				Name:  String("basic-auth"),
 				RunOn: String("test"),
 				Config: Configuration{
-					"anonymous":        nil,
 					"hide_credentials": false,
 					// NOTE: realm has been introduced in 3.6 basic auth schema
 					// https://docs.konghq.com/hub/kong-inc/basic-auth/changelog/#kong-gateway-36x
@@ -594,7 +593,6 @@ func TestFillPluginDefaults(T *testing.T) {
 				Name:  String("basic-auth"),
 				RunOn: String("test"),
 				Config: Configuration{
-					"anonymous":        nil,
 					"hide_credentials": false,
 				},
 				Protocols: []*string{String("grpc"), String("grpcs"), String("http"), String("https")},
@@ -619,7 +617,6 @@ func TestFillPluginDefaults(T *testing.T) {
 					ID: String("3bb9a73c-a467-11ec-b909-0242ac120002"),
 				},
 				Config: Configuration{
-					"anonymous":        nil,
 					"hide_credentials": true,
 					// NOTE: realm has been introduced in 3.6 basic auth schema
 					// https://docs.konghq.com/hub/kong-inc/basic-auth/changelog/#kong-gateway-36x
@@ -647,7 +644,6 @@ func TestFillPluginDefaults(T *testing.T) {
 					ID: String("3bb9a73c-a467-11ec-b909-0242ac120002"),
 				},
 				Config: Configuration{
-					"anonymous":        nil,
 					"hide_credentials": true,
 				},
 				Protocols: []*string{String("grpc"), String("grpcs"), String("http"), String("https")},
@@ -678,7 +674,6 @@ func TestFillPluginDefaults(T *testing.T) {
 			expected: &Plugin{
 				Name: String("request-transformer"),
 				Config: Configuration{
-					"http_method": nil,
 					"add": map[string]interface{}{
 						"body":        []interface{}{},
 						"headers":     "x-new-header:value",
@@ -703,7 +698,6 @@ func TestFillPluginDefaults(T *testing.T) {
 						"body":        []interface{}{},
 						"headers":     []interface{}{},
 						"querystring": []interface{}{},
-						"uri":         nil,
 					},
 				},
 				Protocols: []*string{String("grpc"), String("grpcs")},

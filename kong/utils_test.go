@@ -1801,7 +1801,6 @@ func Test_fillConfigRecord(t *testing.T) {
 				"enabled": true,
 				"mappings": []any{
 					Configuration{
-						"name":        nil,
 						"nationality": "Ethiopian",
 					},
 				},
@@ -1823,7 +1822,6 @@ func Test_fillConfigRecord(t *testing.T) {
 				"enabled": true,
 				"mappings": []any{
 					Configuration{
-						"name":        nil,
 						"nationality": "Ethiopian",
 					},
 				},
@@ -1954,17 +1952,14 @@ func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 				"enabled": true,
 				"mappings": []any{
 					Configuration{
-						"name":        nil,
 						"nationality": "Ethiopian",
 					},
 				},
 				"empty_record": map[string]any{},
 				"redis": map[string]interface{}{
-					"host": nil,
 					"port": float64(6379),
 				},
 				"redis_port": float64(6379),
-				"redis_host": nil,
 			},
 		},
 		{
@@ -1976,7 +1971,6 @@ func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 			},
 			expected: Configuration{
 				"enabled":      true,
-				"mappings":     nil,
 				"empty_record": map[string]any{},
 				"redis": map[string]interface{}{
 					"host": "localhost",
@@ -2075,10 +2069,8 @@ func Test_FillPluginsDefaults(t *testing.T) {
 					"prefix": "kong",
 					"metrics": []interface{}{
 						Configuration{
-							"name":                "response_size",
-							"stat_type":           "histogram",
-							"consumer_identifier": nil,
-							"sample_rate":         nil,
+							"name":      "response_size",
+							"stat_type": "histogram",
 						},
 					},
 				},
@@ -2165,10 +2157,9 @@ func Test_FillPluginsDefaults_RequestTransformer(t *testing.T) {
 						"headers":     []any{},
 						"querystring": []any{},
 					},
-					"http_method": nil,
-					"enabled":     true,
-					"id":          "0beef60e-e7e3-40f8-ac47-f6a10b931cee",
-					"name":        "request-transformer",
+					"enabled": true,
+					"id":      "0beef60e-e7e3-40f8-ac47-f6a10b931cee",
+					"name":    "request-transformer",
 					"protocols": []any{
 						"grpc",
 						"grpcs",
@@ -2196,13 +2187,12 @@ func Test_FillPluginsDefaults_RequestTransformer(t *testing.T) {
 						"headers":     []interface{}{},
 						"querystring": []interface{}{},
 					},
-					"remove":      map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}},
-					"rename":      map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}},
-					"replace":     map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}, "uri": nil},
-					"http_method": nil,
-					"enabled":     true,
-					"id":          "0beef60e-e7e3-40f8-ac47-f6a10b931cee",
-					"name":        "request-transformer",
+					"remove":  map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}},
+					"rename":  map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}},
+					"replace": map[string]any{"body": []any{}, "headers": []any{}, "querystring": []any{}},
+					"enabled": true,
+					"id":      "0beef60e-e7e3-40f8-ac47-f6a10b931cee",
+					"name":    "request-transformer",
 					"protocols": []any{
 						"grpc",
 						"grpcs",
@@ -2371,54 +2361,29 @@ func Test_FillPluginsDefaults_Acme(t *testing.T) {
 			},
 			expected: &Plugin{
 				Config: Configuration{
-					"account_email":           nil,
-					"account_key":             nil,
 					"allow_any_domain":        bool(false),
 					"api_uri":                 string("https://acme-v02.api.letsencrypt.org/directory"),
 					"cert_type":               string("rsa"),
-					"domains":                 nil,
-					"eab_hmac_key":            nil,
-					"eab_kid":                 nil,
 					"enable_ipv4_common_name": bool(true),
 					"fail_backoff_minutes":    float64(5),
-					"preferred_chain":         nil,
 					"renew_threshold_days":    float64(14),
 					"rsa_key_size":            float64(4096),
 					"storage":                 string("shm"),
 					"storage_config": map[string]any{
 						"consul": map[string]any{
-							"host":    nil,
-							"https":   bool(false),
-							"kv_path": nil,
-							"port":    nil,
-							"timeout": nil,
-							"token":   nil,
+							"https": bool(false),
 						},
 						"kong": map[string]any{},
 						"redis": map[string]any{
-							"auth":            nil,
-							"database":        nil,
-							"host":            nil,
-							"namespace":       string(""),
-							"port":            nil,
-							"ssl":             bool(false),
-							"ssl_server_name": nil,
-							"ssl_verify":      bool(false),
+							"namespace":  string(""),
+							"ssl":        bool(false),
+							"ssl_verify": bool(false),
 						},
 						"shm": map[string]any{"shm_name": string("kong")},
 						"vault": map[string]any{
-							"auth_method":     string("token"),
-							"auth_path":       nil,
-							"auth_role":       nil,
-							"host":            nil,
-							"https":           bool(false),
-							"jwt_path":        nil,
-							"kv_path":         nil,
-							"port":            nil,
-							"timeout":         nil,
-							"tls_server_name": nil,
-							"tls_verify":      bool(true),
-							"token":           nil,
+							"auth_method": string("token"),
+							"https":       bool(false),
+							"tls_verify":  bool(true),
 						},
 					},
 					"tos_accepted": bool(false),
@@ -2466,7 +2431,6 @@ func Test_FillPluginsDefaults_DefaultRecord(t *testing.T) {
 					"endpoint": "http://test.test:4317",
 					"propagation": map[string]interface{}{
 						"default_format": string("w3c"), // from record defaults
-						"extract":        nil,           // from field defaults
 					},
 					"queue": map[string]interface{}{
 						"max_batch_size":       float64(200), // from record defaults
@@ -2493,7 +2457,6 @@ func Test_FillPluginsDefaults_DefaultRecord(t *testing.T) {
 					"endpoint": "http://test.test:4317",
 					"propagation": map[string]interface{}{
 						"default_format": string("b3"),
-						"extract":        nil, // from field defaults
 					},
 					"queue": map[string]interface{}{
 						"max_batch_size":       float64(123),
