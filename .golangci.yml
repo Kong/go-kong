@@ -14,13 +14,14 @@ linters:
   - errname
   - errorlint
   - exhaustive
-  - exportloopref
+  # TODO: enable when we set minimal Go version to 1.23
+  # - copyloopvar
   - gci
   - gochecknoinits
   - gofmt
   - gofumpt
   - goimports
-  - gomnd
+  - mnd
   - gomodguard
   - gosec
   - gosimple
@@ -28,7 +29,6 @@ linters:
   - importas
   - ineffassign
   - lll
-  - megacheck
   - misspell
   - nakedret
   - nilerr

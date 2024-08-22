@@ -36,8 +36,7 @@ func (s *CustomEntityService) Get(ctx context.Context,
 ) (custom.Entity, error) {
 	def := s.client.Lookup(entity.Type())
 	if def == nil {
-		return nil, fmt.Errorf("entity '" + string(entity.Type()) +
-			"' not registered")
+		return nil, fmt.Errorf("entity '%s' not registered", entity.Type())
 	}
 
 	queryPath, err := def.GetEndpoint(entity)
@@ -66,8 +65,7 @@ func (s *CustomEntityService) Create(ctx context.Context,
 ) (custom.Entity, error) {
 	def := s.client.Lookup(entity.Type())
 	if def == nil {
-		return nil, fmt.Errorf("entity '" + string(entity.Type()) +
-			"' not registered")
+		return nil, fmt.Errorf("entity '%s' not registered", entity.Type())
 	}
 
 	method := "POST"
@@ -111,8 +109,7 @@ func (s *CustomEntityService) Update(ctx context.Context,
 ) (custom.Entity, error) {
 	def := s.client.Lookup(entity.Type())
 	if def == nil {
-		return nil, fmt.Errorf("entity '" + string(entity.Type()) +
-			"' not registered")
+		return nil, fmt.Errorf("entity '%s' not registered", entity.Type())
 	}
 
 	queryPath, err := def.PatchEndpoint(entity)
@@ -146,8 +143,7 @@ func (s *CustomEntityService) Delete(ctx context.Context,
 ) error {
 	def := s.client.Lookup(entity.Type())
 	if def == nil {
-		return fmt.Errorf("entity '" + string(entity.Type()) +
-			"' not registered")
+		return fmt.Errorf("entity '%s' not registered", entity.Type())
 	}
 
 	queryPath, err := def.PatchEndpoint(entity)
@@ -170,8 +166,7 @@ func (s *CustomEntityService) List(ctx context.Context, opt *ListOpt,
 ) ([]custom.Entity, *ListOpt, error) {
 	def := s.client.Lookup(entity.Type())
 	if def == nil {
-		return nil, nil, fmt.Errorf("entity '" + string(entity.Type()) +
-			"' not registered")
+		return nil, nil, fmt.Errorf("entity '%s' not registered", entity.Type())
 	}
 
 	queryPath, err := def.ListEndpoint(entity)

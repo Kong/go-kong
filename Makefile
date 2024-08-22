@@ -3,19 +3,32 @@
 # ------------------------------------------------------------------------------
 
 PROJECT_DIR := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
+TOOLS_VERSIONS_FILE = $(PROJECT_DIR)/.tools_versions.yaml
+export MISE_DATA_DIR = $(PROJECT_DIR)/bin/
 
-.PHONY: _download_tool
-_download_tool:
-	(cd third_party && go mod tidy && \
-		GOBIN=$(PROJECT_DIR)/bin go generate -tags=third_party ./$(TOOL).go )
+MISE := $(shell which mise)
+.PHONY: mise
+mise:
+	@mise -V >/dev/null || (echo "mise - https://github.com/jdx/mise - not found. Please install it." && exit 1)
 
 .PHONY: tools
-tools: golangci-lint
+tools: golangci-lint yq
 
-GOLANGCI_LINT = $(PROJECT_DIR)/bin/golangci-lint
+# Do not store yq's version in .tools_versions.yaml as it is used to get tool versions.
+# renovate: datasource=github-releases depName=mikefarah/yq
+YQ_VERSION = 4.43.1
+YQ = $(PROJECT_DIR)/bin/installs/yq/$(YQ_VERSION)/bin/yq
+.PHONY: yq
+yq: mise # Download yq locally if necessary.
+	@$(MISE) plugin install --yes -q yq
+	@$(MISE) install -q yq@$(YQ_VERSION)
+
+GOLANGCI_LINT_VERSION = $(shell $(YQ) -r '.golangci-lint' < $(TOOLS_VERSIONS_FILE))
+GOLANGCI_LINT = $(PROJECT_DIR)/bin/installs/golangci-lint/$(GOLANGCI_LINT_VERSION)/bin/golangci-lint
 .PHONY: golangci-lint
-golangci-lint: ## Download golangci-lint locally if necessary.
-	@$(MAKE) _download_tool TOOL=golangci-lint
+golangci-lint: mise yq ## Download golangci-lint locally if necessary.
+	@$(MISE) plugin install --yes -q golangci-lint
+	@$(MISE) install -q golangci-lint@$(GOLANGCI_LINT_VERSION)
 
 # ------------------------------------------------------------------------------
 # Testing

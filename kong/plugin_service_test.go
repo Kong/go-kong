@@ -730,7 +730,7 @@ func TestFillPluginDefaults(T *testing.T) {
 			require.NoError(t, FillPluginsDefaults(p, fullSchema))
 
 			if diff := cmp.Diff(p, tc.expected); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -795,7 +795,7 @@ func TestFillPluginDefaultsArbitraryMap(T *testing.T) {
 			// https://github.com/Kong/kong/commit/9df893f6aff98cd51f27f1c27fa30fdcf13fcf48 changes a number of other
 			// fields for 3.3, so this test only checks the relevant field to avoid needing a version split
 			if diff := cmp.Diff(p.Config["custom_fields_by_lua"], tc.expected.Config["custom_fields_by_lua"]); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
