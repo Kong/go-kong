@@ -53,8 +53,7 @@ func render(template string, entity Entity) (string, error) {
 		if v := entity.GetRelation(m[1]); v != "" {
 			result = strings.Replace(result, m[0], v, 1)
 		} else {
-			return "", fmt.Errorf("cannot substitute '" + m[1] +
-				"' in URL: " + template)
+			return "", fmt.Errorf("cannot substitute '%s' in URL: %s", m[1], template)
 		}
 	}
 	return result, nil
