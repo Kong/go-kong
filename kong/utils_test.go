@@ -1018,16 +1018,14 @@ func TestFillRoutesDefaults(T *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "routes")
 			assert.NoError(err)
 			assert.NotNil(fullSchema)
-			if err = FillEntityDefaults(r, fullSchema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, FillEntityDefaults(r, fullSchema))
 			// Ignore fields to make tests pass despite small differences across releases.
 			opts := cmpopts.IgnoreFields(
 				Route{},
 				"RequestBuffering", "ResponseBuffering", "PathHandling",
 			)
 			if diff := cmp.Diff(r, tc.expected, opts); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -1108,14 +1106,12 @@ func TestFillServiceDefaults(T *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "services")
 			assert.NoError(err)
 			assert.NotNil(fullSchema)
-			if err := FillEntityDefaults(s, fullSchema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, FillEntityDefaults(s, fullSchema))
 			opt := []cmp.Option{
 				cmpopts.IgnoreFields(Service{}, "Enabled"),
 			}
 			if diff := cmp.Diff(s, tc.expected, opt...); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -1157,11 +1153,9 @@ func TestFillTargetDefaults(T *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "targets")
 			assert.NoError(err)
 			assert.NotNil(fullSchema)
-			if err := FillEntityDefaults(target, fullSchema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, FillEntityDefaults(target, fullSchema))
 			if diff := cmp.Diff(target, tc.expected); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -1297,16 +1291,14 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "upstreams")
 			assert.NoError(err)
 			assert.NotNil(fullSchema)
-			if err = FillEntityDefaults(u, fullSchema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, FillEntityDefaults(u, fullSchema))
 			// Ignore fields to make tests pass despite small differences across releases.
 			opts := []cmp.Option{
 				cmpopts.IgnoreFields(Healthcheck{}, "Threshold"),
 				cmpopts.IgnoreFields(Upstream{}, "UseSrvName"),
 			}
 			if diff := cmp.Diff(u, tc.expected, opts...); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -1449,7 +1441,7 @@ func TestFillUpstreamsDefaultsFromJSONSchema(t *testing.T) {
 			// Ignore fields to make tests pass despite small differences across releases.
 			opts := cmpopts.IgnoreFields(Healthcheck{}, "Threshold")
 			if diff := cmp.Diff(u, tc.expected, opts); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -1529,7 +1521,7 @@ func TestFillServicesDefaultsFromJSONSchema(t *testing.T) {
 				cmpopts.IgnoreFields(Service{}, "Enabled"),
 			}
 			if diff := cmp.Diff(s, tc.expected, opt...); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -1608,7 +1600,7 @@ func TestFillRoutesDefaultsFromJSONSchema(t *testing.T) {
 				"RequestBuffering", "ResponseBuffering", "PathHandling",
 			)
 			if diff := cmp.Diff(r, tc.expected, opts); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -1732,11 +1724,9 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "consumer_group_plugins")
 			assert.NoError(err)
 			assert.NotNil(fullSchema)
-			if err := FillEntityDefaults(plugin, fullSchema); err != nil {
-				t.Errorf(err.Error())
-			}
+			require.NoError(t, FillEntityDefaults(plugin, fullSchema))
 			if diff := cmp.Diff(plugin, tc.expected); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -1849,7 +1839,7 @@ func Test_fillConfigRecord(t *testing.T) {
 			config := fillConfigRecord(configSchema, tc.config)
 			require.NotNil(t, config)
 			if diff := cmp.Diff(config, tc.expected); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -2005,7 +1995,7 @@ func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 			config := fillConfigRecord(configSchema, tc.config)
 			require.NotNil(t, config)
 			if diff := cmp.Diff(config, tc.expected); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -2142,7 +2132,7 @@ func Test_FillPluginsDefaults(t *testing.T) {
 				"Protocols", "Enabled",
 			)
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -2237,7 +2227,7 @@ func Test_FillPluginsDefaults_RequestTransformer(t *testing.T) {
 			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -2358,7 +2348,7 @@ func Test_FillPluginsDefaults_SetType(t *testing.T) {
 				"Protocols", "Enabled",
 			)
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -2448,7 +2438,7 @@ func Test_FillPluginsDefaults_Acme(t *testing.T) {
 			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -2523,7 +2513,7 @@ func Test_FillPluginsDefaults_DefaultRecord(t *testing.T) {
 			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
@@ -2656,7 +2646,7 @@ func Test_FillPluginsDefaults_NonEmptyDefaultArrayField(t *testing.T) {
 			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
-				t.Errorf(diff)
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
