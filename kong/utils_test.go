@@ -1836,7 +1836,7 @@ func Test_fillConfigRecord(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			configSchema, err := getConfigSchema(tc.schema)
 			require.NoError(t, err)
-			config := fillConfigRecord(configSchema, tc.config)
+			config := fillConfigRecord(configSchema, tc.config, nil)
 			require.NotNil(t, config)
 			if diff := cmp.Diff(config, tc.expected); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
@@ -1933,6 +1933,35 @@ const fillConfigRecordTestSchemaWithShorthandFields = `{
 }
 `
 
+const fillConfigRecordTestSchemaWithAutoFields = `{
+	"fields": {
+		"config": {
+			"type": "record",
+			"fields": [
+				{
+					"foo_string": {
+						"type": "string",
+						"auto": true
+					}
+				},
+				{
+					"bar_string": {
+						"type": "string",
+						"auto": true
+					}
+				},
+				{
+					"baz_string": {
+						"type": "string",
+						"auto": true
+					}
+				}
+			]
+		}
+	}
+}
+`
+
 func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -1992,7 +2021,46 @@ func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			configSchema, err := getConfigSchema(tc.schema)
 			require.NoError(t, err)
-			config := fillConfigRecord(configSchema, tc.config)
+			config := fillConfigRecord(configSchema, tc.config, nil)
+			require.NotNil(t, config)
+			if diff := cmp.Diff(config, tc.expected); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_fillConfigRecord_auto_fields(t *testing.T) {
+	tests := []struct {
+		name     string
+		schema   gjson.Result
+		config   Configuration
+		expected Configuration
+	}{
+		{
+			name:   "fills auto fields with values from oldConfig",
+			schema: gjson.Parse(fillConfigRecordTestSchemaWithAutoFields),
+			config: Configuration{
+				"baz_string": "789",
+			},
+			expected: Configuration{
+				"foo_string": "123",
+				"bar_string": "456",
+				"baz_string": "789",
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			configSchema, err := getConfigSchema(tc.schema)
+			require.NoError(t, err)
+			oldConfig := Configuration{
+				"foo_string": "123",
+				"bar_string": "456",
+				"baz_string": "000",
+			}
+			config := fillConfigRecord(configSchema, tc.config, oldConfig)
 			require.NotNil(t, config)
 			if diff := cmp.Diff(config, tc.expected); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
