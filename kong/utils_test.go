@@ -1836,7 +1836,10 @@ func Test_fillConfigRecord(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			configSchema, err := getConfigSchema(tc.schema)
 			require.NoError(t, err)
-			config := fillConfigRecord(configSchema, tc.config, nil)
+			config := fillConfigRecord(configSchema, tc.config, FillRecordOptions{
+				FillDefaults: true,
+				FillAuto:     true,
+			})
 			require.NotNil(t, config)
 			if diff := cmp.Diff(config, tc.expected); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
@@ -1939,19 +1942,25 @@ const fillConfigRecordTestSchemaWithAutoFields = `{
 			"type": "record",
 			"fields": [
 				{
-					"foo_string": {
+					"default_string": {
+						"type": "string",
+						"default": "abc"
+					}
+				},
+				{
+					"auto_string_1": {
 						"type": "string",
 						"auto": true
 					}
 				},
 				{
-					"bar_string": {
+					"auto_string_2": {
 						"type": "string",
 						"auto": true
 					}
 				},
 				{
-					"baz_string": {
+					"auto_string_3": {
 						"type": "string",
 						"auto": true
 					}
@@ -2021,7 +2030,10 @@ func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			configSchema, err := getConfigSchema(tc.schema)
 			require.NoError(t, err)
-			config := fillConfigRecord(configSchema, tc.config, nil)
+			config := fillConfigRecord(configSchema, tc.config, FillRecordOptions{
+				FillDefaults: true,
+				FillAuto:     true,
+			})
 			require.NotNil(t, config)
 			if diff := cmp.Diff(config, tc.expected); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
@@ -2030,7 +2042,7 @@ func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 	}
 }
 
-func Test_fillConfigRecord_auto_fields(t *testing.T) {
+func Test_fillConfigRecord_defaults_only(t *testing.T) {
 	tests := []struct {
 		name     string
 		schema   gjson.Result
@@ -2038,15 +2050,14 @@ func Test_fillConfigRecord_auto_fields(t *testing.T) {
 		expected Configuration
 	}{
 		{
-			name:   "fills auto fields with values from oldConfig",
+			name:   "fills defaults with opts to fill defaults only",
 			schema: gjson.Parse(fillConfigRecordTestSchemaWithAutoFields),
 			config: Configuration{
-				"baz_string": "789",
+				"auto_string_3": "789",
 			},
 			expected: Configuration{
-				"foo_string": "123",
-				"bar_string": "456",
-				"baz_string": "789",
+				"default_string": "abc",
+				"auto_string_3":  "789",
 			},
 		},
 	}
@@ -2055,12 +2066,48 @@ func Test_fillConfigRecord_auto_fields(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			configSchema, err := getConfigSchema(tc.schema)
 			require.NoError(t, err)
-			oldConfig := Configuration{
-				"foo_string": "123",
-				"bar_string": "456",
-				"baz_string": "000",
+			config := fillConfigRecord(configSchema, tc.config, FillRecordOptions{
+				FillDefaults: true,
+				FillAuto:     false,
+			})
+			require.NotNil(t, config)
+			if diff := cmp.Diff(config, tc.expected); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
 			}
-			config := fillConfigRecord(configSchema, tc.config, oldConfig)
+		})
+	}
+}
+
+func Test_fillConfigRecord_auto_only(t *testing.T) {
+	tests := []struct {
+		name     string
+		schema   gjson.Result
+		config   Configuration
+		expected Configuration
+	}{
+		{
+			name:   "fills defaults with opts to fill auto only",
+			schema: gjson.Parse(fillConfigRecordTestSchemaWithAutoFields),
+			config: Configuration{
+				"auto_string_3": "789",
+			},
+			expected: Configuration{
+				"auto_string_1": nil,
+				"auto_string_2": nil,
+				"auto_string_3": "789",
+				// defalt_string missing
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			configSchema, err := getConfigSchema(tc.schema)
+			require.NoError(t, err)
+			config := fillConfigRecord(configSchema, tc.config, FillRecordOptions{
+				FillDefaults: false,
+				FillAuto:     true,
+			})
 			require.NotNil(t, config)
 			if diff := cmp.Diff(config, tc.expected); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
