@@ -355,7 +355,12 @@ func fillConfigRecord(schema gjson.Result, config Configuration, opts FillRecord
 				fieldConfig = subConfig.(map[string]interface{})
 			}
 			newSubConfig := fillConfigRecord(value.Get(fname), fieldConfig, opts)
-			res[fname] = map[string]interface{}(newSubConfig)
+			// When we are not filling defaults, only assign the subconfig if it's not empty.
+			// This is to avoid having records that are assigned empty map values when defaults
+			// are not supposed to be filled.
+			if opts.FillDefaults || len(newSubConfig) > 0 {
+				res[fname] = map[string]interface{}(newSubConfig)
+			}
 			return true
 		}
 
