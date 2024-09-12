@@ -76,13 +76,17 @@
 ## [v0.59.1]
 
 > Release date: 2024/09/12
-- fix: Prevent unset records to be filled with empty tables: {}
-  for deck files.
+
+- Prevent unset plugin's configuration "record" fields to be filled with 
+  empty tables: {} for deck files. Since, deck doesn't fill defaults anymore, 
+  thisfix ensures that deck doesn't pass empty record fields while syncing
+  plugin configurations.
   [#467](https://github.com/Kong/go-kong/pull/467)
 
 ## [v0.59.0]
 
 > Release date: 2024/09/04
+
 - Enhance the utils `FillPluginsDefaults*` functions to allow individually 
   selecting whether to fill normal and auto fields with default values.
   [#466](https://github.com/Kong/go-kong/pull/466)
