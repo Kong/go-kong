@@ -1971,6 +1971,48 @@ const fillConfigRecordTestSchemaWithAutoFields = `{
 }
 `
 
+const fillConfigRecordTestSchemaWithRecord = `{
+	"fields": {
+		"config": {
+			"type": "record",
+			"fields": [
+				{
+					"some_record": {
+							"required": true,
+              "fields": [
+                {
+                  "some_field": {
+                    "default": "kong",
+                    "type": "string"
+                  }
+                }
+              ],
+              "type": "record"
+          }
+				},
+				{
+					"some_other_record": {
+              "fields": [
+                {
+                  "some_field": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "type": "record"
+          }
+				},
+				{
+					"string_1": {
+						"type": "string",
+					}
+				}
+			]
+		}
+	}
+}
+`
+
 func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -2096,6 +2138,20 @@ func Test_fillConfigRecord_auto_only(t *testing.T) {
 				"auto_string_2": nil,
 				"auto_string_3": "789",
 				// defalt_string missing
+			},
+		},
+		{
+			name:   "not passing record field leaves field unset",
+			schema: gjson.Parse(fillConfigRecordTestSchemaWithRecord),
+			config: Configuration{
+				// some_record missing
+				"some_other_record": map[string]any{}, // explicitly set to empty record
+				"string_1":          "abc",
+			},
+			expected: Configuration{
+				// some_record was not filled
+				"some_other_record": map[string]any{}, // empty record remained unchanged
+				"string_1":          "abc",
 			},
 		},
 	}
