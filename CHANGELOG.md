@@ -79,7 +79,7 @@
 
 - Prevent unset plugin's configuration "record" fields to be filled with 
   empty tables: {} for deck files. Since, deck doesn't fill defaults anymore, 
-  thisfix ensures that deck doesn't pass empty record fields while syncing
+  this fix ensures that deck doesn't pass empty record fields while syncing
   plugin configurations.
   [#467](https://github.com/Kong/go-kong/pull/467)
 
