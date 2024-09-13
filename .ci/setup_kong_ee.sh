@@ -40,6 +40,7 @@ function deploy_kong_ee()
     -e "KONG_PROXY_ERROR_LOG=/dev/stderr" \
     -e "KONG_ADMIN_ERROR_LOG=/dev/stderr" \
     -e "KONG_ADMIN_LISTEN=0.0.0.0:8001" \
+    -e "KONG_STATUS_LISTEN=0.0.0.0:8100" \
     -e "KONG_PORTAL_GUI_URI=127.0.0.1:8003" \
     -e "KONG_ADMIN_GUI_URL=http://127.0.0.1:8002" \
     -e "KONG_LICENSE_DATA=$KONG_LICENSE_DATA" \
@@ -59,6 +60,7 @@ function deploy_kong_ee()
     -p 8445:8445 \
     -p 8003:8003 \
     -p 8004:8004 \
+    -p 127.0.0.1:8100:8100 \
     --label "$DOCKER_LABEL" \
     $KONG_IMAGE
 }
