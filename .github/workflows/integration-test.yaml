@@ -81,7 +81,7 @@ jobs:
       - name: Run tests
         run: make test-coverage
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@v4.5.0
+        uses: codecov/codecov-action@v4.6.0
         continue-on-error: true
         with:
           name: codecov-${{ matrix.kong_version }}
