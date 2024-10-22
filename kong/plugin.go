@@ -16,8 +16,8 @@ type Plugin struct {
 	Enabled       *bool           `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 	RunOn         *string         `json:"run_on,omitempty" yaml:"run_on,omitempty"`
 	Ordering      *PluginOrdering `json:"ordering,omitempty" yaml:"ordering,omitempty"`
-	Protocols     []*string       `json:"protocols,omitempty" yaml:"protocols,omitempty"`
-	Tags          []*string       `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Protocols     []*string       `json:"protocols" yaml:"protocols"`
+	Tags          []*string       `json:"tags" yaml:"tags"`
 }
 
 // PluginOrdering contains before or after instructions for plugin execution order

@@ -19,10 +19,10 @@ type Service struct {
 	UpdatedAt         *int         `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 	URL               *string      `json:"url,omitempty" yaml:"url,omitempty"`
 	WriteTimeout      *int         `json:"write_timeout,omitempty" yaml:"write_timeout,omitempty"`
-	Tags              []*string    `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Tags              []*string    `json:"tags" yaml:"tags"`
 	TLSVerify         *bool        `json:"tls_verify,omitempty" yaml:"tls_verify,omitempty"`
 	TLSVerifyDepth    *int         `json:"tls_verify_depth,omitempty" yaml:"tls_verify_depth,omitempty"`
-	CACertificates    []*string    `json:"ca_certificates,omitempty" yaml:"ca_certificates,omitempty"`
+	CACertificates    []*string    `json:"ca_certificates" yaml:"ca_certificates"`
 }
 
 // FriendlyName returns the endpoint key name or ID.
