@@ -453,9 +453,24 @@ func fillConfigRecord(schema gjson.Result, config Configuration, opts FillRecord
 		backwardTranslation := value.Get(fname + ".translate_backwards")
 
 		if !backwardTranslation.Exists() {
-			// This block attempts to fill defaults for deprecated fields.
-			// Thus, not erroring out here, as it is not vital.
-			return true
+			// Checking for replaced_with path if it exists in the deprecation block
+			var replacePath gjson.Result
+			replacedWith := value.Get(fname + ".deprecation.replaced_with")
+			if replacedWith.IsArray() {
+				for _, item := range replacedWith.Array() {
+					if pathArray := item.Get("path"); pathArray.Exists() && pathArray.IsArray() {
+						replacePath = pathArray
+					}
+				}
+			}
+
+			if !replacePath.Exists() {
+				// This block attempts to fill defaults for deprecated fields.
+				// Thus, not erroring out here, as it is not vital.
+				return true
+			}
+
+			backwardTranslation = replacePath
 		}
 
 		configPathForBackwardTranslation := make([]string, 0, len(backwardTranslation.Array()))
