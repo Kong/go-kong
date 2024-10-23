@@ -741,3 +741,119 @@ func FillPluginsDefaults(plugin *Plugin, schema Schema) error {
 func FillPluginsDefaultsWithOpts(plugin *Plugin, schema map[string]interface{}, opts FillRecordOptions) error {
 	return fillConfigRecordDefaultsAutoFields(plugin, schema, opts)
 }
+
+func deleteAndCollapseMap(config map[string]interface{}, path []string) {
+	key := path[0]
+	if len(path) == 1 {
+		delete(config, key)
+	} else {
+		if nested, ok := config[key].(map[string]interface{}); ok {
+			deleteAndCollapseMap(nested, path[1:])
+			if len(nested) == 0 {
+				delete(config, key)
+			}
+		}
+	}
+}
+
+func pathExistsInConfig(config map[string]interface{}, path []string) bool {
+	key := path[0]
+	if len(path) == 1 {
+		_, ok := config[key]
+		return ok
+	} else if nested, ok := config[key].(map[string]interface{}); ok {
+		return pathExistsInConfig(nested, path[1:])
+	}
+
+	return false
+}
+
+func clearUnmatchingDeprecationsHelper(
+	newPluginConfig Configuration,
+	oldPluginConfig Configuration,
+	schema *gjson.Result,
+) {
+	configFields := schema.Get("fields")
+	// Fetch deprecated fields
+	shortHandFields := schema.Get("shorthand_fields")
+
+	shortHandFields.ForEach(func(_, value gjson.Result) bool {
+		field := value.Map()
+		for deprecatedFieldName, shorthandFieldConfig := range field {
+			if _, ok := newPluginConfig[deprecatedFieldName]; ok {
+				// deprecatedFieldName is used in new plugin configuration
+				// verify if the fields that this depractedField is replaced with
+				// are also sent in new plugin configuration - if not clear them from old plugin configuration
+				replacements := shorthandFieldConfig.Get("deprecation.replaced_with.#.path")
+				replacements.ForEach(func(_, value gjson.Result) bool {
+					replacementPathAsStringArray := make([]string, len(value.Array()))
+					for i, pathSegment := range value.Array() {
+						replacementPathAsStringArray[i] = pathSegment.String()
+					}
+
+					// We know that deprecated value is defined in new config and we also have information
+					// on how this deprecated value is replaced. If the new plugin configuration contains
+					// both old and new values we don't need to adjust old plugin configuration.
+					// However if the new key is missing in new plugin configuration then we need to
+					// delete it from old plugin configuration in order for them to match.
+					if !pathExistsInConfig(newPluginConfig, replacementPathAsStringArray) {
+						deleteAndCollapseMap(oldPluginConfig, replacementPathAsStringArray)
+					}
+
+					return true
+				})
+
+			} else {
+				// Here the opposite is true - the new plugin configuration does not contain deprecated fields
+				// however for backwards compatibility Kong sends deprecated fields as well in the response.
+				// Now in order to make diffs the same we need to delete those deprecated fields from the old plugin
+				// configuration that Kong sent us.
+				delete(oldPluginConfig, deprecatedFieldName)
+			}
+		}
+
+		return true
+	})
+
+	configFields.ForEach(func(_, value gjson.Result) bool {
+		field := value.Map()
+
+		for fieldName, fieldConfig := range field {
+			if fieldType := fieldConfig.Get("type"); fieldType.String() == "record" {
+				var nestedNewPluginConfig map[string]interface{}
+				if f, ok := newPluginConfig[fieldName].(map[string]interface{}); ok {
+					nestedNewPluginConfig = f
+				}
+
+				var nestedOldPluginConfig map[string]interface{}
+				if f, ok := oldPluginConfig[fieldName].(map[string]interface{}); ok {
+					nestedOldPluginConfig = f
+				}
+
+				if nestedNewPluginConfig != nil && nestedOldPluginConfig != nil {
+					clearUnmatchingDeprecationsHelper(nestedNewPluginConfig, nestedOldPluginConfig, &fieldConfig)
+				}
+			}
+		}
+
+		return true
+	})
+}
+
+func ClearUnmatchingDeprecations(newPlugin *Plugin, oldPlugin *Plugin, schema map[string]interface{}) error {
+	jsonb, err := json.Marshal(&schema)
+	if err != nil {
+		return err
+	}
+	gjsonSchema := gjson.ParseBytes((jsonb))
+	configSchema, err := getConfigSchema(gjsonSchema)
+	if err != nil {
+		return err
+	}
+
+	if newPlugin != nil && oldPlugin != nil {
+		clearUnmatchingDeprecationsHelper(newPlugin.Config, oldPlugin.Config, &configSchema)
+	}
+
+	return nil
+}

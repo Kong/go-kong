@@ -2,6 +2,7 @@ package kong
 
 import (
 	"encoding/json"
+	"math"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -2013,6 +2014,326 @@ const fillConfigRecordTestSchemaWithRecord = `{
 }
 `
 
+const clearUnmatchingDeprecationsTestSimpleSchema = `{
+  "fields": [
+    {
+      "config": {
+        "type": "record",
+        "fields": [
+          {
+            "redis": {
+              "type": "record",
+              "description": "Redis configuration",
+              "required": true,
+              "fields": [
+                {
+                  "host": {
+                    "type": "string",
+                    "description": "A string representing a host name, such as example.com."
+                  }
+                },
+                {
+                  "port": {
+                    "type": "integer",
+                    "description": "An integer representing a port number between 0 and 65535, inclusive.",
+                    "default": 6379,
+                    "between": [
+                      0,
+                      65535
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "required": true,
+        "shorthand_fields": [
+          {
+            "redis_host": {
+              "type": "string",
+              "deprecation": {
+                "replaced_with": [
+                  {
+                    "path": [
+                      "redis",
+                      "host"
+                    ]
+                  }
+                ],
+                "message": "rate-limiting: config.redis_host is deprecated, please use config.redis.host instead",
+                "removal_in_version": "4.0"
+              }
+            }
+          },
+          {
+            "redis_port": {
+              "type": "integer",
+              "deprecation": {
+                "replaced_with": [
+                  {
+                    "path": [
+                      "redis",
+                      "port"
+                    ]
+                  }
+                ],
+                "message": "rate-limiting: config.redis_port is deprecated, please use config.redis.port instead",
+                "removal_in_version": "4.0"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}`
+
+const clearUnmatchingDeprecationsTestAdvancedSchema = `{
+  "fields": [
+    {
+      "config": {
+        "required": true,
+        "fields": [
+          {
+            "redis": {
+              "required": true,
+              "fields": [
+                {
+                  "host": {
+                    "default": "127.0.0.1",
+                    "description": "A string representing a host name, such as example.com.",
+                    "type": "string"
+                  }
+                },
+                {
+                  "port": {
+                    "default": 6379,
+                    "description": "An integer representing a port number between 0 and 65535, inclusive.",
+                    "type": "integer",
+                    "between": [
+                      0,
+                      65535
+                    ]
+                  }
+                },
+                {
+                  "connect_timeout": {
+                    "default": 2000,
+                    "description": "An integer representing a timeout in milliseconds. Must be between 0 and 2^31-2.",
+                    "type": "integer",
+                    "between": [
+                      0,
+                      2147483646
+                    ]
+                  }
+                },
+                {
+                  "send_timeout": {
+                    "default": 2000,
+                    "description": "An integer representing a timeout in milliseconds. Must be between 0 and 2^31-2.",
+                    "type": "integer",
+                    "between": [
+                      0,
+                      2147483646
+                    ]
+                  }
+                },
+                {
+                  "read_timeout": {
+                    "default": 2000,
+                    "description": "An integer representing a timeout in milliseconds. Must be between 0 and 2^31-2.",
+                    "type": "integer",
+                    "between": [
+                      0,
+                      2147483646
+                    ]
+                  }
+                },
+                {
+                  "sentinel_username": {
+                    "referenceable": true,
+                    "type": "string",
+                    "description": "some description"
+                  }
+                },
+                {
+                  "sentinel_password": {
+                    "referenceable": true,
+                    "type": "string",
+                    "encrypted": true,
+                    "description": "some description"
+                  }
+                },
+
+                {
+                  "sentinel_master": {
+                    "description": "some description",
+                    "type": "string"
+                  }
+                },
+                {
+                  "sentinel_role": {
+                    "one_of": [
+                      "master",
+                      "slave",
+                      "any"
+                    ],
+                    "type": "string",
+                    "description": "some description"
+                  }
+                },
+                {
+                  "sentinel_nodes": {
+                    "required": false,
+                    "len_min": 1,
+                    "type": "array",
+                    "elements": {
+                      "type": "record",
+                      "fields": [
+                        {
+                          "host": {
+                            "required": true,
+                            "type": "string",
+                            "default": "127.0.0.1",
+                            "description": "A string representing a host name, such as example.com."
+                          }
+                        },
+                        {
+                          "port": {
+                            "default": 6379,
+                            "description": "An integer representing a port number between 0 and 65535, inclusive.",
+                            "type": "integer",
+                            "between": [
+                              0,
+                              65535
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "description": "some description"
+                  }
+                },
+                {
+                  "cluster_nodes": {
+                    "required": false,
+                    "len_min": 1,
+                    "type": "array",
+                    "elements": {
+                      "type": "record",
+                      "fields": [
+                        {
+                          "ip": {
+                            "required": true,
+                            "type": "string",
+                            "default": "127.0.0.1",
+                            "description": "A string representing a host name, such as example.com."
+                          }
+                        },
+                        {
+                          "port": {
+                            "default": 6379,
+                            "description": "An integer representing a port number between 0 and 65535, inclusive.",
+                            "type": "integer",
+                            "between": [
+                              0,
+                              65535
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "description": "some description"
+                  }
+                },
+                {
+                  "ssl": {
+                    "required": false,
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If set to true, uses SSL to connect to Redis."
+                  }
+                }
+              ],
+              "type": "record",
+              "shorthand_fields": [
+                {
+                  "timeout": {
+                    "deprecation": {
+                      "message": "deprecation message...",
+                      "removal_in_version": "4.0",
+                      "replaced_with": [
+                        {
+                          "path": [
+                            "connect_timeout"
+                          ]
+                        },
+                        {
+                          "path": [
+                            "send_timeout"
+                          ]
+                        },
+                        {
+                          "path": [
+                            "read_timeout"
+                          ]
+                        }
+                      ]
+                    },
+                    "type": "integer"
+                  }
+                },
+                {
+                  "sentinel_addresses": {
+                    "deprecation": {
+                      "message": "sentinel_addresses is deprecated, please use sentinel_nodes instead",
+                      "removal_in_version": "4.0",
+                      "replaced_with": [
+                        {
+                          "path": [
+                            "sentinel_nodes"
+                          ]
+                        }
+                      ]
+                    },
+                    "elements": {
+                      "type": "string"
+                    },
+                    "len_min": 1,
+                    "type": "array"
+                  }
+                },
+                {
+                  "cluster_addresses": {
+                    "deprecation": {
+                      "message": "cluster_addresses is deprecated, please use cluster_nodes instead",
+                      "removal_in_version": "4.0",
+                      "replaced_with": [
+                        {
+                          "path": [
+                            "cluster_nodes"
+                          ]
+                        }
+                      ]
+                    },
+                    "elements": {
+                      "type": "string"
+                    },
+                    "len_min": 1,
+                    "type": "array"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "type": "record"
+      }
+    }
+  ]
+}`
+
 func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -2819,6 +3140,397 @@ func Test_FillPluginsDefaults_NonEmptyDefaultArrayField(t *testing.T) {
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}
+		})
+	}
+}
+
+func Test_ClearUnmatchingDeprecationsSimple(t *testing.T) {
+	tests := []struct {
+		name                     string
+		newPlugin                *Plugin
+		oldPlugin                *Plugin
+		expectedOldPluginCleared Configuration
+	}{
+		{
+			name: "when new object contains only old (deprecated) fields",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis_host": "localhost",
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"host": "localhost",
+					},
+					"redis_host": "localhost",
+				},
+			},
+			expectedOldPluginCleared: Configuration{
+				"redis_host": "localhost",
+			},
+		},
+		{
+			name: "when new object contains only new fields (non-deprecated)",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"host": "localhost",
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"host": "localhost",
+					},
+					"redis_host": "localhost",
+				},
+			},
+			expectedOldPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"host": "localhost",
+				},
+			},
+		},
+		{
+			name: "when new object contains both new and old fields",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"host": "localhost",
+					},
+					"redis_host": "localhost",
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"host": "localhost",
+					},
+					"redis_host": "localhost",
+				},
+			},
+			expectedOldPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"host": "localhost",
+				},
+				"redis_host": "localhost",
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var fullSchema map[string]interface{}
+			require.NoError(t, json.Unmarshal([]byte(clearUnmatchingDeprecationsTestSimpleSchema), &fullSchema))
+			require.NotNil(t, fullSchema)
+			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
+			if diff := cmp.Diff(tc.oldPlugin.Config, tc.expectedOldPluginCleared); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_ClearUnmatchingDeprecationsAdvanced(t *testing.T) {
+	tests := []struct {
+		name                     string
+		newPlugin                *Plugin
+		oldPlugin                *Plugin
+		expectedOldPluginCleared Configuration
+	}{
+		{
+			name: "when new object contains only old (deprecated) fields",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+					},
+				},
+			},
+			expectedOldPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+				},
+			},
+		},
+		{
+			name: "when new object contains only new fields",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+					},
+				},
+			},
+			expectedOldPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 6379},
+						{"ip": "127.0.0.1", "port": 6380},
+						{"ip": "127.0.0.1", "port": 6381},
+					},
+				},
+			},
+		},
+		{
+			name: "when new object contains old field but the new ones are split into multiple separate fields",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"timeout": 2000,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedOldPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"timeout": 2000,
+				},
+			},
+		},
+		{
+			name: "when new object contains new field that is split into multiple fields but there was only one old field",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedOldPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"connect_timeout": 2000,
+					"send_timeout":    2000,
+					"read_timeout":    2000,
+				},
+			},
+		},
+		{
+			name: "when both complete new and old configuration is sent",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedOldPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 6379},
+						{"ip": "127.0.0.1", "port": 6380},
+						{"ip": "127.0.0.1", "port": 6381},
+					},
+					"timeout":         2000,
+					"connect_timeout": 2000,
+					"send_timeout":    2000,
+					"read_timeout":    2000,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var fullSchema map[string]interface{}
+			require.NoError(t, json.Unmarshal([]byte(clearUnmatchingDeprecationsTestAdvancedSchema), &fullSchema))
+			require.NotNil(t, fullSchema)
+			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
+			if diff := cmp.Diff(tc.oldPlugin.Config, tc.expectedOldPluginCleared); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_ClearUnmatchingDeprecationsWhenSchemaIsWrong(t *testing.T) {
+	tests := []struct {
+		name   string
+		schema map[string]interface{}
+	}{
+		// These test cases are rather theoretical since the schema is a JSON extracted from Kong /schemas endpoint
+		// probably the only upside is to boost up code coverage
+		{
+			name: "when schema is not json serializble",
+			schema: map[string]interface{}{
+				"some other field": math.Inf(1),
+			},
+		},
+		{
+			name: "when schema is wrong - i.e. does not have {fields: [ {config: {fields: []}} ]} structure",
+			schema: map[string]interface{}{
+				"some other field": 4,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Error(t, ClearUnmatchingDeprecations(nil, nil, tc.schema))
+		})
+	}
+}
+
+func Test_ClearUnmatchingDeprecationsWhenNotUpdateEvent(t *testing.T) {
+	tests := []struct {
+		name                     string
+		newPlugin                *Plugin
+		oldPlugin                *Plugin
+		expectedOldPluginCleared Configuration
+	}{
+		{
+			name: "when only new configuration is sent (CREATE event)",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			oldPlugin: nil,
+			expectedOldPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 6379},
+						{"ip": "127.0.0.1", "port": 6380},
+						{"ip": "127.0.0.1", "port": 6381},
+					},
+					"timeout":         2000,
+					"connect_timeout": 2000,
+					"send_timeout":    2000,
+					"read_timeout":    2000,
+				},
+			},
+		},
+		{
+			name:      "when only old configuration is sent (DELETE event)",
+			newPlugin: nil,
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedOldPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 6379},
+						{"ip": "127.0.0.1", "port": 6380},
+						{"ip": "127.0.0.1", "port": 6381},
+					},
+					"timeout":         2000,
+					"connect_timeout": 2000,
+					"send_timeout":    2000,
+					"read_timeout":    2000,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var fullSchema map[string]interface{}
+			require.NoError(t, json.Unmarshal([]byte(clearUnmatchingDeprecationsTestAdvancedSchema), &fullSchema))
+			require.NotNil(t, fullSchema)
+			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
 		})
 	}
 }
