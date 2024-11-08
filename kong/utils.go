@@ -268,8 +268,9 @@ func traverseConfigMap(currentConfigMap map[string]interface{}, path []string) (
 //		// Output:
 //	 	// ["apple", "banana", "cherry"]
 func readStringArray(gjsonArray gjson.Result) []string {
-	result := make([]string, len(gjsonArray.Array()))
-	for i, pathSegment := range gjsonArray.Array() {
+	array := gjsonArray.Array()
+	result := make([]string, len(array))
+	for i, pathSegment := range array {
 		result[i] = pathSegment.String()
 	}
 
@@ -322,12 +323,10 @@ func parseReplacedWithPaths(shorthandField gjson.Result) [][]string {
 
 	backwardTranslation := shorthandField.Get("translate_backwards")
 	if !backwardTranslation.Exists() {
-		return make([][]string, 0)
+		return nil
 	}
-	paths := make([][]string, 1)
-	paths[0] = readStringArray(backwardTranslation)
 
-	return paths
+	return [][]string{readStringArray(backwardTranslation)}
 }
 
 // buildDeprecatedFieldWithReplacementsMap processes a list of shorthand fields and creates a map,
@@ -373,8 +372,9 @@ func buildDeprecatedFieldWithReplacementsMap(shorthandFields gjson.Result) map[s
 	shorthandFields.ForEach(func(_, value gjson.Result) bool {
 		field := value.Map()
 		for deprecatedFieldName, shorthandFieldConfig := range field {
-			paths := parseReplacedWithPaths(shorthandFieldConfig)
-			result[deprecatedFieldName] = paths
+			if paths := parseReplacedWithPaths(shorthandFieldConfig); paths != nil {
+				result[deprecatedFieldName] = paths
+			}
 		}
 
 		return true
@@ -1054,7 +1054,7 @@ func ClearUnmatchingDeprecations(newPlugin *Plugin, oldPlugin *Plugin, schema ma
 	if err != nil {
 		return err
 	}
-	gjsonSchema := gjson.ParseBytes((jsonb))
+	gjsonSchema := gjson.ParseBytes(jsonb)
 	configSchema, err := getConfigSchema(gjsonSchema)
 	if err != nil {
 		return err
