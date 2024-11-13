@@ -3404,6 +3404,43 @@ func Test_ClearUnmatchingDeprecationsAdvanced(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "when both complete new and old configuration is sent but their values are nil",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": nil,
+						"cluster_nodes":     nil,
+						"timeout":           nil,
+						"connect_timeout":   nil,
+						"send_timeout":      nil,
+						"read_timeout":      nil,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": nil,
+						"cluster_nodes":     nil,
+						"timeout":           nil,
+						"connect_timeout":   nil,
+						"send_timeout":      nil,
+						"read_timeout":      nil,
+					},
+				},
+			},
+			expectedOldPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": nil,
+					"cluster_nodes":     nil,
+					"timeout":           nil,
+					"connect_timeout":   nil,
+					"send_timeout":      nil,
+					"read_timeout":      nil,
+				},
+			},
+		},
 	}
 
 	for _, tc := range tests {

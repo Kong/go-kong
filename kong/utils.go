@@ -208,47 +208,6 @@ func getConfigSchema(schema gjson.Result) (gjson.Result, error) {
 	return schema, fmt.Errorf("no 'config' field found in schema")
 }
 
-// traverseConfigMap recursively traverses a plugin config
-// and returns the value at the specified path.
-// The path is represented as a slice of strings, where each string is a key in the map.
-//
-// If the path is empty, nil is returned.
-//
-// If the path cannot be fully traversed (e.g., a non-existent key is encountered),
-// this function returns nil and an appropriate error.
-//
-// This function can be helpful to fetch the nested config value from a backward translation
-// path provided with deprecated fields.
-//
-// Example usage:
-//
-//	configMap := map[string]interface{}{
-//		"foo": map[string]interface{}{
-//			"bar": 42,
-//		},
-//	}
-//	value, err := traverseConfigMap(configMap, []string{"foo", "bar"})
-//	// value comes 42 here
-func traverseConfigMap(currentConfigMap map[string]interface{}, path []string) (interface{}, error) {
-	if len(path) == 0 {
-		return nil, nil
-	}
-
-	pathElement := path[0]
-	value, ok := currentConfigMap[pathElement]
-	if !ok {
-		return nil, fmt.Errorf("key %q not found in map", pathElement)
-	}
-
-	switch v := value.(type) {
-	case map[string]interface{}:
-		// Traversing the map recursively, dissecting the path each time
-		return traverseConfigMap(v, path[1:])
-	default:
-		return v, nil
-	}
-}
-
 // readStringArray converts a gjson.Result (JSON array) into a slice of strings.
 // It extracts each element of the JSON array and returns a slice containing their string values.
 //
@@ -911,6 +870,49 @@ func deleteAndCollapseMap(config map[string]interface{}, path []string) {
 	}
 }
 
+// traverseConfigMap recursively traverses a plugin config map and returns the value at the specified path.
+// The path is represented as a slice of strings, where each string is a key in the map.
+//
+// If the path is empty, nil is returned and false is indicated to show no value was found.
+//
+// If the path cannot be fully traversed (e.g., a non-existent key is encountered),
+// the function returns nil and false, along with an appropriate error.
+//
+// This function is useful for retrieving a nested config value, even when dealing with deprecated or backward-compatible field names.
+//
+// Example usage:
+//
+//	configMap := map[string]interface{}{
+//	    "foo": map[string]interface{}{
+//	        "bar": 42,
+//	    },
+//	}
+//	value, found := traverseConfigMap(configMap, []string{"foo", "bar"})
+//	// value will be 42, and found will be true if the path is fully resolved
+//
+// Parameters:
+//   - currentConfigMap: The map representing the plugin's config to be traversed.
+//   - path: A slice of strings representing the keys to follow in the map.
+//
+// Returns:
+//   - The value found at the end of the path, or nil if not found.
+//   - A boolean indicating whether the value was found at the given path.
+func traverseConfigMap(currentConfigMap map[string]interface{}, path []string) (interface{}, bool) {
+	if len(path) == 0 {
+		return nil, false
+	}
+
+	value, ok := currentConfigMap[path[0]]
+
+	switch v := value.(type) {
+	case map[string]interface{}:
+		// Traversing the map recursively, dissecting the path each time
+		return traverseConfigMap(v, path[1:])
+	default:
+		return v, ok
+	}
+}
+
 // This function handles the relationship between deprecated and new plugin configuration values.
 // We consider the following scenarios:
 //
@@ -929,11 +931,12 @@ func clearUnmatchingDeprecationsForGivenPath(
 	oldPluginConfig Configuration,
 	acceptNullValue bool,
 ) {
-	newPluginNewFieldValue, _ := traverseConfigMap(newPluginConfig, path)
-	if newPluginNewFieldValue == nil {
-		if !acceptNullValue {
-			deleteAndCollapseMap(newPluginConfig, path)
-		}
+	newPluginNewFieldValue, ok := traverseConfigMap(newPluginConfig, path)
+
+	if !ok {
+		deleteAndCollapseMap(oldPluginConfig, path)
+	} else if newPluginNewFieldValue == nil && !acceptNullValue {
+		deleteAndCollapseMap(newPluginConfig, path)
 		deleteAndCollapseMap(oldPluginConfig, path)
 	}
 }
@@ -957,7 +960,6 @@ func clearCurrentLevelUnmatchingDeprecations(
 ) {
 	// Fetch deprecated fields
 	shortHandFields := schema.Get("shorthand_fields")
-
 	shortHandFields.ForEach(func(_, value gjson.Result) bool {
 		field := value.Map()
 		for deprecatedFieldName, shorthandFieldConfig := range field {
