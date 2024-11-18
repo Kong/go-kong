@@ -2825,11 +2825,13 @@ func Test_FillPluginsDefaults_NonEmptyDefaultArrayField(t *testing.T) {
 
 func Test_ClearUnmatchingDeprecationsSimple(t *testing.T) {
 	RunWhenKong(t, ">=3.8.0")
-	assert := assert.New(t)
-
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting")
+	require.NoError(t, err)
+	require.NotNil(t, fullSchema)
 
 	tests := []struct {
 		name              string
@@ -2908,9 +2910,6 @@ func Test_ClearUnmatchingDeprecationsSimple(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting")
-			assert.NoError(err)
-			assert.NotNil(fullSchema)
 			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
 			if diff := cmp.Diff(tc.oldPlugin.Config, tc.expectedOldPlugin); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
@@ -2921,11 +2920,13 @@ func Test_ClearUnmatchingDeprecationsSimple(t *testing.T) {
 
 func Test_ClearUnmatchingDeprecationsAdvanced(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.8.0", RequiredFeatures{})
-	assert := assert.New(t)
-
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
+	require.NoError(t, err)
+	require.NotNil(t, fullSchema)
 
 	tests := []struct {
 		name              string
@@ -3139,9 +3140,6 @@ func Test_ClearUnmatchingDeprecationsAdvanced(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
-			assert.NoError(err)
-			assert.NotNil(fullSchema)
 			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
 			if diff := cmp.Diff(tc.oldPlugin.Config, tc.expectedOldPlugin); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
@@ -3179,11 +3177,13 @@ func Test_ClearUnmatchingDeprecationsWhenSchemaIsWrong(t *testing.T) {
 
 func Test_ClearUnmatchingDeprecationsWhenNotUpdateEvent(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.8.0", RequiredFeatures{})
-	assert := assert.New(t)
-
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
+	require.NoError(t, err)
+	require.NotNil(t, fullSchema)
 
 	tests := []struct {
 		name                     string
@@ -3266,9 +3266,6 @@ func Test_ClearUnmatchingDeprecationsWhenNotUpdateEvent(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
-			assert.NoError(err)
-			assert.NotNil(fullSchema)
 			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
 			if tc.expectedNewPluginCleared != nil {
 				if diff := cmp.Diff(tc.newPlugin.Config, tc.expectedNewPluginCleared); diff != "" {
@@ -3287,11 +3284,13 @@ func Test_ClearUnmatchingDeprecationsWhenNotUpdateEvent(t *testing.T) {
 
 func Test_ClearUnmatchingDeprecationsWhenNewConfigIsSetAsNil(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.8.0", RequiredFeatures{})
-	assert := assert.New(t)
-
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
+	require.NoError(t, err)
+	require.NotNil(t, fullSchema)
 
 	tests := []struct {
 		name                     string
@@ -3410,9 +3409,6 @@ func Test_ClearUnmatchingDeprecationsWhenNewConfigIsSetAsNil(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
-			assert.NoError(err)
-			assert.NotNil(fullSchema)
 			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
 			if diff := cmp.Diff(tc.newPlugin.Config, tc.expectedNewPluginCleared); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
@@ -3427,11 +3423,13 @@ func Test_ClearUnmatchingDeprecationsWhenNewConfigIsSetAsNil(t *testing.T) {
 
 func Test_ClearUnmatchingDeprecationsWhenNewConfigHasDefaults(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.8.0", RequiredFeatures{})
-	assert := assert.New(t)
-
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
+	require.NoError(t, err)
+	require.NotNil(t, fullSchema)
 
 	tests := []struct {
 		name                     string
@@ -3550,9 +3548,6 @@ func Test_ClearUnmatchingDeprecationsWhenNewConfigHasDefaults(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
-			assert.NoError(err)
-			assert.NotNil(fullSchema)
 			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
 			if diff := cmp.Diff(tc.newPlugin.Config, tc.expectedNewPluginCleared); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)

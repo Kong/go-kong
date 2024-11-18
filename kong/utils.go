@@ -913,7 +913,7 @@ func traverseConfigMap(currentConfigMap map[string]interface{}, path []string) (
 	}
 }
 
-// This function handles the relationship between deprecated and new plugin configuration values.
+// clearUnmatchingDeprecationsForGivenPath handles the relationship between deprecated and new plugin configuration values.
 // We consider the following scenarios:
 //
 // - **Scenario 1**: Both old and new values are present.
