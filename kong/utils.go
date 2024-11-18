@@ -1026,8 +1026,8 @@ func traverseConfigurationsAndExecute(
 	})
 }
 
-// same as ClearUnmatchingDeprecations but this function below is adjusted for recursive use (which is required
-// when the schema contains nested records and they can have nested shorthands).
+// clearUnmatchingDeprecationsHelper is similar to ClearUnmatchingDeprecations but it is adjusted for recursive use
+// (which is required when the schema contains nested records and they can have nested shorthands).
 func clearUnmatchingDeprecationsHelper(
 	newPluginConfig Configuration,
 	oldPluginConfig Configuration,
@@ -1044,13 +1044,47 @@ func clearUnmatchingDeprecationsHelper(
 	)
 }
 
-// ClearUnmatchingDeprecations is a function that go through a pair of
-// configurations: newPlugin and oldPlugin, and by using schema it makes sure those two configurations
-// are aligned.
-// It does so by removing deprecated or new fields in "oldPlugin" that were not defined in "oldPlugin".
-// Furthermore it'll remove new field from newPlugin when it's value is nil and the corresponding deprecated
-// value is not nil (in that case we can be sure that "oldPlugin" contains
-// specific value for both new and old fields).
+// ClearUnmatchingDeprecations compares two plugin configurations: newPlugin and oldPlugin,
+// and ensures they are aligned according to the provided schema.
+//
+// Specifically, this function removes deprecated or newly added fields from the oldPlugin configuration
+// that are not present in newPlugin. It also removes new fields in the newPlugin configuration where
+// the corresponding deprecated value in that configuration is not nil. This ensures that
+// if both the new and old fields exist, their values are properly aligned.
+//
+// Example:
+//
+//		newPlugin := map[string]interface{}{
+//		    "newValue": nil,
+//	     "deprecatedValue": "value-version-2",
+//		}
+//		oldPlugin := map[string]interface{}{
+//		    "newValue": "value-version-1",
+//	     "deprecatedValue": "value-version-1",
+//		}
+//
+// After calling ClearUnmatchingDeprecations:
+//
+//		newPlugin := map[string]interface{}{
+//	     "deprecatedValue": "value-version-2",
+//		}
+//		oldPlugin := map[string]interface{}{
+//	     "deprecatedValue": "value-version-1",
+//		}
+//
+// In this example, the new field `newValue` is removed from `newPlugin` because its value is `nil`,
+// while the corresponding deprecated field in `newPlugin` (`deprecatedValue`) has a concrete value ("value-version-2").
+// This is how Gateway will behave since it'll prefer concrete value over nil.
+// Afterward, `newPlugin` and `oldPlugin` are compared, and the field `newValue` is removed from `oldPlugin`
+// because it no longer exists in `newPlugin` (it was removed due to the `nil` value).
+//
+// Parameters:
+//   - newPlugin: The configuration of the new plugin version.
+//   - oldPlugin: The configuration of the old plugin version.
+//   - schema: A map representing the schema used to validate and align the plugin configurations.
+//
+// Returns:
+//   - error: If an error occurs during schema parsing or processing, it returns an error.
 func ClearUnmatchingDeprecations(newPlugin *Plugin, oldPlugin *Plugin, schema map[string]interface{}) error {
 	jsonb, err := json.Marshal(&schema)
 	if err != nil {
