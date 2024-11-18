@@ -2,6 +2,7 @@ package kong
 
 import (
 	"encoding/json"
+	"math"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -1805,7 +1806,6 @@ func Test_fillConfigRecord(t *testing.T) {
 						"nationality": "Ethiopian",
 					},
 				},
-				"empty_record": map[string]any{},
 			},
 		},
 		{
@@ -1836,7 +1836,7 @@ func Test_fillConfigRecord(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			configSchema, err := getConfigSchema(tc.schema)
 			require.NoError(t, err)
-			config := fillConfigRecord(configSchema, tc.config, FillRecordOptions{
+			config := fillConfigRecord(configSchema, tc.config, nil, FillRecordOptions{
 				FillDefaults: true,
 				FillAuto:     true,
 			})
@@ -2038,13 +2038,10 @@ func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 						"nationality": "Ethiopian",
 					},
 				},
-				"empty_record": map[string]any{},
 				"redis": map[string]interface{}{
 					"host": nil,
 					"port": float64(6379),
 				},
-				"redis_port": float64(6379),
-				"redis_host": nil,
 			},
 		},
 		{
@@ -2055,15 +2052,24 @@ func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 				"redis_port": float64(8000),
 			},
 			expected: Configuration{
-				"enabled":      true,
-				"mappings":     nil,
-				"empty_record": map[string]any{},
-				"redis": map[string]interface{}{
-					"host": "localhost",
-					"port": float64(8000),
-				},
+				"enabled":    true,
+				"mappings":   nil,
 				"redis_port": float64(8000),
 				"redis_host": "localhost",
+			},
+		},
+		{
+			name:   "backfills nested fields if shorthand field values are changed and respects nil value (over default)",
+			schema: gjson.Parse(fillConfigRecordTestSchemaWithShorthandFields),
+			config: Configuration{
+				"redis_host": "localhost-custom-1",
+				"redis_port": nil,
+			},
+			expected: Configuration{
+				"enabled":    true,
+				"mappings":   nil,
+				"redis_port": nil, // new field redis.port has defined default value but the given redis_port is respected
+				"redis_host": "localhost-custom-1",
 			},
 		},
 	}
@@ -2072,7 +2078,7 @@ func Test_fillConfigRecord_shorthand_fields(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			configSchema, err := getConfigSchema(tc.schema)
 			require.NoError(t, err)
-			config := fillConfigRecord(configSchema, tc.config, FillRecordOptions{
+			config := fillConfigRecord(configSchema, tc.config, nil, FillRecordOptions{
 				FillDefaults: true,
 				FillAuto:     true,
 			})
@@ -2108,7 +2114,7 @@ func Test_fillConfigRecord_defaults_only(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			configSchema, err := getConfigSchema(tc.schema)
 			require.NoError(t, err)
-			config := fillConfigRecord(configSchema, tc.config, FillRecordOptions{
+			config := fillConfigRecord(configSchema, tc.config, nil, FillRecordOptions{
 				FillDefaults: true,
 				FillAuto:     false,
 			})
@@ -2160,7 +2166,7 @@ func Test_fillConfigRecord_auto_only(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			configSchema, err := getConfigSchema(tc.schema)
 			require.NoError(t, err)
-			config := fillConfigRecord(configSchema, tc.config, FillRecordOptions{
+			config := fillConfigRecord(configSchema, tc.config, nil, FillRecordOptions{
 				FillDefaults: false,
 				FillAuto:     true,
 			})
@@ -2283,7 +2289,7 @@ func Test_FillPluginsDefaults(t *testing.T) {
 					"host":    "localhost",
 					"port":    float64(8125),
 					"prefix":  "kong",
-					"metrics": defaultMetrics,
+					"metrics": nil,
 				},
 			},
 		},
@@ -2494,12 +2500,7 @@ func Test_FillPluginsDefaults_SetType(t *testing.T) {
 			},
 			expected: &Plugin{
 				Config: Configuration{
-					"bootstrap_servers": []any{
-						map[string]any{
-							"host": "127.0.0.1",
-							"port": float64(42),
-						},
-					},
+					"bootstrap_servers": nil,
 				},
 			},
 		},
@@ -2565,7 +2566,6 @@ func Test_FillPluginsDefaults_Acme(t *testing.T) {
 							"timeout": nil,
 							"token":   nil,
 						},
-						"kong": map[string]any{},
 						"redis": map[string]any{
 							"auth":            nil,
 							"database":        nil,
@@ -2817,6 +2817,743 @@ func Test_FillPluginsDefaults_NonEmptyDefaultArrayField(t *testing.T) {
 			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_ClearUnmatchingDeprecationsSimple(t *testing.T) {
+	RunWhenKong(t, ">=3.8.0")
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting")
+	require.NoError(t, err)
+	require.NotNil(t, fullSchema)
+
+	tests := []struct {
+		name              string
+		newPlugin         *Plugin
+		oldPlugin         *Plugin
+		expectedOldPlugin Configuration
+	}{
+		{
+			name: "when new object contains only old (deprecated) fields",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis_host": "localhost",
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"host": "localhost",
+					},
+					"redis_host": "localhost",
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis_host": "localhost",
+			},
+		},
+		{
+			name: "when new object contains only new fields (non-deprecated)",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"host": "localhost",
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"host": "localhost",
+					},
+					"redis_host": "localhost",
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"host": "localhost",
+				},
+			},
+		},
+		{
+			name: "when new object contains both new and old fields",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"host": "localhost",
+					},
+					"redis_host": "localhost",
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"host": "localhost",
+					},
+					"redis_host": "localhost",
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"host": "localhost",
+				},
+				"redis_host": "localhost",
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
+			if diff := cmp.Diff(tc.oldPlugin.Config, tc.expectedOldPlugin); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_ClearUnmatchingDeprecationsAdvanced(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.8.0", RequiredFeatures{})
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
+	require.NoError(t, err)
+	require.NotNil(t, fullSchema)
+
+	tests := []struct {
+		name              string
+		newPlugin         *Plugin
+		oldPlugin         *Plugin
+		expectedOldPlugin Configuration
+	}{
+		{
+			name: "when new object contains only old (deprecated) fields",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+					},
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+				},
+			},
+		},
+		{
+			name: "when new object contains only new fields",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+					},
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 6379},
+						{"ip": "127.0.0.1", "port": 6380},
+						{"ip": "127.0.0.1", "port": 6381},
+					},
+				},
+			},
+		},
+		{
+			name: "when new object contains old field but the new ones are split into multiple separate fields",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"timeout": 2000,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"timeout": 2000,
+				},
+			},
+		},
+		{
+			name: "when new object contains new field that is split into multiple fields but there was only one old field",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"connect_timeout": 2000,
+					"send_timeout":    2000,
+					"read_timeout":    2000,
+				},
+			},
+		},
+		{
+			name: "when both complete new and old configuration is sent",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 6379},
+						{"ip": "127.0.0.1", "port": 6380},
+						{"ip": "127.0.0.1", "port": 6381},
+					},
+					"timeout":         2000,
+					"connect_timeout": 2000,
+					"send_timeout":    2000,
+					"read_timeout":    2000,
+				},
+			},
+		},
+		{
+			name: "when both complete new and old configuration is sent but their values are nil",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": nil,
+						"cluster_nodes":     nil,
+						"timeout":           nil,
+						"connect_timeout":   nil,
+						"send_timeout":      nil,
+						"read_timeout":      nil,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": nil,
+						"cluster_nodes":     nil,
+						"timeout":           nil,
+						"connect_timeout":   nil,
+						"send_timeout":      nil,
+						"read_timeout":      nil,
+					},
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": nil,
+					"cluster_nodes":     nil,
+					"timeout":           nil,
+					"connect_timeout":   nil,
+					"send_timeout":      nil,
+					"read_timeout":      nil,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
+			if diff := cmp.Diff(tc.oldPlugin.Config, tc.expectedOldPlugin); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_ClearUnmatchingDeprecationsWhenSchemaIsWrong(t *testing.T) {
+	tests := []struct {
+		name   string
+		schema map[string]interface{}
+	}{
+		// These test cases are rather theoretical since the schema is a JSON extracted from Kong /schemas endpoint
+		{
+			name: "when schema is not json serializble",
+			schema: map[string]interface{}{
+				"some other field": math.Inf(1),
+			},
+		},
+		{
+			name: "when schema is wrong - i.e. does not have {fields: [ {config: {fields: []}} ]} structure",
+			schema: map[string]interface{}{
+				"some other field": 4,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Error(t, ClearUnmatchingDeprecations(nil, nil, tc.schema))
+		})
+	}
+}
+
+func Test_ClearUnmatchingDeprecationsWhenNotUpdateEvent(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.8.0", RequiredFeatures{})
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
+	require.NoError(t, err)
+	require.NotNil(t, fullSchema)
+
+	tests := []struct {
+		name                     string
+		newPlugin                *Plugin
+		oldPlugin                *Plugin
+		expectedNewPluginCleared Configuration
+		expectedOldPlugin        Configuration
+	}{
+		{
+			name: "when only new configuration is sent (CREATE event)",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			oldPlugin:         nil,
+			expectedOldPlugin: nil,
+			expectedNewPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 6379},
+						{"ip": "127.0.0.1", "port": 6380},
+						{"ip": "127.0.0.1", "port": 6381},
+					},
+					"timeout":         2000,
+					"connect_timeout": 2000,
+					"send_timeout":    2000,
+					"read_timeout":    2000,
+				},
+			},
+		},
+		{
+			name:      "when only old configuration is sent (DELETE event)",
+			newPlugin: nil,
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedNewPluginCleared: nil,
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 6379},
+						{"ip": "127.0.0.1", "port": 6380},
+						{"ip": "127.0.0.1", "port": 6381},
+					},
+					"timeout":         2000,
+					"connect_timeout": 2000,
+					"send_timeout":    2000,
+					"read_timeout":    2000,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
+			if tc.expectedNewPluginCleared != nil {
+				if diff := cmp.Diff(tc.newPlugin.Config, tc.expectedNewPluginCleared); diff != "" {
+					t.Errorf("unexpected diff:\n%s", diff)
+				}
+			}
+
+			if tc.expectedOldPlugin != nil {
+				if diff := cmp.Diff(tc.oldPlugin.Config, tc.expectedOldPlugin); diff != "" {
+					t.Errorf("unexpected diff:\n%s", diff)
+				}
+			}
+		})
+	}
+}
+
+func Test_ClearUnmatchingDeprecationsWhenNewConfigIsSetAsNil(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.8.0", RequiredFeatures{})
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
+	require.NoError(t, err)
+	require.NotNil(t, fullSchema)
+
+	tests := []struct {
+		name                     string
+		newPlugin                *Plugin
+		oldPlugin                *Plugin
+		expectedNewPluginCleared Configuration
+		expectedOldPlugin        Configuration
+	}{
+		{
+			name: "when only old configuration is sent but the new one was filled with nil",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes":     nil,
+						"timeout":           2000,
+						"connect_timeout":   nil,
+						"send_timeout":      nil,
+						"read_timeout":      nil,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedNewPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"timeout":           2000,
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"timeout":           2000,
+				},
+			},
+		},
+		{
+			name: "when both new and old configuration is sent and their values differ - (should not change configurations)",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 9379},
+							{"ip": "127.0.0.1", "port": 9380},
+							{"ip": "127.0.0.1", "port": 9381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 3001,
+						"send_timeout":    3002,
+						"read_timeout":    3003,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedNewPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 9379},
+						{"ip": "127.0.0.1", "port": 9380},
+						{"ip": "127.0.0.1", "port": 9381},
+					},
+					"timeout":         2000,
+					"connect_timeout": 3001,
+					"send_timeout":    3002,
+					"read_timeout":    3003,
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 6379},
+						{"ip": "127.0.0.1", "port": 6380},
+						{"ip": "127.0.0.1", "port": 6381},
+					},
+					"timeout":         2000,
+					"connect_timeout": 2000,
+					"send_timeout":    2000,
+					"read_timeout":    2000,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
+			if diff := cmp.Diff(tc.newPlugin.Config, tc.expectedNewPluginCleared); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+
+			if diff := cmp.Diff(tc.oldPlugin.Config, tc.expectedOldPlugin); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_ClearUnmatchingDeprecationsWhenNewConfigHasDefaults(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.8.0", RequiredFeatures{})
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
+	require.NoError(t, err)
+	require.NotNil(t, fullSchema)
+
+	tests := []struct {
+		name                     string
+		newPlugin                *Plugin
+		oldPlugin                *Plugin
+		expectedNewPluginCleared Configuration
+		expectedOldPlugin        Configuration
+	}{
+		{
+			name: "when only old configuration is sent but the new one was filled with nil",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes":     nil,
+						"timeout":           2000,
+						"connect_timeout":   nil,
+						"send_timeout":      nil,
+						"read_timeout":      nil,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedNewPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"timeout":           2000,
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"timeout":           2000,
+				},
+			},
+		},
+		{
+			name: "when both new and old configuration is sent and their values differ - (should not change configurations)",
+			newPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 9379},
+							{"ip": "127.0.0.1", "port": 9380},
+							{"ip": "127.0.0.1", "port": 9381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 3001,
+						"send_timeout":    3002,
+						"read_timeout":    3003,
+					},
+				},
+			},
+			oldPlugin: &Plugin{
+				Config: Configuration{
+					"redis": map[string]interface{}{
+						"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+						"cluster_nodes": []map[string]interface{}{
+							{"ip": "127.0.0.1", "port": 6379},
+							{"ip": "127.0.0.1", "port": 6380},
+							{"ip": "127.0.0.1", "port": 6381},
+						},
+						"timeout":         2000,
+						"connect_timeout": 2000,
+						"send_timeout":    2000,
+						"read_timeout":    2000,
+					},
+				},
+			},
+			expectedNewPluginCleared: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 9379},
+						{"ip": "127.0.0.1", "port": 9380},
+						{"ip": "127.0.0.1", "port": 9381},
+					},
+					"timeout":         2000,
+					"connect_timeout": 3001,
+					"send_timeout":    3002,
+					"read_timeout":    3003,
+				},
+			},
+			expectedOldPlugin: Configuration{
+				"redis": map[string]interface{}{
+					"cluster_addresses": []string{"127.0.0.1:6379", "127.0.0.1:6380", "127.0.0.1:6381"},
+					"cluster_nodes": []map[string]interface{}{
+						{"ip": "127.0.0.1", "port": 6379},
+						{"ip": "127.0.0.1", "port": 6380},
+						{"ip": "127.0.0.1", "port": 6381},
+					},
+					"timeout":         2000,
+					"connect_timeout": 2000,
+					"send_timeout":    2000,
+					"read_timeout":    2000,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			require.NoError(t, ClearUnmatchingDeprecations(tc.newPlugin, tc.oldPlugin, fullSchema))
+			if diff := cmp.Diff(tc.newPlugin.Config, tc.expectedNewPluginCleared); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+
+			if diff := cmp.Diff(tc.oldPlugin.Config, tc.expectedOldPlugin); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
