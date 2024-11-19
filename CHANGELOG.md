@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.60.0](#v0600)
 - [v0.59.1](#v0591)
 - [v0.59.0](#v0590)
 - [v0.58.0](#v0580)
@@ -72,6 +73,20 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.60.0]
+
+> Release date: 2024/11/19
+
+- Added the `ClearUnmatchingDeprecations` function to align plugin configuration for comparison.
+  [#473](https://github.com/Kong/go-kong/pull/473)
+- `FillPluginsDefaults` will no longer populate fields with equivalent deprecated keys.
+  Previously, if the configuration contained an old field,
+  the function would add its equivalent new field with a `nil` value.
+  [#473](https://github.com/Kong/go-kong/pull/473)
+- Fixed a bug in `FillPluginsDefaults` that resulted in the overwriting of
+  new values with deprecated values under certain conditions.
+  [#473](https://github.com/Kong/go-kong/pull/473)
 
 ## [v0.59.1]
 
@@ -950,6 +965,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.60.0]: https://github.com/Kong/go-kong/compare/v0.59.1...v0.60.0
 [v0.59.1]: https://github.com/Kong/go-kong/compare/v0.59.0...v0.59.1
 [v0.59.0]: https://github.com/Kong/go-kong/compare/v0.58.0...v0.59.0
 [v0.58.0]: https://github.com/Kong/go-kong/compare/v0.57.1...v0.58.0
