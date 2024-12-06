@@ -242,3 +242,60 @@ func compareConsumerGroups(expected, actual []*ConsumerGroup) bool {
 
 	return (compareSlices(expectedNames, actualNames))
 }
+
+func TestConsumerGroupPluginWithTags(t *testing.T) {
+	RunWhenEnterprise(t, "<3.4.0", RequiredFeatures{})
+	require := require.New(t)
+	assert := assert.New(t)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	// Creating a consumer-group
+	cg := &ConsumerGroup{
+		Name: String("foo"),
+	}
+
+	createdConsumerGroup, err := client.ConsumerGroups.Create(defaultCtx, cg)
+	require.NoError(err)
+	t.Cleanup(func() {
+		err = client.ConsumerGroups.Delete(defaultCtx, String("foo"))
+		assert.NoError(err)
+	})
+	assert.NotNil(createdConsumerGroup)
+
+	// Creating a plugin associated with above consumer-group
+	plugin := &ConsumerGroupPlugin{
+		Name:          String("request-transformer"),
+		Tags:          StringSlice("tag1", "tag2"),
+		ConsumerGroup: createdConsumerGroup,
+	}
+
+	createdPlugin, err := client.Plugins.Create(defaultCtx, &Plugin{
+		Name:          plugin.Name,
+		ConsumerGroup: plugin.ConsumerGroup,
+		Tags:          plugin.Tags,
+	})
+
+	assert.NoError(err)
+	t.Cleanup(func() {
+		err = client.Plugins.Delete(defaultCtx, createdPlugin.ID)
+		assert.NoError(err)
+	})
+	require.NotNil(createdPlugin)
+	assert.Equal(createdPlugin.ConsumerGroup.ID, createdConsumerGroup.ID)
+
+	// Fetching the consumer group object
+	var cgo *ConsumerGroupObject
+	cgo, err = client.ConsumerGroups.Get(defaultCtx, createdConsumerGroup.ID)
+	require.NoError(err)
+	assert.NotNil(cgo)
+	assert.NotNil(cgo.ConsumerGroup)
+
+	// Checking if the plugin associated with the consumer-group has the tags
+	consumerGroupScopedPlugins := cgo.Plugins
+	assert.Len(consumerGroupScopedPlugins, 1)
+	cgPlugin := consumerGroupScopedPlugins[0]
+	assert.Equal(cgPlugin.Tags, createdPlugin.Tags)
+}
