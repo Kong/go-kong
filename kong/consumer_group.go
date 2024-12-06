@@ -42,6 +42,7 @@ type ConsumerGroupPlugin struct {
 	Config        Configuration  `json:"config,omitempty" yaml:"config,omitempty"`
 	ConsumerGroup *ConsumerGroup `json:"consumer_group,omitempty" yaml:"consumer_group,omitempty"`
 	ConfigSource  *string        `json:"_config,omitempty" yaml:"_config,omitempty"`
+	Tags          []*string      `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 // FriendlyName returns the endpoint key name or ID.
