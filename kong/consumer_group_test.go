@@ -242,3 +242,106 @@ func compareConsumerGroups(expected, actual []*ConsumerGroup) bool {
 
 	return (compareSlices(expectedNames, actualNames))
 }
+
+func TestConsumerGroupGetEndpointPreGW39(t *testing.T) {
+	RunWhenEnterprise(t, ">=2.7.0 <3.9.0", RequiredFeatures{})
+	assert := assert.New(t)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	assert.NotNil(client)
+
+	// create consumer
+	consumer := &Consumer{
+		Username: String("foo"),
+	}
+	createdConsumer, err := client.Consumers.Create(defaultCtx, consumer)
+	require.NoError(t, err)
+	assert.NotNil(createdConsumer)
+	t.Cleanup(func() {
+		err = client.Consumers.Delete(defaultCtx, createdConsumer.ID)
+		assert.NoError(err)
+	})
+
+	// create a consumer-group
+	cg := &ConsumerGroup{
+		Name: String("foo-group"),
+	}
+
+	createdConsumerGroup, err := client.ConsumerGroups.Create(defaultCtx, cg)
+	require.NoError(t, err)
+	assert.NotNil(createdConsumerGroup)
+	t.Cleanup(func() {
+		err = client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID)
+		assert.NoError(err)
+	})
+
+	// add consumer to consumer group
+	var response *ConsumerGroupObject
+	response, err = client.ConsumerGroupConsumers.Create(defaultCtx, cg.Name, consumer.Username)
+	require.NoError(t, err)
+	assert.NotNil(response)
+	assert.Equal(response.Consumers[0].ID, createdConsumer.ID)
+	assert.Equal(response.Consumers[0].Username, createdConsumer.Username)
+	assert.Equal(response.ConsumerGroup.ID, createdConsumerGroup.ID)
+
+	// Check get endpoint
+	consumerGroupFromKong, err := client.ConsumerGroups.Get(defaultCtx, createdConsumerGroup.ID)
+	require.NoError(t, err)
+	assert.NotNil(consumerGroupFromKong)
+	assert.Equal(consumerGroupFromKong.ConsumerGroup.ID, createdConsumerGroup.ID)
+	assert.NotNil(consumerGroupFromKong.Consumers)
+	assert.Len(consumerGroupFromKong.Consumers, 1)
+	assert.Equal(consumerGroupFromKong.Consumers[0].ID, createdConsumer.ID)
+}
+
+func TestConsumerGroupGetEndpointPostGW39(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.9.0", RequiredFeatures{})
+	assert := assert.New(t)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	assert.NotNil(client)
+
+	// create consumer
+	consumer := &Consumer{
+		Username: String("foo"),
+	}
+	createdConsumer, err := client.Consumers.Create(defaultCtx, consumer)
+	require.NoError(t, err)
+	assert.NotNil(createdConsumer)
+	t.Cleanup(func() {
+		err = client.Consumers.Delete(defaultCtx, createdConsumer.ID)
+		assert.NoError(err)
+	})
+
+	// create a consumer-group
+	cg := &ConsumerGroup{
+		Name: String("foo-group"),
+	}
+
+	createdConsumerGroup, err := client.ConsumerGroups.Create(defaultCtx, cg)
+	require.NoError(t, err)
+	assert.NotNil(createdConsumerGroup)
+	t.Cleanup(func() {
+		err = client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID)
+		assert.NoError(err)
+	})
+
+	// add consumer to consumer group
+	var response *ConsumerGroupObject
+	response, err = client.ConsumerGroupConsumers.Create(defaultCtx, cg.Name, consumer.Username)
+	require.NoError(t, err)
+	assert.NotNil(response)
+	assert.Equal(response.Consumers[0].ID, createdConsumer.ID)
+	assert.Equal(response.Consumers[0].Username, createdConsumer.Username)
+	assert.Equal(response.ConsumerGroup.ID, createdConsumerGroup.ID)
+
+	// Check get endpoint
+	consumerGroupFromKong, err := client.ConsumerGroups.Get(defaultCtx, createdConsumerGroup.ID)
+	require.NoError(t, err)
+	assert.NotNil(consumerGroupFromKong)
+	assert.Equal(consumerGroupFromKong.ConsumerGroup.ID, createdConsumerGroup.ID)
+	// Consumers are not listed in a get operation
+	assert.Nil(consumerGroupFromKong.Consumers)
+}

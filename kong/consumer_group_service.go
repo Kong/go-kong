@@ -63,7 +63,7 @@ func (s *ConsumerGroupService) Get(ctx context.Context,
 		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
 
-	endpoint := fmt.Sprintf("/consumer_groups/%v", *nameOrID)
+	endpoint := fmt.Sprintf("/consumer_groups/%v?list_consumers=false", *nameOrID)
 	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
 	if err != nil {
 		return nil, err
