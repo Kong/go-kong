@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.61.0](#v0610)
 - [v0.60.0](#v0600)
 - [v0.59.1](#v0591)
 - [v0.59.0](#v0590)
@@ -73,6 +74,20 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.61.0]
+
+> Release date: 2024/12/06
+
+- Added a query-parameter `list_consumers=false` in `GET /consumer_groups`
+  API call to make it faster. This is supported from Gateway 3.9 version.
+  This will ensure that tools like decK work faster in cases where a
+  consumer-group holds thousands of consumers.
+  [#487](https://github.com/Kong/go-kong/pull/487)
+- Added `Tags` field for type `ConsumerGroupPlugin` to ensure that
+  tags added by end-users are retained on the consumer-group scoped
+  plugins.
+  [#485](https://github.com/Kong/go-kong/pull/485)
 
 ## [v0.60.0]
 
@@ -965,6 +980,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.61.0]: https://github.com/Kong/go-kong/compare/v0.60.1...v0.61.0
 [v0.60.0]: https://github.com/Kong/go-kong/compare/v0.59.1...v0.60.0
 [v0.59.1]: https://github.com/Kong/go-kong/compare/v0.59.0...v0.59.1
 [v0.59.0]: https://github.com/Kong/go-kong/compare/v0.58.0...v0.59.0
