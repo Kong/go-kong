@@ -18,6 +18,7 @@ type KonnectApplication struct {
 
 // ApplicationContext reprensents the application context inside the
 // Konnenct-Application-Auth.
+// +k8s:deepcopy-gen=true
 type ApplicationContext struct {
 	PortalID       *string `json:"portal_id"`
 	ApplicationID  *string `json:"application_id"`
