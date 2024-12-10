@@ -67,6 +67,7 @@ type Client struct {
 	Vaults                  AbstractVaultService
 	Keys                    AbstractKeyService
 	KeySets                 AbstractKeySetService
+	KonnectApplication      AbstractKonnectApplicationService
 	Licenses                AbstractLicenseService
 	FilterChains            AbstractFilterChainService
 
@@ -165,6 +166,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.Vaults = (*VaultService)(&kong.common)
 	kong.Keys = (*KeyService)(&kong.common)
 	kong.KeySets = (*KeySetService)(&kong.common)
+	kong.KonnectApplication = (*KonnectApplicationService)(&kong.common)
 	kong.Licenses = (*LicenseService)(&kong.common)
 	kong.FilterChains = (*FilterChainService)(&kong.common)
 
