@@ -56,7 +56,7 @@ func TestKonnectApplicationService_Create(T *testing.T) {
 
 func TestKonnectApplicationService_ListAll(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
-	RunWhenKong(T, ">=3.1.0")
+	RunWhenEnterprise(T, ">=3.1.0", RequiredFeatures{})
 
 	require := require.New(T)
 
