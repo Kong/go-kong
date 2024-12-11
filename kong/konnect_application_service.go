@@ -22,6 +22,7 @@ type AbstractKonnectApplicationService interface {
 
 type KonnectApplicationService service
 
+// Create creates a Konnect Application in Kong.
 func (k *KonnectApplicationService) Create(ctx context.Context, key *KonnectApplication) (*KonnectApplication, error) {
 	queryPath := "/konnect_applications"
 	method := "POST"
@@ -42,6 +43,7 @@ func (k *KonnectApplicationService) Create(ctx context.Context, key *KonnectAppl
 	return &createdKey, nil
 }
 
+// List fetches list of Konnect Applications in Kong.
 func (k *KonnectApplicationService) List(ctx context.Context, opt *ListOpt) ([]*KonnectApplication, *ListOpt, error) {
 	data, next, err := k.client.list(ctx, "/konnect_applications", opt)
 	if err != nil {
@@ -65,6 +67,7 @@ func (k *KonnectApplicationService) List(ctx context.Context, opt *ListOpt) ([]*
 	return kaas, next, nil
 }
 
+// ListAll fetches all Konnect Applications in Kong.
 func (k *KonnectApplicationService) ListAll(ctx context.Context) ([]*KonnectApplication, error) {
 	var kaa, data []*KonnectApplication
 	var err error
@@ -80,6 +83,7 @@ func (k *KonnectApplicationService) ListAll(ctx context.Context) ([]*KonnectAppl
 	return kaa, nil
 }
 
+// Delete deletes a Konnect Application in Kong by ID.
 func (k *KonnectApplicationService) Delete(ctx context.Context, ID *string) error {
 	if isEmptyString(ID) {
 		return fmt.Errorf("ID cannot be nil for Delete operation")
