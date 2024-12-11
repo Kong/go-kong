@@ -1,6 +1,7 @@
 package kong
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -47,11 +48,11 @@ func TestKonnectApplicationService_Create(T *testing.T) {
 	createResponse, err := client.KonnectApplication.Create(defaultCtx, kaa)
 	require.NoError(err)
 	require.NotNil(createResponse)
-	
-	t.Cleanup(func() {
+
+	T.Cleanup(func() {
 		assert.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
 	})
-	
+
 	require.Equal(createResponse.ClientID, clientID)
 	require.Equal(createResponse.CreatedAt, createdAt)
 	require.Equal(createResponse.ConsumerGroups, consumerGroup)
@@ -63,6 +64,7 @@ func TestKonnectApplicationService_ListAll(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 	RunWhenEnterprise(T, ">=3.6.0", RequiredFeatures{})
 
+	assert := assert.New(T)
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -99,10 +101,10 @@ func TestKonnectApplicationService_ListAll(T *testing.T) {
 		createResponse, err := client.KonnectApplication.Create(defaultCtx, kaa)
 		require.NoError(err)
 		require.NotNil(createResponse)
-		
-		t.Cleanup(func() {
+
+		T.Cleanup(func() {
 			assert.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
-	})
+		})
 	}
 
 	listKonnectApplicationResponse, err := client.KonnectApplication.ListAll(defaultCtx)
