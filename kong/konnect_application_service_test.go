@@ -47,14 +47,16 @@ func TestKonnectApplicationService_Create(T *testing.T) {
 	createResponse, err := client.KonnectApplication.Create(defaultCtx, kaa)
 	require.NoError(err)
 	require.NotNil(createResponse)
+	
+	t.Cleanup(func() {
+		assert.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
+	})
+	
 	require.Equal(createResponse.ClientID, clientID)
 	require.Equal(createResponse.CreatedAt, createdAt)
 	require.Equal(createResponse.ConsumerGroups, consumerGroup)
 	require.Equal(createResponse.Scopes, scopes)
 	require.Equal(createResponse.ExhaustedScopes, exhaustedScopes)
-
-	err = client.KonnectApplication.Delete(defaultCtx, createResponse.ID)
-	require.NoError(err)
 }
 
 func TestKonnectApplicationService_ListAll(T *testing.T) {
