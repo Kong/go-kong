@@ -16,7 +16,7 @@ type KonnectApplication struct {
 	Tags               *[]string           `json:"tags"`
 }
 
-// ApplicationContext reprensents the application context inside the
+// ApplicationContext represents the application context inside the
 // Konnenct-Application-Auth.
 // +k8s:deepcopy-gen=true
 type ApplicationContext struct {
