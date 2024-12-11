@@ -20,7 +20,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/gjson v1.18.0
-	k8s.io/code-generator v0.31.3
+	k8s.io/code-generator v0.31.4
 	sigs.k8s.io/yaml v1.4.0
 )
 
