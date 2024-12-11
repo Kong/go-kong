@@ -8,7 +8,7 @@ import (
 
 var _ AbstractKonnectApplicationService = &KonnectApplicationService{}
 
-// AbstractACLService handles consumer ACL groups in Kong.
+// AbstractKonnectApplicationService handles Konnect applications in Kong.
 type AbstractKonnectApplicationService interface {
 	// Create creates a Konnect Application in Kong.
 	Create(ctx context.Context, key *KonnectApplication) (*KonnectApplication, error)
