@@ -3,6 +3,7 @@ package kong
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 )
 
 var _ AbstractKonnectApplicationService = &KonnectApplicationService{}
@@ -15,6 +16,8 @@ type AbstractKonnectApplicationService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*KonnectApplication, *ListOpt, error)
 	// ListAll fetches all Konnect Applications in Kong.
 	ListAll(ctx context.Context) ([]*KonnectApplication, error)
+	// Delete deletes a Konnect Application in Kong by ID.
+	Delete(ctx context.Context, ID *string) error
 }
 
 type KonnectApplicationService service
@@ -75,4 +78,18 @@ func (k *KonnectApplicationService) ListAll(ctx context.Context) ([]*KonnectAppl
 		kaa = append(kaa, data...)
 	}
 	return kaa, nil
+}
+
+func (k *KonnectApplicationService) Delete(ctx context.Context, ID *string) error {
+	if isEmptyString(ID) {
+		return fmt.Errorf("ID cannot be nil for Delete operation")
+	}
+
+	req, err := k.client.NewRequest("DELETE", fmt.Sprintf("/konnect_applications/%s", *ID), nil, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = k.client.Do(ctx, req, nil)
+	return err
 }

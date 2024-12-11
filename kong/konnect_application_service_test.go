@@ -52,6 +52,9 @@ func TestKonnectApplicationService_Create(T *testing.T) {
 	require.Equal(createResponse.ConsumerGroups, consumerGroup)
 	require.Equal(createResponse.Scopes, scopes)
 	require.Equal(createResponse.ExhaustedScopes, exhaustedScopes)
+
+	err = client.KonnectApplication.Delete(defaultCtx, createResponse.ID)
+	require.NoError(err)
 }
 
 func TestKonnectApplicationService_ListAll(T *testing.T) {
