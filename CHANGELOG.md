@@ -75,6 +75,14 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
+## [v0.62.0]
+
+> Release date: 2024/12/11
+
+- Added Client APIs (Create, List, ListALL, Delete) to interact 
+  with the Konnect Application Auth resources.
+  [#490](https://github.com/Kong/go-kong/pull/490)
+
 ## [v0.61.0]
 
 > Release date: 2024/12/06
