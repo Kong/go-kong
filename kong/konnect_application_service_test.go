@@ -11,7 +11,7 @@ import (
 
 func TestKonnectApplicationService_Create(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
-	RunWhenKong(T, ">=3.1.0")
+	RunWhenKong(T, ">=3.6.0")
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -59,7 +59,7 @@ func TestKonnectApplicationService_Create(T *testing.T) {
 
 func TestKonnectApplicationService_ListAll(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
-	RunWhenEnterprise(T, ">=3.1.0", RequiredFeatures{})
+	RunWhenEnterprise(T, ">=3.6.0", RequiredFeatures{})
 
 	require := require.New(T)
 
