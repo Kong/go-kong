@@ -97,6 +97,10 @@ func TestKonnectApplicationService_ListAll(T *testing.T) {
 		createResponse, err := client.KonnectApplication.Create(defaultCtx, kaa)
 		require.NoError(err)
 		require.NotNil(createResponse)
+		
+		t.Cleanup(func() {
+			assert.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
+	})
 	}
 
 	listKonnectApplicationResponse, err := client.KonnectApplication.ListAll(defaultCtx)
