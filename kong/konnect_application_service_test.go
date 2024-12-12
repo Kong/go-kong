@@ -19,8 +19,8 @@ func TestKonnectApplicationService_Create(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
-	assert.NotNil(client)
+	require.NoError(err)
+	require.NotNil(client)
 
 	var (
 		clientID        = uuid.NewString()
