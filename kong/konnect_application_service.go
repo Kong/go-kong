@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
 var _ AbstractKonnectApplicationService = &KonnectApplicationService{}
@@ -94,6 +95,11 @@ func (k *KonnectApplicationService) Delete(ctx context.Context, ID *string) erro
 		return err
 	}
 
-	_, err = k.client.Do(ctx, req, nil)
+	resp, err := k.client.Do(ctx, req, nil)
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("failed to delete Konnect Application: %s: "+
+			"expected status %v, but received %v", *ID, http.StatusNoContent, resp.Status)
+	}
+
 	return err
 }
