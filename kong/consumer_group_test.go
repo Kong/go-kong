@@ -348,6 +348,15 @@ func TestConsumerGroupGetEndpointPostGW39(t *testing.T) {
 	require.NoError(err)
 	assert.NotNil(consumerGroupFromKong)
 	assert.Equal(consumerGroupFromKong.ConsumerGroup.ID, createdConsumerGroup.ID)
-	// Consumers are not listed in a get operation
+	// Consumers are listed
+	assert.NotNil(consumerGroupFromKong.Consumers)
+	assert.Len(consumerGroupFromKong.Consumers, 1)
+
+	// Check GetWithConsumers
+	consumerGroupFromKong, err = client.ConsumerGroups.GetWithNoConsumers(defaultCtx, createdConsumerGroup.ID)
+	require.NoError(err)
+	assert.NotNil(consumerGroupFromKong)
+	assert.Equal(consumerGroupFromKong.ConsumerGroup.ID, createdConsumerGroup.ID)
+	// Consumers are not listed
 	assert.Nil(consumerGroupFromKong.Consumers)
 }

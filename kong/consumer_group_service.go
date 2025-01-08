@@ -12,6 +12,8 @@ type AbstractConsumerGroupService interface {
 	Create(ctx context.Context, consumerGroup *ConsumerGroup) (*ConsumerGroup, error)
 	// Get fetches a ConsumerGroup from Kong.
 	Get(ctx context.Context, nameOrID *string) (*ConsumerGroupObject, error)
+	// GetWithNoConsumers fetches a ConsumerGroup with no consumers listed from Kong.
+	GetWithNoConsumers(ctx context.Context, nameOrID *string) (*ConsumerGroupObject, error)
 	// Update updates a ConsumerGroup in Kong
 	Update(ctx context.Context, consumerGroup *ConsumerGroup) (*ConsumerGroup, error)
 	// Delete deletes a ConsumerGroup in Kong
@@ -57,6 +59,28 @@ func (s *ConsumerGroupService) Create(ctx context.Context,
 
 // Get fetches a ConsumerGroup from Kong.
 func (s *ConsumerGroupService) Get(ctx context.Context,
+	nameOrID *string,
+) (*ConsumerGroupObject, error) {
+	if isEmptyString(nameOrID) {
+		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
+	}
+
+	endpoint := fmt.Sprintf("/consumer_groups/%v", *nameOrID)
+	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var cg ConsumerGroupObject
+	_, err = s.client.Do(ctx, req, &cg)
+	if err != nil {
+		return nil, err
+	}
+	return &cg, nil
+}
+
+// Get fetches a ConsumerGroup from Kong, but skips the associated consumers.
+func (s *ConsumerGroupService) GetWithNoConsumers(ctx context.Context,
 	nameOrID *string,
 ) (*ConsumerGroupObject, error) {
 	if isEmptyString(nameOrID) {
