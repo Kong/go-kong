@@ -90,7 +90,7 @@ jobs:
       # to override:
       # Warning: Skip output 'license' since it may contain secret.
       # on Github Actions when setting a job output.
-      - uses: Kong/kong-license@master
+      - uses: Kong/kong-license@c4decf08584f84ff8fe8e7cd3c463e0192f6111b
         id: license_step
         with:
           password: ${{ secrets.PULP_PASSWORD }}
@@ -106,7 +106,7 @@ jobs:
       - name: Run tests
         run: make test-coverage-enterprise
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@v5.1.1
+        uses: codecov/codecov-action@7f8b4b4bde536c465e797be725718b88c5d95e0e # v5.1.1
         continue-on-error: true
         with:
           name: codecov-${{ matrix.kong_version }}
