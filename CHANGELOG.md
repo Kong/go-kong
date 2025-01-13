@@ -1,5 +1,7 @@
 # Table of Contents
 
+- [v0.63.0](#v0630)
+- [v0.62.0](#v0620)
 - [v0.61.0](#v0610)
 - [v0.60.0](#v0600)
 - [v0.59.1](#v0591)
@@ -74,6 +76,17 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.63.0]
+
+> Release date: 2025/01/10
+
+- Added `GetWithNoConsumers` function to AbstractConsumerGroupService
+  to allow the fetching a consumer-group without listing its
+  consumers. 
+- Reverted `GET /consumer_groups` to older way that lists consumers
+  along with consumer-group information.
+  [#494](https://github.com/Kong/go-kong/pull/494)
 
 ## [v0.62.0]
 
@@ -988,6 +1001,8 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.63.0]: https://github.com/Kong/go-kong/compare/v0.62.0...v0.63.0
+[v0.62.0]: https://github.com/Kong/go-kong/compare/v0.61.0...v0.62.0
 [v0.61.0]: https://github.com/Kong/go-kong/compare/v0.60.0...v0.61.0
 [v0.60.0]: https://github.com/Kong/go-kong/compare/v0.59.1...v0.60.0
 [v0.59.1]: https://github.com/Kong/go-kong/compare/v0.59.0...v0.59.1

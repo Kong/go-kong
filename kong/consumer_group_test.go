@@ -343,11 +343,20 @@ func TestConsumerGroupGetEndpointPostGW39(t *testing.T) {
 	assert.Equal(response.Consumers[0].Username, createdConsumer.Username)
 	assert.Equal(response.ConsumerGroup.ID, createdConsumerGroup.ID)
 
-	// Check get endpoint
-	consumerGroupFromKong, err := client.ConsumerGroups.Get(defaultCtx, createdConsumerGroup.ID)
-	require.NoError(err)
-	assert.NotNil(consumerGroupFromKong)
-	assert.Equal(consumerGroupFromKong.ConsumerGroup.ID, createdConsumerGroup.ID)
-	// Consumers are not listed in a get operation
-	assert.Nil(consumerGroupFromKong.Consumers)
+	t.Run("Get", func(_ *testing.T) {
+		consumerGroupFromKong, err := client.ConsumerGroups.Get(defaultCtx, createdConsumerGroup.ID)
+		require.NoError(err)
+		assert.NotNil(consumerGroupFromKong)
+		assert.Equal(consumerGroupFromKong.ConsumerGroup.ID, createdConsumerGroup.ID)
+		assert.NotNil(consumerGroupFromKong.Consumers)
+		assert.Len(consumerGroupFromKong.Consumers, 1, "consumers are listed")
+	})
+
+	t.Run("GetWithNoConsumers", func(_ *testing.T) {
+		consumerGroupFromKong, err := client.ConsumerGroups.GetWithNoConsumers(defaultCtx, createdConsumerGroup.ID)
+		require.NoError(err)
+		assert.NotNil(consumerGroupFromKong)
+		assert.Equal(consumerGroupFromKong.ConsumerGroup.ID, createdConsumerGroup.ID)
+		assert.Nil(consumerGroupFromKong.Consumers, "consumers should not be listed")
+	})
 }
