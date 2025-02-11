@@ -70,6 +70,7 @@ type Client struct {
 	KonnectApplication      AbstractKonnectApplicationService
 	Licenses                AbstractLicenseService
 	FilterChains            AbstractFilterChainService
+	Partials                AbstractPartialService
 
 	credentials       abstractCredentialService
 	KeyAuths          AbstractKeyAuthService
@@ -169,6 +170,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.KonnectApplication = (*KonnectApplicationService)(&kong.common)
 	kong.Licenses = (*LicenseService)(&kong.common)
 	kong.FilterChains = (*FilterChainService)(&kong.common)
+	kong.Partials = (*PartialService)(&kong.common)
 
 	kong.credentials = (*credentialService)(&kong.common)
 	kong.KeyAuths = (*KeyAuthService)(&kong.common)
