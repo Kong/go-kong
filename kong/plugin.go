@@ -23,7 +23,7 @@ type Plugin struct {
 
 // +k8s:deepcopy-gen=true
 type PartialLink struct {
-	*Partial
+	ID   *string `json:"id,omitempty" yaml:"id,omitempty"`
 	Path *string `json:"path,omitempty" yaml:"path,omitempty"`
 }
 
