@@ -223,28 +223,16 @@ func TestPartialServiceDeleteEndpoint(t *testing.T) {
 		})
 		require.NoError(err)
 
-		t.Cleanup(func() {
-			if createdPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.Name))
-			}
-		})
-
 		err = client.Partials.Delete(defaultCtx, createdPartial.ID)
 		assert.NoError(err)
 	})
 
 	t.Run("valid delete -  by name", func(_ *testing.T) {
-		createdPartial, err := client.Partials.Create(defaultCtx, &Partial{
+		_, err := client.Partials.Create(defaultCtx, &Partial{
 			Name: String("my-test-partial"),
 			Type: String("redis-ee"),
 		})
 		require.NoError(err)
-
-		t.Cleanup(func() {
-			if createdPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.Name))
-			}
-		})
 
 		err = client.Partials.Delete(defaultCtx, String("my-test-partial"))
 		assert.NoError(err)

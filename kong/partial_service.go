@@ -116,7 +116,6 @@ func (s *PartialService) Delete(ctx context.Context,
 		return fmt.Errorf("nameOrID cannot be nil for Delete operation")
 	}
 
-	// TODO: Uncomment when /partials/:id/links endpoint is enabled
 	// plugins, _, err := s.GetLinkedPlugins(ctx, nameOrID, nil)
 	// if err != nil {
 	// 	return err
@@ -180,37 +179,36 @@ func (s *PartialService) ListAll(ctx context.Context) ([]*Partial, error) {
 	return partials, nil
 }
 
-// TODO: Uncomment when /partials/:id/links endpoint is enabled
 // GetLinkedPlugins fetches a list of Plugins in Kong,
 // linked with the Partial.
 // opt can be used to control pagination.
-// func (s *PartialService) GetLinkedPlugins(ctx context.Context,
-// 	nameOrID *string, opt *ListOpt,
-// ) ([]*Plugin, *ListOpt, error) {
-// 	if isEmptyString(nameOrID) {
-// 		return nil, nil, fmt.Errorf("nameOrID cannot be nil for GetLinkedPlugins operation")
-// 	}
+func (s *PartialService) GetLinkedPlugins(ctx context.Context,
+	nameOrID *string, opt *ListOpt,
+) ([]*Plugin, *ListOpt, error) {
+	if isEmptyString(nameOrID) {
+		return nil, nil, fmt.Errorf("nameOrID cannot be nil for GetLinkedPlugins operation")
+	}
 
-// 	endpoint := fmt.Sprintf("/partials/%v/links", *nameOrID)
-// 	data, next, err := s.client.list(ctx, endpoint, opt)
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
+	endpoint := fmt.Sprintf("/partials/%v/links", *nameOrID)
+	data, next, err := s.client.list(ctx, endpoint, opt)
+	if err != nil {
+		return nil, nil, err
+	}
 
-// 	var plugins []*Plugin
+	var plugins []*Plugin
 
-// 	for _, object := range data {
-// 		b, err := object.MarshalJSON()
-// 		if err != nil {
-// 			return nil, nil, err
-// 		}
-// 		var p Plugin
-// 		err = json.Unmarshal(b, &p)
-// 		if err != nil {
-// 			return nil, nil, err
-// 		}
-// 		plugins = append(plugins, &p)
-// 	}
+	for _, object := range data {
+		b, err := object.MarshalJSON()
+		if err != nil {
+			return nil, nil, err
+		}
+		var p Plugin
+		err = json.Unmarshal(b, &p)
+		if err != nil {
+			return nil, nil, err
+		}
+		plugins = append(plugins, &p)
+	}
 
-// 	return plugins, next, nil
-// }
+	return plugins, next, nil
+}

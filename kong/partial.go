@@ -10,3 +10,14 @@ type Partial struct {
 	CreatedAt *int          `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	UpdatedAt *int          `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
+
+// FriendlyName returns the endpoint key name or ID.
+func (p *Partial) FriendlyName() string {
+	if p.Name != nil {
+		return *p.Name
+	}
+	if p.ID != nil {
+		return *p.ID
+	}
+	return ""
+}
