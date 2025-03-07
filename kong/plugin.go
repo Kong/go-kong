@@ -18,6 +18,13 @@ type Plugin struct {
 	Ordering      *PluginOrdering `json:"ordering,omitempty" yaml:"ordering,omitempty"`
 	Protocols     []*string       `json:"protocols,omitempty" yaml:"protocols,omitempty"`
 	Tags          []*string       `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Partials      []*PartialLink  `json:"partials,omitempty" yaml:"partials,omitempty"`
+}
+
+// +k8s:deepcopy-gen=true
+type PartialLink struct {
+	*Partial
+	Path *string `json:"path,omitempty" yaml:"path,omitempty"`
 }
 
 // PluginOrdering contains before or after instructions for plugin execution order

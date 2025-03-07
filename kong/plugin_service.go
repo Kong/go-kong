@@ -367,7 +367,11 @@ func (s *PluginService) listByPath(ctx context.Context,
 		if err != nil {
 			return nil, nil, err
 		}
-		var plugin Plugin
+		// var plugin Plugin
+		plugin := Plugin{
+			Partials: make([]*PartialLink, 0),
+		}
+
 		err = json.Unmarshal(b, &plugin)
 		if err != nil {
 			return nil, nil, err
