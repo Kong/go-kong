@@ -3,6 +3,7 @@ package kong
 import (
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -82,7 +83,7 @@ func TestPartialServiceCreateEndpoint(t *testing.T) {
 
 		t.Cleanup(func() {
 			if createdPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.Name))
+				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
 			}
 		})
 	})
@@ -98,11 +99,11 @@ func TestPartialServiceGetEndpoint(t *testing.T) {
 	require.NoError(err)
 	require.NotNil(client)
 
-	t.Run("invalid get -  empty name/id", func(_ *testing.T) {
+	t.Run("invalid get -  empty id", func(_ *testing.T) {
 		noPartial, err := client.Partials.Get(defaultCtx, String(""))
 
 		assert.Error(err)
-		assert.ErrorContains(err, "nameOrID cannot be nil for Get operation")
+		assert.ErrorContains(err, "partialID cannot be nil for Get operation")
 		assert.Nil(noPartial)
 	})
 
@@ -115,7 +116,7 @@ func TestPartialServiceGetEndpoint(t *testing.T) {
 
 		t.Cleanup(func() {
 			if createdPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.Name))
+				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
 			}
 		})
 
@@ -126,25 +127,25 @@ func TestPartialServiceGetEndpoint(t *testing.T) {
 		assert.Equal("redis-ee", *fetchedPartial.Type)
 	})
 
-	t.Run("get by name", func(_ *testing.T) {
-		createdPartial, err := client.Partials.Create(defaultCtx, &Partial{
-			Name: String("my-demo-partial"),
-			Type: String("redis-ee"),
-		})
-		require.NoError(err)
+	// t.Run("get by name", func(_ *testing.T) {
+	// 	createdPartial, err := client.Partials.Create(defaultCtx, &Partial{
+	// 		Name: String("my-demo-partial"),
+	// 		Type: String("redis-ee"),
+	// 	})
+	// 	require.NoError(err)
 
-		t.Cleanup(func() {
-			if createdPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.Name))
-			}
-		})
+	// 	t.Cleanup(func() {
+	// 		if createdPartial != nil {
+	// 			assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
+	// 		}
+	// 	})
 
-		fetchedPartial, err := client.Partials.Get(defaultCtx, String("my-demo-partial"))
-		assert.NoError(err)
-		assert.NotNil(fetchedPartial)
-		assert.Equal("my-demo-partial", *fetchedPartial.Name)
-		assert.Equal("redis-ee", *fetchedPartial.Type)
-	})
+	// 	fetchedPartial, err := client.Partials.Get(defaultCtx, String("my-demo-partial"))
+	// 	assert.NoError(err)
+	// 	assert.NotNil(fetchedPartial)
+	// 	assert.Equal("my-demo-partial", *fetchedPartial.Name)
+	// 	assert.Equal("redis-ee", *fetchedPartial.Type)
+	// })
 }
 
 func TestPartialServiceUpdateEndpoint(t *testing.T) {
@@ -174,7 +175,7 @@ func TestPartialServiceUpdateEndpoint(t *testing.T) {
 
 		t.Cleanup(func() {
 			if createdPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.Name))
+				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
 			}
 		})
 
@@ -213,40 +214,17 @@ func TestPartialServiceDeleteEndpoint(t *testing.T) {
 		err := client.Partials.Delete(defaultCtx, String(""))
 
 		assert.Error(err)
-		assert.ErrorContains(err, "nameOrID cannot be nil for Delete operation")
+		assert.ErrorContains(err, "partialID cannot be nil for Delete operation")
 	})
 
 	t.Run("valid delete -  by id", func(_ *testing.T) {
 		createdPartial, err := client.Partials.Create(defaultCtx, &Partial{
-			Name: String("my-test-partial"),
+			Name: String("my-demo-partial"),
 			Type: String("redis-ee"),
 		})
 		require.NoError(err)
-
-		t.Cleanup(func() {
-			if createdPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.Name))
-			}
-		})
 
 		err = client.Partials.Delete(defaultCtx, createdPartial.ID)
-		assert.NoError(err)
-	})
-
-	t.Run("valid delete -  by name", func(_ *testing.T) {
-		createdPartial, err := client.Partials.Create(defaultCtx, &Partial{
-			Name: String("my-test-partial"),
-			Type: String("redis-ee"),
-		})
-		require.NoError(err)
-
-		t.Cleanup(func() {
-			if createdPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.Name))
-			}
-		})
-
-		err = client.Partials.Delete(defaultCtx, String("my-test-partial"))
 		assert.NoError(err)
 	})
 }
@@ -291,7 +269,7 @@ func TestPartialServiceListEndpoint(t *testing.T) {
 
 	t.Cleanup(func() {
 		for _, p := range partialsFromKong {
-			assert.NoError(client.Partials.Delete(defaultCtx, p.Name))
+			assert.NoError(client.Partials.Delete(defaultCtx, p.ID))
 		}
 	})
 }
@@ -314,7 +292,7 @@ func TestPartialServiceListAllEndpoint(t *testing.T) {
 
 	t.Cleanup(func() {
 		for _, p := range partials {
-			assert.NoError(client.Partials.Delete(defaultCtx, p.Name))
+			assert.NoError(client.Partials.Delete(defaultCtx, p.ID))
 		}
 	})
 }
@@ -345,4 +323,133 @@ func populatePartials(t *testing.T, client *Client) {
 		require.NoError(err)
 		require.NotNil(createdPartial)
 	}
+}
+
+func TestPartialServiceGetFullSchema(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+
+	require := require.New(t)
+	assert := assert.New(t)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	t.Run("successful schema retrieval for a partial", func(_ *testing.T) {
+		schema, err := client.Partials.GetFullSchema(defaultCtx, String("redis-ee"))
+		require.NoError(err)
+		require.NotNil(schema)
+
+		schema, err = client.Partials.GetFullSchema(defaultCtx, String("redis-ce"))
+		require.NoError(err)
+		require.NotNil(schema)
+	})
+
+	t.Run("invalid schema retrieval - empty string parameter", func(_ *testing.T) {
+		schema, err := client.Partials.GetFullSchema(defaultCtx, String(""))
+		require.Error(err)
+		require.Nil(schema)
+		assert.ErrorContains(err, "partialName cannot be nil for GetFullSchema operation")
+	})
+
+	t.Run("invalid schema retrieval - nil parameter", func(_ *testing.T) {
+		schema, err := client.Partials.GetFullSchema(defaultCtx, nil)
+		require.Error(err)
+		require.Nil(schema)
+		assert.ErrorContains(err, "partialName cannot be nil for GetFullSchema operation")
+	})
+
+	t.Run("invalid schema retrieval - fake partial", func(_ *testing.T) {
+		schema, err := client.Partials.GetFullSchema(defaultCtx, String("fake-partial"))
+		require.Error(err)
+		require.Nil(schema)
+		assert.ErrorContains(err, "No partial of type 'fake-partial'")
+	})
+}
+
+func TestPartialServiceGetLinkedPlugins(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+
+	require := require.New(t)
+	assert := assert.New(t)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	t.Run("successful links retrieval for a partial", func(_ *testing.T) {
+		// Create redis-ee partial
+		redisEEPartial := &Partial{
+			Name: String("my-test-partial"),
+			Type: String("redis-ee"),
+		}
+
+		redisEEPartial, err := client.Partials.Create(defaultCtx, redisEEPartial)
+		require.NoError(err)
+		require.NotNil(redisEEPartial)
+
+		t.Cleanup(func() {
+			if redisEEPartial != nil {
+				assert.NoError(client.Partials.Delete(defaultCtx, redisEEPartial.ID))
+			}
+		})
+
+		// Create RLA plugin with partial
+		rlaPlugin := &Plugin{
+			Name: String("rate-limiting-advanced"),
+			Config: Configuration{
+				"limit":       []interface{}{5},
+				"window_size": []interface{}{30},
+			},
+			Partials: []*PartialLink{
+				{
+					Partial: &Partial{
+						ID: redisEEPartial.ID,
+					},
+				},
+			},
+			Enabled: Bool(true),
+		}
+		rlaPlugin, err = client.Plugins.Create(defaultCtx, rlaPlugin)
+		require.NoError(err)
+		require.NotNil(rlaPlugin)
+
+		t.Cleanup(func() {
+			if rlaPlugin != nil {
+				assert.NoError(client.Plugins.Delete(defaultCtx, rlaPlugin.ID))
+			}
+		})
+
+		plugins, _, err := client.Partials.GetLinkedPlugins(defaultCtx, redisEEPartial.ID, nil)
+		require.NoError(err)
+		require.NotNil(plugins)
+		assert.Len(plugins, 1)
+		assert.Equal(rlaPlugin.Name, plugins[0].Name)
+		assert.Equal(rlaPlugin.ID, plugins[0].ID)
+	})
+
+	t.Run("invalid links retrieval - empty string parameter", func(_ *testing.T) {
+		plugins, next, err := client.Partials.GetLinkedPlugins(defaultCtx, String(""), nil)
+		require.Error(err)
+		require.Nil(plugins)
+		require.Nil(next)
+		assert.ErrorContains(err, "partialID cannot be nil for GetLinkedPlugins operation")
+	})
+
+	t.Run("invalid links retrieval - nil parameter", func(_ *testing.T) {
+		plugins, next, err := client.Partials.GetLinkedPlugins(defaultCtx, nil, nil)
+		require.Error(err)
+		require.Nil(plugins)
+		require.Nil(next)
+		assert.ErrorContains(err, "partialID cannot be nil for GetLinkedPlugins operation")
+	})
+
+	t.Run("invalid links retrieval - fake partial", func(_ *testing.T) {
+		randomID := uuid.NewString()
+		plugins, next, err := client.Partials.GetLinkedPlugins(defaultCtx, String(randomID), nil)
+		require.Error(err)
+		require.Nil(plugins)
+		require.Nil(next)
+		assert.ErrorContains(err, "HTTP status 404")
+	})
 }

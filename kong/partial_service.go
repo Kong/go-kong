@@ -11,15 +11,21 @@ type AbstractPartialService interface {
 	// Create creates a Partial in Kong.
 	Create(ctx context.Context, partial *Partial) (*Partial, error)
 	// Get fetches a Partial in Kong.
-	Get(ctx context.Context, nameOrID *string) (*Partial, error)
+	Get(ctx context.Context, partialID *string) (*Partial, error)
 	// Update updates a Partial in Kong
 	Update(ctx context.Context, partial *Partial) (*Partial, error)
 	// Delete deletes a Partial in Kong
-	Delete(ctx context.Context, nameOrID *string) error
+	Delete(ctx context.Context, partialID *string) error
 	// List fetches a list of Partials in Kong.
 	List(ctx context.Context, opt *ListOpt) ([]*Partial, *ListOpt, error)
 	// ListAll fetches all Partials in Kong.
 	ListAll(ctx context.Context) ([]*Partial, error)
+	// GetFullSchema retrieves the full schema of a partial.
+	// This makes the use of `/schemas` endpoint in Kong.
+	GetFullSchema(ctx context.Context, partialName *string) (Schema, error)
+	// GetLinkedPlugins fetches a list of Plugins in Kong,
+	// linked with the Partial. ListOpt can be used to control pagination.
+	GetLinkedPlugins(ctx context.Context, partialID *string, opt *ListOpt) ([]*Plugin, *ListOpt, error)
 }
 
 // PartialService handles Partials in Kong.
@@ -62,13 +68,13 @@ func (s *PartialService) Create(ctx context.Context,
 
 // Get fetches a Partial in Kong.
 func (s *PartialService) Get(ctx context.Context,
-	nameOrID *string,
+	partialID *string,
 ) (*Partial, error) {
-	if isEmptyString(nameOrID) {
-		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
+	if isEmptyString(partialID) {
+		return nil, fmt.Errorf("partialID cannot be nil for Get operation")
 	}
 
-	endpoint := fmt.Sprintf("/partials/%v", *nameOrID)
+	endpoint := fmt.Sprintf("/partials/%v", *partialID)
 	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
 	if err != nil {
 		return nil, err
@@ -110,24 +116,13 @@ func (s *PartialService) Update(ctx context.Context,
 
 // Delete deletes a Partial in Kong
 func (s *PartialService) Delete(ctx context.Context,
-	nameOrID *string,
+	partialID *string,
 ) error {
-	if isEmptyString(nameOrID) {
-		return fmt.Errorf("nameOrID cannot be nil for Delete operation")
+	if isEmptyString(partialID) {
+		return fmt.Errorf("partialID cannot be nil for Delete operation")
 	}
 
-	// TODO: Uncomment when /partials/:id/links endpoint is enabled
-	// plugins, _, err := s.GetLinkedPlugins(ctx, nameOrID, nil)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// if len(plugins) != 0 {
-	// 	return fmt.Errorf("cannot delete partial %v, it is still linked to plugins: %v",
-	// 		*nameOrID, plugins)
-	// }
-
-	endpoint := fmt.Sprintf("/partials/%v", *nameOrID)
+	endpoint := fmt.Sprintf("/partials/%v", *partialID)
 	req, err := s.client.NewRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
 		return err
@@ -180,37 +175,58 @@ func (s *PartialService) ListAll(ctx context.Context) ([]*Partial, error) {
 	return partials, nil
 }
 
-// TODO: Uncomment when /partials/:id/links endpoint is enabled
 // GetLinkedPlugins fetches a list of Plugins in Kong,
 // linked with the Partial.
 // opt can be used to control pagination.
-// func (s *PartialService) GetLinkedPlugins(ctx context.Context,
-// 	nameOrID *string, opt *ListOpt,
-// ) ([]*Plugin, *ListOpt, error) {
-// 	if isEmptyString(nameOrID) {
-// 		return nil, nil, fmt.Errorf("nameOrID cannot be nil for GetLinkedPlugins operation")
-// 	}
+func (s *PartialService) GetLinkedPlugins(ctx context.Context,
+	partialID *string, opt *ListOpt,
+) ([]*Plugin, *ListOpt, error) {
+	if isEmptyString(partialID) {
+		return nil, nil, fmt.Errorf("partialID cannot be nil for GetLinkedPlugins operation")
+	}
 
-// 	endpoint := fmt.Sprintf("/partials/%v/links", *nameOrID)
-// 	data, next, err := s.client.list(ctx, endpoint, opt)
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
+	endpoint := fmt.Sprintf("/partials/%v/links", *partialID)
+	data, next, err := s.client.list(ctx, endpoint, opt)
+	if err != nil {
+		return nil, nil, err
+	}
 
-// 	var plugins []*Plugin
+	var plugins []*Plugin
 
-// 	for _, object := range data {
-// 		b, err := object.MarshalJSON()
-// 		if err != nil {
-// 			return nil, nil, err
-// 		}
-// 		var p Plugin
-// 		err = json.Unmarshal(b, &p)
-// 		if err != nil {
-// 			return nil, nil, err
-// 		}
-// 		plugins = append(plugins, &p)
-// 	}
+	for _, object := range data {
+		b, err := object.MarshalJSON()
+		if err != nil {
+			return nil, nil, err
+		}
+		var p Plugin
+		err = json.Unmarshal(b, &p)
+		if err != nil {
+			return nil, nil, err
+		}
+		plugins = append(plugins, &p)
+	}
 
-// 	return plugins, next, nil
-// }
+	return plugins, next, nil
+}
+
+// GetFullSchema retrieves the full schema of a partial.
+func (s *PartialService) GetFullSchema(ctx context.Context,
+	partialName *string,
+) (Schema, error) {
+	if isEmptyString(partialName) {
+		return nil, fmt.Errorf("partialName cannot be nil for GetFullSchema operation")
+	}
+
+	endpoint := fmt.Sprintf("/schemas/partials/%v", *partialName)
+	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var schema Schema
+	_, err = s.client.Do(ctx, req, &schema)
+	if err != nil {
+		return nil, err
+	}
+	return schema, nil
+}
