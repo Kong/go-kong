@@ -946,12 +946,9 @@ func TestPluginsWithPartialLinks(T *testing.T) {
 	require.NoError(err)
 	T.Cleanup(func() {
 		if newPartial != nil {
-			assert.NoError(client.Partials.Delete(defaultCtx, newPartial.Name))
+			assert.NoError(client.Partials.Delete(defaultCtx, newPartial.ID))
 		}
 	})
-
-	newPartial.CreatedAt = nil
-	newPartial.UpdatedAt = nil
 
 	plugin := &Plugin{
 		Name: String("rate-limiting-advanced"),
