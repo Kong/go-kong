@@ -4196,24 +4196,6 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 			},
 		},
 		{
-			name: "fill plugin defaults, partial not found",
-			plugin: &Plugin{
-				ID:     String("test-plugin"),
-				Config: Configuration{},
-				Partials: []*PartialLink{
-					{
-						Partial: &Partial{
-							ID: String("abc"),
-						},
-					},
-				},
-			},
-			pluginSchema: rlaPluginSchema,
-			partials:     nil,
-			wantErr:      true,
-			errString:    "plugin test-plugin has partials attached but no partials found in config",
-		},
-		{
 			name: "invalid schema passed",
 			plugin: &Plugin{
 				ID:     String("test-plugin"),

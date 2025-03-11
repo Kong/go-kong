@@ -806,16 +806,12 @@ func fillConfigRecordDefaultsAutoFields(plugin *Plugin, schema map[string]interf
 
 	plugin.Config = fillConfigRecord(configSchema, plugin.Config, nil, opts)
 
-	if plugin.Partials != nil && len(partials) == 0 {
-		return fmt.Errorf("plugin %s has partials attached but no partials found in config", plugin.FriendlyName())
-	}
-
 	if len(partials) > 0 {
 		err = getDefaultPartialPath(plugin.Partials, gjsonSchema, partials)
 		if err != nil {
 			return err
 		}
-		plugin.Config, err = fillPartialConfigsInPlugin(plugin, partials)
+		err = fillPartialConfigsInPlugin(plugin, partials)
 		if err != nil {
 			return err
 		}
@@ -874,9 +870,7 @@ func getDefaultPartialPath(partialLinks []*PartialLink, pluginSchema gjson.Resul
 	return nil
 }
 
-func fillPartialConfigsInPlugin(plugin *Plugin, partials []*Partial) (Configuration, error) {
-	config := plugin.Config.DeepCopy()
-
+func fillPartialConfigsInPlugin(plugin *Plugin, partials []*Partial) error {
 	// internal function to find a partial by its ID
 	// this is useful to get partial's type for finding
 	// its default path in the config
@@ -895,14 +889,14 @@ func fillPartialConfigsInPlugin(plugin *Plugin, partials []*Partial) (Configurat
 		sanitisedPath := strings.ReplaceAll(*partialLink.Path, configString, "")
 		partialNeeded := findPartialByID(*partialLink.ID)
 		if partialNeeded == nil {
-			return nil, fmt.Errorf("partial with ID %s not found", *partialLink.ID)
+			return fmt.Errorf("partial with ID %s not found", *partialLink.ID)
 		}
 		// Gateway does not support overrides yet.
 		// Thus, we are adding the config directly
-		config[sanitisedPath] = partialNeeded.Config
+		plugin.Config[sanitisedPath] = partialNeeded.Config
 	}
 
-	return config, nil
+	return nil
 }
 
 func fillConfigRecordWithPartialsConfig(plugin *Plugin, pluginSchema map[string]interface{},
@@ -923,7 +917,7 @@ func fillConfigRecordWithPartialsConfig(plugin *Plugin, pluginSchema map[string]
 		if err != nil {
 			return err
 		}
-		plugin.Config, err = fillPartialConfigsInPlugin(plugin, partials)
+		err = fillPartialConfigsInPlugin(plugin, partials)
 		if err != nil {
 			return err
 		}
