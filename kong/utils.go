@@ -806,6 +806,10 @@ func fillConfigRecordDefaultsAutoFields(plugin *Plugin, schema map[string]interf
 
 	plugin.Config = fillConfigRecord(configSchema, plugin.Config, nil, opts)
 
+	if plugin.Partials != nil && len(partials) == 0 {
+		return fmt.Errorf("plugin %s has partials attached but no partials found in config", plugin.FriendlyName())
+	}
+
 	if len(partials) > 0 {
 		err = getDefaultPartialPath(plugin.Partials, gjsonSchema, partials)
 		if err != nil {
@@ -827,8 +831,8 @@ func fillConfigRecordDefaultsAutoFields(plugin *Plugin, schema map[string]interf
 	return nil
 }
 
-func getDefaultPartialPath(partialLinks []*PartialLink, schema gjson.Result, partials []*Partial) error {
-	supportedPartials := schema.Get("supported_partials")
+func getDefaultPartialPath(partialLinks []*PartialLink, pluginSchema gjson.Result, partials []*Partial) error {
+	supportedPartials := pluginSchema.Get("supported_partials")
 	if !supportedPartials.Exists() {
 		return fmt.Errorf("schema does not contain supported_partials")
 	}
@@ -893,6 +897,8 @@ func fillPartialConfigsInPlugin(plugin *Plugin, partials []*Partial) (Configurat
 		if partialNeeded == nil {
 			return nil, fmt.Errorf("partial with ID %s not found", *partialLink.ID)
 		}
+		// Gateway does not support overrides yet.
+		// Thus, we are adding the config directly
 		config[sanitisedPath] = partialNeeded.Config
 	}
 
@@ -950,9 +956,9 @@ func FillPluginsDefaultsWithOpts(plugin *Plugin, schema map[string]interface{}, 
 	return fillConfigRecordDefaultsAutoFields(plugin, schema, nil, opts)
 }
 
-// FillPluginsDefaultsWithPartials ingests plugin's defaults from its schema.
-// Takes in a plugin struct and mutates it in place.
-// It also fills in partial config
+// FillPluginWithPartials populates partials config
+// in the plugin schema. It doesn't focus on filling
+// plugin defaults or auto fields.
 func FillPluginWithPartials(plugin *Plugin, pluginSchema map[string]interface{}, partials []*Partial) error {
 	return fillConfigRecordWithPartialsConfig(plugin, pluginSchema, partials)
 }
