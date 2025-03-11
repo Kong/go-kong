@@ -906,7 +906,7 @@ func fillConfigRecordWithPartialsConfig(plugin *Plugin, pluginSchema map[string]
 	if err != nil {
 		return err
 	}
-	gjsonSchema := gjson.ParseBytes((jsonb))
+	gjsonSchema := gjson.ParseBytes(jsonb)
 
 	if plugin.Config == nil {
 		plugin.Config = make(Configuration)
@@ -927,7 +927,7 @@ func fillConfigRecordWithPartialsConfig(plugin *Plugin, pluginSchema map[string]
 }
 
 // FillPluginsDefaults ingests plugin's defaults from its schema.
-// Takes in a plugin struct and mutate it in place.
+// Takes in a plugin struct and mutates it in place.
 func FillPluginsDefaults(plugin *Plugin, schema Schema) error {
 	return fillConfigRecordDefaultsAutoFields(plugin, schema, nil, FillRecordOptions{
 		FillDefaults: true,
@@ -936,7 +936,7 @@ func FillPluginsDefaults(plugin *Plugin, schema Schema) error {
 }
 
 // FillPluginsDefaultsWithPartials ingests plugin's defaults from its schema.
-// Takes in a plugin struct and mutate it in place.
+// Takes in a plugin struct and mutates it in place.
 // It also fills in partial config
 func FillPluginsDefaultsWithPartials(plugin *Plugin, schema Schema, partials []*Partial) error {
 	return fillConfigRecordDefaultsAutoFields(plugin, schema, partials, FillRecordOptions{
@@ -951,7 +951,7 @@ func FillPluginsDefaultsWithOpts(plugin *Plugin, schema map[string]interface{}, 
 }
 
 // FillPluginsDefaultsWithPartials ingests plugin's defaults from its schema.
-// Takes in a plugin struct and mutate it in place.
+// Takes in a plugin struct and mutates it in place.
 // It also fills in partial config
 func FillPluginWithPartials(plugin *Plugin, pluginSchema map[string]interface{}, partials []*Partial) error {
 	return fillConfigRecordWithPartialsConfig(plugin, pluginSchema, partials)
@@ -1242,7 +1242,7 @@ func FillPartialDefaults(partial *Partial, schema Schema) error {
 	if err != nil {
 		return err
 	}
-	gjsonSchema := gjson.ParseBytes((jsonb))
+	gjsonSchema := gjson.ParseBytes(jsonb)
 	configSchema, err := getConfigSchema(gjsonSchema)
 	if err != nil {
 		return err

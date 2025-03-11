@@ -944,10 +944,9 @@ func TestPluginsWithPartialLinks(T *testing.T) {
 		},
 	})
 	require.NoError(err)
+	require.NotNil(newPartial)
 	T.Cleanup(func() {
-		if newPartial != nil {
-			assert.NoError(client.Partials.Delete(defaultCtx, newPartial.ID))
-		}
+		assert.NoError(client.Partials.Delete(defaultCtx, newPartial.ID))
 	})
 
 	plugin := &Plugin{
@@ -977,9 +976,7 @@ func TestPluginsWithPartialLinks(T *testing.T) {
 	assert.Equal(float64(4001), redisConfig["connect_timeout"])
 
 	T.Cleanup(func() {
-		if createdPlugin != nil {
-			assert.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
-		}
+		assert.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
 	})
 }
 

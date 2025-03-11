@@ -82,9 +82,7 @@ func TestPartialServiceCreateEndpoint(t *testing.T) {
 		assert.Equal(defaultConfigRedisEEPartial, createdPartial.Config)
 
 		t.Cleanup(func() {
-			if createdPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
-			}
+			assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
 		})
 	})
 }
@@ -113,11 +111,10 @@ func TestPartialServiceGetEndpoint(t *testing.T) {
 			Type: String("redis-ee"),
 		})
 		require.NoError(err)
+		require.NotNil(createdPartial)
 
 		t.Cleanup(func() {
-			if createdPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
-			}
+			assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
 		})
 
 		fetchedPartial, err := client.Partials.Get(defaultCtx, createdPartial.ID)
@@ -126,26 +123,6 @@ func TestPartialServiceGetEndpoint(t *testing.T) {
 		assert.Equal("my-test-partial", *fetchedPartial.Name)
 		assert.Equal("redis-ee", *fetchedPartial.Type)
 	})
-
-	// t.Run("get by name", func(_ *testing.T) {
-	// 	createdPartial, err := client.Partials.Create(defaultCtx, &Partial{
-	// 		Name: String("my-demo-partial"),
-	// 		Type: String("redis-ee"),
-	// 	})
-	// 	require.NoError(err)
-
-	// 	t.Cleanup(func() {
-	// 		if createdPartial != nil {
-	// 			assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
-	// 		}
-	// 	})
-
-	// 	fetchedPartial, err := client.Partials.Get(defaultCtx, String("my-demo-partial"))
-	// 	assert.NoError(err)
-	// 	assert.NotNil(fetchedPartial)
-	// 	assert.Equal("my-demo-partial", *fetchedPartial.Name)
-	// 	assert.Equal("redis-ee", *fetchedPartial.Type)
-	// })
 }
 
 func TestPartialServiceUpdateEndpoint(t *testing.T) {
@@ -172,11 +149,10 @@ func TestPartialServiceUpdateEndpoint(t *testing.T) {
 			Type: String("redis-ee"),
 		})
 		require.NoError(err)
+		require.NotNil(createdPartial)
 
 		t.Cleanup(func() {
-			if createdPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
-			}
+			assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
 		})
 
 		// initially created with default config
@@ -210,7 +186,7 @@ func TestPartialServiceDeleteEndpoint(t *testing.T) {
 	require.NoError(err)
 	require.NotNil(client)
 
-	t.Run("invalid delete -  empty name/id", func(_ *testing.T) {
+	t.Run("invalid delete -  empty id", func(_ *testing.T) {
 		err := client.Partials.Delete(defaultCtx, String(""))
 
 		assert.Error(err)
@@ -223,6 +199,7 @@ func TestPartialServiceDeleteEndpoint(t *testing.T) {
 			Type: String("redis-ee"),
 		})
 		require.NoError(err)
+		require.NotNil(createdPartial)
 
 		err = client.Partials.Delete(defaultCtx, createdPartial.ID)
 		assert.NoError(err)
@@ -246,18 +223,18 @@ func TestPartialServiceListEndpoint(t *testing.T) {
 
 	// first page
 	page1, next, err := client.Partials.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(err)
+	require.NotNil(page1)
 	require.NotNil(next)
-	assert.NotNil(page1)
 	assert.Len(page1, 1)
 	partialsFromKong = append(partialsFromKong, page1...)
 
 	// last page
 	next.Size = 3
 	page2, next, err := client.Partials.List(defaultCtx, next)
-	assert.NoError(err)
-	assert.Nil(next)
-	assert.NotNil(page2)
+	require.NoError(err)
+	require.NotNil(page2)
+	require.Nil(next)
 	assert.Len(page2, 3)
 	partialsFromKong = append(partialsFromKong, page2...)
 
@@ -389,9 +366,7 @@ func TestPartialServiceGetLinkedPlugins(t *testing.T) {
 		require.NotNil(redisEEPartial)
 
 		t.Cleanup(func() {
-			if redisEEPartial != nil {
-				assert.NoError(client.Partials.Delete(defaultCtx, redisEEPartial.ID))
-			}
+			assert.NoError(client.Partials.Delete(defaultCtx, redisEEPartial.ID))
 		})
 
 		// Create RLA plugin with partial
@@ -415,9 +390,7 @@ func TestPartialServiceGetLinkedPlugins(t *testing.T) {
 		require.NotNil(rlaPlugin)
 
 		t.Cleanup(func() {
-			if rlaPlugin != nil {
-				assert.NoError(client.Plugins.Delete(defaultCtx, rlaPlugin.ID))
-			}
+			assert.NoError(client.Plugins.Delete(defaultCtx, rlaPlugin.ID))
 		})
 
 		plugins, _, err := client.Partials.GetLinkedPlugins(defaultCtx, redisEEPartial.ID, nil)
