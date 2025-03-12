@@ -787,7 +787,9 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 	return nil
 }
 
-func fillConfigRecordDefaultsAutoFields(plugin *Plugin, schema map[string]interface{}, opts FillRecordOptions) error {
+func fillConfigRecordDefaultsAutoFields(plugin *Plugin, schema map[string]interface{}, partials []*Partial,
+	opts FillRecordOptions,
+) error {
 	jsonb, err := json.Marshal(&schema)
 	if err != nil {
 		return err
@@ -797,24 +799,147 @@ func fillConfigRecordDefaultsAutoFields(plugin *Plugin, schema map[string]interf
 	if err != nil {
 		return err
 	}
+
 	if plugin.Config == nil {
 		plugin.Config = make(Configuration)
 	}
 
 	plugin.Config = fillConfigRecord(configSchema, plugin.Config, nil, opts)
+
+	if len(partials) > 0 {
+		err = getDefaultPartialPath(plugin.Partials, gjsonSchema, partials)
+		if err != nil {
+			return err
+		}
+		err = fillPartialConfigsInPlugin(plugin, partials)
+		if err != nil {
+			return err
+		}
+	}
+
 	if plugin.Protocols == nil {
 		plugin.Protocols = getDefaultProtocols(gjsonSchema)
 	}
 	if plugin.Enabled == nil {
 		plugin.Enabled = Bool(true)
 	}
+
+	return nil
+}
+
+func getDefaultPartialPath(partialLinks []*PartialLink, pluginSchema gjson.Result, partials []*Partial) error {
+	supportedPartials := pluginSchema.Get("supported_partials")
+	if !supportedPartials.Exists() {
+		return fmt.Errorf("schema does not contain supported_partials")
+	}
+
+	// internal function to find a partial by its ID
+	// this is useful to get partial's type for finding
+	// its default path in the config
+	findPartialByID := func(partialID string) *Partial {
+		for _, p := range partials {
+			if *p.ID == partialID {
+				return p
+			}
+		}
+		return nil
+	}
+
+	for _, p := range partialLinks {
+		if p.Path != nil {
+			continue
+		}
+
+		partialNeeded := findPartialByID(*p.ID)
+		if partialNeeded == nil {
+			return fmt.Errorf("partial with ID %s not found", *p.ID)
+		}
+
+		defaultPartialPathInSchema := supportedPartials.Get(*partialNeeded.Type)
+		if !defaultPartialPathInSchema.Exists() {
+			return fmt.Errorf("schema does not contain default partial path for partial type %s", *partialNeeded.Type)
+		}
+		defaultPartialPathArray := defaultPartialPathInSchema.Array()
+		if len(defaultPartialPathArray) > 1 {
+			return fmt.Errorf(">1 supported paths found for partial type %s; provide a path in config", *partialNeeded.Type)
+		}
+
+		p.Path = String(defaultPartialPathArray[0].String())
+	}
+
+	return nil
+}
+
+func fillPartialConfigsInPlugin(plugin *Plugin, partials []*Partial) error {
+	// internal function to find a partial by its ID
+	// this is useful to get partial's type for finding
+	// its default path in the config
+	findPartialByID := func(partialID string) *Partial {
+		for _, p := range partials {
+			if *p.ID == partialID {
+				return p
+			}
+		}
+		return nil
+	}
+
+	const configString string = "config."
+
+	for _, partialLink := range plugin.Partials {
+		sanitisedPath := strings.ReplaceAll(*partialLink.Path, configString, "")
+		partialNeeded := findPartialByID(*partialLink.ID)
+		if partialNeeded == nil {
+			return fmt.Errorf("partial with ID %s not found", *partialLink.ID)
+		}
+		// Gateway does not support overrides yet.
+		// Thus, we are adding the config directly
+		plugin.Config[sanitisedPath] = partialNeeded.Config
+	}
+
+	return nil
+}
+
+func fillConfigRecordWithPartialsConfig(plugin *Plugin, pluginSchema map[string]interface{},
+	partials []*Partial,
+) error {
+	jsonb, err := json.Marshal(&pluginSchema)
+	if err != nil {
+		return err
+	}
+	gjsonSchema := gjson.ParseBytes(jsonb)
+
+	if plugin.Config == nil {
+		plugin.Config = make(Configuration)
+	}
+
+	if len(partials) > 0 {
+		err = getDefaultPartialPath(plugin.Partials, gjsonSchema, partials)
+		if err != nil {
+			return err
+		}
+		err = fillPartialConfigsInPlugin(plugin, partials)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
 // FillPluginsDefaults ingests plugin's defaults from its schema.
-// Takes in a plugin struct and mutate it in place.
+// Takes in a plugin struct and mutates it in place.
 func FillPluginsDefaults(plugin *Plugin, schema Schema) error {
-	return fillConfigRecordDefaultsAutoFields(plugin, schema, FillRecordOptions{
+	return fillConfigRecordDefaultsAutoFields(plugin, schema, nil, FillRecordOptions{
+		FillDefaults: true,
+		FillAuto:     true,
+	})
+}
+
+// FillPluginsDefaultsWithPartials ingests plugin's defaults from its schema.
+// Takes in a plugin struct and mutates it in place.
+// It also fills in partial config
+func FillPluginsDefaultsWithPartials(plugin *Plugin, schema Schema, partials []*Partial) error {
+	return fillConfigRecordDefaultsAutoFields(plugin, schema, partials, FillRecordOptions{
 		FillDefaults: true,
 		FillAuto:     true,
 	})
@@ -822,7 +947,14 @@ func FillPluginsDefaults(plugin *Plugin, schema Schema) error {
 
 // same as FillPluginsDefaults but allows configuring whether to fill defaults and auto fields.
 func FillPluginsDefaultsWithOpts(plugin *Plugin, schema map[string]interface{}, opts FillRecordOptions) error {
-	return fillConfigRecordDefaultsAutoFields(plugin, schema, opts)
+	return fillConfigRecordDefaultsAutoFields(plugin, schema, nil, opts)
+}
+
+// FillPluginWithPartials populates partials config
+// in the plugin schema. It doesn't focus on filling
+// plugin defaults or auto fields.
+func FillPluginWithPartials(plugin *Plugin, pluginSchema map[string]interface{}, partials []*Partial) error {
+	return fillConfigRecordWithPartialsConfig(plugin, pluginSchema, partials)
 }
 
 // deleteAndCollapseMap is a utility function that removes an element from a map
@@ -1100,5 +1232,28 @@ func ClearUnmatchingDeprecations(newPlugin *Plugin, oldPlugin *Plugin, schema ma
 		clearUnmatchingDeprecationsHelper(newPlugin.Config, oldPlugin.Config, &configSchema)
 	}
 
+	return nil
+}
+
+// FillPartialDefaults ingests partial's defaults from its schema.
+// Takes in a partial struct and mutates it in place.
+func FillPartialDefaults(partial *Partial, schema Schema) error {
+	jsonb, err := json.Marshal(&schema)
+	if err != nil {
+		return err
+	}
+	gjsonSchema := gjson.ParseBytes(jsonb)
+	configSchema, err := getConfigSchema(gjsonSchema)
+	if err != nil {
+		return err
+	}
+	if partial.Config == nil {
+		partial.Config = make(Configuration)
+	}
+
+	partial.Config = fillConfigRecord(configSchema, partial.Config, nil, FillRecordOptions{
+		FillDefaults: true,
+		FillAuto:     false,
+	})
 	return nil
 }

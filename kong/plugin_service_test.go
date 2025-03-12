@@ -924,6 +924,62 @@ func TestPluginsWithConsumerGroup(T *testing.T) {
 	}
 }
 
+func TestPluginsWithPartialLinks(T *testing.T) {
+	RunWhenEnterprise(T, ">=3.10.0", RequiredFeatures{})
+	require := require.New(T)
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	// create a partial
+	newPartial, err := client.Partials.Create(defaultCtx, &Partial{
+		Name: String("my-test-partial"),
+		Type: String("redis-ee"),
+		Config: Configuration{
+			"send_timeout":    2001,
+			"read_timeout":    3001,
+			"connect_timeout": 4001,
+		},
+	})
+	require.NoError(err)
+	require.NotNil(newPartial)
+	T.Cleanup(func() {
+		assert.NoError(client.Partials.Delete(defaultCtx, newPartial.ID))
+	})
+
+	plugin := &Plugin{
+		Name: String("rate-limiting-advanced"),
+		Config: Configuration{
+			"limit":       []interface{}{50},
+			"window_size": []interface{}{30},
+		},
+		Partials: []*PartialLink{
+			{
+				Partial: &Partial{
+					ID: newPartial.ID,
+				},
+			},
+		},
+	}
+
+	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
+	require.NoError(err)
+	require.NotNil(createdPlugin)
+	assert.Equal(createdPlugin.Partials[0].ID, newPartial.ID)
+	assert.Equal(String("config.redis"), createdPlugin.Partials[0].Path)
+	redisConfig, ok := createdPlugin.Config["redis"].(map[string]interface{})
+	assert.True(ok)
+	assert.Equal(float64(2001), redisConfig["send_timeout"])
+	assert.Equal(float64(3001), redisConfig["read_timeout"])
+	assert.Equal(float64(4001), redisConfig["connect_timeout"])
+
+	T.Cleanup(func() {
+		assert.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
+	})
+}
+
 func comparePlugins(T *testing.T, expected, actual []*Plugin) bool {
 	var expectedNames, actualNames []string
 	for _, plugin := range expected {

@@ -3559,3 +3559,673 @@ func Test_ClearUnmatchingDeprecationsWhenNewConfigHasDefaults(t *testing.T) {
 		})
 	}
 }
+
+func Test_FillPartialDefaults(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	partialSchema, err := client.Schemas.Get(defaultCtx, "partials/redis-ee")
+	require.NoError(t, err)
+	require.NotNil(t, partialSchema)
+
+	tests := []struct {
+		name            string
+		partial         *Partial
+		expectedPartial *Partial
+		schema          Schema
+		wantErr         bool
+	}{
+		{
+			name: "empty partial config gets filled with defaults",
+			partial: &Partial{
+				Config: nil,
+			},
+			expectedPartial: &Partial{
+				Config: Configuration{
+					"cluster_max_redirections": float64(5),
+					"cluster_nodes":            nil,
+					"connect_timeout":          float64(2000),
+					"connection_is_proxied":    bool(false),
+					"database":                 float64(0),
+					"host":                     string("127.0.0.1"),
+					"keepalive_backlog":        nil,
+					"keepalive_pool_size":      float64(256),
+					"password":                 nil,
+					"port":                     float64(6379),
+					"read_timeout":             float64(2000),
+					"send_timeout":             float64(2000),
+					"sentinel_master":          nil,
+					"sentinel_nodes":           nil,
+					"sentinel_password":        nil,
+					"sentinel_role":            nil,
+					"sentinel_username":        nil,
+					"server_name":              nil,
+					"ssl":                      bool(false),
+					"ssl_verify":               bool(false),
+					"username":                 nil,
+				},
+			},
+			schema: partialSchema,
+		},
+		{
+			name: "existing partial config gets merged with defaults",
+			partial: &Partial{
+				Config: Configuration{
+					"port":     float64(7000),
+					"username": string("test-user"),
+					"password": string("test-password"),
+				},
+			},
+			expectedPartial: &Partial{
+				Config: Configuration{
+					"cluster_max_redirections": float64(5),
+					"cluster_nodes":            nil,
+					"connect_timeout":          float64(2000),
+					"connection_is_proxied":    bool(false),
+					"database":                 float64(0),
+					"host":                     string("127.0.0.1"),
+					"keepalive_backlog":        nil,
+					"keepalive_pool_size":      float64(256),
+					"password":                 string("test-password"),
+					"port":                     float64(7000),
+					"read_timeout":             float64(2000),
+					"send_timeout":             float64(2000),
+					"sentinel_master":          nil,
+					"sentinel_nodes":           nil,
+					"sentinel_password":        nil,
+					"sentinel_role":            nil,
+					"sentinel_username":        nil,
+					"server_name":              nil,
+					"ssl":                      bool(false),
+					"ssl_verify":               bool(false),
+					"username":                 string("test-user"),
+				},
+			},
+			schema: partialSchema,
+		},
+		{
+			name: "invalid schema should return error",
+			partial: &Partial{
+				Config: nil,
+			},
+			schema: Schema{
+				"type": "invalid_schema",
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			err := FillPartialDefaults(tc.partial, tc.schema)
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("FillPartialDefaults() expected error but got none")
+				}
+				return
+			}
+
+			require.NoError(t, err)
+			if diff := cmp.Diff(tc.partial.Config, tc.expectedPartial.Config); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_FillPluginWithPartials(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	rlaPluginSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
+	require.NoError(t, err)
+	require.NotNil(t, rlaPluginSchema)
+
+	reqPluginSchema, err := client.Schemas.Get(defaultCtx, "plugins/request-transformer")
+	require.NoError(t, err)
+	require.NotNil(t, reqPluginSchema)
+
+	tests := []struct {
+		name                  string
+		plugin                *Plugin
+		pluginSchema          map[string]interface{}
+		partials              []*Partial
+		expectedConfiguration Configuration
+		wantErr               bool
+		errString             string
+	}{
+		{
+			name: "empty partials",
+			plugin: &Plugin{
+				Config: nil,
+			},
+			pluginSchema:          rlaPluginSchema,
+			partials:              nil,
+			expectedConfiguration: Configuration{},
+		},
+		{
+			name: "plugin with single partial, path is not defined",
+			plugin: &Plugin{
+				Config: nil,
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+					},
+				},
+			},
+			pluginSchema: rlaPluginSchema,
+			partials: []*Partial{
+				{
+					ID:   String("abc"),
+					Type: String("redis-ee"),
+					Config: Configuration{
+						"host": string("127.0.0.1"),
+						"port": float64(7000),
+					},
+				},
+			},
+			expectedConfiguration: Configuration{
+				"redis": Configuration{"host": string("127.0.0.1"), "port": float64(7000)},
+			},
+		},
+		{
+			name: "plugin with single partial, path is defined",
+			plugin: &Plugin{
+				Config: nil,
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+						Path: String("config.redis"),
+					},
+				},
+			},
+			pluginSchema: rlaPluginSchema,
+			partials: []*Partial{
+				{
+					ID:   String("abc"),
+					Type: String("redis-ee"),
+					Config: Configuration{
+						"host": string("127.0.0.1"),
+						"port": float64(7000),
+					},
+				},
+			},
+			expectedConfiguration: Configuration{
+				"redis": Configuration{"host": string("127.0.0.1"), "port": float64(7000)},
+			},
+		},
+		{
+			name: "plugin that does not support partials",
+			plugin: &Plugin{
+				Config: nil,
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+					},
+				},
+			},
+			pluginSchema: reqPluginSchema,
+			partials: []*Partial{
+				{
+					ID:   String("abc"),
+					Type: String("redis-ee"),
+					Config: Configuration{
+						"host": string("127.0.0.1"),
+						"port": float64(7000),
+					},
+				},
+			},
+			wantErr:   true,
+			errString: "schema does not contain supported_partials",
+		},
+		{
+			name: "partial added is not supported",
+			plugin: &Plugin{
+				Config: nil,
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+					},
+				},
+			},
+			pluginSchema: map[string]interface{}{
+				"supported_partials": map[string]interface{}{},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("abc"),
+					Type: String("redis-ee"),
+					Config: Configuration{
+						"host": string("127.0.0.1"),
+						"port": float64(7000),
+					},
+				},
+			},
+			wantErr:   true,
+			errString: "schema does not contain default partial path for partial type redis-ee",
+		},
+		{
+			name: ">1 path found for partial added, no path defined",
+			plugin: &Plugin{
+				Config: nil,
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+					},
+				},
+			},
+			pluginSchema: map[string]interface{}{
+				"supported_partials": map[string]interface{}{
+					"redis-ee": []string{"config.redis", "config.redis2"},
+				},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("abc"),
+					Type: String("redis-ee"),
+					Config: Configuration{
+						"host": string("127.0.0.1"),
+						"port": float64(7000),
+					},
+				},
+			},
+			wantErr:   true,
+			errString: ">1 supported paths found for partial type redis-ee; provide a path in config",
+		},
+		{
+			name: ">1 path found for partial added, path is defined",
+			plugin: &Plugin{
+				Config: nil,
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+						Path: String("config.redis"),
+					},
+				},
+			},
+			pluginSchema: map[string]interface{}{
+				"supported_partials": map[string]interface{}{
+					"redis-ee": []string{"config.redis", "config.redis2"},
+				},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("abc"),
+					Type: String("redis-ee"),
+					Config: Configuration{
+						"host": string("127.0.0.1"),
+						"port": float64(7000),
+					},
+				},
+			},
+			expectedConfiguration: Configuration{
+				"redis": Configuration{"host": string("127.0.0.1"), "port": float64(7000)},
+			},
+		},
+		{
+			name: "partial added does not exist",
+			plugin: &Plugin{
+				Config: nil,
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+					},
+				},
+			},
+			pluginSchema: rlaPluginSchema,
+			partials: []*Partial{
+				{
+					ID:   String("xyz"),
+					Type: String("redis-ee"),
+					Config: Configuration{
+						"host": string("127.0.0.1"),
+						"port": float64(7000),
+					},
+				},
+			},
+			wantErr:   true,
+			errString: "partial with ID abc not found",
+		},
+		// TODO: add a usecase for plugin that allows multiple partials
+		// once that is turned on in the gateway
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			err := FillPluginWithPartials(tc.plugin, tc.pluginSchema, tc.partials)
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("FillPluginWithPartials() expected error but got none")
+				}
+				assert.ErrorContains(t, err, tc.errString)
+				return
+			}
+
+			require.NoError(t, err)
+			if diff := cmp.Diff(tc.plugin.Config, tc.expectedConfiguration); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	rlaPluginSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
+	require.NoError(t, err)
+	require.NotNil(t, rlaPluginSchema)
+
+	tests := []struct {
+		name           string
+		plugin         *Plugin
+		pluginSchema   map[string]interface{}
+		partials       []*Partial
+		expectedPlugin *Plugin
+		wantErr        bool
+		errString      string
+	}{
+		{
+			name: "empty config, no partials present",
+			plugin: &Plugin{
+				Config: Configuration{},
+			},
+			pluginSchema: rlaPluginSchema,
+			partials:     nil,
+			expectedPlugin: &Plugin{
+				Config: Configuration{
+					"compound_identifier":     nil,
+					"consumer_groups":         nil,
+					"dictionary_name":         string("kong_rate_limiting_counters"),
+					"disable_penalty":         bool(false),
+					"enforce_consumer_groups": bool(false),
+					"error_code":              float64(429),
+					"error_message":           string("API rate limit exceeded"),
+					"header_name":             nil,
+					"hide_client_headers":     bool(false),
+					"identifier":              string("consumer"),
+					"limit":                   nil,
+					"lock_dictionary_name":    string("kong_locks"),
+					"namespace":               nil,
+					"path":                    nil,
+					"redis": map[string]any{
+						"cluster_max_redirections": float64(5),
+						"cluster_nodes":            nil,
+						"connect_timeout":          float64(2000),
+						"connection_is_proxied":    bool(false),
+						"database":                 float64(0),
+						"host":                     string("127.0.0.1"),
+						"keepalive_backlog":        nil,
+						"keepalive_pool_size":      float64(256),
+						"password":                 nil,
+						"port":                     float64(6379),
+						"read_timeout":             float64(2000),
+						"redis_proxy_type":         nil,
+						"send_timeout":             float64(2000),
+						"sentinel_master":          nil,
+						"sentinel_nodes":           nil,
+						"sentinel_password":        nil,
+						"sentinel_role":            nil,
+						"sentinel_username":        nil,
+						"server_name":              nil,
+						"ssl":                      bool(false),
+						"ssl_verify":               bool(false),
+						"username":                 nil,
+					},
+					"retry_after_jitter_max": float64(0),
+					"strategy":               string("local"),
+					"sync_rate":              nil,
+					"window_size":            nil,
+					"window_type":            string("sliding"),
+				},
+			},
+		},
+		{
+			name: "fill plugin defaults, single partial present",
+			plugin: &Plugin{
+				Config: Configuration{},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+					},
+				},
+			},
+			pluginSchema: rlaPluginSchema,
+			partials: []*Partial{
+				{
+					ID:   String("abc"),
+					Type: String("redis-ee"),
+					Config: Configuration{
+						"cluster_max_redirections": float64(5),
+						"cluster_nodes":            nil,
+						"connect_timeout":          float64(2000),
+						"connection_is_proxied":    bool(false),
+						"database":                 float64(0),
+						"host":                     string("127.0.0.1"),
+						"keepalive_backlog":        nil,
+						"keepalive_pool_size":      float64(256),
+						"password":                 nil,
+						"port":                     float64(7000),
+						"read_timeout":             float64(2000),
+						"send_timeout":             float64(2000),
+						"sentinel_master":          nil,
+						"sentinel_nodes":           nil,
+						"sentinel_password":        nil,
+						"sentinel_role":            nil,
+						"sentinel_username":        nil,
+						"server_name":              nil,
+						"ssl":                      bool(false),
+						"ssl_verify":               bool(false),
+						"username":                 nil,
+					},
+				},
+			},
+			expectedPlugin: &Plugin{
+				Config: Configuration{
+					"compound_identifier":     nil,
+					"consumer_groups":         nil,
+					"dictionary_name":         string("kong_rate_limiting_counters"),
+					"disable_penalty":         bool(false),
+					"enforce_consumer_groups": bool(false),
+					"error_code":              float64(429),
+					"error_message":           string("API rate limit exceeded"),
+					"header_name":             nil,
+					"hide_client_headers":     bool(false),
+					"identifier":              string("consumer"),
+					"limit":                   nil,
+					"lock_dictionary_name":    string("kong_locks"),
+					"namespace":               nil,
+					"path":                    nil,
+					"redis": Configuration{
+						"cluster_max_redirections": float64(5),
+						"cluster_nodes":            nil,
+						"connect_timeout":          float64(2000),
+						"connection_is_proxied":    bool(false),
+						"database":                 float64(0),
+						"host":                     string("127.0.0.1"),
+						"keepalive_backlog":        nil,
+						"keepalive_pool_size":      float64(256),
+						"password":                 nil,
+						"port":                     float64(7000),
+						"read_timeout":             float64(2000),
+						"send_timeout":             float64(2000),
+						"sentinel_master":          nil,
+						"sentinel_nodes":           nil,
+						"sentinel_password":        nil,
+						"sentinel_role":            nil,
+						"sentinel_username":        nil,
+						"server_name":              nil,
+						"ssl":                      bool(false),
+						"ssl_verify":               bool(false),
+						"username":                 nil,
+					},
+					"retry_after_jitter_max": float64(0),
+					"strategy":               string("local"),
+					"sync_rate":              nil,
+					"window_size":            nil,
+					"window_type":            string("sliding"),
+				},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+						Path: String("config.redis"),
+					},
+				},
+			},
+		},
+		{
+			name: "fill plugin defaults, single partial and path present",
+			plugin: &Plugin{
+				Config: Configuration{},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+						Path: String("config.redis"),
+					},
+				},
+			},
+			pluginSchema: rlaPluginSchema,
+			partials: []*Partial{
+				{
+					ID:   String("abc"),
+					Type: String("redis-ee"),
+					Config: Configuration{
+						"cluster_max_redirections": float64(5),
+						"cluster_nodes":            nil,
+						"connect_timeout":          float64(2000),
+						"connection_is_proxied":    bool(false),
+						"database":                 float64(0),
+						"host":                     string("127.0.0.1"),
+						"keepalive_backlog":        nil,
+						"keepalive_pool_size":      float64(256),
+						"password":                 nil,
+						"port":                     float64(7000),
+						"read_timeout":             float64(2000),
+						"send_timeout":             float64(2000),
+						"sentinel_master":          nil,
+						"sentinel_nodes":           nil,
+						"sentinel_password":        nil,
+						"sentinel_role":            nil,
+						"sentinel_username":        nil,
+						"server_name":              nil,
+						"ssl":                      bool(false),
+						"ssl_verify":               bool(false),
+						"username":                 nil,
+					},
+				},
+			},
+			expectedPlugin: &Plugin{
+				Config: Configuration{
+					"compound_identifier":     nil,
+					"consumer_groups":         nil,
+					"dictionary_name":         string("kong_rate_limiting_counters"),
+					"disable_penalty":         bool(false),
+					"enforce_consumer_groups": bool(false),
+					"error_code":              float64(429),
+					"error_message":           string("API rate limit exceeded"),
+					"header_name":             nil,
+					"hide_client_headers":     bool(false),
+					"identifier":              string("consumer"),
+					"limit":                   nil,
+					"lock_dictionary_name":    string("kong_locks"),
+					"namespace":               nil,
+					"path":                    nil,
+					"redis": Configuration{
+						"cluster_max_redirections": float64(5),
+						"cluster_nodes":            nil,
+						"connect_timeout":          float64(2000),
+						"connection_is_proxied":    bool(false),
+						"database":                 float64(0),
+						"host":                     string("127.0.0.1"),
+						"keepalive_backlog":        nil,
+						"keepalive_pool_size":      float64(256),
+						"password":                 nil,
+						"port":                     float64(7000),
+						"read_timeout":             float64(2000),
+						"send_timeout":             float64(2000),
+						"sentinel_master":          nil,
+						"sentinel_nodes":           nil,
+						"sentinel_password":        nil,
+						"sentinel_role":            nil,
+						"sentinel_username":        nil,
+						"server_name":              nil,
+						"ssl":                      bool(false),
+						"ssl_verify":               bool(false),
+						"username":                 nil,
+					},
+					"retry_after_jitter_max": float64(0),
+					"strategy":               string("local"),
+					"sync_rate":              nil,
+					"window_size":            nil,
+					"window_type":            string("sliding"),
+				},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+						Path: String("config.redis"),
+					},
+				},
+			},
+		},
+		{
+			name: "invalid schema passed",
+			plugin: &Plugin{
+				ID:     String("test-plugin"),
+				Config: Configuration{},
+			},
+			pluginSchema: map[string]interface{}{
+				"type": "invalid",
+			},
+			partials:  nil,
+			wantErr:   true,
+			errString: "no 'config' field found in schema",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			err := FillPluginsDefaultsWithPartials(tc.plugin, tc.pluginSchema, tc.partials)
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("FillPluginsDefaultsWithPartials expected error but got none")
+				}
+				assert.ErrorContains(t, err, tc.errString)
+				return
+			}
+
+			require.NoError(t, err)
+			opts := cmpopts.IgnoreFields(*tc.plugin, "Enabled", "Protocols")
+			if diff := cmp.Diff(tc.plugin, tc.expectedPlugin, opts); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}

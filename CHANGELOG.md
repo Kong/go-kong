@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.64.0](#v0640)
 - [v0.63.0](#v0630)
 - [v0.62.0](#v0620)
 - [v0.61.0](#v0610)
@@ -76,6 +77,17 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.64.0]
+
+> Release date: 2025/03/11
+
+- Added Client APIs (Create, Get, List, ListAll, Update, Delete, 
+  GetFullSchema, GetLinkedPlugins) to interact with Partials.
+- Updated Plugin entity to allow linking with partials.
+- Added new utility functions to allow Partials' config to fill
+  with defaults and Plugin configs to fill with partial's configs.
+  [#507](https://github.com/Kong/go-kong/pull/507)
 
 ## [v0.63.0]
 
@@ -1001,6 +1013,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.64.0]: https://github.com/Kong/go-kong/compare/v0.63.0...v0.64.0
 [v0.63.0]: https://github.com/Kong/go-kong/compare/v0.62.0...v0.63.0
 [v0.62.0]: https://github.com/Kong/go-kong/compare/v0.61.0...v0.62.0
 [v0.61.0]: https://github.com/Kong/go-kong/compare/v0.60.0...v0.61.0

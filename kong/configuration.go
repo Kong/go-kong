@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-// Configuration represents a config of a plugin in Kong.
+// Configuration represents a config of a plugin/partial in Kong.
 type Configuration map[string]interface{}
 
 // DeepCopyInto copies the receiver, writing into out. in must be non-nil.
