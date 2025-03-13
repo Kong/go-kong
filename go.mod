@@ -21,7 +21,7 @@ require (
 	github.com/samber/lo v1.49.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/gjson v1.18.0
-	k8s.io/code-generator v0.32.2
+	k8s.io/code-generator v0.32.3
 	sigs.k8s.io/yaml v1.4.0
 )
 
