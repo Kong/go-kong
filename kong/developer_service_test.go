@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDevelopersService(T *testing.T) {
@@ -14,12 +15,12 @@ func TestDevelopersService(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	testWs, err := NewTestWorkspace(client, "default")
-	assert.NoError(err)
-	assert.NoError(testWs.UpdateConfig(map[string]interface{}{
+	require.NoError(T, err)
+	require.NoError(T, testWs.UpdateConfig(map[string]interface{}{
 		"portal_auth":         "basic-auth",
 		"portal_session_conf": map[string]interface{}{"secret": "garbage"},
 		"portal":              true,
@@ -33,31 +34,31 @@ func TestDevelopersService(T *testing.T) {
 	}
 
 	createdDeveloper, err := client.Developers.Create(defaultCtx, developer)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdDeveloper)
 
 	developer, err = client.Developers.Get(defaultCtx, createdDeveloper.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(developer)
 
 	developer, err = client.Developers.GetByCustomID(defaultCtx,
 		String("does-not-exist"))
-	assert.NotNil(err)
+	require.Error(T, err)
 	assert.Nil(developer)
 
 	developer, err = client.Developers.GetByCustomID(defaultCtx,
 		String("custom_id_foo"))
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(developer)
 
 	developer.Email = String("bar@example.com")
 	developer, err = client.Developers.Update(defaultCtx, developer)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(developer)
 	assert.Equal("bar@example.com", *developer.Email)
 
 	err = client.Developers.Delete(defaultCtx, createdDeveloper.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -69,14 +70,14 @@ func TestDevelopersService(T *testing.T) {
 	}
 
 	createdDeveloper, err = client.Developers.Create(defaultCtx, developer)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdDeveloper)
 	assert.Equal(id, *createdDeveloper.ID)
 
 	err = client.Developers.Delete(defaultCtx, createdDeveloper.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 
-	assert.NoError(testWs.Reset())
+	require.NoError(T, testWs.Reset())
 }
 
 func TestDeveloperListEndpoint(T *testing.T) {
@@ -86,12 +87,12 @@ func TestDeveloperListEndpoint(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	testWs, err := NewTestWorkspace(client, "default")
-	assert.NoError(err)
-	assert.NoError(testWs.UpdateConfig(map[string]interface{}{
+	require.NoError(T, err)
+	require.NoError(T, testWs.UpdateConfig(map[string]interface{}{
 		"portal_auth":         "basic-auth",
 		"portal_session_conf": map[string]interface{}{"secret": "garbage"},
 		"portal":              true,
@@ -119,16 +120,16 @@ func TestDeveloperListEndpoint(T *testing.T) {
 	// create fixturs
 	for i := 0; i < len(developers); i++ {
 		developer, err := client.Developers.Create(defaultCtx, developers[i])
-		assert.NoError(err)
+		require.NoError(T, err)
 		assert.NotNil(developer)
 		developers[i] = developer
 	}
 
 	developersFromKong, next, err := client.Developers.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.Nil(next)
 	assert.NotNil(developersFromKong)
-	assert.Equal(3, len(developersFromKong))
+	assert.Len(developersFromKong, 3)
 
 	// check if we see all developers
 	assert.True(compareDevelopers(developers, developersFromKong))
@@ -138,33 +139,33 @@ func TestDeveloperListEndpoint(T *testing.T) {
 
 	// first page
 	page1, next, err := client.Developers.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 	developersFromKong = append(developersFromKong, page1...)
 
 	// last page
 	next.Size = 2
 	page2, next, err := client.Developers.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.Nil(next)
 	assert.NotNil(page2)
-	assert.Equal(2, len(page2))
+	assert.Len(page2, 2)
 	developersFromKong = append(developersFromKong, page2...)
 
 	assert.True(compareDevelopers(developers, developersFromKong))
 
 	developers, err = client.Developers.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(developers)
-	assert.Equal(3, len(developers))
+	assert.Len(developers, 3)
 
 	for i := 0; i < len(developers); i++ {
-		assert.NoError(client.Developers.Delete(defaultCtx, developers[i].ID))
+		require.NoError(T, client.Developers.Delete(defaultCtx, developers[i].ID))
 	}
 
-	assert.NoError(testWs.Reset())
+	require.NoError(T, testWs.Reset())
 }
 
 func compareDevelopers(expected, actual []*Developer) bool {

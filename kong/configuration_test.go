@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestConfigurationDeepCopyInto(T *testing.T) {
@@ -12,9 +13,7 @@ func TestConfigurationDeepCopyInto(T *testing.T) {
 
 	var c Configuration
 	byt := []byte(`{"int":42,"float":4.2,"strings":["foo","bar"]}`)
-	if err := json.Unmarshal(byt, &c); err != nil {
-		panic(err)
-	}
+	require.NoError(T, json.Unmarshal(byt, &c))
 
 	c2 := c.DeepCopy()
 	assert.Equal(c, c2)
@@ -22,7 +21,7 @@ func TestConfigurationDeepCopyInto(T *testing.T) {
 	// Both are independent now
 	c["int"] = 24
 	assert.Equal(24, c["int"])
-	assert.Equal(float64(42), c2["int"])
+	assert.EqualValues(42, c2["int"])
 
 	c["strings"] = []string{"fubar"}
 	assert.Equal([]string{"fubar"}, c["strings"].([]string))

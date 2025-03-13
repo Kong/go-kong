@@ -15,7 +15,7 @@ func TestKeyService(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	//nolint:lll // JSON can't split lines so the encoded field is way too long for Go
@@ -32,21 +32,21 @@ func TestKeyService(T *testing.T) {
 	}
 
 	createdKey, err := client.Keys.Create(defaultCtx, key)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdKey)
 
 	key, err = client.Keys.Get(defaultCtx, createdKey.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(key)
 
 	key.Name = String("bar")
 	key, err = client.Keys.Update(defaultCtx, key)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(key)
 	assert.Equal("bar", *key.Name)
 
 	err = client.Keys.Delete(defaultCtx, createdKey.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -65,12 +65,12 @@ func TestKeyService(T *testing.T) {
 	}
 
 	createdKey, err = client.Keys.Create(defaultCtx, key)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdKey)
 	assert.Equal(id, *createdKey.ID)
 
 	err = client.Keys.Delete(defaultCtx, createdKey.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestKeyServiceWithSet(T *testing.T) {
@@ -81,11 +81,11 @@ func TestKeyServiceWithSet(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	createdKeySet, err := client.KeySets.Create(defaultCtx, &KeySet{Name: String("foo")})
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdKeySet)
 
 	//nolint:lll // JSON can't split lines so the encoded field is way too long for Go
@@ -103,21 +103,21 @@ func TestKeyServiceWithSet(T *testing.T) {
 	}
 
 	createdKey, err := client.Keys.Create(defaultCtx, key)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdKey)
 
 	key, err = client.Keys.Get(defaultCtx, createdKey.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(key)
 
 	key.Name = String("bar")
 	key, err = client.Keys.Update(defaultCtx, key)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(key)
 	assert.Equal("bar", *key.Name)
 
 	err = client.Keys.Delete(defaultCtx, createdKey.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -137,15 +137,15 @@ func TestKeyServiceWithSet(T *testing.T) {
 	}
 
 	createdKey, err = client.Keys.Create(defaultCtx, key)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdKey)
 	assert.Equal(id, *createdKey.ID)
 
 	err = client.Keys.Delete(defaultCtx, createdKey.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	err = client.KeySets.Delete(defaultCtx, createdKeySet.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestKeyWithTags(T *testing.T) {
@@ -155,7 +155,7 @@ func TestKeyWithTags(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	//nolint:lll // JSON can't split lines so the encoded field is way too long for Go
@@ -173,12 +173,12 @@ func TestKeyWithTags(T *testing.T) {
 	}
 
 	createdKey, err := client.Keys.Create(defaultCtx, key)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdKey)
 	assert.Equal(StringSlice("tag1", "tag2"), createdKey.Tags)
 
 	err = client.Keys.Delete(defaultCtx, createdKey.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestKeyWithTagsWithSet(T *testing.T) {
@@ -189,11 +189,11 @@ func TestKeyWithTagsWithSet(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	createdKeySet, err := client.KeySets.Create(defaultCtx, &KeySet{Name: String("foo")})
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdKeySet)
 
 	//nolint:lll // JSON can't split lines so the encoded field is way too long for Go
@@ -212,15 +212,15 @@ func TestKeyWithTagsWithSet(T *testing.T) {
 	}
 
 	createdKey, err := client.Keys.Create(defaultCtx, key)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdKey)
 	assert.Equal(StringSlice("tag1", "tag2"), createdKey.Tags)
 
 	err = client.Keys.Delete(defaultCtx, createdKey.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	err = client.KeySets.Delete(defaultCtx, createdKeySet.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestKeyListWithTags(T *testing.T) {
@@ -230,7 +230,7 @@ func TestKeyListWithTags(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -313,7 +313,7 @@ func TestKeyListWithTags(T *testing.T) {
 	// create fixtures
 	for i := 0; i < len(keys); i++ {
 		key, err := client.Keys.Create(defaultCtx, keys[i])
-		assert.NoError(err)
+		require.NoError(err)
 		require.NotNil(key)
 		keys[i] = key
 	}
@@ -321,61 +321,61 @@ func TestKeyListWithTags(T *testing.T) {
 	keysFromKong, next, err := client.Keys.List(defaultCtx, &ListOpt{
 		Tags: StringSlice("tag1"),
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(4, len(keysFromKong))
+	assert.Len(keysFromKong, 4)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, &ListOpt{
 		Tags: StringSlice("tag2"),
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(4, len(keysFromKong))
+	assert.Len(keysFromKong, 4)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, &ListOpt{
 		Tags: StringSlice("tag1", "tag2"),
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(6, len(keysFromKong))
+	assert.Len(keysFromKong, 6)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, &ListOpt{
 		Tags:         StringSlice("tag1", "tag2"),
 		MatchAllTags: true,
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(2, len(keysFromKong))
+	assert.Len(keysFromKong, 2)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, &ListOpt{
 		Tags: StringSlice("tag1", "tag2"),
 		Size: 3,
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(next)
-	assert.Equal(3, len(keysFromKong))
+	assert.Len(keysFromKong, 3)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(3, len(keysFromKong))
+	assert.Len(keysFromKong, 3)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, &ListOpt{
 		Tags:         StringSlice("tag1", "tag2"),
 		MatchAllTags: true,
 		Size:         1,
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(next)
-	assert.Equal(1, len(keysFromKong))
+	assert.Len(keysFromKong, 1)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(1, len(keysFromKong))
+	assert.Len(keysFromKong, 1)
 
 	for i := 0; i < len(keys); i++ {
-		assert.NoError(client.Keys.Delete(defaultCtx, keys[i].Name))
+		require.NoError(client.Keys.Delete(defaultCtx, keys[i].Name))
 	}
 }
 
@@ -387,12 +387,12 @@ func TestKeyListWithTagsWithSet(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// fixtures
 	createdKeySet, err := client.KeySets.Create(defaultCtx, &KeySet{Name: String("foo")})
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdKeySet)
 
 	//nolint:lll // JSON can't split lines so the encoded field is way too long for Go
@@ -480,7 +480,7 @@ func TestKeyListWithTagsWithSet(T *testing.T) {
 	// create fixtures
 	for i := 0; i < len(keys); i++ {
 		key, err := client.Keys.Create(defaultCtx, keys[i])
-		assert.NoError(err)
+		require.NoError(err)
 		require.NotNil(key)
 		keys[i] = key
 	}
@@ -488,63 +488,63 @@ func TestKeyListWithTagsWithSet(T *testing.T) {
 	keysFromKong, next, err := client.Keys.List(defaultCtx, &ListOpt{
 		Tags: StringSlice("tag1"),
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(4, len(keysFromKong))
+	assert.Len(keysFromKong, 4)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, &ListOpt{
 		Tags: StringSlice("tag2"),
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(4, len(keysFromKong))
+	assert.Len(keysFromKong, 4)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, &ListOpt{
 		Tags: StringSlice("tag1", "tag2"),
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(6, len(keysFromKong))
+	assert.Len(keysFromKong, 6)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, &ListOpt{
 		Tags:         StringSlice("tag1", "tag2"),
 		MatchAllTags: true,
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(2, len(keysFromKong))
+	assert.Len(keysFromKong, 2)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, &ListOpt{
 		Tags: StringSlice("tag1", "tag2"),
 		Size: 3,
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(next)
-	assert.Equal(3, len(keysFromKong))
+	assert.Len(keysFromKong, 3)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(3, len(keysFromKong))
+	assert.Len(keysFromKong, 3)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, &ListOpt{
 		Tags:         StringSlice("tag1", "tag2"),
 		MatchAllTags: true,
 		Size:         1,
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(next)
-	assert.Equal(1, len(keysFromKong))
+	assert.Len(keysFromKong, 1)
 
 	keysFromKong, next, err = client.Keys.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
-	assert.Equal(1, len(keysFromKong))
+	assert.Len(keysFromKong, 1)
 
 	for i := 0; i < len(keys); i++ {
-		assert.NoError(client.Keys.Delete(defaultCtx, keys[i].Name))
+		require.NoError(client.Keys.Delete(defaultCtx, keys[i].Name))
 	}
 
 	err = client.KeySets.Delete(defaultCtx, createdKeySet.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }

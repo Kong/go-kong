@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRBACUserService(T *testing.T) {
@@ -13,7 +14,7 @@ func TestRBACUserService(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	user := &RBACUser{
@@ -24,21 +25,21 @@ func TestRBACUserService(T *testing.T) {
 	}
 
 	createdUser, err := client.RBACUsers.Create(defaultCtx, user)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdUser)
 
 	user, err = client.RBACUsers.Get(defaultCtx, createdUser.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(user)
 
 	user.Comment = String("new comment")
 	user, err = client.RBACUsers.Update(defaultCtx, user)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(user)
 	assert.Equal("new comment", *user.Comment)
 
 	err = client.RBACUsers.Delete(defaultCtx, createdUser.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 }
 
 func TestRBACUserServiceWorkspace(T *testing.T) {
@@ -46,7 +47,7 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	workspace := Workspace{
@@ -54,14 +55,14 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 	}
 
 	createdWorkspace, err := client.Workspaces.Create(defaultCtx, &workspace)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdWorkspace)
 	// Setup Workspace aware client
 	url, err := url.Parse(defaultBaseURL)
-	assert.NoError(err)
+	require.NoError(T, err)
 	url.Path = path.Join(url.Path, *createdWorkspace.Name)
 	workspaceClient, err := NewTestClient(String(url.String()), nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(workspaceClient)
 
 	user := &RBACUser{
@@ -72,24 +73,24 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 	}
 
 	createdUser, err := workspaceClient.RBACUsers.Create(defaultCtx, user)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdUser)
 
 	user, err = workspaceClient.RBACUsers.Get(defaultCtx, createdUser.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(user)
 
 	user.Comment = String("new comment")
 	user, err = workspaceClient.RBACUsers.Update(defaultCtx, user)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(user)
 	assert.Equal("new comment", *user.Comment)
 
 	err = workspaceClient.RBACUsers.Delete(defaultCtx, createdUser.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 
 	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.Name)
-	assert.NoError(err)
+	require.NoError(T, err)
 }
 
 func TestUserRoles(T *testing.T) {
@@ -97,7 +98,7 @@ func TestUserRoles(T *testing.T) {
 	assert := assert.New(T)
 	client, err := NewTestClient(nil, nil)
 
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	roleA := &RBACRole{
@@ -108,9 +109,9 @@ func TestUserRoles(T *testing.T) {
 	}
 
 	createdRoleA, err := client.RBACRoles.Create(defaultCtx, roleA)
-	assert.NoError(err)
+	require.NoError(T, err)
 	createdRoleB, err := client.RBACRoles.Create(defaultCtx, roleB)
-	assert.NoError(err)
+	require.NoError(T, err)
 
 	ep := &RBACEndpointPermission{
 		Role: &RBACRole{
@@ -124,7 +125,7 @@ func TestUserRoles(T *testing.T) {
 	}
 
 	createdEndpointPermission, err := client.RBACEndpointPermissions.Create(defaultCtx, ep)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdEndpointPermission)
 
 	user := &RBACUser{
@@ -135,7 +136,7 @@ func TestUserRoles(T *testing.T) {
 	}
 
 	createdUser, err := client.RBACUsers.Create(defaultCtx, user)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdUser)
 
 	roles := []*RBACRole{
@@ -144,26 +145,26 @@ func TestUserRoles(T *testing.T) {
 	}
 
 	updatedUser, err := client.RBACUsers.AddRoles(defaultCtx, createdUser.ID, roles)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(updatedUser)
 
 	roleList, err := client.RBACUsers.ListRoles(defaultCtx, createdUser.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(roleList)
-	assert.Equal(2, len(roleList))
+	assert.Len(roleList, 2)
 
 	permissionsList, err := client.RBACUsers.ListPermissions(defaultCtx, createdUser.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(permissionsList)
-	assert.Equal(1, len(permissionsList.Endpoints))
+	assert.Len(permissionsList.Endpoints, 1)
 
 	err = client.RBACEndpointPermissions.Delete(
 		defaultCtx, createdRoleA.ID, String("default"), createdEndpointPermission.Endpoint)
-	assert.NoError(err)
+	require.NoError(T, err)
 	err = client.RBACUsers.Delete(defaultCtx, createdUser.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	err = client.RBACRoles.Delete(defaultCtx, createdRoleA.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	err = client.RBACRoles.Delete(defaultCtx, createdRoleB.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 }

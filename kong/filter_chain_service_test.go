@@ -17,7 +17,7 @@ func TestFilterChainsService(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	service := &Service{
@@ -27,10 +27,10 @@ func TestFilterChainsService(T *testing.T) {
 		Path: String("/"),
 	}
 	err = client.Services.Delete(defaultCtx, service.Name)
-	assert.NoError(err)
+	require.NoError(err)
 
 	_, err = client.Services.Create(defaultCtx, service)
-	assert.NoError(err)
+	require.NoError(err)
 
 	filterChain := &FilterChain{
 		Filters: []*Filter{
@@ -44,22 +44,22 @@ func TestFilterChainsService(T *testing.T) {
 	assert.NotNil(filterChain)
 
 	createdFilterChain, err := client.FilterChains.Create(defaultCtx, filterChain)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdFilterChain)
 	require.Nil(createdFilterChain.Name)
 
 	filterChain, err = client.FilterChains.Get(defaultCtx, createdFilterChain.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(filterChain)
 
 	filterChain.Name = String("my-chain")
 	filterChain, err = client.FilterChains.Update(defaultCtx, filterChain)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(filterChain)
 	assert.Equal(String("my-chain"), filterChain.Name)
 
 	err = client.FilterChains.Delete(defaultCtx, createdFilterChain.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -75,12 +75,12 @@ func TestFilterChainsService(T *testing.T) {
 	}
 
 	createdFilterChain, err = client.FilterChains.Create(defaultCtx, filterChain)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdFilterChain)
 	assert.Equal(id, *createdFilterChain.ID)
 
 	err = client.FilterChains.Delete(defaultCtx, createdFilterChain.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	service = &Service{
 		Name: String("fooWithFilterChain2"),
@@ -90,10 +90,10 @@ func TestFilterChainsService(T *testing.T) {
 	}
 	// Clean Data
 	err = client.Services.Delete(defaultCtx, service.Name)
-	assert.NoError(err)
+	require.NoError(err)
 	// Test to create filter chain from service endpoint
 	createdService, err := client.Services.Create(defaultCtx, service)
-	assert.NoError(err)
+	require.NoError(err)
 
 	id = uuid.NewString()
 	FilterChainForService := &FilterChain{
@@ -108,20 +108,20 @@ func TestFilterChainsService(T *testing.T) {
 	}
 
 	createdFilterChain, err = client.FilterChains.CreateForService(defaultCtx, createdService.Name, FilterChainForService)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdFilterChain)
 	assert.Equal(id, *createdFilterChain.ID)
 	assert.Equal(Bool(true), createdFilterChain.Filters[0].Enabled)
 
 	createdFilterChain.Filters[0].Enabled = Bool(false)
 	updatedFilterChain, err := client.FilterChains.UpdateForService(defaultCtx, createdService.Name, createdFilterChain)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(updatedFilterChain)
 	assert.Equal(id, *updatedFilterChain.ID)
 	assert.Equal(Bool(false), createdFilterChain.Filters[0].Enabled)
 
 	err = client.FilterChains.DeleteForService(defaultCtx, createdService.Name, updatedFilterChain.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// Create filter chain without ID
 	createdFilterChain, err = client.FilterChains.CreateForService(defaultCtx, createdService.Name, &FilterChain{
@@ -133,11 +133,11 @@ func TestFilterChainsService(T *testing.T) {
 			},
 		},
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdFilterChain)
 	assert.NotNil(createdFilterChain.ID)
 
-	assert.NoError(client.Services.Delete(defaultCtx, createdService.ID))
+	require.NoError(client.Services.Delete(defaultCtx, createdService.ID))
 
 	route := &Route{
 		Name:  String("route_filter_chain"),
@@ -145,10 +145,10 @@ func TestFilterChainsService(T *testing.T) {
 	}
 	// Clean Data
 	err = client.Routes.Delete(defaultCtx, route.Name)
-	assert.NoError(err)
+	require.NoError(err)
 	// Test to create filter chain from route endpoint
 	createdRoute, err := client.Routes.Create(defaultCtx, route)
-	assert.NoError(err)
+	require.NoError(err)
 
 	id = uuid.NewString()
 	FilterChainForRoute := &FilterChain{
@@ -163,20 +163,20 @@ func TestFilterChainsService(T *testing.T) {
 	}
 
 	createdFilterChain, err = client.FilterChains.CreateForRoute(defaultCtx, createdRoute.Name, FilterChainForRoute)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdFilterChain)
 	assert.Equal(id, *createdFilterChain.ID)
 	assert.Equal(Bool(true), createdFilterChain.Filters[0].Enabled)
 
 	createdFilterChain.Filters[0].Enabled = Bool(false)
 	updatedFilterChain, err = client.FilterChains.UpdateForRoute(defaultCtx, createdRoute.Name, createdFilterChain)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(updatedFilterChain)
 	assert.Equal(id, *updatedFilterChain.ID)
 	assert.Equal(Bool(false), createdFilterChain.Filters[0].Enabled)
 
 	err = client.FilterChains.DeleteForRoute(defaultCtx, createdRoute.Name, updatedFilterChain.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// Create filter chain without ID
 	createdFilterChain, err = client.FilterChains.CreateForRoute(defaultCtx, createdRoute.Name, &FilterChain{
@@ -188,18 +188,17 @@ func TestFilterChainsService(T *testing.T) {
 			},
 		},
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdFilterChain)
 	assert.NotNil(createdFilterChain.ID)
 
-	assert.NoError(client.Routes.Delete(defaultCtx, createdRoute.ID))
+	require.NoError(client.Routes.Delete(defaultCtx, createdRoute.ID))
 }
 
 func TestFilterChainWithTags(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=3.4.0")
 
-	assert := assert.New(T)
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -213,10 +212,10 @@ func TestFilterChainWithTags(T *testing.T) {
 		Path: String("/"),
 	}
 	err = client.Services.Delete(defaultCtx, service.Name)
-	assert.NoError(err)
+	require.NoError(err)
 
 	createdService, err := client.Services.Create(defaultCtx, service)
-	assert.NoError(err)
+	require.NoError(err)
 
 	filterChain := &FilterChain{
 		Filters: []*Filter{
@@ -230,7 +229,7 @@ func TestFilterChainWithTags(T *testing.T) {
 	}
 
 	createdFilterChain, err := client.FilterChains.Create(defaultCtx, filterChain)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdFilterChain)
 	require.Equal(StringSlice("tag1", "tag2"), createdFilterChain.Tags)
 
@@ -248,7 +247,7 @@ func TestUnknownFilterChain(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	service := &Service{
@@ -258,10 +257,10 @@ func TestUnknownFilterChain(T *testing.T) {
 		Path: String("/"),
 	}
 	err = client.Services.Delete(defaultCtx, service.Name)
-	assert.NoError(err)
+	require.NoError(T, err)
 
 	createdService, err := client.Services.Create(defaultCtx, service)
-	assert.NoError(err)
+	require.NoError(T, err)
 
 	filterChain := &FilterChain{
 		Filters: []*Filter{
@@ -279,7 +278,7 @@ func TestUnknownFilterChain(T *testing.T) {
 	require.Nil(T, createdFilterChain)
 
 	err = client.Services.Delete(defaultCtx, createdService.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 }
 
 func TestFilterChainListEndpoint(T *testing.T) {
@@ -289,7 +288,7 @@ func TestFilterChainListEndpoint(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -332,19 +331,19 @@ func TestFilterChainListEndpoint(T *testing.T) {
 			Path: String("/"),
 		})
 
-		assert.NoError(err)
+		require.NoError(T, err)
 		assert.NotNil(service)
 		filterChain, err := client.FilterChains.CreateForService(defaultCtx, service.Name, filterChains[i])
-		assert.NoError(err)
+		require.NoError(T, err)
 		assert.NotNil(filterChain)
 		filterChains[i] = filterChain
 	}
 
 	filterChainsFromKong, next, err := client.FilterChains.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.Nil(next)
 	assert.NotNil(filterChainsFromKong)
-	assert.Equal(3, len(filterChainsFromKong))
+	assert.Len(filterChainsFromKong, 3)
 
 	// check if we see all filterChains
 	assert.True(compareFilterChains(T, filterChains, filterChainsFromKong))
@@ -354,37 +353,37 @@ func TestFilterChainListEndpoint(T *testing.T) {
 
 	// first page
 	page1, next, err := client.FilterChains.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 	filterChainsFromKong = append(filterChainsFromKong, page1...)
 
 	// second page
 	page2, next, err := client.FilterChains.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(next)
 	assert.NotNil(page2)
-	assert.Equal(1, len(page2))
+	assert.Len(page2, 1)
 	filterChainsFromKong = append(filterChainsFromKong, page2...)
 
 	// last page
 	page3, next, err := client.FilterChains.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.Nil(next)
 	assert.NotNil(page3)
-	assert.Equal(1, len(page3))
+	assert.Len(page3, 1)
 	filterChainsFromKong = append(filterChainsFromKong, page3...)
 
 	assert.True(compareFilterChains(T, filterChains, filterChainsFromKong))
 
 	filterChains, err = client.FilterChains.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(filterChains)
-	assert.Equal(3, len(filterChains))
+	assert.Len(filterChains, 3)
 
 	for i := 0; i < len(filterChains); i++ {
-		assert.NoError(client.Services.Delete(defaultCtx, filterChains[i].Service.ID))
+		require.NoError(T, client.Services.Delete(defaultCtx, filterChains[i].Service.ID))
 	}
 }
 
@@ -396,7 +395,7 @@ func TestFilterChainListAllForEntityEndpoint(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -407,14 +406,14 @@ func TestFilterChainListAllForEntityEndpoint(T *testing.T) {
 		Port: Int(42),
 		Path: String("/path"),
 	})
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdService)
 
 	createdRoute, err := client.Routes.Create(defaultCtx, &Route{
 		Hosts:   StringSlice("example.com", "example.test"),
 		Service: createdService,
 	})
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdRoute)
 
 	filterChains := []*FilterChain{
@@ -453,13 +452,13 @@ func TestFilterChainListAllForEntityEndpoint(T *testing.T) {
 	// create fixtures
 	for i := 0; i < len(filterChains); i++ {
 		filterChain, err := client.FilterChains.Create(defaultCtx, filterChains[i])
-		assert.NoError(err)
+		require.NoError(T, err)
 		assert.NotNil(filterChain)
 		filterChains[i] = filterChain
 	}
 
 	filterChainsFromKong, err := client.FilterChains.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(filterChainsFromKong)
 	assert.Equal(len(filterChains), len(filterChainsFromKong))
 
@@ -467,28 +466,28 @@ func TestFilterChainListAllForEntityEndpoint(T *testing.T) {
 	assert.True(compareFilterChains(T, filterChains, filterChainsFromKong))
 
 	filterChainsFromKong, err = client.FilterChains.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(filterChainsFromKong)
-	assert.Equal(2, len(filterChainsFromKong))
+	assert.Len(filterChainsFromKong, 2)
 
 	filterChainsFromKong, err = client.FilterChains.ListAllForService(defaultCtx,
 		createdService.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(filterChainsFromKong)
-	assert.Equal(1, len(filterChainsFromKong))
+	assert.Len(filterChainsFromKong, 1)
 
 	filterChainsFromKong, err = client.FilterChains.ListAllForRoute(defaultCtx,
 		createdRoute.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(filterChainsFromKong)
-	assert.Equal(1, len(filterChainsFromKong))
+	assert.Len(filterChainsFromKong, 1)
 
 	for i := 0; i < len(filterChains); i++ {
-		assert.NoError(client.FilterChains.Delete(defaultCtx, filterChains[i].ID))
+		require.NoError(T, client.FilterChains.Delete(defaultCtx, filterChains[i].ID))
 	}
 
-	assert.NoError(client.Routes.Delete(defaultCtx, createdRoute.ID))
-	assert.NoError(client.Services.Delete(defaultCtx, createdService.ID))
+	require.NoError(T, client.Routes.Delete(defaultCtx, createdRoute.ID))
+	require.NoError(T, client.Services.Delete(defaultCtx, createdService.ID))
 }
 
 func compareFilterChains(T *testing.T, expected, actual []*FilterChain) bool {

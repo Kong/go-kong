@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTagExists(T *testing.T) {
@@ -11,11 +12,11 @@ func TestTagExists(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	exists, err := client.Tags.Exists(defaultCtx)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.True(exists)
 }
 
@@ -24,10 +25,10 @@ func TestTagDoesNotExists(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	exists, err := client.Tags.Exists(defaultCtx)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.False(exists)
 }

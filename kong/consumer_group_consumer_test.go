@@ -45,7 +45,7 @@ func TestConsumerGroupConsumersService(t *testing.T) {
 
 	// make sure adding a not-existing consumer to a group fails
 	_, err = client.ConsumerGroupConsumers.Create(defaultCtx, cg.Name, consumer.Username)
-	assert.NotNil(err)
+	require.Error(t, err)
 
 	// delete consumer group
 	err = client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID)
@@ -98,14 +98,14 @@ func TestConsumerGroupConsumersListEndpoint(t *testing.T) {
 	consumerGroupConsumersFromKong, err := client.ConsumerGroupConsumers.ListAll(defaultCtx, cg.Name)
 	require.NoError(t, err)
 	assert.NotNil(consumerGroupConsumersFromKong)
-	assert.Equal(3, len(consumerGroupConsumersFromKong))
+	assert.Len(consumerGroupConsumersFromKong, 3)
 
 	// check if we see all consumer groups
 	assert.True(compareConsumers(consumers, consumerGroupConsumersFromKong))
 
 	for i := 0; i < len(consumerGroupConsumersFromKong); i++ {
-		assert.NoError(client.Consumers.Delete(defaultCtx, consumers[i].ID))
+		require.NoError(t, client.Consumers.Delete(defaultCtx, consumers[i].ID))
 	}
 
-	assert.NoError(client.ConsumerGroups.Delete(defaultCtx, cg.Name))
+	require.NoError(t, client.ConsumerGroups.Delete(defaultCtx, cg.Name))
 }

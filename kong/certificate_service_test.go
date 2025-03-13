@@ -260,7 +260,7 @@ func TestCertificatesService(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	certificate := &Certificate{
@@ -270,29 +270,29 @@ func TestCertificatesService(T *testing.T) {
 	}
 
 	createdCertificate, err := client.Certificates.Create(defaultCtx, certificate)
-	assert.NotNil(err) // invalid cert and key
+	require.Error(err) // invalid cert and key
 	assert.Nil(createdCertificate)
 
 	certificate.Key = String(key1)
 	certificate.Cert = String(cert1)
 	createdCertificate, err = client.Certificates.Create(defaultCtx, certificate)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdCertificate)
 
 	certificate, err = client.Certificates.Get(defaultCtx, createdCertificate.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(certificate)
-	assert.Equal(2, len(createdCertificate.SNIs))
+	assert.Len(createdCertificate.SNIs, 2)
 
 	certificate.Key = String(key2)
 	certificate.Cert = String(cert2)
 	certificate, err = client.Certificates.Update(defaultCtx, certificate)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(certificate)
 	assert.Equal(key2, *certificate.Key)
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -303,12 +303,12 @@ func TestCertificatesService(T *testing.T) {
 	}
 
 	createdCertificate, err = client.Certificates.Create(defaultCtx, certificate)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdCertificate)
 	assert.Equal(id, *createdCertificate.ID)
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestCertificateWithTags(T *testing.T) {
@@ -319,7 +319,7 @@ func TestCertificateWithTags(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	certificate := &Certificate{
@@ -334,7 +334,7 @@ func TestCertificateWithTags(T *testing.T) {
 	require.Equal(StringSlice("tag1", "tag2"), createdCertificate.Tags)
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestCertificateListEndpoint(T *testing.T) {
@@ -344,7 +344,7 @@ func TestCertificateListEndpoint(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -366,16 +366,16 @@ func TestCertificateListEndpoint(T *testing.T) {
 	// create fixturs
 	for i := 0; i < len(certificates); i++ {
 		certificate, err := client.Certificates.Create(defaultCtx, certificates[i])
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(certificate)
 		certificates[i] = certificate
 	}
 
 	certificatesFromKong, next, err := client.Certificates.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(certificatesFromKong)
-	assert.Equal(3, len(certificatesFromKong))
+	assert.Len(certificatesFromKong, 3)
 
 	// check if we see all certificates
 	assert.True(compareCertificates(T, certificates, certificatesFromKong))
@@ -385,30 +385,30 @@ func TestCertificateListEndpoint(T *testing.T) {
 
 	// first page
 	page1, next, err := client.Certificates.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(next)
 	require.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 	certificatesFromKong = append(certificatesFromKong, page1...)
 
 	// last page
 	next.Size = 2
 	page2, next, err := client.Certificates.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	require.NotNil(page2)
-	assert.Equal(2, len(page2))
+	assert.Len(page2, 2)
 	certificatesFromKong = append(certificatesFromKong, page2...)
 
 	assert.True(compareCertificates(T, certificates, certificatesFromKong))
 
 	certificates, err = client.Certificates.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(certificates)
-	assert.Equal(3, len(certificates))
+	assert.Len(certificates, 3)
 
 	for i := 0; i < len(certificates); i++ {
-		assert.NoError(client.Certificates.Delete(defaultCtx, certificates[i].ID))
+		require.NoError(client.Certificates.Delete(defaultCtx, certificates[i].ID))
 	}
 }
 

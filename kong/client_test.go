@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"os"
 	"testing"
@@ -15,22 +14,20 @@ import (
 )
 
 func TestNewTestClient(t *testing.T) {
-	assert := assert.New(t)
-
 	client, err := NewTestClient(String("foo/bar"), nil)
-	assert.Nil(client)
-	assert.NotNil(err)
+	require.Nil(t, client)
+	require.Error(t, err)
 }
 
 func TestKongStatus(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	status, err := client.Status(defaultCtx)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(status)
 }
 
@@ -54,11 +51,11 @@ func TestRoot(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	root, err := client.Root(defaultCtx)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(root)
 	assert.NotNil(root["version"])
 }
@@ -67,11 +64,11 @@ func TestRootJSON(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	root, err := client.RootJSON(defaultCtx)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotEmpty(root)
 	assert.Contains(string(root), `"version"`)
 }
@@ -156,7 +153,7 @@ func TestDo(T *testing.T) {
 			require.NoError(err)
 			require.NotNil(req)
 			resp, err = client.Do(context.Background(), req, nil)
-			require.NotNil(err)
+			require.Error(err)
 			require.NotNil(resp)
 			assert.Equal(405, resp.StatusCode)
 
@@ -215,29 +212,29 @@ func TestTestWorkspace(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	wsName := "default"
 
 	origWorkspace, err := client.Workspaces.Get(defaultCtx, String(wsName))
-	assert.NoError(err)
+	require.NoError(T, err)
 
 	testWs, err := NewTestWorkspace(client, wsName)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.Equal(wsName, *testWs.workspace.Name)
 
 	err = testWs.UpdateConfig(map[string]interface{}{"portal": true, "portal_auto_approve": true})
-	assert.NoError(err)
+	require.NoError(T, err)
 	currWorkspace, err := client.Workspaces.Get(defaultCtx, String(wsName))
-	assert.NoError(err)
-	assert.Equal(currWorkspace.Config["portal"], true)
-	assert.Equal(currWorkspace.Config["portal_auto_approve"], true)
+	require.NoError(T, err)
+	assert.Equal(true, currWorkspace.Config["portal"])
+	assert.Equal(true, currWorkspace.Config["portal_auto_approve"])
 
 	err = testWs.Reset()
-	assert.NoError(err)
+	require.NoError(T, err)
 	currWorkspace, err = client.Workspaces.Get(defaultCtx, String(wsName))
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.Equal(currWorkspace.Config, origWorkspace.Config)
 }
 
@@ -247,7 +244,7 @@ func TestBaseRootURL(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, client)
 
-		require.Equal(t, client.BaseRootURL(), "http://localhost:8001")
+		require.Equal(t, "http://localhost:8001", client.BaseRootURL())
 	})
 
 	t.Run("set via env", func(t *testing.T) {
@@ -256,7 +253,7 @@ func TestBaseRootURL(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, client)
 
-		require.Equal(t, client.BaseRootURL(), "https://customkong.com")
+		require.Equal(t, "https://customkong.com", client.BaseRootURL())
 	})
 
 	t.Run("set via flag", func(t *testing.T) {
@@ -264,7 +261,7 @@ func TestBaseRootURL(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, client)
 
-		require.Equal(t, client.BaseRootURL(), "https://customkong2.com")
+		require.Equal(t, "https://customkong2.com", client.BaseRootURL())
 	})
 }
 
@@ -364,12 +361,12 @@ func TestReloadDeclarativeRawConfig(t *testing.T) {
 			err = client.ReloadDeclarativeRawConfig(ctx, bytes.NewBuffer(b), true, flattenErrors)
 
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 				apiErr := &APIError{}
-				assert.True(t, errors.As(err, &apiErr))
+				require.ErrorAs(t, err, &apiErr)
 				assert.NotEmpty(t, apiErr.Raw(), "expected non-empty response body in APIError")
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 		})
 	}
@@ -386,7 +383,7 @@ func TestReloadDeclarativeRawConfig_NetworkErrorDoesntReturnAPIError(t *testing.
 
 	err = client.ReloadDeclarativeRawConfig(context.Background(), bytes.NewReader([]byte("dummy-config")), true, true)
 	require.Error(t, err)
-	require.False(t, errors.Is(err, &APIError{}), "expected error to not be an APIError")
+	require.NotErrorIs(t, err, &APIError{}, "expected error to not be an APIError")
 }
 
 func assertHeadersExist(t *testing.T, request *http.Request, headers http.Header) {
