@@ -11,6 +11,8 @@ type AbstractJWTAuthService interface {
 	Create(ctx context.Context, consumerUsernameOrID *string, jwtAuth *JWTAuth) (*JWTAuth, error)
 	// Get fetches a JWT credential from Kong.
 	Get(ctx context.Context, consumerUsernameOrID, keyOrID *string) (*JWTAuth, error)
+	// GetById fetches a JWT credential from Kong.
+	GetById(ctx context.Context, ID *string) (*JWTAuth, error)
 	// Update updates a JWT credential in Kong
 	Update(ctx context.Context, consumerUsernameOrID *string, jwtAuth *JWTAuth) (*JWTAuth, error)
 	// Delete deletes a JWT credential in Kong
@@ -55,6 +57,25 @@ func (s *JWTAuthService) Get(ctx context.Context,
 ) (*JWTAuth, error) {
 	cred, err := s.client.credentials.Get(ctx, "jwt-auth",
 		consumerUsernameOrID, keyOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	var jwtAuth JWTAuth
+	err = json.Unmarshal(cred, &jwtAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	return &jwtAuth, nil
+}
+
+// GetById fetches a JWT credential from Kong using ID.
+func (s *JWTAuthService) GetById(ctx context.Context,
+	ID *string,
+) (*JWTAuth, error) {
+	cred, err := s.client.credentials.GetById(ctx, "jwt-auth",
+		ID)
 	if err != nil {
 		return nil, err
 	}
