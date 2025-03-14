@@ -24,12 +24,12 @@ func TestIsNotFoundErrE2E(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	consumer, err := client.Consumers.Get(defaultCtx, String("does-not-exists"))
 	assert.Nil(consumer)
-	assert.NotNil(err)
+	require.Error(T, err)
 	assert.True(IsNotFoundErr(err))
 }
 
@@ -38,17 +38,17 @@ func TestAPIError_Code(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	consumer, err := client.Consumers.Get(defaultCtx, String("does-not-exists"))
 	assert.Nil(consumer)
-	assert.NotNil(err)
+	require.Error(err)
 
 	var kongErr *APIError
 	ok := errors.As(err, &kongErr)
 	require.True(ok)
-	assert.True(kongErr.Code() == 404)
+	assert.Equal(404, kongErr.Code())
 }
 
 func TestIsForbiddenErrE2E(T *testing.T) {

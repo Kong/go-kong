@@ -14,7 +14,7 @@ func TestPluginsServiceValidation(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	goodPlugin := &Plugin{
@@ -33,11 +33,11 @@ func TestPluginsServiceValidation(T *testing.T) {
 
 	valid, _, err := client.Plugins.Validate(defaultCtx, goodPlugin)
 	assert.True(valid)
-	assert.NoError(err)
+	require.NoError(T, err)
 
 	valid, msg, err := client.Plugins.Validate(defaultCtx, badPlugin)
 	assert.False(valid)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.Equal("schema violation (config.garbage: unknown field)", msg)
 }
 
@@ -49,7 +49,7 @@ func TestPluginsService(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	plugin := &Plugin{
@@ -57,22 +57,22 @@ func TestPluginsService(T *testing.T) {
 	}
 
 	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdPlugin)
 	require.Nil(createdPlugin.InstanceName)
 
 	plugin, err = client.Plugins.Get(defaultCtx, createdPlugin.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(plugin)
 
 	plugin.Config["key_in_body"] = true
 	plugin, err = client.Plugins.Update(defaultCtx, plugin)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(plugin)
 	assert.Equal(true, plugin.Config["key_in_body"])
 
 	err = client.Plugins.Delete(defaultCtx, createdPlugin.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -82,12 +82,12 @@ func TestPluginsService(T *testing.T) {
 	}
 
 	createdPlugin, err = client.Plugins.Create(defaultCtx, plugin)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdPlugin)
 	assert.Equal(id, *createdPlugin.ID)
 
 	err = client.Plugins.Delete(defaultCtx, createdPlugin.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	service := &Service{
 		Name: String("fooWithPlugin"),
@@ -97,10 +97,10 @@ func TestPluginsService(T *testing.T) {
 	}
 	// Clean Data
 	err = client.Services.Delete(defaultCtx, service.Name)
-	assert.NoError(err)
+	require.NoError(err)
 	// Test to create plugin from service endpoint
 	createdService, err := client.Services.Create(defaultCtx, service)
-	assert.NoError(err)
+	require.NoError(err)
 
 	id = uuid.NewString()
 	pluginForService := &Plugin{
@@ -112,28 +112,28 @@ func TestPluginsService(T *testing.T) {
 	}
 
 	createdPlugin, err = client.Plugins.CreateForService(defaultCtx, createdService.Name, pluginForService)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdPlugin)
 	assert.Equal(id, *createdPlugin.ID)
 	assert.Equal("true", createdPlugin.Config["anonymous"])
 
 	createdPlugin.Config["anonymous"] = "false"
 	updatedPlugin, err := client.Plugins.UpdateForService(defaultCtx, createdService.Name, createdPlugin)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(updatedPlugin)
 	assert.Equal(id, *updatedPlugin.ID)
 	assert.Equal("false", updatedPlugin.Config["anonymous"])
 
 	err = client.Plugins.DeleteForService(defaultCtx, createdService.Name, updatedPlugin.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// Create plugin without ID
 	_, err = client.Plugins.CreateForService(defaultCtx, createdService.Name, &Plugin{Name: String("key-auth")})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdPlugin)
 	assert.NotNil(createdPlugin.ID)
 
-	assert.NoError(client.Services.Delete(defaultCtx, createdService.ID))
+	require.NoError(client.Services.Delete(defaultCtx, createdService.ID))
 
 	// Create Plugin for route
 	route := &Route{
@@ -142,10 +142,10 @@ func TestPluginsService(T *testing.T) {
 	}
 	// Clean Data
 	err = client.Routes.Delete(defaultCtx, route.Name)
-	assert.NoError(err)
+	require.NoError(err)
 	// Test to create plugin from route endpoint
 	createdRoute, err := client.Routes.Create(defaultCtx, route)
-	assert.NoError(err)
+	require.NoError(err)
 
 	id = uuid.NewString()
 	pluginForRoute := &Plugin{
@@ -157,28 +157,28 @@ func TestPluginsService(T *testing.T) {
 	}
 
 	createdPlugin, err = client.Plugins.CreateForRoute(defaultCtx, createdRoute.Name, pluginForRoute)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdPlugin)
 	assert.Equal(id, *createdPlugin.ID)
 	assert.Equal("true", createdPlugin.Config["anonymous"])
 
 	createdPlugin.Config["anonymous"] = "false"
 	updatedPlugin, err = client.Plugins.UpdateForRoute(defaultCtx, createdRoute.Name, createdPlugin)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdPlugin)
 	assert.Equal(id, *createdPlugin.ID)
 	assert.Equal("false", updatedPlugin.Config["anonymous"])
 
 	err = client.Plugins.DeleteForRoute(defaultCtx, createdRoute.Name, updatedPlugin.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// Create plugin without ID
 	_, err = client.Plugins.CreateForRoute(defaultCtx, createdRoute.Name, &Plugin{Name: String("key-auth")})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdPlugin)
 	assert.NotNil(createdPlugin.ID)
 
-	assert.NoError(client.Routes.Delete(defaultCtx, createdRoute.ID))
+	require.NoError(client.Routes.Delete(defaultCtx, createdRoute.ID))
 }
 
 func TestPluginsWithInstanceNameService(T *testing.T) {
@@ -251,7 +251,7 @@ func TestPluginWithOrdering(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	plugin := &Plugin{
@@ -267,7 +267,7 @@ func TestPluginWithOrdering(T *testing.T) {
 	}
 
 	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdPlugin)
 	assert.Equal(PluginOrdering{
 		Before: PluginOrderingPhase{
@@ -279,7 +279,7 @@ func TestPluginWithOrdering(T *testing.T) {
 	}, *createdPlugin.Ordering)
 
 	err = client.Plugins.Delete(defaultCtx, createdPlugin.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 
 	plugin = &Plugin{
 		Name: String("request-termination"),
@@ -291,7 +291,7 @@ func TestPluginWithOrdering(T *testing.T) {
 	}
 
 	createdPlugin, err = client.Plugins.Create(defaultCtx, plugin)
-	assert.Error(err)
+	require.Error(T, err)
 	assert.Nil(createdPlugin)
 
 	plugin = &Plugin{
@@ -304,7 +304,7 @@ func TestPluginWithOrdering(T *testing.T) {
 	}
 
 	createdPlugin, err = client.Plugins.Create(defaultCtx, plugin)
-	assert.Error(err)
+	require.Error(T, err)
 	assert.Nil(createdPlugin)
 }
 
@@ -312,13 +312,13 @@ func TestUnknownPlugin(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	plugin, err := client.Plugins.Create(defaultCtx, &Plugin{
 		Name: String("plugin-not-present"),
 	})
-	assert.NotNil(err)
+	require.Error(T, err)
 	assert.Nil(plugin)
 }
 
@@ -328,7 +328,7 @@ func TestPluginListEndpoint(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -347,19 +347,19 @@ func TestPluginListEndpoint(T *testing.T) {
 	// create fixtures
 	for i := 0; i < len(plugins); i++ {
 		schema, err := client.Plugins.GetFullSchema(defaultCtx, plugins[i].Name)
-		assert.NoError(err)
+		require.NoError(T, err)
 		assert.NotNil(schema)
 		plugin, err := client.Plugins.Create(defaultCtx, plugins[i])
-		assert.NoError(err)
+		require.NoError(T, err)
 		assert.NotNil(plugin)
 		plugins[i] = plugin
 	}
 
 	pluginsFromKong, next, err := client.Plugins.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.Nil(next)
 	assert.NotNil(pluginsFromKong)
-	assert.Equal(3, len(pluginsFromKong))
+	assert.Len(pluginsFromKong, 3)
 
 	// check if we see all plugins
 	assert.True(comparePlugins(T, plugins, pluginsFromKong))
@@ -369,37 +369,37 @@ func TestPluginListEndpoint(T *testing.T) {
 
 	// first page
 	page1, next, err := client.Plugins.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 	pluginsFromKong = append(pluginsFromKong, page1...)
 
 	// second page
 	page2, next, err := client.Plugins.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(next)
 	assert.NotNil(page2)
-	assert.Equal(1, len(page2))
+	assert.Len(page2, 1)
 	pluginsFromKong = append(pluginsFromKong, page2...)
 
 	// last page
 	page3, next, err := client.Plugins.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.Nil(next)
 	assert.NotNil(page3)
-	assert.Equal(1, len(page3))
+	assert.Len(page3, 1)
 	pluginsFromKong = append(pluginsFromKong, page3...)
 
 	assert.True(comparePlugins(T, plugins, pluginsFromKong))
 
 	plugins, err = client.Plugins.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(plugins)
-	assert.Equal(3, len(plugins))
+	assert.Len(plugins, 3)
 
 	for i := 0; i < len(plugins); i++ {
-		assert.NoError(client.Plugins.Delete(defaultCtx, plugins[i].ID))
+		require.NoError(T, client.Plugins.Delete(defaultCtx, plugins[i].ID))
 	}
 }
 
@@ -411,7 +411,7 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -422,20 +422,20 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 		Port: Int(42),
 		Path: String("/path"),
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdService)
 
 	createdRoute, err := client.Routes.Create(defaultCtx, &Route{
 		Hosts:   StringSlice("host1.com", "host2.com"),
 		Service: createdService,
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdRoute)
 
 	createdConsumer, err := client.Consumers.Create(defaultCtx, &Consumer{
 		Username: String("foo"),
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdConsumer)
 
 	plugins := []*Plugin{
@@ -480,16 +480,16 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	// create fixtures
 	for i := 0; i < len(plugins); i++ {
 		schema, err := client.Plugins.GetFullSchema(defaultCtx, plugins[i].Name)
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(schema)
 		plugin, err := client.Plugins.Create(defaultCtx, plugins[i])
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(plugin)
 		plugins[i] = plugin
 	}
 
 	pluginsFromKong, err := client.Plugins.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(pluginsFromKong)
 	assert.Equal(len(plugins), len(pluginsFromKong))
 
@@ -497,52 +497,52 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	assert.True(comparePlugins(T, plugins, pluginsFromKong))
 
 	pluginsFromKong, err = client.Plugins.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(pluginsFromKong)
-	assert.Equal(8, len(pluginsFromKong))
+	assert.Len(pluginsFromKong, 8)
 
 	pluginsFromKong, err = client.Plugins.ListAllForConsumer(defaultCtx,
 		createdConsumer.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(pluginsFromKong)
-	assert.Equal(1, len(pluginsFromKong))
+	assert.Len(pluginsFromKong, 1)
 
 	pluginsFromKong, err = client.Plugins.ListAllForService(defaultCtx,
 		createdService.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(pluginsFromKong)
-	assert.Equal(2, len(pluginsFromKong))
+	assert.Len(pluginsFromKong, 2)
 
 	pluginsFromKong, err = client.Plugins.ListAllForRoute(defaultCtx,
 		createdRoute.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(pluginsFromKong)
-	assert.Equal(2, len(pluginsFromKong))
+	assert.Len(pluginsFromKong, 2)
 
 	for i := 0; i < len(plugins); i++ {
-		assert.NoError(client.Plugins.Delete(defaultCtx, plugins[i].ID))
+		require.NoError(client.Plugins.Delete(defaultCtx, plugins[i].ID))
 	}
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, createdConsumer.ID))
-	assert.NoError(client.Routes.Delete(defaultCtx, createdRoute.ID))
-	assert.NoError(client.Services.Delete(defaultCtx, createdService.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, createdConsumer.ID))
+	require.NoError(client.Routes.Delete(defaultCtx, createdRoute.ID))
+	require.NoError(client.Services.Delete(defaultCtx, createdService.ID))
 }
 
 func TestPluginGetFullSchema(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	schema, err := client.Plugins.GetFullSchema(defaultCtx, String("key-auth"))
 	_, ok := schema["fields"]
 	assert.True(ok)
-	assert.NoError(err)
+	require.NoError(T, err)
 
 	schema, err = client.Plugins.GetFullSchema(defaultCtx, String("noexist"))
 	assert.Nil(schema)
-	assert.NotNil(err)
+	require.Error(T, err)
 	assert.True(IsNotFoundErr(err))
 }
 
@@ -832,23 +832,23 @@ func TestPluginsWithConsumerGroup(T *testing.T) {
 	}
 
 	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdPlugin)
 	require.Nil(createdPlugin.InstanceName)
 
 	plugin, err = client.Plugins.Get(defaultCtx, createdPlugin.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(plugin)
 	assert.Equal(plugin.ConsumerGroup.ID, createdCG.ID)
 	assert.Equal("sliding", plugin.Config["window_type"])
 
 	createdPlugin.Config["window_type"] = "fixed"
 	updatedPlugin, err := client.Plugins.UpdateForConsumerGroup(defaultCtx, createdCG.Name, createdPlugin)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdPlugin)
 	assert.Equal("fixed", updatedPlugin.Config["window_type"])
 
-	assert.NoError(client.ConsumerGroups.Delete(defaultCtx, createdCG.ID))
+	require.NoError(client.ConsumerGroups.Delete(defaultCtx, createdCG.ID))
 	// assert the plugin was cascade deleted
 	plugin, err = client.Plugins.Get(defaultCtx, createdPlugin.ID)
 	assert.Nil(plugin)
@@ -869,11 +869,11 @@ func TestPluginsWithConsumerGroup(T *testing.T) {
 	}
 
 	createdPlugin, err = client.Plugins.CreateForConsumerGroup(defaultCtx, createdCG.Name, pluginForCG)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdPlugin)
 	assert.Equal(createdPlugin.ConsumerGroup.ID, createdCG.ID)
 
-	assert.NoError(client.ConsumerGroups.Delete(defaultCtx, createdCG.ID))
+	require.NoError(client.ConsumerGroups.Delete(defaultCtx, createdCG.ID))
 	// assert the plugin was cascade deleted
 	plugin, err = client.Plugins.Get(defaultCtx, createdPlugin.ID)
 	assert.Nil(plugin)
@@ -905,17 +905,17 @@ func TestPluginsWithConsumerGroup(T *testing.T) {
 	// create fixtures
 	for i := 0; i < len(plugins); i++ {
 		plugin, err := client.Plugins.Create(defaultCtx, plugins[i])
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(plugin)
 		plugins[i] = plugin
 	}
 
 	pluginsFromKong, err := client.Plugins.ListAllForConsumerGroups(defaultCtx, createdCG.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(pluginsFromKong)
 	assert.Len(pluginsFromKong, 2)
 
-	assert.NoError(client.ConsumerGroups.Delete(defaultCtx, createdCG.ID))
+	require.NoError(client.ConsumerGroups.Delete(defaultCtx, createdCG.ID))
 	// assert the plugins were cascade deleted
 	for _, plugin := range plugins {
 		res, err := client.Plugins.Get(defaultCtx, plugin.ID)
@@ -946,7 +946,7 @@ func TestPluginsWithPartialLinks(T *testing.T) {
 	require.NoError(err)
 	require.NotNil(newPartial)
 	T.Cleanup(func() {
-		assert.NoError(client.Partials.Delete(defaultCtx, newPartial.ID))
+		require.NoError(client.Partials.Delete(defaultCtx, newPartial.ID))
 	})
 
 	plugin := &Plugin{
@@ -970,13 +970,13 @@ func TestPluginsWithPartialLinks(T *testing.T) {
 	assert.Equal(createdPlugin.Partials[0].ID, newPartial.ID)
 	assert.Equal(String("config.redis"), createdPlugin.Partials[0].Path)
 	redisConfig, ok := createdPlugin.Config["redis"].(map[string]interface{})
-	assert.True(ok)
-	assert.Equal(float64(2001), redisConfig["send_timeout"])
-	assert.Equal(float64(3001), redisConfig["read_timeout"])
-	assert.Equal(float64(4001), redisConfig["connect_timeout"])
+	require.True(ok)
+	assert.InEpsilon(2001, redisConfig["send_timeout"], 0.1)
+	assert.InEpsilon(3001, redisConfig["read_timeout"], 0.1)
+	assert.InEpsilon(4001, redisConfig["connect_timeout"], 0.1)
 
 	T.Cleanup(func() {
-		assert.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
+		require.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
 	})
 }
 

@@ -22,7 +22,7 @@ func TestNewRequestBody(t *testing.T) {
 		b, err := io.ReadAll(req.Body)
 		require.NoError(t, err)
 
-		assert.Equal(t,
+		assert.JSONEq(t,
 			`{"_format_version":"1.1","services":[{"host":"example.com","name":"foo"}]}`,
 			string(b),
 		)
@@ -40,7 +40,7 @@ func TestNewRequestBody(t *testing.T) {
 		b, err := io.ReadAll(req.Body)
 		require.NoError(t, err)
 
-		assert.Equal(t,
+		assert.JSONEq(t,
 			`{"_format_version":"1.1","services":[{"host":"example.com","name":"foo"}]}`,
 			string(b),
 		)
@@ -58,7 +58,7 @@ func TestNewRequestBody(t *testing.T) {
 		b, err := io.ReadAll(req.Body)
 		require.NoError(t, err)
 
-		assert.Equal(t,
+		assert.JSONEq(t,
 			`{"_format_version":"1.1","services":[{"host":"example.com","name":"foo"}]}`,
 			string(b),
 		)
@@ -84,7 +84,7 @@ func TestNewRequestBody(t *testing.T) {
 		b, err := io.ReadAll(req.Body)
 		require.NoError(t, err)
 
-		assert.Equal(t,
+		assert.JSONEq(t,
 			`{"_format_version":"1.1","services":[{"host":"example.com","name":"foo"}]}`,
 			string(b),
 		)

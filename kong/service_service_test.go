@@ -16,7 +16,7 @@ func TestServicesService(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	service := &Service{
@@ -27,17 +27,17 @@ func TestServicesService(T *testing.T) {
 	}
 
 	createdService, err := client.Services.Create(defaultCtx, service)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(createdService)
 
 	service, err = client.Services.Get(defaultCtx, createdService.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(service)
 
 	service.Name = String("bar")
 	service.Host = String("newUpstream")
 	service, err = client.Services.Update(defaultCtx, service)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(service)
 	assert.Equal("bar", *service.Name)
 	assert.Equal("newUpstream", *service.Host)
@@ -46,20 +46,20 @@ func TestServicesService(T *testing.T) {
 	route, err := client.Routes.CreateInService(defaultCtx, service.ID, &Route{
 		Paths: StringSlice("/route"),
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(route)
 
 	serviceForRoute, err := client.Services.GetForRoute(defaultCtx, route.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(serviceForRoute)
 
 	assert.Equal(*service.ID, *serviceForRoute.ID)
 
 	err = client.Routes.Delete(defaultCtx, route.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	err = client.Services.Delete(defaultCtx, service.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -70,19 +70,19 @@ func TestServicesService(T *testing.T) {
 	}
 
 	createdService, err = client.Services.Create(defaultCtx, service)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdService)
 	assert.Equal(id, *createdService.ID)
 	assert.Equal("buzz", *createdService.Host)
 
 	err = client.Services.Delete(defaultCtx, createdService.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	_, err = client.Services.Create(defaultCtx, nil)
-	assert.NotNil(err)
+	require.Error(err)
 
 	_, err = client.Services.Update(defaultCtx, nil)
-	assert.NotNil(err)
+	require.Error(err)
 }
 
 func TestServiceWithTags(T *testing.T) {
@@ -108,7 +108,7 @@ func TestServiceWithTags(T *testing.T) {
 	assert.Equal(StringSlice("tag1", "tag2"), createdService.Tags)
 
 	err = client.Services.Delete(defaultCtx, createdService.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestServiceListEndpoint(T *testing.T) {
@@ -118,7 +118,7 @@ func TestServiceListEndpoint(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -146,10 +146,10 @@ func TestServiceListEndpoint(T *testing.T) {
 	}
 
 	servicesFromKong, next, err := client.Services.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(servicesFromKong)
-	assert.Equal(3, len(servicesFromKong))
+	assert.Len(servicesFromKong, 3)
 
 	// check if we see all services
 	assert.True(compareServices(T, services, servicesFromKong))
@@ -159,30 +159,30 @@ func TestServiceListEndpoint(T *testing.T) {
 
 	// first page
 	page1, next, err := client.Services.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 	servicesFromKong = append(servicesFromKong, page1...)
 
 	// last page
 	next.Size = 2
 	page2, next, err := client.Services.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
-	assert.Equal(2, len(page2))
+	assert.Len(page2, 2)
 	servicesFromKong = append(servicesFromKong, page2...)
 
 	assert.True(compareServices(T, services, servicesFromKong))
 
 	services, err = client.Services.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(services)
-	assert.Equal(3, len(services))
+	assert.Len(services, 3)
 
 	for i := 0; i < len(services); i++ {
-		assert.NoError(client.Services.Delete(defaultCtx, services[i].ID))
+		require.NoError(client.Services.Delete(defaultCtx, services[i].ID))
 	}
 }
 
@@ -233,8 +233,8 @@ func TestServiceWithClientCert(T *testing.T) {
 	assert.Equal(*createdCertificate.ID, *createdService.ClientCertificate.ID)
 
 	err = client.Services.Delete(defaultCtx, createdService.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }

@@ -764,7 +764,7 @@ func TestStringArrayToString(t *testing.T) {
 	s = stringArrayToString(arr)
 	assert.Equal("[ foo ]", s)
 
-	assert.Equal(stringArrayToString(nil), "nil")
+	assert.Equal("nil", stringArrayToString(nil))
 }
 
 func TestString(t *testing.T) {
@@ -778,7 +778,7 @@ func TestBool(t *testing.T) {
 	assert := assert.New(t)
 
 	b := Bool(true)
-	assert.Equal(true, *b)
+	assert.True(*b)
 }
 
 func TestInt(t *testing.T) {
@@ -795,7 +795,7 @@ func TestStringSlice(t *testing.T) {
 	assert.Empty(arrp)
 
 	arrp = StringSlice("foo", "bar")
-	assert.Equal(2, len(arrp))
+	assert.Len(arrp, 2)
 	assert.Equal("foo", *arrp[0])
 	assert.Equal("bar", *arrp[1])
 }
@@ -951,7 +951,7 @@ func TestFillRoutesDefaults(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	tests := []struct {
@@ -1017,7 +1017,7 @@ func TestFillRoutesDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			r := tc.route
 			fullSchema, err := client.Schemas.Get(defaultCtx, "routes")
-			assert.NoError(err)
+			require.NoError(T, err)
 			assert.NotNil(fullSchema)
 			require.NoError(t, FillEntityDefaults(r, fullSchema))
 			// Ignore fields to make tests pass despite small differences across releases.
@@ -1036,7 +1036,7 @@ func TestFillServiceDefaults(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	tests := []struct {
@@ -1105,7 +1105,7 @@ func TestFillServiceDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			s := tc.service
 			fullSchema, err := client.Schemas.Get(defaultCtx, "services")
-			assert.NoError(err)
+			require.NoError(T, err)
 			assert.NotNil(fullSchema)
 			require.NoError(t, FillEntityDefaults(s, fullSchema))
 			opt := []cmp.Option{
@@ -1122,7 +1122,7 @@ func TestFillTargetDefaults(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	tests := []struct {
@@ -1152,7 +1152,7 @@ func TestFillTargetDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			target := tc.target
 			fullSchema, err := client.Schemas.Get(defaultCtx, "targets")
-			assert.NoError(err)
+			require.NoError(T, err)
 			assert.NotNil(fullSchema)
 			require.NoError(t, FillEntityDefaults(target, fullSchema))
 			if diff := cmp.Diff(target, tc.expected); diff != "" {
@@ -1166,7 +1166,7 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	tests := []struct {
@@ -1290,7 +1290,7 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			u := tc.upstream
 			fullSchema, err := client.Schemas.Get(defaultCtx, "upstreams")
-			assert.NoError(err)
+			require.NoError(T, err)
 			assert.NotNil(fullSchema)
 			require.NoError(t, FillEntityDefaults(u, fullSchema))
 			// Ignore fields to make tests pass despite small differences across releases.
@@ -1671,7 +1671,7 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	tests := []struct {
@@ -1723,7 +1723,7 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 		T.Run(tc.name, func(t *testing.T) {
 			plugin := tc.plugin
 			fullSchema, err := client.Schemas.Get(defaultCtx, "consumer_group_plugins")
-			assert.NoError(err)
+			require.NoError(T, err)
 			assert.NotNil(fullSchema)
 			require.NoError(t, FillEntityDefaults(plugin, fullSchema))
 			if diff := cmp.Diff(plugin, tc.expected); diff != "" {
@@ -2304,7 +2304,7 @@ func Test_FillPluginsDefaults(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, fullSchema)
 
-			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			require.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin,
 				"Protocols", "Enabled",
 			)
@@ -2401,7 +2401,7 @@ func Test_FillPluginsDefaults_RequestTransformer(t *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "plugins/request-transformer")
 			require.NoError(t, err)
 			require.NotNil(t, fullSchema)
-			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			require.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
@@ -2515,7 +2515,7 @@ func Test_FillPluginsDefaults_SetType(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, fullSchema)
 
-			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			require.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin,
 				"Protocols", "Enabled",
 			)
@@ -2606,7 +2606,7 @@ func Test_FillPluginsDefaults_Acme(t *testing.T) {
 
 			require.NoError(t, err)
 			require.NotNil(t, fullSchema)
-			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			require.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
@@ -2681,7 +2681,7 @@ func Test_FillPluginsDefaults_DefaultRecord(t *testing.T) {
 			var fullSchema map[string]interface{}
 			require.NoError(t, json.Unmarshal([]byte(defaultRecordSchema), &fullSchema))
 			require.NotNil(t, fullSchema)
-			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			require.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
@@ -2814,7 +2814,7 @@ func Test_FillPluginsDefaults_NonEmptyDefaultArrayField(t *testing.T) {
 			require.NoError(t, json.Unmarshal([]byte(NonEmptyDefaultArrayFieldSchema), &fullSchema))
 
 			require.NotNil(t, fullSchema)
-			assert.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			require.NoError(t, FillPluginsDefaults(plugin, fullSchema))
 			opts := cmpopts.IgnoreFields(*plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)

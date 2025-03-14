@@ -4,21 +4,22 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDefaultRegistry(t *testing.T) {
 	assert := assert.New(t)
 	r := NewDefaultRegistry()
 
-	assert.NotNil(r)
+	require.NotNil(t, r)
 	var typ Type = "foo"
 	entitiy := EntityCRUDDefinition{
 		Name: typ,
 	}
 	err := r.Register(typ, &entitiy)
-	assert.NoError(err)
+	require.NoError(t, err)
 	err = r.Register(typ, &entitiy)
-	assert.NotNil(err)
+	require.Error(t, err)
 
 	e := r.Lookup(typ)
 	assert.NotNil(e)
@@ -27,8 +28,8 @@ func TestDefaultRegistry(t *testing.T) {
 	assert.Nil(e)
 
 	err = r.Unregister("NotExists)")
-	assert.NotNil(err)
+	require.Error(t, err)
 
 	err = r.Unregister(typ)
-	assert.NoError(err)
+	require.NoError(t, err)
 }

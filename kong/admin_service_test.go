@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAdminService(T *testing.T) {
@@ -14,7 +15,7 @@ func TestAdminService(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	admin := &Admin{
@@ -25,21 +26,21 @@ func TestAdminService(T *testing.T) {
 	}
 
 	createdAdmin, err := client.Admins.Create(defaultCtx, admin)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdAdmin)
 
 	admin, err = client.Admins.Get(defaultCtx, createdAdmin.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(admin)
 
 	admin.CustomID = String("admin321")
 	admin, err = client.Admins.Update(defaultCtx, admin)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(admin)
 	assert.Equal("admin321", *admin.CustomID)
 
 	err = client.Admins.Delete(defaultCtx, createdAdmin.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 }
 
 func TestAdminServiceWorkspace(T *testing.T) {
@@ -47,7 +48,7 @@ func TestAdminServiceWorkspace(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	workspace := Workspace{
@@ -55,11 +56,11 @@ func TestAdminServiceWorkspace(T *testing.T) {
 	}
 
 	createdWorkspace, err := client.Workspaces.Create(defaultCtx, &workspace)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdWorkspace)
 
 	workspaceClient, err := NewTestClient(String(path.Join(defaultBaseURL, *createdWorkspace.Name)), nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(workspaceClient)
 
 	admin := &Admin{
@@ -70,24 +71,24 @@ func TestAdminServiceWorkspace(T *testing.T) {
 	}
 
 	createdAdmin, err := client.Admins.Create(defaultCtx, admin)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdAdmin)
 
 	admin, err = client.Admins.Get(defaultCtx, createdAdmin.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(admin)
 
 	admin.CustomID = String("admin321")
 	admin, err = client.Admins.Update(defaultCtx, admin)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(admin)
 	assert.Equal("admin321", *admin.CustomID)
 
 	err = client.Admins.Delete(defaultCtx, createdAdmin.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 
 	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.Name)
-	assert.NoError(err)
+	require.NoError(T, err)
 }
 
 func TestAdminServiceList(T *testing.T) {
@@ -95,7 +96,7 @@ func TestAdminServiceList(T *testing.T) {
 	client, err := NewTestClient(nil, nil)
 	RunWhenEnterprise(T, ">=0.33.0", RequiredFeatures{})
 
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	admin1 := &Admin{
@@ -112,30 +113,30 @@ func TestAdminServiceList(T *testing.T) {
 	}
 
 	createdAdmin1, err := client.Admins.Create(defaultCtx, admin1)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdAdmin1)
 	createdAdmin2, err := client.Admins.Create(defaultCtx, admin2)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdAdmin2)
 
 	admins, _, err := client.Admins.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(admins)
 
 	// Check if RBAC is enabled
 	res, err := client.Root(defaultCtx)
-	assert.NoError(err)
+	require.NoError(T, err)
 	rbac := res["configuration"].(map[string]interface{})["rbac"].(string)
 	expectedAdmins := 3
 	if rbac == "off" {
 		expectedAdmins = 2
 	}
-	assert.Equal(expectedAdmins, len(admins))
+	require.Len(T, admins, expectedAdmins)
 
 	err = client.Admins.Delete(defaultCtx, createdAdmin1.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	err = client.Admins.Delete(defaultCtx, createdAdmin2.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 }
 
 // XXX:
@@ -145,7 +146,7 @@ func TestAdminServiceRegisterCredentials(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	admin := &Admin{
@@ -156,23 +157,23 @@ func TestAdminServiceRegisterCredentials(T *testing.T) {
 	}
 
 	admin, err = client.Admins.Invite(defaultCtx, admin)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(admin)
 
 	// Generate a new registration URL for the Admin
 	admin, err = client.Admins.GenerateRegisterURL(defaultCtx, admin.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(admin)
 
 	admin.Password = String("bar")
 
 	err = client.Admins.RegisterCredentials(defaultCtx, admin)
-	assert.NoError(err)
+	require.NoError(T, err)
 
 	admin, err = client.Admins.Get(defaultCtx, admin.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(admin)
 
 	err = client.Admins.Delete(defaultCtx, admin.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 }

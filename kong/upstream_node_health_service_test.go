@@ -14,7 +14,7 @@ func TestUpstreamNodeHealthService(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// create a upstream
@@ -24,7 +24,7 @@ func TestUpstreamNodeHealthService(T *testing.T) {
 			Name: String("vhost.com"),
 		},
 	)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(fixtureUpstream)
 	assert.NotNil(fixtureUpstream.ID)
 
@@ -36,23 +36,23 @@ func TestUpstreamNodeHealthService(T *testing.T) {
 			Target: String("10.0.0.1:80"),
 		},
 	)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdTarget)
 
 	// upstream node health
 	nodeHealths, err := client.UpstreamNodeHealth.ListAll(
 		defaultCtx, fixtureUpstream.ID,
 	)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(nodeHealths)
 
 	// cleanup targets
 	err = client.Targets.Delete(
 		defaultCtx, fixtureUpstream.ID, createdTarget.ID,
 	)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// cleanup upstream
 	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }

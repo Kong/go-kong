@@ -15,18 +15,18 @@ func TestHMACAuthCreate(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	hmacAuth, err := client.HMACAuths.Create(defaultCtx,
 		String("foo"), nil)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(hmacAuth)
 
 	hmacAuth = &HMACAuth{}
 	hmacAuth, err = client.HMACAuths.Create(defaultCtx, String(""),
 		hmacAuth)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(hmacAuth)
 
 	// consumer for the hmac-auth:
@@ -35,24 +35,24 @@ func TestHMACAuthCreate(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	// no username is specified
 	hmacAuth = &HMACAuth{}
 	hmacAuth, err = client.HMACAuths.Create(defaultCtx, consumer.ID, hmacAuth)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(hmacAuth)
 
 	hmacAuth = &HMACAuth{
 		Username: String("foo"),
 	}
 	hmacAuth, err = client.HMACAuths.Create(defaultCtx, consumer.ID, hmacAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(hmacAuth)
 	assert.NotNil(hmacAuth.Secret)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestHMACAuthCreateWithID(T *testing.T) {
@@ -62,7 +62,7 @@ func TestHMACAuthCreateWithID(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -78,19 +78,19 @@ func TestHMACAuthCreateWithID(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdHMACAuth, err := client.HMACAuths.Create(defaultCtx, consumer.ID,
 		hmacAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdHMACAuth)
 
 	assert.Equal(uuid, *createdHMACAuth.ID)
 	assert.Equal("my-username", *createdHMACAuth.Username)
 	assert.Equal("my-secret", *createdHMACAuth.Secret)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestHMACAuthGet(T *testing.T) {
@@ -100,7 +100,7 @@ func TestHMACAuthGet(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -115,33 +115,33 @@ func TestHMACAuthGet(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdHMACAuth, err := client.HMACAuths.Create(defaultCtx,
 		consumer.ID, hmacAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdHMACAuth)
 
 	hmacAuth, err = client.HMACAuths.Get(defaultCtx, consumer.ID, hmacAuth.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-username", *hmacAuth.Username)
 
 	hmacAuth, err = client.HMACAuths.Get(defaultCtx, consumer.ID,
 		hmacAuth.Username)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-username", *hmacAuth.Username)
 
 	hmacAuth, err = client.HMACAuths.Get(defaultCtx, consumer.ID,
 		String("does-not-exists"))
 	assert.Nil(hmacAuth)
-	assert.NotNil(err)
+	require.Error(err)
 
 	hmacAuth, err = client.HMACAuths.Get(defaultCtx, consumer.ID, String(""))
 	assert.Nil(hmacAuth)
-	assert.NotNil(err)
+	require.Error(err)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestHMACAuthUpdate(T *testing.T) {
@@ -151,7 +151,7 @@ func TestHMACAuthUpdate(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -167,28 +167,28 @@ func TestHMACAuthUpdate(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdHMACAuth, err := client.HMACAuths.Create(defaultCtx,
 		consumer.ID, hmacAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdHMACAuth)
 
 	hmacAuth, err = client.HMACAuths.Get(defaultCtx, consumer.ID, hmacAuth.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-username", *hmacAuth.Username)
 
 	hmacAuth.Username = String("my-new-username")
 	hmacAuth.Secret = String("my-new-secret")
 	updatedHMACAuth, err := client.HMACAuths.Update(defaultCtx,
 		consumer.ID, hmacAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(updatedHMACAuth)
 	assert.Equal("my-new-secret", *updatedHMACAuth.Secret)
 	assert.Equal("my-new-username", *updatedHMACAuth.Username)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestHMACAuthDelete(T *testing.T) {
@@ -198,7 +198,7 @@ func TestHMACAuthDelete(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -213,23 +213,23 @@ func TestHMACAuthDelete(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdHMACAuth, err := client.HMACAuths.Create(defaultCtx,
 		consumer.ID, hmacAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdHMACAuth)
 
 	err = client.HMACAuths.Delete(defaultCtx, consumer.ID, hmacAuth.Username)
-	assert.NoError(err)
+	require.NoError(err)
 
 	hmacAuth, err = client.HMACAuths.Get(defaultCtx,
 		consumer.ID, hmacAuth.Username)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(hmacAuth)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestHMACAuthListMethods(T *testing.T) {
@@ -239,7 +239,7 @@ func TestHMACAuthListMethods(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// consumer for the hmac-auth:
@@ -248,7 +248,7 @@ func TestHMACAuthListMethods(T *testing.T) {
 	}
 
 	consumer1, err = client.Consumers.Create(defaultCtx, consumer1)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer1)
 
 	consumer2 := &Consumer{
@@ -256,7 +256,7 @@ func TestHMACAuthListMethods(T *testing.T) {
 	}
 
 	consumer2, err = client.Consumers.Create(defaultCtx, consumer2)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer2)
 
 	// fixtures
@@ -283,43 +283,43 @@ func TestHMACAuthListMethods(T *testing.T) {
 	for i := 0; i < len(hmacAuths); i++ {
 		hmacAuth, err := client.HMACAuths.Create(defaultCtx,
 			hmacAuths[i].Consumer.ID, hmacAuths[i])
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(hmacAuth)
 		hmacAuths[i] = hmacAuth
 	}
 
 	hmacAuthsFromKong, next, err := client.HMACAuths.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(hmacAuthsFromKong)
-	assert.Equal(4, len(hmacAuthsFromKong))
+	assert.Len(hmacAuthsFromKong, 4)
 
 	// first page
 	page1, next, err := client.HMACAuths.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 
 	// last page
 	next.Size = 3
 	page2, next, err := client.HMACAuths.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
-	assert.Equal(3, len(page2))
+	assert.Len(page2, 3)
 
 	hmacAuthsForConsumer, next, err := client.HMACAuths.ListForConsumer(defaultCtx, consumer1.ID, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(hmacAuthsForConsumer)
-	assert.Equal(2, len(hmacAuthsForConsumer))
+	assert.Len(hmacAuthsForConsumer, 2)
 
 	hmacAuths, err = client.HMACAuths.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(hmacAuths)
-	assert.Equal(4, len(hmacAuths))
+	assert.Len(hmacAuths, 4)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer1.ID))
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer2.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer1.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer2.ID))
 }

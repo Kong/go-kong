@@ -15,23 +15,23 @@ func TestKeyAuthCreate(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	keyAuth, err := client.KeyAuths.Create(defaultCtx,
 		String("foo"), nil)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(keyAuth)
 
 	keyAuth = &KeyAuth{}
 	keyAuth, err = client.KeyAuths.Create(defaultCtx, String(""),
 		keyAuth)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(keyAuth)
 
 	keyAuth, err = client.KeyAuths.Create(defaultCtx,
 		String("does-not-exist"), keyAuth)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(keyAuth)
 
 	// consumer for the key-auth
@@ -40,16 +40,16 @@ func TestKeyAuthCreate(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	keyAuth = &KeyAuth{}
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdKeyAuth)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestKeyAuthCreateWithID(T *testing.T) {
@@ -59,7 +59,7 @@ func TestKeyAuthCreateWithID(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -74,18 +74,18 @@ func TestKeyAuthCreateWithID(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdKeyAuth)
 
 	assert.Equal(uuid, *createdKeyAuth.ID)
 	assert.Equal("my-apikey", *createdKeyAuth.Key)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestKeyAuthGet(T *testing.T) {
@@ -95,7 +95,7 @@ func TestKeyAuthGet(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -110,35 +110,35 @@ func TestKeyAuthGet(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdKeyAuth)
 
 	searchKeyAuth, err := client.KeyAuths.Get(defaultCtx,
 		consumer.ID, keyAuth.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-apikey", *searchKeyAuth.Key)
 
 	searchKeyAuth, err = client.KeyAuths.Get(defaultCtx,
 		consumer.ID, keyAuth.Key)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-apikey", *searchKeyAuth.Key)
 
 	searchKeyAuth, err = client.KeyAuths.Get(defaultCtx, consumer.ID,
 		String("does-not-exists"))
 	assert.Nil(searchKeyAuth)
-	assert.NotNil(err)
+	require.Error(err)
 
 	searchKeyAuth, err = client.KeyAuths.Get(defaultCtx,
 		consumer.ID, String(""))
 	assert.Nil(searchKeyAuth)
-	assert.NotNil(err)
+	require.Error(err)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestKeyAuthUpdate(T *testing.T) {
@@ -148,7 +148,7 @@ func TestKeyAuthUpdate(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -163,27 +163,27 @@ func TestKeyAuthUpdate(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdKeyAuth)
 
 	searchKeyAuth, err := client.KeyAuths.Get(defaultCtx,
 		consumer.ID, keyAuth.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-apikey", *searchKeyAuth.Key)
 
 	keyAuth.Key = String("my-new-apikey")
 	updatedKeyAuth, err := client.KeyAuths.Update(defaultCtx,
 		consumer.ID, keyAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(updatedKeyAuth)
 	assert.Equal("my-new-apikey", *updatedKeyAuth.Key)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestKeyAuthDelete(T *testing.T) {
@@ -193,7 +193,7 @@ func TestKeyAuthDelete(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -208,23 +208,23 @@ func TestKeyAuthDelete(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdKeyAuth)
 
 	err = client.KeyAuths.Delete(defaultCtx, consumer.ID, keyAuth.Key)
-	assert.NoError(err)
+	require.NoError(err)
 
 	searchKeyAuth, err := client.KeyAuths.Get(defaultCtx,
 		consumer.ID, keyAuth.ID)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(searchKeyAuth)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestKeyAuthListMethods(T *testing.T) {
@@ -234,7 +234,7 @@ func TestKeyAuthListMethods(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// consumer for the key-auth:
@@ -243,7 +243,7 @@ func TestKeyAuthListMethods(T *testing.T) {
 	}
 
 	consumer1, err = client.Consumers.Create(defaultCtx, consumer1)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer1)
 
 	consumer2 := &Consumer{
@@ -251,7 +251,7 @@ func TestKeyAuthListMethods(T *testing.T) {
 	}
 
 	consumer2, err = client.Consumers.Create(defaultCtx, consumer2)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer2)
 
 	// fixtures
@@ -278,45 +278,45 @@ func TestKeyAuthListMethods(T *testing.T) {
 	for i := 0; i < len(keyAuths); i++ {
 		keyAuth, err := client.KeyAuths.Create(defaultCtx,
 			keyAuths[i].Consumer.ID, keyAuths[i])
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(keyAuth)
 		keyAuths[i] = keyAuth
 	}
 
 	keyAuthsFromKong, next, err := client.KeyAuths.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(keyAuthsFromKong)
-	assert.Equal(4, len(keyAuthsFromKong))
+	assert.Len(keyAuthsFromKong, 4)
 
 	// first page
 	page1, next, err := client.KeyAuths.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 
 	// last page
 	next.Size = 3
 	page2, next, err := client.KeyAuths.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
-	assert.Equal(3, len(page2))
+	assert.Len(page2, 3)
 
 	keyAuthsForConsumer, next, err := client.KeyAuths.ListForConsumer(defaultCtx, consumer1.ID, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(keyAuthsForConsumer)
-	assert.Equal(2, len(keyAuthsForConsumer))
+	assert.Len(keyAuthsForConsumer, 2)
 
 	keyAuths, err = client.KeyAuths.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(keyAuths)
-	assert.Equal(4, len(keyAuths))
+	assert.Len(keyAuths, 4)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer1.ID))
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer2.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer1.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer2.ID))
 }
 
 func TestKeyAuthCreateWithTTL(T *testing.T) {
@@ -327,7 +327,7 @@ func TestKeyAuthCreateWithTTL(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	keyAuth := &KeyAuth{
@@ -341,16 +341,16 @@ func TestKeyAuthCreateWithTTL(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdKeyAuth)
 
-	assert.True(*createdKeyAuth.TTL < 10)
+	assert.Less(*createdKeyAuth.TTL, 10)
 	assert.Equal("my-apikey", *createdKeyAuth.Key)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }

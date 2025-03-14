@@ -73,7 +73,7 @@ func TestConsumerGroupWithTags(t *testing.T) {
 	require.NoError(err)
 	t.Cleanup(func() {
 		err = client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID)
-		assert.NoError(err)
+		require.NoError(err)
 	})
 	assert.NotNil(createdConsumerGroup)
 	require.Equal(cg.Tags, createdConsumerGroup.Tags)
@@ -118,7 +118,7 @@ func TestConsumerGroupListEndpoint(t *testing.T) {
 	require.NoError(t, err)
 	assert.Nil(next)
 	assert.NotNil(consumerGroupsFromKong)
-	assert.Equal(3, len(consumerGroupsFromKong))
+	assert.Len(consumerGroupsFromKong, 3)
 
 	// check if we see all consumer groups
 	assert.True(compareConsumerGroups(consumerGroups, consumerGroupsFromKong))
@@ -131,7 +131,7 @@ func TestConsumerGroupListEndpoint(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 	consumerGroupsFromKong = append(consumerGroupsFromKong, page1...)
 
 	// last page
@@ -140,7 +140,7 @@ func TestConsumerGroupListEndpoint(t *testing.T) {
 	require.NoError(t, err)
 	assert.Nil(next)
 	assert.NotNil(page2)
-	assert.Equal(2, len(page2))
+	assert.Len(page2, 2)
 	consumerGroupsFromKong = append(consumerGroupsFromKong, page2...)
 
 	assert.True(compareConsumerGroups(consumerGroups, consumerGroupsFromKong))
@@ -148,10 +148,10 @@ func TestConsumerGroupListEndpoint(t *testing.T) {
 	consumerGroupsFromKong, err = client.ConsumerGroups.ListAll(defaultCtx)
 	require.NoError(t, err)
 	assert.NotNil(consumerGroupsFromKong)
-	assert.Equal(3, len(consumerGroupsFromKong))
+	assert.Len(consumerGroupsFromKong, 3)
 
 	for i := 0; i < len(consumerGroups); i++ {
-		assert.NoError(client.ConsumerGroups.Delete(defaultCtx, consumerGroups[i].ID))
+		require.NoError(t, client.ConsumerGroups.Delete(defaultCtx, consumerGroups[i].ID))
 	}
 }
 
@@ -221,13 +221,13 @@ func TestConsumerGroupsRLAService(t *testing.T) {
 	assert.NotNil(override)
 
 	assert.Equal(override.Config, config["config"])
-	assert.Equal(*override.ConsumerGroup, "bar")
-	assert.Equal(*override.Plugin, "rate-limiting-advanced")
+	assert.Equal("bar", *override.ConsumerGroup)
+	assert.Equal("rate-limiting-advanced", *override.Plugin)
 
 	// clean up
-	assert.NoError(client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID))
-	assert.NoError(client.Consumers.Delete(defaultCtx, createdConsumer.ID))
-	assert.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
+	require.NoError(t, client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID))
+	require.NoError(t, client.Consumers.Delete(defaultCtx, createdConsumer.ID))
+	require.NoError(t, client.Plugins.Delete(defaultCtx, createdPlugin.ID))
 }
 
 func compareConsumerGroups(expected, actual []*ConsumerGroup) bool {
@@ -261,7 +261,7 @@ func TestConsumerGroupGetEndpointPreGW39(t *testing.T) {
 	assert.NotNil(createdConsumer)
 	t.Cleanup(func() {
 		if createdConsumer != nil {
-			assert.NoError(client.Consumers.Delete(defaultCtx, createdConsumer.ID))
+			require.NoError(client.Consumers.Delete(defaultCtx, createdConsumer.ID))
 		}
 	})
 
@@ -275,7 +275,7 @@ func TestConsumerGroupGetEndpointPreGW39(t *testing.T) {
 	assert.NotNil(createdConsumerGroup)
 	t.Cleanup(func() {
 		if createdConsumerGroup != nil {
-			assert.NoError(client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID))
+			require.NoError(client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID))
 		}
 	})
 
@@ -316,7 +316,7 @@ func TestConsumerGroupGetEndpointPostGW39(t *testing.T) {
 	assert.NotNil(createdConsumer)
 	t.Cleanup(func() {
 		if createdConsumer != nil {
-			assert.NoError(client.Consumers.Delete(defaultCtx, createdConsumer.ID))
+			require.NoError(client.Consumers.Delete(defaultCtx, createdConsumer.ID))
 		}
 	})
 
@@ -330,7 +330,7 @@ func TestConsumerGroupGetEndpointPostGW39(t *testing.T) {
 	assert.NotNil(createdConsumerGroup)
 	t.Cleanup(func() {
 		if createdConsumerGroup != nil {
-			assert.NoError(client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID))
+			require.NoError(client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID))
 		}
 	})
 

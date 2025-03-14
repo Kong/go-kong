@@ -45,16 +45,16 @@ func TestPartialServiceCreateEndpoint(t *testing.T) {
 	t.Run("invalid partial creation -  nil partial", func(_ *testing.T) {
 		notCreatedPartial, err := client.Partials.Create(defaultCtx, nil)
 
-		assert.Error(err)
-		assert.ErrorContains(err, "cannot create a nil partial")
+		require.Error(err)
+		require.ErrorContains(err, "cannot create a nil partial")
 		assert.Nil(notCreatedPartial)
 	})
 
 	t.Run("invalid partial creation -  empty partial", func(_ *testing.T) {
 		notCreatedPartial, err := client.Partials.Create(defaultCtx, &Partial{})
 
-		assert.Error(err)
-		assert.ErrorContains(err, "partial type cannot be nil")
+		require.Error(err)
+		require.ErrorContains(err, "partial type cannot be nil")
 		assert.Nil(notCreatedPartial)
 	})
 
@@ -63,8 +63,8 @@ func TestPartialServiceCreateEndpoint(t *testing.T) {
 			Name: String("my-test-partial"),
 		})
 
-		assert.Error(err)
-		assert.ErrorContains(err, "partial type cannot be nil")
+		require.Error(err)
+		require.ErrorContains(err, "partial type cannot be nil")
 		assert.Nil(notCreatedPartial)
 	})
 
@@ -82,7 +82,7 @@ func TestPartialServiceCreateEndpoint(t *testing.T) {
 		assert.Equal(defaultConfigRedisEEPartial, createdPartial.Config)
 
 		t.Cleanup(func() {
-			assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
+			require.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
 		})
 	})
 }
@@ -100,8 +100,8 @@ func TestPartialServiceGetEndpoint(t *testing.T) {
 	t.Run("invalid get -  empty id", func(_ *testing.T) {
 		noPartial, err := client.Partials.Get(defaultCtx, String(""))
 
-		assert.Error(err)
-		assert.ErrorContains(err, "partialID cannot be nil for Get operation")
+		require.Error(err)
+		require.ErrorContains(err, "partialID cannot be nil for Get operation")
 		assert.Nil(noPartial)
 	})
 
@@ -114,11 +114,11 @@ func TestPartialServiceGetEndpoint(t *testing.T) {
 		require.NotNil(createdPartial)
 
 		t.Cleanup(func() {
-			assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
+			require.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
 		})
 
 		fetchedPartial, err := client.Partials.Get(defaultCtx, createdPartial.ID)
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(fetchedPartial)
 		assert.Equal("my-test-partial", *fetchedPartial.Name)
 		assert.Equal("redis-ee", *fetchedPartial.Type)
@@ -138,8 +138,8 @@ func TestPartialServiceUpdateEndpoint(t *testing.T) {
 	t.Run("invalid update -  nil partial", func(_ *testing.T) {
 		notUpdatedPartial, err := client.Partials.Update(defaultCtx, nil)
 
-		assert.Error(err)
-		assert.ErrorContains(err, "cannot update a nil partial")
+		require.Error(err)
+		require.ErrorContains(err, "cannot update a nil partial")
 		assert.Nil(notUpdatedPartial)
 	})
 
@@ -152,7 +152,7 @@ func TestPartialServiceUpdateEndpoint(t *testing.T) {
 		require.NotNil(createdPartial)
 
 		t.Cleanup(func() {
-			assert.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
+			require.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
 		})
 
 		// initially created with default config
@@ -170,9 +170,9 @@ func TestPartialServiceUpdateEndpoint(t *testing.T) {
 		require.NoError(err)
 		require.NotNil(updatedPartial)
 
-		assert.Equal(float64(2001), updatedPartial.Config["send_timeout"])
-		assert.Equal(float64(3001), updatedPartial.Config["read_timeout"])
-		assert.Equal(float64(4001), updatedPartial.Config["connect_timeout"])
+		assert.InEpsilon(2001, updatedPartial.Config["send_timeout"], 0.1)
+		assert.InEpsilon(3001, updatedPartial.Config["read_timeout"], 0.1)
+		assert.InEpsilon(4001, updatedPartial.Config["connect_timeout"], 0.1)
 	})
 }
 
@@ -189,7 +189,7 @@ func TestPartialServiceDeleteEndpoint(t *testing.T) {
 	t.Run("invalid delete -  empty id", func(_ *testing.T) {
 		err := client.Partials.Delete(defaultCtx, String(""))
 
-		assert.Error(err)
+		require.Error(err)
 		assert.ErrorContains(err, "partialID cannot be nil for Delete operation")
 	})
 
@@ -202,7 +202,7 @@ func TestPartialServiceDeleteEndpoint(t *testing.T) {
 		require.NotNil(createdPartial)
 
 		err = client.Partials.Delete(defaultCtx, createdPartial.ID)
-		assert.NoError(err)
+		require.NoError(err)
 	})
 }
 
@@ -246,7 +246,7 @@ func TestPartialServiceListEndpoint(t *testing.T) {
 
 	t.Cleanup(func() {
 		for _, p := range partialsFromKong {
-			assert.NoError(client.Partials.Delete(defaultCtx, p.ID))
+			require.NoError(client.Partials.Delete(defaultCtx, p.ID))
 		}
 	})
 }
@@ -269,7 +269,7 @@ func TestPartialServiceListAllEndpoint(t *testing.T) {
 
 	t.Cleanup(func() {
 		for _, p := range partials {
-			assert.NoError(client.Partials.Delete(defaultCtx, p.ID))
+			require.NoError(client.Partials.Delete(defaultCtx, p.ID))
 		}
 	})
 }
@@ -366,7 +366,7 @@ func TestPartialServiceGetLinkedPlugins(t *testing.T) {
 		require.NotNil(redisEEPartial)
 
 		t.Cleanup(func() {
-			assert.NoError(client.Partials.Delete(defaultCtx, redisEEPartial.ID))
+			require.NoError(client.Partials.Delete(defaultCtx, redisEEPartial.ID))
 		})
 
 		// Create RLA plugin with partial
@@ -390,7 +390,7 @@ func TestPartialServiceGetLinkedPlugins(t *testing.T) {
 		require.NotNil(rlaPlugin)
 
 		t.Cleanup(func() {
-			assert.NoError(client.Plugins.Delete(defaultCtx, rlaPlugin.ID))
+			require.NoError(client.Plugins.Delete(defaultCtx, rlaPlugin.ID))
 		})
 
 		plugins, _, err := client.Partials.GetLinkedPlugins(defaultCtx, redisEEPartial.ID, nil)
