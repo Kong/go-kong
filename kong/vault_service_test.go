@@ -4,14 +4,12 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestVaultsService(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.0.0", RequiredFeatures{})
 	require := require.New(t)
-	assert := assert.New(t)
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
@@ -32,7 +30,7 @@ func TestVaultsService(t *testing.T) {
 	t.Cleanup(func() {
 		// Note the assert here as we might want more logic to be run as part of the cleanup,
 		// regardless of the return value of removing this particular object.
-		assert.NoError(client.Vaults.Delete(defaultCtx, createdVault.ID))
+		require.NoError(client.Vaults.Delete(defaultCtx, createdVault.ID))
 	})
 
 	vault, err = client.Vaults.Get(defaultCtx, createdVault.ID)
@@ -70,7 +68,7 @@ func TestVaultsService(t *testing.T) {
 	t.Cleanup(func() {
 		// Note the assert here as we might want more logic to be run as part of the cleanup,
 		// regardless of the return value of removing this particular object.
-		assert.NoError(client.Vaults.Delete(defaultCtx, createdVault.ID))
+		require.NoError(client.Vaults.Delete(defaultCtx, createdVault.ID))
 	})
 	require.Equal(id, *createdVault.ID)
 	require.Equal("aws", *createdVault.Name)
@@ -92,7 +90,6 @@ func TestVaultsService(t *testing.T) {
 func TestVaultWithTags(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.0.0", RequiredFeatures{})
 	require := require.New(t)
-	assert := assert.New(t)
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
@@ -114,7 +111,7 @@ func TestVaultWithTags(t *testing.T) {
 	t.Cleanup(func() {
 		// Note the assert here as we might want more logic to be run as part of the cleanup,
 		// regardless of the return value of removing this particular object.
-		assert.NoError(client.Vaults.Delete(defaultCtx, createdVault.ID))
+		require.NoError(client.Vaults.Delete(defaultCtx, createdVault.ID))
 	})
 	require.Equal(StringSlice("tag1", "tag2"), createdVault.Tags)
 
@@ -125,7 +122,6 @@ func TestVaultWithTags(t *testing.T) {
 func TestVaultListEndpoint(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.0.0", RequiredFeatures{})
 	require := require.New(t)
-	assert := assert.New(t)
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
@@ -169,7 +165,7 @@ func TestVaultListEndpoint(t *testing.T) {
 		t.Cleanup(func() {
 			// Note the assert here as we might want more logic to be run as part of the cleanup,
 			// regardless of the return value of removing this particular object.
-			assert.NoError(client.Vaults.Delete(defaultCtx, vault.ID))
+			require.NoError(client.Vaults.Delete(defaultCtx, vault.ID))
 		})
 	}
 
@@ -177,7 +173,7 @@ func TestVaultListEndpoint(t *testing.T) {
 	require.NoError(err)
 	require.Nil(next)
 	require.NotNil(vaultsFromKong)
-	require.Equal(3, len(vaultsFromKong))
+	require.Len(vaultsFromKong, 3)
 
 	// check if we see all vaults
 	require.True(compareVaults(t, vaults, vaultsFromKong))
@@ -190,7 +186,7 @@ func TestVaultListEndpoint(t *testing.T) {
 	require.NoError(err)
 	require.NotNil(next)
 	require.NotNil(page1)
-	require.Equal(1, len(page1))
+	require.Len(page1, 1)
 	vaultsFromKong = append(vaultsFromKong, page1...)
 
 	// last page
@@ -199,7 +195,7 @@ func TestVaultListEndpoint(t *testing.T) {
 	require.NoError(err)
 	require.Nil(next)
 	require.NotNil(page2)
-	require.Equal(2, len(page2))
+	require.Len(page2, 2)
 	vaultsFromKong = append(vaultsFromKong, page2...)
 
 	require.True(compareVaults(t, vaults, vaultsFromKong))
@@ -207,7 +203,7 @@ func TestVaultListEndpoint(t *testing.T) {
 	vaults, err = client.Vaults.ListAll(defaultCtx)
 	require.NoError(err)
 	require.NotNil(vaults)
-	require.Equal(3, len(vaults))
+	require.Len(vaults, 3)
 }
 
 func compareVaults(t *testing.T, expected, actual []*Vault) bool {

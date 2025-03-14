@@ -16,12 +16,12 @@ func TestCustomEntityService(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 	// fixture consumer
 	consumer, err := client.Consumers.Create(defaultCtx,
 		&Consumer{Username: String("foo")})
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	// create a key associated with the consumer
@@ -29,7 +29,7 @@ func TestCustomEntityService(T *testing.T) {
 	k1.AddRelation("consumer_id", *consumer.ID)
 	e1, err := client.CustomEntities.Create(defaultCtx, k1)
 	assert.NotNil(e1)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// look up the key
 	se := custom.NewEntityObject("key-auth")
@@ -38,12 +38,12 @@ func TestCustomEntityService(T *testing.T) {
 	gotE, err := client.CustomEntities.Get(defaultCtx, se)
 	assert.NotNil(gotE)
 	assert.Equal(e1.Object()["key"], gotE.Object()["key"])
-	assert.NoError(err)
+	require.NoError(err)
 
 	gotE.Object()["key"] = "my-secret"
 	e1, err = client.CustomEntities.Update(defaultCtx, gotE)
 	assert.NotNil(e1)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-secret", e1.Object()["key"])
 
 	// PUT request
@@ -56,7 +56,7 @@ func TestCustomEntityService(T *testing.T) {
 	k2.AddRelation("consumer_id", *consumer.ID)
 	e2, err := client.CustomEntities.Create(defaultCtx, k2)
 	assert.NotNil(e2)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("super-secret", e2.Object()["key"])
 	assert.Equal(id, e2.Object()["id"])
 
@@ -64,13 +64,13 @@ func TestCustomEntityService(T *testing.T) {
 	se.AddRelation("consumer_id", *consumer.ID)
 	keyAuths, _, err := client.CustomEntities.List(defaultCtx, nil, se)
 
-	assert.NoError(err)
-	assert.Equal(2, len(keyAuths))
+	require.NoError(err)
+	assert.Len(keyAuths, 2)
 
 	// list endpoint
 	keyAuths, err = client.CustomEntities.ListAll(defaultCtx, se)
-	assert.NoError(err)
-	assert.Equal(2, len(keyAuths))
+	require.NoError(err)
+	assert.Len(keyAuths, 2)
 
 	expectedKeys := []string{
 		e1.Object()["key"].(string),
@@ -83,9 +83,9 @@ func TestCustomEntityService(T *testing.T) {
 	sort.Strings(expectedKeys)
 	sort.Strings(actualKeys)
 	assert.Equal(expectedKeys, actualKeys)
-	assert.NoError(client.CustomEntities.Delete(defaultCtx, e1))
-	assert.NoError(client.CustomEntities.Delete(defaultCtx, e2))
+	require.NoError(client.CustomEntities.Delete(defaultCtx, e1))
+	require.NoError(client.CustomEntities.Delete(defaultCtx, e2))
 
 	// delete fixture consumer
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }

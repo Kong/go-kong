@@ -15,21 +15,21 @@ func TestMTLSCreate(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	mtls, err := client.MTLSAuths.Create(defaultCtx, String("foo"), nil)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(mtls)
 
 	mtls = &MTLSAuth{}
 	mtls, err = client.MTLSAuths.Create(defaultCtx, String(""), mtls)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(mtls)
 
 	mtls, err = client.MTLSAuths.Create(defaultCtx,
 		String("does-not-exist"), mtls)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(mtls)
 
 	// consumer for the MTLS
@@ -39,22 +39,22 @@ func TestMTLSCreate(T *testing.T) {
 
 	// without a CA certificate attached
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	mtls = &MTLSAuth{
 		SubjectName: String("test@example.com"),
 	}
 	mtls, err = client.MTLSAuths.Create(defaultCtx, consumer.ID, mtls)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(mtls)
 	assert.Equal("test@example.com", *mtls.SubjectName)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 
 	// with a CA certificate attached
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	certificate := &CACertificate{
@@ -62,7 +62,7 @@ func TestMTLSCreate(T *testing.T) {
 	}
 	createdCertificate, err := client.CACertificates.Create(defaultCtx,
 		certificate)
-	assert.NoError(err)
+	require.NoError(err)
 
 	assert.NotNil(createdCertificate)
 	mtls = &MTLSAuth{
@@ -70,11 +70,11 @@ func TestMTLSCreate(T *testing.T) {
 		CACertificate: createdCertificate,
 	}
 	mtls, err = client.MTLSAuths.Create(defaultCtx, consumer.ID, mtls)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(mtls)
 	assert.Equal("test@example.com", *mtls.SubjectName)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestMTLSCreateWithID(T *testing.T) {
@@ -82,7 +82,7 @@ func TestMTLSCreateWithID(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -97,18 +97,18 @@ func TestMTLSCreateWithID(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdMTLS, err := client.MTLSAuths.Create(defaultCtx, consumer.ID,
 		mtls)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdMTLS)
 
 	assert.Equal(uuid, *createdMTLS.ID)
 	assert.Equal("test@example.com", *mtls.SubjectName)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestMTLSGet(T *testing.T) {
@@ -116,7 +116,7 @@ func TestMTLSGet(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -131,27 +131,27 @@ func TestMTLSGet(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdMTLS, err := client.MTLSAuths.Create(defaultCtx, consumer.ID, mtls)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdMTLS)
 
 	mtls, err = client.MTLSAuths.Get(defaultCtx, consumer.ID, mtls.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("test@example.com", *mtls.SubjectName)
 
 	mtls, err = client.MTLSAuths.Get(defaultCtx, consumer.ID,
 		String("does-not-exists"))
 	assert.Nil(mtls)
-	assert.NotNil(err)
+	require.Error(err)
 
 	mtls, err = client.MTLSAuths.Get(defaultCtx, consumer.ID, String(""))
 	assert.Nil(mtls)
-	assert.NotNil(err)
+	require.Error(err)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestMTLSUpdate(T *testing.T) {
@@ -159,7 +159,7 @@ func TestMTLSUpdate(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -174,24 +174,24 @@ func TestMTLSUpdate(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdMTLS, err := client.MTLSAuths.Create(defaultCtx, consumer.ID, mtls)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdMTLS)
 
 	mtls, err = client.MTLSAuths.Get(defaultCtx, consumer.ID, mtls.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("test@example.com", *mtls.SubjectName)
 
 	mtls.SubjectName = String("different@example.com")
 	updatedMTLS, err := client.MTLSAuths.Update(defaultCtx, consumer.ID, mtls)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(updatedMTLS)
 	assert.Equal("different@example.com", *updatedMTLS.SubjectName)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestMTLSDelete(T *testing.T) {
@@ -199,7 +199,7 @@ func TestMTLSDelete(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -214,21 +214,21 @@ func TestMTLSDelete(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdMTLS, err := client.MTLSAuths.Create(defaultCtx, consumer.ID, mtls)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdMTLS)
 
 	err = client.MTLSAuths.Delete(defaultCtx, consumer.ID, mtls.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	mtls, err = client.MTLSAuths.Get(defaultCtx, consumer.ID, mtls.ID)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(mtls)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestMTLSListMethods(T *testing.T) {
@@ -236,7 +236,7 @@ func TestMTLSListMethods(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// consumer for the MTLS
@@ -245,7 +245,7 @@ func TestMTLSListMethods(T *testing.T) {
 	}
 
 	consumer1, err = client.Consumers.Create(defaultCtx, consumer1)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer1)
 
 	consumer2 := &Consumer{
@@ -253,7 +253,7 @@ func TestMTLSListMethods(T *testing.T) {
 	}
 
 	consumer2, err = client.Consumers.Create(defaultCtx, consumer2)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer2)
 
 	// fixtures
@@ -280,44 +280,44 @@ func TestMTLSListMethods(T *testing.T) {
 	for i := 0; i < len(mtlss); i++ {
 		mtls, err := client.MTLSAuths.Create(defaultCtx,
 			mtlss[i].Consumer.ID, mtlss[i])
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(mtls)
 		mtlss[i] = mtls
 	}
 
 	mtlssFromKong, next, err := client.MTLSAuths.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(mtlssFromKong)
-	assert.Equal(4, len(mtlssFromKong))
+	assert.Len(mtlssFromKong, 4)
 
 	// first page
 	page1, next, err := client.MTLSAuths.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 
 	// last page
 	next.Size = 3
 	page2, next, err := client.MTLSAuths.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
-	assert.Equal(3, len(page2))
+	assert.Len(page2, 3)
 
 	mtlssForConsumer, next, err := client.MTLSAuths.ListForConsumer(defaultCtx,
 		consumer1.ID, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(mtlssForConsumer)
-	assert.Equal(2, len(mtlssForConsumer))
+	assert.Len(mtlssForConsumer, 2)
 
 	mtlss, err = client.MTLSAuths.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(mtlss)
-	assert.Equal(4, len(mtlss))
+	assert.Len(mtlss, 4)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer1.ID))
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer2.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer1.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer2.ID))
 }

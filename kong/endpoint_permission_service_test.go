@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRBACEndpointPermissionservice(T *testing.T) {
@@ -12,7 +13,7 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	// Create Workspace
@@ -21,18 +22,18 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 	}
 
 	createdWorkspace, err := client.Workspaces.Create(defaultCtx, workspace)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdWorkspace)
 
 	// Use new client in workspace context.
 	workspaced, err := NewTestClient(String(defaultBaseURL+"/endpoint-test-workspace"), nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	role := &RBACRole{
 		Name: String("test-role-endpoint-perm"),
 	}
 
 	createdRole, err := workspaced.RBACRoles.Create(defaultCtx, role)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdRole)
 
 	// Add Endpoint Permission to Role
@@ -48,12 +49,12 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 	}
 
 	createdEndpointPermission, err := workspaced.RBACEndpointPermissions.Create(defaultCtx, origEp)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(createdEndpointPermission)
 
 	ep, err := workspaced.RBACEndpointPermissions.Get(
 		defaultCtx, createdRole.ID, createdWorkspace.Name, createdEndpointPermission.Endpoint)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(ep)
 	// we test this equality specifically because the Kong API handles this field oddly
 	// see https://github.com/Kong/go-kong/pull/148
@@ -73,16 +74,16 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 	ep.Comment = String("new comment")
 	ep.Negative = &negative
 	ep, err = workspaced.RBACEndpointPermissions.Update(defaultCtx, ep)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(ep)
 	assert.Equal("new comment", *ep.Comment)
 	assert.Equal(negative, *ep.Negative)
 
 	err = workspaced.RBACEndpointPermissions.Delete(
 		defaultCtx, createdRole.ID, createdWorkspace.ID, createdEndpointPermission.Endpoint)
-	assert.NoError(err)
+	require.NoError(T, err)
 	err = workspaced.RBACRoles.Delete(defaultCtx, createdRole.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
-	assert.NoError(err)
+	require.NoError(T, err)
 }

@@ -104,7 +104,7 @@ func TestCACertificatesService(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	certificate := &CACertificate{
@@ -113,7 +113,7 @@ func TestCACertificatesService(T *testing.T) {
 
 	createdCertificate, err := client.CACertificates.Create(defaultCtx,
 		certificate)
-	assert.NotNil(err) // invalid cert and key
+	require.Error(err) // invalid cert and key
 	assert.Nil(createdCertificate)
 
 	certificate.Cert = String(caCert1)
@@ -124,16 +124,16 @@ func TestCACertificatesService(T *testing.T) {
 
 	certificate, err = client.CACertificates.Get(defaultCtx,
 		createdCertificate.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(certificate)
 
 	certificate.Cert = String(caCert2)
 	certificate, err = client.CACertificates.Update(defaultCtx, certificate)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(certificate)
 
 	err = client.CACertificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// ID can be specified
 	id := uuid.NewString()
@@ -144,12 +144,12 @@ func TestCACertificatesService(T *testing.T) {
 
 	createdCertificate, err = client.CACertificates.Create(defaultCtx,
 		certificate)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdCertificate)
 	assert.Equal(id, *createdCertificate.ID)
 
 	err = client.CACertificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestCACertificateWithTags(T *testing.T) {
@@ -160,7 +160,7 @@ func TestCACertificateWithTags(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	certificate := &CACertificate{
@@ -175,7 +175,7 @@ func TestCACertificateWithTags(T *testing.T) {
 	assert.Equal(StringSlice("tag1", "tag2"), createdCertificate.Tags)
 
 	err = client.CACertificates.Delete(defaultCtx, createdCertificate.ID)
-	assert.NoError(err)
+	require.NoError(err)
 }
 
 func TestCACertificateListEndpoint(T *testing.T) {
@@ -186,7 +186,7 @@ func TestCACertificateListEndpoint(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// fixtures
@@ -206,7 +206,7 @@ func TestCACertificateListEndpoint(T *testing.T) {
 	for i := 0; i < len(certificates); i++ {
 		certificate, err := client.CACertificates.Create(defaultCtx,
 			certificates[i])
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(certificate)
 		certificates[i] = certificate
 	}
@@ -216,7 +216,7 @@ func TestCACertificateListEndpoint(T *testing.T) {
 	require.NoError(err)
 	require.Nil(next)
 	require.NotNil(certificatesFromKong)
-	assert.Equal(3, len(certificatesFromKong))
+	assert.Len(certificatesFromKong, 3)
 
 	// check if we see all certificates
 	assert.True(compareCACertificates(certificates, certificatesFromKong))
@@ -228,30 +228,30 @@ func TestCACertificateListEndpoint(T *testing.T) {
 	page1, next, err := client.CACertificates.List(defaultCtx, &ListOpt{
 		Size: 1,
 	})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 	certificatesFromKong = append(certificatesFromKong, page1...)
 
 	// last page
 	next.Size = 2
 	page2, next, err := client.CACertificates.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
-	assert.Equal(2, len(page2))
+	assert.Len(page2, 2)
 	certificatesFromKong = append(certificatesFromKong, page2...)
 
 	assert.True(compareCACertificates(certificates, certificatesFromKong))
 
 	certificates, err = client.CACertificates.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(certificates)
-	assert.Equal(3, len(certificates))
+	assert.Len(certificates, 3)
 
 	for i := 0; i < len(certificates); i++ {
-		assert.NoError(client.CACertificates.Delete(defaultCtx, certificates[i].ID))
+		require.NoError(client.CACertificates.Delete(defaultCtx, certificates[i].ID))
 	}
 }
 

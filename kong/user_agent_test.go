@@ -24,11 +24,11 @@ func TestUserAgentHeader(t *testing.T) {
 
 	testingID := "test-id"
 	_, _ = client.Licenses.Get(context.Background(), &testingID)
-	require.Equal(t, collectedUserAgents[0], userAgent)
+	require.Equal(t, userAgent, collectedUserAgents[0])
 
 	_, _, _ = client.Plugins.List(context.Background(), nil) //nolint:dogsled
-	require.Equal(t, collectedUserAgents[1], userAgent)
+	require.Equal(t, userAgent, collectedUserAgents[1])
 
 	_, _ = client.Vaults.Create(context.Background(), &Vault{})
-	require.Equal(t, collectedUserAgents[2], userAgent)
+	require.Equal(t, userAgent, collectedUserAgents[2])
 }

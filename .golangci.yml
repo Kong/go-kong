@@ -42,6 +42,7 @@ linters:
   - unparam
   - unused
   - wastedassign
+  - testifylint
 
 issues:
   max-same-issues: 0

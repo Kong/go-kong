@@ -15,21 +15,21 @@ func TestJWTCreate(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	jwt, err := client.JWTAuths.Create(defaultCtx, String("foo"), nil)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(jwt)
 
 	jwt = &JWTAuth{}
 	jwt, err = client.JWTAuths.Create(defaultCtx, String(""), jwt)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(jwt)
 
 	jwt, err = client.JWTAuths.Create(defaultCtx,
 		String("does-not-exist"), jwt)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(jwt)
 
 	// consumer for the JWT
@@ -38,7 +38,7 @@ func TestJWTCreate(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	jwt = &JWTAuth{
@@ -46,13 +46,13 @@ func TestJWTCreate(T *testing.T) {
 		RSAPublicKey: String("bar"),
 	}
 	jwt, err = client.JWTAuths.Create(defaultCtx, consumer.ID, jwt)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(jwt)
 	assert.NotEmpty(*jwt.Secret)
 	assert.Equal("bar", *jwt.RSAPublicKey)
 	assert.NotEmpty(*jwt.Algorithm)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestJWTCreateWithID(T *testing.T) {
@@ -62,7 +62,7 @@ func TestJWTCreateWithID(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -78,19 +78,19 @@ func TestJWTCreateWithID(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdJWT, err := client.JWTAuths.Create(defaultCtx, consumer.ID,
 		jwt)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdJWT)
 
 	assert.Equal(uuid, *createdJWT.ID)
 	assert.Equal("my-key", *createdJWT.Key)
 	assert.Equal("my-secret", *createdJWT.Secret)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestJWTGet(T *testing.T) {
@@ -100,7 +100,7 @@ func TestJWTGet(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -115,32 +115,32 @@ func TestJWTGet(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdJWT, err := client.JWTAuths.Create(defaultCtx, consumer.ID, jwt)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdJWT)
 
 	jwt, err = client.JWTAuths.Get(defaultCtx, consumer.ID, jwt.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-key", *jwt.Key)
 
 	jwt, err = client.JWTAuths.Get(defaultCtx, consumer.ID,
 		jwt.Key)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-key", *jwt.Key)
 
 	jwt, err = client.JWTAuths.Get(defaultCtx, consumer.ID,
 		String("does-not-exists"))
 	assert.Nil(jwt)
-	assert.NotNil(err)
+	require.Error(err)
 
 	jwt, err = client.JWTAuths.Get(defaultCtx, consumer.ID, String(""))
 	assert.Nil(jwt)
-	assert.NotNil(err)
+	require.Error(err)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestJWTUpdate(T *testing.T) {
@@ -150,7 +150,7 @@ func TestJWTUpdate(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -165,26 +165,26 @@ func TestJWTUpdate(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdJWT, err := client.JWTAuths.Create(defaultCtx, consumer.ID, jwt)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdJWT)
 
 	jwt, err = client.JWTAuths.Get(defaultCtx, consumer.ID, jwt.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-key", *jwt.Key)
 
 	jwt.Key = String("my-new-key")
 	jwt.Secret = String("my-new-secret")
 	updatedJWT, err := client.JWTAuths.Update(defaultCtx, consumer.ID, jwt)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(updatedJWT)
 	assert.Equal("my-new-secret", *updatedJWT.Secret)
 	assert.Equal("my-new-key", *updatedJWT.Key)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestJWTDelete(T *testing.T) {
@@ -194,7 +194,7 @@ func TestJWTDelete(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -209,21 +209,21 @@ func TestJWTDelete(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdJWT, err := client.JWTAuths.Create(defaultCtx, consumer.ID, jwt)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdJWT)
 
 	err = client.JWTAuths.Delete(defaultCtx, consumer.ID, jwt.Key)
-	assert.NoError(err)
+	require.NoError(err)
 
 	jwt, err = client.JWTAuths.Get(defaultCtx, consumer.ID, jwt.Key)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(jwt)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestJWTListMethods(T *testing.T) {
@@ -233,7 +233,7 @@ func TestJWTListMethods(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// consumer for the JWT
@@ -242,7 +242,7 @@ func TestJWTListMethods(T *testing.T) {
 	}
 
 	consumer1, err = client.Consumers.Create(defaultCtx, consumer1)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer1)
 
 	consumer2 := &Consumer{
@@ -250,7 +250,7 @@ func TestJWTListMethods(T *testing.T) {
 	}
 
 	consumer2, err = client.Consumers.Create(defaultCtx, consumer2)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer2)
 
 	// fixtures
@@ -277,44 +277,44 @@ func TestJWTListMethods(T *testing.T) {
 	for i := 0; i < len(jwts); i++ {
 		jwt, err := client.JWTAuths.Create(defaultCtx,
 			jwts[i].Consumer.ID, jwts[i])
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(jwt)
 		jwts[i] = jwt
 	}
 
 	jwtsFromKong, next, err := client.JWTAuths.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(jwtsFromKong)
-	assert.Equal(4, len(jwtsFromKong))
+	assert.Len(jwtsFromKong, 4)
 
 	// first page
 	page1, next, err := client.JWTAuths.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 
 	// last page
 	next.Size = 3
 	page2, next, err := client.JWTAuths.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
-	assert.Equal(3, len(page2))
+	assert.Len(page2, 3)
 
 	jwtsForConsumer, next, err := client.JWTAuths.ListForConsumer(defaultCtx,
 		consumer1.ID, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(jwtsForConsumer)
-	assert.Equal(2, len(jwtsForConsumer))
+	assert.Len(jwtsForConsumer, 2)
 
 	jwts, err = client.JWTAuths.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(jwts)
-	assert.Equal(4, len(jwts))
+	assert.Len(jwts, 4)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer1.ID))
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer2.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer1.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer2.ID))
 }
