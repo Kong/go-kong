@@ -15,23 +15,23 @@ func TestBasicAuthCreate(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	basicAuth, err := client.BasicAuths.Create(defaultCtx,
 		String("foo"), nil)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(basicAuth)
 
 	basicAuth = &BasicAuth{}
 	basicAuth, err = client.BasicAuths.Create(defaultCtx, String(""),
 		basicAuth)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(basicAuth)
 
 	basicAuth, err = client.BasicAuths.Create(defaultCtx,
 		String("does-not-exist"), basicAuth)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(basicAuth)
 
 	// consumer for the basic-auth:
@@ -40,14 +40,14 @@ func TestBasicAuthCreate(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	// no username is specified
 	basicAuth = &BasicAuth{}
 	basicAuth, err = client.BasicAuths.Create(defaultCtx,
 		consumer.ID, basicAuth)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(basicAuth)
 
 	basicAuth = &BasicAuth{
@@ -56,11 +56,11 @@ func TestBasicAuthCreate(T *testing.T) {
 	}
 	basicAuth, err = client.BasicAuths.Create(defaultCtx,
 		consumer.ID, basicAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(basicAuth)
 	assert.NotEmpty(*basicAuth.Password)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestBasicAuthCreateWithID(T *testing.T) {
@@ -70,7 +70,7 @@ func TestBasicAuthCreateWithID(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -86,12 +86,12 @@ func TestBasicAuthCreateWithID(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx, consumer.ID,
 		basicAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdBasicAuth)
 
 	assert.Equal(uuid, *createdBasicAuth.ID)
@@ -99,7 +99,7 @@ func TestBasicAuthCreateWithID(T *testing.T) {
 	// password is hashed
 	assert.NotEqual("my-password", *createdBasicAuth.Password)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestBasicAuthGet(T *testing.T) {
@@ -109,7 +109,7 @@ func TestBasicAuthGet(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -125,34 +125,34 @@ func TestBasicAuthGet(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx,
 		consumer.ID, basicAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdBasicAuth)
 
 	basicAuth, err = client.BasicAuths.Get(defaultCtx,
 		consumer.ID, basicAuth.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-username", *basicAuth.Username)
 
 	basicAuth, err = client.BasicAuths.Get(defaultCtx, consumer.ID,
 		basicAuth.Username)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-username", *basicAuth.Username)
 
 	basicAuth, err = client.BasicAuths.Get(defaultCtx, consumer.ID,
 		String("does-not-exists"))
 	assert.Nil(basicAuth)
-	assert.NotNil(err)
+	require.Error(err)
 
 	basicAuth, err = client.BasicAuths.Get(defaultCtx, consumer.ID, String(""))
 	assert.Nil(basicAuth)
-	assert.NotNil(err)
+	require.Error(err)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestBasicAuthUpdate(T *testing.T) {
@@ -162,7 +162,7 @@ func TestBasicAuthUpdate(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -178,29 +178,29 @@ func TestBasicAuthUpdate(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx,
 		consumer.ID, basicAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdBasicAuth)
 
 	basicAuth, err = client.BasicAuths.Get(defaultCtx,
 		consumer.ID, basicAuth.ID)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Equal("my-username", *basicAuth.Username)
 
 	basicAuth.Username = String("my-new-username")
 	basicAuth.Password = String("my-new-password")
 	updatedBasicAuth, err := client.BasicAuths.Update(defaultCtx,
 		consumer.ID, basicAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(updatedBasicAuth)
 	assert.NotEqual("my-new-password", *updatedBasicAuth.Password)
 	assert.Equal("my-new-username", *updatedBasicAuth.Username)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestBasicAuthDelete(T *testing.T) {
@@ -210,7 +210,7 @@ func TestBasicAuthDelete(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	uuid := uuid.NewString()
@@ -226,23 +226,23 @@ func TestBasicAuthDelete(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx,
 		consumer.ID, basicAuth)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(createdBasicAuth)
 
 	err = client.BasicAuths.Delete(defaultCtx, consumer.ID, basicAuth.Username)
-	assert.NoError(err)
+	require.NoError(err)
 
 	basicAuth, err = client.BasicAuths.Get(defaultCtx,
 		consumer.ID, basicAuth.Username)
-	assert.NotNil(err)
+	require.Error(err)
 	assert.Nil(basicAuth)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
 func TestBasicAuthListMethods(T *testing.T) {
@@ -258,7 +258,7 @@ func TestBasicAuthListMethods(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	// consumer for the basic-auth:
@@ -267,7 +267,7 @@ func TestBasicAuthListMethods(T *testing.T) {
 	}
 
 	consumer1, err = client.Consumers.Create(defaultCtx, consumer1)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer1)
 
 	consumer2 := &Consumer{
@@ -275,7 +275,7 @@ func TestBasicAuthListMethods(T *testing.T) {
 	}
 
 	consumer2, err = client.Consumers.Create(defaultCtx, consumer2)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(consumer2)
 
 	// fixtures
@@ -306,43 +306,43 @@ func TestBasicAuthListMethods(T *testing.T) {
 	for i := 0; i < len(basicAuths); i++ {
 		basicAuth, err := client.BasicAuths.Create(defaultCtx,
 			basicAuths[i].Consumer.ID, basicAuths[i])
-		assert.NoError(err)
+		require.NoError(err)
 		assert.NotNil(basicAuth)
 		basicAuths[i] = basicAuth
 	}
 
 	basicAuthsFromKong, next, err := client.BasicAuths.List(defaultCtx, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(basicAuthsFromKong)
-	assert.Equal(4, len(basicAuthsFromKong))
+	assert.Len(basicAuthsFromKong, 4)
 
 	// first page
 	page1, next, err := client.BasicAuths.List(defaultCtx, &ListOpt{Size: 1})
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 
 	// last page
 	next.Size = 4
 	page2, next, err := client.BasicAuths.List(defaultCtx, next)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
-	assert.Equal(3, len(page2))
+	assert.Len(page2, 3)
 
 	basicAuthsForConsumer, next, err := client.BasicAuths.ListForConsumer(defaultCtx, consumer1.ID, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(basicAuthsForConsumer)
-	assert.Equal(2, len(basicAuthsForConsumer))
+	assert.Len(basicAuthsForConsumer, 2)
 
 	basicAuths, err = client.BasicAuths.ListAll(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(basicAuths)
-	assert.Equal(4, len(basicAuths))
+	assert.Len(basicAuths, 4)
 
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer1.ID))
-	assert.NoError(client.Consumers.Delete(defaultCtx, consumer2.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer1.ID))
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer2.ID))
 }

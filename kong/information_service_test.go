@@ -13,11 +13,11 @@ func TestInfoService(T *testing.T) {
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(err)
 	assert.NotNil(client)
 
 	info, err := client.Info.Get(defaultCtx)
-	assert.NoError(err)
+	require.NoError(err)
 	require.NotNil(info)
 	require.NotNil(info.Version)
 	require.NotNil(info.Configuration)
@@ -44,7 +44,7 @@ func TestConvert(T *testing.T) {
 	}
 	var actual Info
 	err := convert(information, &actual)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.True(reflect.DeepEqual(expected, &actual))
 	assert.False(actual.Configuration.IsInMemory())
 	assert.True(actual.Configuration.IsRBACEnabled())

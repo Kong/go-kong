@@ -4,13 +4,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSchemaService(T *testing.T) {
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(err)
+	require.NoError(T, err)
 	assert.NotNil(client)
 
 	entities := []string{
@@ -29,13 +30,13 @@ func TestSchemaService(T *testing.T) {
 		schema, err := client.Schemas.Get(defaultCtx, entity)
 		_, ok := schema["fields"]
 		assert.True(ok)
-		assert.NoError(err)
+		require.NoError(T, err)
 	}
 }
 
 func TestSchemaServiceValidate(t *testing.T) {
 	client, err := NewTestClient(nil, nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, client)
 
 	testCases := []struct {
@@ -69,7 +70,7 @@ func TestSchemaServiceValidate(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			valid, msg, err := client.Schemas.Validate(defaultCtx, tc.entityType, tc.entity)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			if tc.valid {
 				assert.True(t, valid)
 				assert.Empty(t, msg)

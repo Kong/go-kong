@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -16,7 +15,6 @@ func TestLicensesService(t *testing.T) {
 		t.Skip("KONG_LICENSE_DATA not set, skipping")
 	}
 	require := require.New(t)
-	assert := assert.New(t)
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
@@ -32,7 +30,7 @@ func TestLicensesService(t *testing.T) {
 	t.Cleanup(func() {
 		// Note the assert here as we might want more logic to be run as part of the cleanup,
 		// regardless of the return value of removing this particular object.
-		assert.NoError(client.Licenses.Delete(defaultCtx, createdLicense.ID))
+		require.NoError(client.Licenses.Delete(defaultCtx, createdLicense.ID))
 	})
 
 	license, err = client.Licenses.Get(defaultCtx, createdLicense.ID)
@@ -63,7 +61,7 @@ func TestLicensesService(t *testing.T) {
 	t.Cleanup(func() {
 		// Note the assert here as we might want more logic to be run as part of the cleanup,
 		// regardless of the return value of removing this particular object.
-		assert.NoError(client.Licenses.Delete(defaultCtx, createdLicense.ID))
+		require.NoError(client.Licenses.Delete(defaultCtx, createdLicense.ID))
 	})
 	require.Equal(id, *createdLicense.ID)
 

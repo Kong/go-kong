@@ -22,7 +22,7 @@ func TestDeveloperRoleService(T *testing.T) {
 	testWs, err := NewTestWorkspace(client, "default")
 	require.NoError(err)
 	T.Cleanup(func() {
-		assert.NoError(testWs.Reset())
+		require.NoError(testWs.Reset())
 	})
 
 	require.NoError(testWs.UpdateConfig(map[string]interface{}{"portal": true}))
@@ -77,7 +77,7 @@ func TestDeveloperRoleServiceList(T *testing.T) {
 	testWs, err := NewTestWorkspace(client, "default")
 	require.NoError(err)
 	T.Cleanup(func() {
-		assert.NoError(testWs.Reset())
+		require.NoError(testWs.Reset())
 	})
 
 	require.NoError(testWs.UpdateConfig(map[string]interface{}{"portal": true}))
@@ -92,13 +92,13 @@ func TestDeveloperRoleServiceList(T *testing.T) {
 	createdRoleA, err := client.DeveloperRoles.Create(defaultCtx, roleA)
 	require.NoError(err)
 	T.Cleanup(func() {
-		assert.NoError(client.DeveloperRoles.Delete(defaultCtx, createdRoleA.ID))
+		require.NoError(client.DeveloperRoles.Delete(defaultCtx, createdRoleA.ID))
 	})
 
 	createdRoleB, err := client.DeveloperRoles.Create(defaultCtx, roleB)
 	require.NoError(err)
 	T.Cleanup(func() {
-		assert.NoError(client.DeveloperRoles.Delete(defaultCtx, createdRoleB.ID))
+		require.NoError(client.DeveloperRoles.Delete(defaultCtx, createdRoleB.ID))
 	})
 
 	roles, next, err := client.DeveloperRoles.List(defaultCtx, nil)
@@ -122,7 +122,7 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 	testWs, err := NewTestWorkspace(client, "default")
 	require.NoError(err)
 	T.Cleanup(func() {
-		assert.NoError(testWs.Reset())
+		require.NoError(testWs.Reset())
 	})
 	require.NoError(testWs.UpdateConfig(map[string]interface{}{"portal": true}))
 
@@ -146,7 +146,7 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 		assert.NotNil(role)
 		T.Cleanup(func() {
 			id := *role.ID
-			assert.NoError(client.DeveloperRoles.Delete(defaultCtx, &id))
+			require.NoError(client.DeveloperRoles.Delete(defaultCtx, &id))
 		})
 		roles[i] = role
 	}
@@ -155,7 +155,7 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(rolesFromKong)
-	assert.Equal(3, len(rolesFromKong))
+	assert.Len(rolesFromKong, 3)
 
 	// check if we see all developerRoles
 	assert.True(compareDeveloperRoles(roles, rolesFromKong))
@@ -168,7 +168,7 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 	require.NoError(err)
 	assert.NotNil(next)
 	assert.NotNil(page1)
-	assert.Equal(1, len(page1))
+	assert.Len(page1, 1)
 	rolesFromKong = append(rolesFromKong, page1...)
 
 	// last page
@@ -177,7 +177,7 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(page2)
-	assert.Equal(2, len(page2))
+	assert.Len(page2, 2)
 	rolesFromKong = append(rolesFromKong, page2...)
 
 	assert.True(compareDeveloperRoles(roles, rolesFromKong))
@@ -185,7 +185,7 @@ func TestDeveloperRoleListEndpoint(T *testing.T) {
 	roles, err = client.DeveloperRoles.ListAll(defaultCtx)
 	require.NoError(err)
 	assert.NotNil(roles)
-	assert.Equal(3, len(roles))
+	assert.Len(roles, 3)
 }
 
 func compareDeveloperRoles(expected, actual []*DeveloperRole) bool {

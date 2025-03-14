@@ -7,7 +7,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/samber/lo"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,7 +14,6 @@ func TestKonnectApplicationService_Create(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 	RunWhenEnterprise(T, ">=3.6.0", RequiredFeatures{})
 
-	assert := assert.New(T)
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -51,7 +49,7 @@ func TestKonnectApplicationService_Create(T *testing.T) {
 	require.NotNil(createResponse)
 
 	T.Cleanup(func() {
-		assert.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
+		require.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
 	})
 
 	require.Equal(createResponse.ClientID, clientID)
@@ -65,7 +63,6 @@ func TestKonnectApplicationService_ListAll(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 	RunWhenEnterprise(T, ">=3.6.0", RequiredFeatures{})
 
-	assert := assert.New(T)
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -104,7 +101,7 @@ func TestKonnectApplicationService_ListAll(T *testing.T) {
 		require.NotNil(createResponse)
 
 		T.Cleanup(func() {
-			assert.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
+			require.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
 		})
 	}
 
@@ -117,7 +114,6 @@ func TestKonnectApplicationService_List(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 	RunWhenEnterprise(T, ">=3.6.0", RequiredFeatures{})
 
-	assert := assert.New(T)
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -159,7 +155,7 @@ func TestKonnectApplicationService_List(T *testing.T) {
 		require.NotNil(createResponse)
 
 		T.Cleanup(func() {
-			assert.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
+			require.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
 		})
 	}
 
@@ -173,7 +169,7 @@ func TestKonnectApplicationService_List(T *testing.T) {
 		require.NotNil(createResponse)
 
 		T.Cleanup(func() {
-			assert.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
+			require.NoError(client.KonnectApplication.Delete(context.Background(), createResponse.ID))
 		})
 	}
 
