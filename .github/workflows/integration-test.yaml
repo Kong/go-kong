@@ -24,22 +24,6 @@ jobs:
         # since expressions router is supported for Kong >= 3.0.
         # Option router_flavor is ignored for Kong < 3.0.
         exclude:
-          - kong_version: '2.1'
-            router_flavor: 'expressions'
-          - kong_version: '2.2'
-            router_flavor: 'expressions'
-          - kong_version: '2.2'
-            router_flavor: 'expressions'
-          - kong_version: '2.3'
-            router_flavor: 'expressions'
-          - kong_version: '2.4'
-            router_flavor: 'expressions'
-          - kong_version: '2.5'
-            router_flavor: 'expressions'
-          - kong_version: '2.6'
-            router_flavor: 'expressions'
-          - kong_version: '2.7'
-            router_flavor: 'expressions'
           - kong_version: '2.8'
             router_flavor: 'expressions'
         dbmode:
@@ -49,13 +33,6 @@ jobs:
           - 'traditional_compatible'
           - 'expressions'
         kong_version:
-          - '2.1'
-          - '2.2'
-          - '2.3'
-          - '2.4'
-          - '2.5'
-          - '2.6'
-          - '2.7'
           - '2.8'
           - '3.0'
           - '3.1'
