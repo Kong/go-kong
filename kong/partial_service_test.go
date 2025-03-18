@@ -176,9 +176,9 @@ func TestPartialServiceUpdateEndpoint(t *testing.T) {
 		require.NoError(err)
 		require.NotNil(updatedPartial)
 
-		assert.Equal(float64(2001), updatedPartial.Config["send_timeout"])
-		assert.Equal(float64(3001), updatedPartial.Config["read_timeout"])
-		assert.Equal(float64(4001), updatedPartial.Config["connect_timeout"])
+		assert.InDelta(float64(2001), updatedPartial.Config["send_timeout"], 0)
+		assert.InDelta(float64(3001), updatedPartial.Config["read_timeout"], 0)
+		assert.InDelta(float64(4001), updatedPartial.Config["connect_timeout"], 0)
 		assert.Equal(StringSlice("tag2"), updatedPartial.Tags)
 	})
 }
