@@ -72,6 +72,7 @@ func TestPartialServiceCreateEndpoint(t *testing.T) {
 		validPartial := &Partial{
 			Name: String("my-test-partial"),
 			Type: String("redis-ee"),
+			Tags: StringSlice("tag1", "tag2"),
 		}
 
 		createdPartial, err := client.Partials.Create(defaultCtx, validPartial)
@@ -109,6 +110,7 @@ func TestPartialServiceGetEndpoint(t *testing.T) {
 		createdPartial, err := client.Partials.Create(defaultCtx, &Partial{
 			Name: String("my-test-partial"),
 			Type: String("redis-ee"),
+			Tags: StringSlice("tag1", "tag2"),
 		})
 		require.NoError(err)
 		require.NotNil(createdPartial)
@@ -122,6 +124,7 @@ func TestPartialServiceGetEndpoint(t *testing.T) {
 		assert.NotNil(fetchedPartial)
 		assert.Equal("my-test-partial", *fetchedPartial.Name)
 		assert.Equal("redis-ee", *fetchedPartial.Type)
+		assert.Equal(StringSlice("tag1", "tag2"), fetchedPartial.Tags)
 	})
 }
 
@@ -147,6 +150,7 @@ func TestPartialServiceUpdateEndpoint(t *testing.T) {
 		createdPartial, err := client.Partials.Create(defaultCtx, &Partial{
 			Name: String("my-test-partial"),
 			Type: String("redis-ee"),
+			Tags: StringSlice("tag1"),
 		})
 		require.NoError(err)
 		require.NotNil(createdPartial)
@@ -165,14 +169,17 @@ func TestPartialServiceUpdateEndpoint(t *testing.T) {
 			"connect_timeout": 4001,
 		}
 
+		createdPartial.Tags = StringSlice("tag2")
+
 		// update partial
 		updatedPartial, err := client.Partials.Update(defaultCtx, createdPartial)
 		require.NoError(err)
 		require.NotNil(updatedPartial)
 
-		assert.InEpsilon(2001, updatedPartial.Config["send_timeout"], 0.1)
-		assert.InEpsilon(3001, updatedPartial.Config["read_timeout"], 0.1)
-		assert.InEpsilon(4001, updatedPartial.Config["connect_timeout"], 0.1)
+		assert.InDelta(float64(2001), updatedPartial.Config["send_timeout"], 0)
+		assert.InDelta(float64(3001), updatedPartial.Config["read_timeout"], 0)
+		assert.InDelta(float64(4001), updatedPartial.Config["connect_timeout"], 0)
+		assert.Equal(StringSlice("tag2"), updatedPartial.Tags)
 	})
 }
 

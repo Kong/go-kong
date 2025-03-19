@@ -9,6 +9,7 @@ type Partial struct {
 	Config    Configuration `json:"config,omitempty" yaml:"config,omitempty"`
 	CreatedAt *int          `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	UpdatedAt *int          `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	Tags      []*string     `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 // FriendlyName returns the endpoint key name or ID.
