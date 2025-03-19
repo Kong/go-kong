@@ -31,6 +31,16 @@ golangci-lint: mise yq ## Download golangci-lint locally if necessary.
 	@$(MISE) install -q golangci-lint@$(GOLANGCI_LINT_VERSION)
 
 # ------------------------------------------------------------------------------
+# CI
+# ------------------------------------------------------------------------------
+
+
+.PHONY: kong.supported-versions
+kong.supported-versions:
+	@curl -s https://docs.konghq.com/_api/gateway-versions.json | \
+		jq '[.[] | select(.endOfLifeDate > (now | strftime("%Y-%m-%d")))] | [.[].tag]'
+
+# ------------------------------------------------------------------------------
 # Testing
 # ------------------------------------------------------------------------------
 
