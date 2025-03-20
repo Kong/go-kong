@@ -38,7 +38,7 @@ golangci-lint: mise yq ## Download golangci-lint locally if necessary.
 .PHONY: kong.supported-versions
 kong.supported-versions:
 	@curl -s https://docs.konghq.com/_api/gateway-versions.json | \
-		jq '[.[] | select(.endOfLifeDate > (now | strftime("%Y-%m-%d")))] | [.[].tag]'
+		jq '[.[] | select(.label == null) | select(.endOfLifeDate > (now | strftime("%Y-%m-%d")))] | [.[].tag]'
 
 # ------------------------------------------------------------------------------
 # Testing
