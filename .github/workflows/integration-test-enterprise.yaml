@@ -31,11 +31,34 @@ jobs:
           echo "ok=true" >> $GITHUB_OUTPUT
         fi
 
+  # NOTE: This should be done in a workflow which runs on schedule and updates
+  # the supported versions in a file in this repository.
+  # This would save unexpected changes in CI matrix where an unrelated change
+  # in the supported versions would block a PR from merging.
+  # This is still better than maintaining the hardcoded matrix of versions in the workflow itself.
+  supported-kong-versions:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
+    outputs:
+      result: ${{ steps.result.outputs.versions }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - id: result
+      run: |
+        {
+          echo 'versions<<EOF'
+          make kong.supported-versions
+          echo EOF
+        } >> "$GITHUB_OUTPUT"
+    - run: |
+        echo "Kong versions: ${{ steps.result.outputs.versions }}"
+
   test-enterprise:
     timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
     continue-on-error: true
     needs:
     - secret-available
+    - supported-kong-versions
     if: needs.secret-available.outputs.ok
     strategy:
       matrix:
@@ -48,18 +71,7 @@ jobs:
         router_flavor:
           - 'traditional_compatible'
           - 'expressions'
-        kong_version:
-        - '2.8'
-        - '3.0'
-        - '3.1'
-        - '3.2'
-        - '3.3'
-        - '3.4'
-        - '3.5'
-        - '3.6'
-        - '3.7'
-        - '3.8'
-        - '3.9'
+        kong_version: ${{ fromJSON(needs.supported-kong-versions.outputs.result) }}
     env:
       KONG_ROUTER_FLAVOR: ${{ matrix.router_flavor }}
       KONG_IMAGE_TAG: ${{ matrix.kong_version }}
