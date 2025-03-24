@@ -158,12 +158,11 @@ func TestBasicAuthGet(T *testing.T) {
 func TestBasicAuthGetByID(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
-	assert := assert.New(T)
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
-	assert.NotNil(client)
+	require.NotNil(client)
 
 	uuid := uuid.NewString()
 	basicAuth := &BasicAuth{
@@ -184,21 +183,30 @@ func TestBasicAuthGetByID(T *testing.T) {
 	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx,
 		consumer.ID, basicAuth)
 	require.NoError(err)
-	assert.NotNil(createdBasicAuth)
+	require.NotNil(createdBasicAuth)
 
-	basicAuth, err = client.BasicAuths.GetByID(defaultCtx, basicAuth.ID)
-	require.NoError(err)
-	assert.Equal("my-username", *basicAuth.Username)
+	T.Cleanup(func() {
+		require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	})
 
-	basicAuth, err = client.BasicAuths.GetByID(defaultCtx, String("does-not-exist"))
-	assert.Nil(basicAuth)
-	require.Error(err)
+	T.Run("successful basic-auth retrieval by ID", func(_ *testing.T) {
+		basicAuth, err = client.BasicAuths.GetByID(defaultCtx, basicAuth.ID)
+		require.NoError(err)
+		require.NotNil(basicAuth)
+		require.Equal("my-username", *basicAuth.Username)
+	})
 
-	basicAuth, err = client.BasicAuths.GetByID(defaultCtx, String(""))
-	assert.Nil(basicAuth)
-	require.Error(err)
+	T.Run("unsuccessful basic-auth retrieval using invalid ID", func(_ *testing.T) {
+		basicAuth, err = client.BasicAuths.GetByID(defaultCtx, String("does-not-exist"))
+		require.Nil(basicAuth)
+		require.Error(err)
+	})
 
-	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	T.Run("unsuccessful basic-auth retrieval using empty string as ID", func(_ *testing.T) {
+		basicAuth, err = client.BasicAuths.GetByID(defaultCtx, String(""))
+		require.Nil(basicAuth)
+		require.Error(err)
+	})
 }
 
 func TestBasicAuthUpdate(T *testing.T) {

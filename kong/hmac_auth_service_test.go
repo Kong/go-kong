@@ -147,12 +147,11 @@ func TestHMACAuthGet(T *testing.T) {
 func TestHMACAuthGetByID(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
-	assert := assert.New(T)
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
-	assert.NotNil(client)
+	require.NotNil(client)
 
 	uuid := uuid.NewString()
 	hmacAuth := &HMACAuth{
@@ -172,21 +171,30 @@ func TestHMACAuthGetByID(T *testing.T) {
 	createdHMACAuth, err := client.HMACAuths.Create(defaultCtx,
 		consumer.ID, hmacAuth)
 	require.NoError(err)
-	assert.NotNil(createdHMACAuth)
+	require.NotNil(createdHMACAuth)
 
-	hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, hmacAuth.ID)
-	require.NoError(err)
-	assert.Equal("my-username", *hmacAuth.Username)
+	T.Cleanup(func() {
+		require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	})
 
-	hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, String("does-not-exist"))
-	assert.Nil(hmacAuth)
-	require.Error(err)
+	T.Run("successful hmac-auth retrieval by ID", func(_ *testing.T) {
+		hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, hmacAuth.ID)
+		require.NoError(err)
+		require.NotNil(hmacAuth)
+		require.Equal("my-username", *hmacAuth.Username)
+	})
 
-	hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, String(""))
-	assert.Nil(hmacAuth)
-	require.Error(err)
+	T.Run("unsuccessful hmac-auth retrieval by ID", func(_ *testing.T) {
+		hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, String("does-not-exist"))
+		require.Nil(hmacAuth)
+		require.Error(err)
+	})
 
-	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	T.Run("unsuccessful hmac-auth retrieval when empty string is passed", func(_ *testing.T) {
+		hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, String(""))
+		require.Nil(hmacAuth)
+		require.Error(err)
+	})
 }
 
 func TestHMACAuthUpdate(T *testing.T) {

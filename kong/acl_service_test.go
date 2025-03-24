@@ -140,12 +140,11 @@ func TestACLGroupGet(T *testing.T) {
 func TestACLGroupGetByID(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
-	assert := assert.New(T)
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
-	assert.NotNil(client)
+	require.NotNil(client)
 
 	uuid := uuid.NewString()
 	acl := &ACLGroup{
@@ -164,21 +163,30 @@ func TestACLGroupGetByID(T *testing.T) {
 
 	createdACL, err := client.ACLs.Create(defaultCtx, consumer.ID, acl)
 	require.NoError(err)
-	assert.NotNil(createdACL)
+	require.NotNil(createdACL)
 
-	aclGroup, err := client.ACLs.GetByID(defaultCtx, acl.ID)
-	require.NoError(err)
-	assert.Equal("my-group", *aclGroup.Group)
+	T.Cleanup(func() {
+		require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	})
 
-	aclGroup, err = client.ACLs.GetByID(defaultCtx, String("does-not-exist"))
-	assert.Nil(aclGroup)
-	require.Error(err)
+	T.Run("successful ACL retrieval by ID", func(_ *testing.T) {
+		aclGroup, err := client.ACLs.GetByID(defaultCtx, acl.ID)
+		require.NoError(err)
+		require.NotNil(aclGroup)
+		require.Equal("my-group", *aclGroup.Group)
+	})
 
-	aclGroup, err = client.ACLs.GetByID(defaultCtx, String(""))
-	assert.Nil(aclGroup)
-	require.Error(err)
+	T.Run("unsuccessful ACL retrieval using invalid ID", func(_ *testing.T) {
+		aclGroup, err := client.ACLs.GetByID(defaultCtx, String("does-not-exist"))
+		require.Nil(aclGroup)
+		require.Error(err)
+	})
 
-	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	T.Run("unsuccessful ACL retrieval using empty string", func(_ *testing.T) {
+		aclGroup, err := client.ACLs.GetByID(defaultCtx, String(""))
+		require.Nil(aclGroup)
+		require.Error(err)
+	})
 }
 
 func TestACLGroupUpdate(T *testing.T) {

@@ -146,12 +146,11 @@ func TestJWTGet(T *testing.T) {
 func TestJWTGetByID(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
-	assert := assert.New(T)
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
-	assert.NotNil(client)
+	require.NotNil(client)
 
 	uuid := uuid.NewString()
 	jwt := &JWTAuth{
@@ -164,27 +163,36 @@ func TestJWTGetByID(T *testing.T) {
 		Username: String("foo"),
 	}
 
+	T.Cleanup(func() {
+		require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	})
+
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
 	require.NoError(err)
 	require.NotNil(consumer)
 
 	createdJWT, err := client.JWTAuths.Create(defaultCtx, consumer.ID, jwt)
 	require.NoError(err)
-	assert.NotNil(createdJWT)
+	require.NotNil(createdJWT)
 
-	jwt, err = client.JWTAuths.GetByID(defaultCtx, jwt.ID)
-	require.NoError(err)
-	assert.Equal("my-key", *jwt.Key)
+	T.Run("successful jwt-auth retrieval by ID", func(_ *testing.T) {
+		jwt, err = client.JWTAuths.GetByID(defaultCtx, jwt.ID)
+		require.NoError(err)
+		require.NotNil(jwt)
+		require.Equal("my-key", *jwt.Key)
+	})
 
-	jwt, err = client.JWTAuths.GetByID(defaultCtx, String("does-not-exist"))
-	assert.Nil(jwt)
-	require.Error(err)
+	T.Run("unsuccessful jwt-auth retrieval by ID", func(_ *testing.T) {
+		jwt, err = client.JWTAuths.GetByID(defaultCtx, String("does-not-exist"))
+		require.Nil(jwt)
+		require.Error(err)
+	})
 
-	jwt, err = client.JWTAuths.GetByID(defaultCtx, String(""))
-	assert.Nil(jwt)
-	require.Error(err)
-
-	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	T.Run("unsuccessful jwt-auth retrieval using empty string", func(_ *testing.T) {
+		jwt, err = client.JWTAuths.GetByID(defaultCtx, String(""))
+		require.Nil(jwt)
+		require.Error(err)
+	})
 }
 
 func TestJWTUpdate(T *testing.T) {
