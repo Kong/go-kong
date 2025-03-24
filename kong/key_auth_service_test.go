@@ -141,6 +141,51 @@ func TestKeyAuthGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
+func TestKeyAuthGetById(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	assert.NotNil(client)
+
+	uuid := uuid.NewString()
+	keyAuth := &KeyAuth{
+		ID:  String(uuid),
+		Key: String("my-apikey"),
+	}
+
+	// consumer for the key-auth:
+	consumer := &Consumer{
+		Username: String("foo"),
+	}
+
+	consumer, err = client.Consumers.Create(defaultCtx, consumer)
+	require.NoError(err)
+	require.NotNil(consumer)
+
+	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
+		consumer.ID, keyAuth)
+	require.NoError(err)
+	assert.NotNil(createdKeyAuth)
+
+	searchKeyAuth, err := client.KeyAuths.GetById(defaultCtx, keyAuth.ID)
+	require.NoError(err)
+	assert.Equal("my-apikey", *searchKeyAuth.Key)
+
+	searchKeyAuth, err = client.KeyAuths.GetById(defaultCtx, String("does-not-exist"))
+	assert.Nil(searchKeyAuth)
+	require.Error(err)
+
+	searchKeyAuth, err = client.KeyAuths.GetById(defaultCtx, String(""))
+	assert.Nil(searchKeyAuth)
+	require.Error(err)
+
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+}
+
 func TestKeyAuthUpdate(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 

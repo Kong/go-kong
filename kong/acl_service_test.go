@@ -137,6 +137,50 @@ func TestACLGroupGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
+func TestACLGroupGetById(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	assert.NotNil(client)
+
+	uuid := uuid.NewString()
+	acl := &ACLGroup{
+		ID:    String(uuid),
+		Group: String("my-group"),
+	}
+
+	// consumer for the ACLGroup
+	consumer := &Consumer{
+		Username: String("foo"),
+	}
+
+	consumer, err = client.Consumers.Create(defaultCtx, consumer)
+	require.NoError(err)
+	require.NotNil(consumer)
+
+	createdACL, err := client.ACLs.Create(defaultCtx, consumer.ID, acl)
+	require.NoError(err)
+	assert.NotNil(createdACL)
+
+	aclGroup, err := client.ACLs.GetById(defaultCtx, acl.ID)
+	require.NoError(err)
+	assert.Equal("my-group", *aclGroup.Group)
+
+	aclGroup, err = client.ACLs.GetById(defaultCtx, String("does-not-exist"))
+	assert.Nil(aclGroup)
+	require.Error(err)
+
+	aclGroup, err = client.ACLs.GetById(defaultCtx, String(""))
+	assert.Nil(aclGroup)
+	require.Error(err)
+
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+}
+
 func TestACLGroupUpdate(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 

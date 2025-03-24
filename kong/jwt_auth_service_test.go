@@ -143,6 +143,50 @@ func TestJWTGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
+func TestJWTGetById(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	assert.NotNil(client)
+
+	uuid := uuid.NewString()
+	jwt := &JWTAuth{
+		ID:  String(uuid),
+		Key: String("my-key"),
+	}
+
+	// consumer for the jwt
+	consumer := &Consumer{
+		Username: String("foo"),
+	}
+
+	consumer, err = client.Consumers.Create(defaultCtx, consumer)
+	require.NoError(err)
+	require.NotNil(consumer)
+
+	createdJWT, err := client.JWTAuths.Create(defaultCtx, consumer.ID, jwt)
+	require.NoError(err)
+	assert.NotNil(createdJWT)
+
+	jwt, err = client.JWTAuths.GetById(defaultCtx, jwt.ID)
+	require.NoError(err)
+	assert.Equal("my-key", *jwt.Key)
+
+	jwt, err = client.JWTAuths.GetById(defaultCtx, String("does-not-exist"))
+	assert.Nil(jwt)
+	require.Error(err)
+
+	jwt, err = client.JWTAuths.GetById(defaultCtx, String(""))
+	assert.Nil(jwt)
+	require.Error(err)
+
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+}
+
 func TestJWTUpdate(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 

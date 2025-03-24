@@ -186,6 +186,53 @@ func TestOauth2CredentialGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
+func TestOauth2CredentialGetById(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	assert.NotNil(client)
+
+	uuid := uuid.NewString()
+	oauth2Cred := &Oauth2Credential{
+		ID:           String(uuid),
+		Name:         String("name-foo"),
+		ClientID:     String("foo-clientid"),
+		RedirectURIs: StringSlice("http://foo.com", "http://bar.com"),
+	}
+
+	// consumer for the oauth2 cred
+	consumer := &Consumer{
+		Username: String("foo"),
+	}
+
+	consumer, err = client.Consumers.Create(defaultCtx, consumer)
+	require.NoError(err)
+	require.NotNil(consumer)
+
+	createdOauth2Credential, err := client.Oauth2Credentials.Create(defaultCtx,
+		consumer.ID, oauth2Cred)
+	require.NoError(err)
+	assert.NotNil(createdOauth2Credential)
+
+	oauth2Cred, err = client.Oauth2Credentials.GetById(defaultCtx, oauth2Cred.ID)
+	require.NoError(err)
+	assert.Equal("foo-clientid", *oauth2Cred.ClientID)
+
+	oauth2Cred, err = client.Oauth2Credentials.GetById(defaultCtx, String("does-not-exist"))
+	assert.Nil(oauth2Cred)
+	require.Error(err)
+
+	oauth2Cred, err = client.Oauth2Credentials.GetById(defaultCtx, String(""))
+	assert.Nil(oauth2Cred)
+	require.Error(err)
+
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+}
+
 func TestOauth2CredentialUpdate(T *testing.T) {
 	RunWhenKong(T, "<=2.0.5")
 	assert := assert.New(T)

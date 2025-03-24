@@ -155,6 +155,52 @@ func TestBasicAuthGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
+func TestBasicAuthGetById(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	assert.NotNil(client)
+
+	uuid := uuid.NewString()
+	basicAuth := &BasicAuth{
+		ID:       String(uuid),
+		Username: String("my-username"),
+		Password: String("my-password"),
+	}
+
+	// consumer for the basic-auth:
+	consumer := &Consumer{
+		Username: String("foo"),
+	}
+
+	consumer, err = client.Consumers.Create(defaultCtx, consumer)
+	require.NoError(err)
+	require.NotNil(consumer)
+
+	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx,
+		consumer.ID, basicAuth)
+	require.NoError(err)
+	assert.NotNil(createdBasicAuth)
+
+	basicAuth, err = client.BasicAuths.GetById(defaultCtx, basicAuth.ID)
+	require.NoError(err)
+	assert.Equal("my-username", *basicAuth.Username)
+
+	basicAuth, err = client.BasicAuths.GetById(defaultCtx, String("does-not-exist"))
+	assert.Nil(basicAuth)
+	require.Error(err)
+
+	basicAuth, err = client.BasicAuths.GetById(defaultCtx, String(""))
+	assert.Nil(basicAuth)
+	require.Error(err)
+
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+}
+
 func TestBasicAuthUpdate(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
