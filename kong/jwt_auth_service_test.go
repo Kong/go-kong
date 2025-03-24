@@ -143,7 +143,7 @@ func TestJWTGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestJWTGetById(T *testing.T) {
+func TestJWTGetByID(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
 	assert := assert.New(T)
@@ -172,15 +172,15 @@ func TestJWTGetById(T *testing.T) {
 	require.NoError(err)
 	assert.NotNil(createdJWT)
 
-	jwt, err = client.JWTAuths.GetById(defaultCtx, jwt.ID)
+	jwt, err = client.JWTAuths.GetByID(defaultCtx, jwt.ID)
 	require.NoError(err)
 	assert.Equal("my-key", *jwt.Key)
 
-	jwt, err = client.JWTAuths.GetById(defaultCtx, String("does-not-exist"))
+	jwt, err = client.JWTAuths.GetByID(defaultCtx, String("does-not-exist"))
 	assert.Nil(jwt)
 	require.Error(err)
 
-	jwt, err = client.JWTAuths.GetById(defaultCtx, String(""))
+	jwt, err = client.JWTAuths.GetByID(defaultCtx, String(""))
 	assert.Nil(jwt)
 	require.Error(err)
 

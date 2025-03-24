@@ -11,8 +11,8 @@ type AbstractKeyAuthService interface {
 	Create(ctx context.Context, consumerUsernameOrID *string, keyAuth *KeyAuth) (*KeyAuth, error)
 	// Get fetches a key-auth credential from Kong.
 	Get(ctx context.Context, consumerUsernameOrID, keyOrID *string) (*KeyAuth, error)
-	// GetById fetches a key-auth credential from Kong using credentialIdentifier
-	GetById(ctx context.Context, keyID *string) (*KeyAuth, error)
+	// GetByID fetches a key-auth credential from Kong using ID
+	GetByID(ctx context.Context, ID *string) (*KeyAuth, error)
 	// Update updates a key-auth credential in Kong
 	Update(ctx context.Context, consumerUsernameOrID *string, keyAuth *KeyAuth) (*KeyAuth, error)
 	// Delete deletes a key-auth credential in Kong
@@ -69,11 +69,11 @@ func (s *KeyAuthService) Get(ctx context.Context,
 	return &keyAuth, nil
 }
 
-// GetById fetches a key-auth credential from Kong using ID.
-func (s *KeyAuthService) GetById(ctx context.Context, keyID *string,
+// GetByID fetches a key-auth credential from Kong using ID.
+func (s *KeyAuthService) GetByID(ctx context.Context, ID *string,
 ) (*KeyAuth, error) {
-	cred, err := s.client.credentials.GetById(ctx, "key-auth",
-		keyID)
+	cred, err := s.client.credentials.GetByID(ctx, "key-auth",
+		ID)
 	if err != nil {
 		return nil, err
 	}

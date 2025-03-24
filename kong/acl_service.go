@@ -11,8 +11,8 @@ type AbstractACLService interface {
 	Create(ctx context.Context, consumerUsernameOrID *string, aclGroup *ACLGroup) (*ACLGroup, error)
 	// Get fetches an ACL group for a consumer in Kong.
 	Get(ctx context.Context, consumerUsernameOrID, groupOrID *string) (*ACLGroup, error)
-	// GetById fetches an ACL group by ID.
-	GetById(ctx context.Context, ID *string) (*ACLGroup, error)
+	// GetByID fetches an ACL group by ID.
+	GetByID(ctx context.Context, ID *string) (*ACLGroup, error)
 	// Update updates an ACL group for a consumer in Kong
 	Update(ctx context.Context, consumerUsernameOrID *string, aclGroup *ACLGroup) (*ACLGroup, error)
 	// Delete deletes an ACL group association for a consumer in Kong
@@ -70,11 +70,11 @@ func (s *ACLService) Get(ctx context.Context,
 	return &aclGroup, nil
 }
 
-// GetById fetches an ACL group for a consumer in Kong.
-func (s *ACLService) GetById(ctx context.Context,
+// GetByID fetches an ACL group using its ID
+func (s *ACLService) GetByID(ctx context.Context,
 	ID *string,
 ) (*ACLGroup, error) {
-	cred, err := s.client.credentials.GetById(ctx, "acl",
+	cred, err := s.client.credentials.GetByID(ctx, "acl",
 		ID)
 	if err != nil {
 		return nil, err

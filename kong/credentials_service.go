@@ -15,8 +15,8 @@ type abstractCredentialService interface {
 	// Get fetches a credential of credType with consumerIdentifier and credIdentifier from Kong.
 	Get(ctx context.Context, credType string, consumerUsernameOrID *string,
 		credIdentifier *string) (json.RawMessage, error)
-	// Get fetches a credential of credType with credIdentifier from Kong.
-	GetById(ctx context.Context, credType string, credIdentifier *string) (json.RawMessage, error)
+	// GetByID fetches a credential of credType with ID from Kong.
+	GetByID(ctx context.Context, credType string, credIdentifier *string) (json.RawMessage, error)
 	// Update updates credential in Kong
 	Update(ctx context.Context, credType string, consumerUsernameOrID *string,
 		credential interface{}) (json.RawMessage, error)
@@ -121,11 +121,11 @@ func (s *credentialService) Get(ctx context.Context, credType string,
 	return cred, nil
 }
 
-// GetById fetches a credential of credType with credIdentifier from Kong.
-func (s *credentialService) GetById(ctx context.Context, credType string, credIdentifier *string,
+// GetByID fetches a credential of credType with ID from Kong.
+func (s *credentialService) GetByID(ctx context.Context, credType string, credIdentifier *string,
 ) (json.RawMessage, error) {
 	if isEmptyString(credIdentifier) {
-		return nil, fmt.Errorf("credIdentifier cannot be nil for GetById operation")
+		return nil, fmt.Errorf("credIdentifier cannot be nil for GetByID operation")
 	}
 
 	subPath, ok := credPathAsParentResource[credType]

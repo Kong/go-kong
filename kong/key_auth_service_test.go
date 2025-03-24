@@ -141,7 +141,7 @@ func TestKeyAuthGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestKeyAuthGetById(T *testing.T) {
+func TestKeyAuthGetByID(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
 	assert := assert.New(T)
@@ -171,15 +171,15 @@ func TestKeyAuthGetById(T *testing.T) {
 	require.NoError(err)
 	assert.NotNil(createdKeyAuth)
 
-	searchKeyAuth, err := client.KeyAuths.GetById(defaultCtx, keyAuth.ID)
+	searchKeyAuth, err := client.KeyAuths.GetByID(defaultCtx, keyAuth.ID)
 	require.NoError(err)
 	assert.Equal("my-apikey", *searchKeyAuth.Key)
 
-	searchKeyAuth, err = client.KeyAuths.GetById(defaultCtx, String("does-not-exist"))
+	searchKeyAuth, err = client.KeyAuths.GetByID(defaultCtx, String("does-not-exist"))
 	assert.Nil(searchKeyAuth)
 	require.Error(err)
 
-	searchKeyAuth, err = client.KeyAuths.GetById(defaultCtx, String(""))
+	searchKeyAuth, err = client.KeyAuths.GetByID(defaultCtx, String(""))
 	assert.Nil(searchKeyAuth)
 	require.Error(err)
 

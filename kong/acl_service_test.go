@@ -137,7 +137,7 @@ func TestACLGroupGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestACLGroupGetById(T *testing.T) {
+func TestACLGroupGetByID(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
 	assert := assert.New(T)
@@ -166,15 +166,15 @@ func TestACLGroupGetById(T *testing.T) {
 	require.NoError(err)
 	assert.NotNil(createdACL)
 
-	aclGroup, err := client.ACLs.GetById(defaultCtx, acl.ID)
+	aclGroup, err := client.ACLs.GetByID(defaultCtx, acl.ID)
 	require.NoError(err)
 	assert.Equal("my-group", *aclGroup.Group)
 
-	aclGroup, err = client.ACLs.GetById(defaultCtx, String("does-not-exist"))
+	aclGroup, err = client.ACLs.GetByID(defaultCtx, String("does-not-exist"))
 	assert.Nil(aclGroup)
 	require.Error(err)
 
-	aclGroup, err = client.ACLs.GetById(defaultCtx, String(""))
+	aclGroup, err = client.ACLs.GetByID(defaultCtx, String(""))
 	assert.Nil(aclGroup)
 	require.Error(err)
 

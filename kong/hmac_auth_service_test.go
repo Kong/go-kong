@@ -144,7 +144,7 @@ func TestHMACAuthGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestHMACAuthGetById(T *testing.T) {
+func TestHMACAuthGetByID(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
 	assert := assert.New(T)
@@ -174,15 +174,15 @@ func TestHMACAuthGetById(T *testing.T) {
 	require.NoError(err)
 	assert.NotNil(createdHMACAuth)
 
-	hmacAuth, err = client.HMACAuths.GetById(defaultCtx, hmacAuth.ID)
+	hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, hmacAuth.ID)
 	require.NoError(err)
 	assert.Equal("my-username", *hmacAuth.Username)
 
-	hmacAuth, err = client.HMACAuths.GetById(defaultCtx, String("does-not-exist"))
+	hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, String("does-not-exist"))
 	assert.Nil(hmacAuth)
 	require.Error(err)
 
-	hmacAuth, err = client.HMACAuths.GetById(defaultCtx, String(""))
+	hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, String(""))
 	assert.Nil(hmacAuth)
 	require.Error(err)
 

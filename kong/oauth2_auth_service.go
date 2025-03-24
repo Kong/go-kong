@@ -11,8 +11,8 @@ type AbstractOauth2Service interface {
 	Create(ctx context.Context, consumerUsernameOrID *string, oauth2Cred *Oauth2Credential) (*Oauth2Credential, error)
 	// Get fetches an oauth2 credential from Kong.
 	Get(ctx context.Context, consumerUsernameOrID, clientIDorID *string) (*Oauth2Credential, error)
-	// GetById fetches an oauth2 credential from Kong using ID.
-	GetById(ctx context.Context, ID *string) (*Oauth2Credential, error)
+	// GetByID fetches an oauth2 credential from Kong using ID.
+	GetByID(ctx context.Context, ID *string) (*Oauth2Credential, error)
 	// Update updates an oauth2 credential in Kong.
 	Update(ctx context.Context, consumerUsernameOrID *string, oauth2Cred *Oauth2Credential) (*Oauth2Credential, error)
 	// Delete deletes an oauth2 credential in Kong.
@@ -71,11 +71,11 @@ func (s *Oauth2Service) Get(ctx context.Context,
 	return &oauth2Cred, nil
 }
 
-// GetById fetches an oauth2 credential from Kong using ID.
-func (s *Oauth2Service) GetById(ctx context.Context,
+// GetByID fetches an oauth2 credential from Kong using ID.
+func (s *Oauth2Service) GetByID(ctx context.Context,
 	ID *string,
 ) (*Oauth2Credential, error) {
-	cred, err := s.client.credentials.GetById(ctx, "oauth2",
+	cred, err := s.client.credentials.GetByID(ctx, "oauth2",
 		ID)
 	if err != nil {
 		return nil, err

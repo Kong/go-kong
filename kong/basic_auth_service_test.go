@@ -155,7 +155,7 @@ func TestBasicAuthGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestBasicAuthGetById(T *testing.T) {
+func TestBasicAuthGetByID(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
 	assert := assert.New(T)
@@ -186,15 +186,15 @@ func TestBasicAuthGetById(T *testing.T) {
 	require.NoError(err)
 	assert.NotNil(createdBasicAuth)
 
-	basicAuth, err = client.BasicAuths.GetById(defaultCtx, basicAuth.ID)
+	basicAuth, err = client.BasicAuths.GetByID(defaultCtx, basicAuth.ID)
 	require.NoError(err)
 	assert.Equal("my-username", *basicAuth.Username)
 
-	basicAuth, err = client.BasicAuths.GetById(defaultCtx, String("does-not-exist"))
+	basicAuth, err = client.BasicAuths.GetByID(defaultCtx, String("does-not-exist"))
 	assert.Nil(basicAuth)
 	require.Error(err)
 
-	basicAuth, err = client.BasicAuths.GetById(defaultCtx, String(""))
+	basicAuth, err = client.BasicAuths.GetByID(defaultCtx, String(""))
 	assert.Nil(basicAuth)
 	require.Error(err)
 

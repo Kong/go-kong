@@ -11,8 +11,8 @@ type AbstractHMACAuthService interface {
 	Create(ctx context.Context, consumerUsernameOrID *string, hmacAuth *HMACAuth) (*HMACAuth, error)
 	// Get fetches a hmac-auth credential from Kong.
 	Get(ctx context.Context, consumerUsernameOrID, usernameOrID *string) (*HMACAuth, error)
-	// GetById fetches a hmac-auth credential from Kong using hmac-auth-identifier.
-	GetById(ctx context.Context, usernameOrID *string) (*HMACAuth, error)
+	// GetByID fetches a hmac-auth credential from Kong using hmac-auth ID.
+	GetByID(ctx context.Context, ID *string) (*HMACAuth, error)
 	// Update updates a hmac-auth credential in Kong
 	Update(ctx context.Context, consumerUsernameOrID *string, hmacAuth *HMACAuth) (*HMACAuth, error)
 	// Delete deletes a hmac-auth credential in Kong
@@ -70,11 +70,11 @@ func (s *HMACAuthService) Get(ctx context.Context,
 	return &hmacAuth, nil
 }
 
-// GetById fetches a hmac-auth credential from Kong using ID.
-func (s *HMACAuthService) GetById(ctx context.Context,
+// GetByID fetches a hmac-auth credential from Kong using ID.
+func (s *HMACAuthService) GetByID(ctx context.Context,
 	ID *string,
 ) (*HMACAuth, error) {
-	cred, err := s.client.credentials.GetById(ctx, "hmac-auth", ID)
+	cred, err := s.client.credentials.GetByID(ctx, "hmac-auth", ID)
 	if err != nil {
 		return nil, err
 	}

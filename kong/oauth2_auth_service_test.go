@@ -186,7 +186,7 @@ func TestOauth2CredentialGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestOauth2CredentialGetById(T *testing.T) {
+func TestOauth2CredentialGetByID(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
 	assert := assert.New(T)
@@ -218,15 +218,15 @@ func TestOauth2CredentialGetById(T *testing.T) {
 	require.NoError(err)
 	assert.NotNil(createdOauth2Credential)
 
-	oauth2Cred, err = client.Oauth2Credentials.GetById(defaultCtx, oauth2Cred.ID)
+	oauth2Cred, err = client.Oauth2Credentials.GetByID(defaultCtx, oauth2Cred.ID)
 	require.NoError(err)
 	assert.Equal("foo-clientid", *oauth2Cred.ClientID)
 
-	oauth2Cred, err = client.Oauth2Credentials.GetById(defaultCtx, String("does-not-exist"))
+	oauth2Cred, err = client.Oauth2Credentials.GetByID(defaultCtx, String("does-not-exist"))
 	assert.Nil(oauth2Cred)
 	require.Error(err)
 
-	oauth2Cred, err = client.Oauth2Credentials.GetById(defaultCtx, String(""))
+	oauth2Cred, err = client.Oauth2Credentials.GetByID(defaultCtx, String(""))
 	assert.Nil(oauth2Cred)
 	require.Error(err)
 
