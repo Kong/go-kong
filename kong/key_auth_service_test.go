@@ -172,20 +172,20 @@ func TestKeyAuthGetByID(t *testing.T) {
 		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
 	})
 
-	t.Run("successful key-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("successful key-auth retrieval by ID", func(t *testing.T) {
 		searchKeyAuth, err := client.KeyAuths.GetByID(defaultCtx, keyAuth.ID)
 		require.NoError(t, err)
 		require.NotNil(t, searchKeyAuth)
 		require.Equal(t, "my-apikey", *searchKeyAuth.Key)
 	})
 
-	t.Run("unsuccessful key-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("unsuccessful key-auth retrieval by ID", func(t *testing.T) {
 		searchKeyAuth, err := client.KeyAuths.GetByID(defaultCtx, String("does-not-exist"))
 		require.Nil(t, searchKeyAuth)
 		require.Error(t, err)
 	})
 
-	t.Run("unsuccessful key-auth retrieval using empty string", func(_ *testing.T) {
+	t.Run("unsuccessful key-auth retrieval using empty string", func(t *testing.T) {
 		searchKeyAuth, err := client.KeyAuths.GetByID(defaultCtx, String(""))
 		require.Nil(t, searchKeyAuth)
 		require.Error(t, err)

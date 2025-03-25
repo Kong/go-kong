@@ -175,20 +175,20 @@ func TestHMACAuthGetByID(t *testing.T) {
 		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
 	})
 
-	t.Run("successful hmac-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("successful hmac-auth retrieval by ID", func(t *testing.T) {
 		hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, hmacAuth.ID)
 		require.NoError(t, err)
 		require.NotNil(t, hmacAuth)
 		require.Equal(t, "my-username", *hmacAuth.Username)
 	})
 
-	t.Run("unsuccessful hmac-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("unsuccessful hmac-auth retrieval by ID", func(t *testing.T) {
 		hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, String("does-not-exist"))
 		require.Nil(t, hmacAuth)
 		require.Error(t, err)
 	})
 
-	t.Run("unsuccessful hmac-auth retrieval when empty string is passed", func(_ *testing.T) {
+	t.Run("unsuccessful hmac-auth retrieval when empty string is passed", func(t *testing.T) {
 		hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, String(""))
 		require.Nil(t, hmacAuth)
 		require.Error(t, err)

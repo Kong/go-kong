@@ -187,20 +187,20 @@ func TestBasicAuthGetByID(t *testing.T) {
 		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
 	})
 
-	t.Run("successful basic-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("successful basic-auth retrieval by ID", func(t *testing.T) {
 		basicAuth, err = client.BasicAuths.GetByID(defaultCtx, basicAuth.ID)
 		require.NoError(t, err)
 		require.NotNil(t, basicAuth)
 		require.Equal(t, "my-username", *basicAuth.Username)
 	})
 
-	t.Run("unsuccessful basic-auth retrieval using invalid ID", func(_ *testing.T) {
+	t.Run("unsuccessful basic-auth retrieval using invalid ID", func(t *testing.T) {
 		basicAuth, err = client.BasicAuths.GetByID(defaultCtx, String("does-not-exist"))
 		require.Nil(t, basicAuth)
 		require.Error(t, err)
 	})
 
-	t.Run("unsuccessful basic-auth retrieval using empty string as ID", func(_ *testing.T) {
+	t.Run("unsuccessful basic-auth retrieval using empty string as ID", func(t *testing.T) {
 		basicAuth, err = client.BasicAuths.GetByID(defaultCtx, String(""))
 		require.Nil(t, basicAuth)
 		require.Error(t, err)

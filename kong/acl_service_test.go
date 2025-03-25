@@ -167,20 +167,20 @@ func TestACLGroupGetByID(t *testing.T) {
 		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
 	})
 
-	t.Run("successful ACL retrieval by ID", func(_ *testing.T) {
+	t.Run("successful ACL retrieval by ID", func(t *testing.T) {
 		aclGroup, err := client.ACLs.GetByID(defaultCtx, acl.ID)
 		require.NoError(t, err)
 		require.NotNil(t, aclGroup)
 		require.Equal(t, "my-group", *aclGroup.Group)
 	})
 
-	t.Run("unsuccessful ACL retrieval using invalid ID", func(_ *testing.T) {
+	t.Run("unsuccessful ACL retrieval using invalid ID", func(t *testing.T) {
 		aclGroup, err := client.ACLs.GetByID(defaultCtx, String("does-not-exist"))
 		require.Nil(t, aclGroup)
 		require.Error(t, err)
 	})
 
-	t.Run("unsuccessful ACL retrieval using empty string", func(_ *testing.T) {
+	t.Run("unsuccessful ACL retrieval using empty string", func(t *testing.T) {
 		aclGroup, err := client.ACLs.GetByID(defaultCtx, String(""))
 		require.Nil(t, aclGroup)
 		require.Error(t, err)

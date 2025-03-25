@@ -173,20 +173,20 @@ func TestJWTGetByID(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, createdJWT)
 
-	t.Run("successful jwt-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("successful jwt-auth retrieval by ID", func(t *testing.T) {
 		jwt, err = client.JWTAuths.GetByID(defaultCtx, jwt.ID)
 		require.NoError(t, err)
 		require.NotNil(t, jwt)
 		require.Equal(t, "my-key", *jwt.Key)
 	})
 
-	t.Run("unsuccessful jwt-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("unsuccessful jwt-auth retrieval by ID", func(t *testing.T) {
 		jwt, err = client.JWTAuths.GetByID(defaultCtx, String("does-not-exist"))
 		require.Nil(t, jwt)
 		require.Error(t, err)
 	})
 
-	t.Run("unsuccessful jwt-auth retrieval using empty string", func(_ *testing.T) {
+	t.Run("unsuccessful jwt-auth retrieval using empty string", func(t *testing.T) {
 		jwt, err = client.JWTAuths.GetByID(defaultCtx, String(""))
 		require.Nil(t, jwt)
 		require.Error(t, err)
