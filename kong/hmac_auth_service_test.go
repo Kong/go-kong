@@ -144,14 +144,12 @@ func TestHMACAuthGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestHMACAuthGetByID(T *testing.T) {
-	RunWhenDBMode(T, "postgres")
-
-	require := require.New(T)
+func TestHMACAuthGetByID(t *testing.T) {
+	RunWhenDBMode(t, "postgres")
 
 	client, err := NewTestClient(nil, nil)
-	require.NoError(err)
-	require.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	uuid := uuid.NewString()
 	hmacAuth := &HMACAuth{
@@ -165,35 +163,35 @@ func TestHMACAuthGetByID(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	require.NoError(err)
-	require.NotNil(consumer)
+	require.NoError(t, err)
+	require.NotNil(t, consumer)
 
 	createdHMACAuth, err := client.HMACAuths.Create(defaultCtx,
 		consumer.ID, hmacAuth)
-	require.NoError(err)
-	require.NotNil(createdHMACAuth)
+	require.NoError(t, err)
+	require.NotNil(t, createdHMACAuth)
 
-	T.Cleanup(func() {
-		require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	t.Cleanup(func() {
+		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
 	})
 
-	T.Run("successful hmac-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("successful hmac-auth retrieval by ID", func(_ *testing.T) {
 		hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, hmacAuth.ID)
-		require.NoError(err)
-		require.NotNil(hmacAuth)
-		require.Equal("my-username", *hmacAuth.Username)
+		require.NoError(t, err)
+		require.NotNil(t, hmacAuth)
+		require.Equal(t, "my-username", *hmacAuth.Username)
 	})
 
-	T.Run("unsuccessful hmac-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("unsuccessful hmac-auth retrieval by ID", func(_ *testing.T) {
 		hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, String("does-not-exist"))
-		require.Nil(hmacAuth)
-		require.Error(err)
+		require.Nil(t, hmacAuth)
+		require.Error(t, err)
 	})
 
-	T.Run("unsuccessful hmac-auth retrieval when empty string is passed", func(_ *testing.T) {
+	t.Run("unsuccessful hmac-auth retrieval when empty string is passed", func(_ *testing.T) {
 		hmacAuth, err = client.HMACAuths.GetByID(defaultCtx, String(""))
-		require.Nil(hmacAuth)
-		require.Error(err)
+		require.Nil(t, hmacAuth)
+		require.Error(t, err)
 	})
 }
 

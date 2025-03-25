@@ -137,14 +137,12 @@ func TestACLGroupGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestACLGroupGetByID(T *testing.T) {
-	RunWhenDBMode(T, "postgres")
-
-	require := require.New(T)
+func TestACLGroupGetByID(t *testing.T) {
+	RunWhenDBMode(t, "postgres")
 
 	client, err := NewTestClient(nil, nil)
-	require.NoError(err)
-	require.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	uuid := uuid.NewString()
 	acl := &ACLGroup{
@@ -158,34 +156,34 @@ func TestACLGroupGetByID(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	require.NoError(err)
-	require.NotNil(consumer)
+	require.NoError(t, err)
+	require.NotNil(t, consumer)
 
 	createdACL, err := client.ACLs.Create(defaultCtx, consumer.ID, acl)
-	require.NoError(err)
-	require.NotNil(createdACL)
+	require.NoError(t, err)
+	require.NotNil(t, createdACL)
 
-	T.Cleanup(func() {
-		require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	t.Cleanup(func() {
+		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
 	})
 
-	T.Run("successful ACL retrieval by ID", func(_ *testing.T) {
+	t.Run("successful ACL retrieval by ID", func(_ *testing.T) {
 		aclGroup, err := client.ACLs.GetByID(defaultCtx, acl.ID)
-		require.NoError(err)
-		require.NotNil(aclGroup)
-		require.Equal("my-group", *aclGroup.Group)
+		require.NoError(t, err)
+		require.NotNil(t, aclGroup)
+		require.Equal(t, "my-group", *aclGroup.Group)
 	})
 
-	T.Run("unsuccessful ACL retrieval using invalid ID", func(_ *testing.T) {
+	t.Run("unsuccessful ACL retrieval using invalid ID", func(_ *testing.T) {
 		aclGroup, err := client.ACLs.GetByID(defaultCtx, String("does-not-exist"))
-		require.Nil(aclGroup)
-		require.Error(err)
+		require.Nil(t, aclGroup)
+		require.Error(t, err)
 	})
 
-	T.Run("unsuccessful ACL retrieval using empty string", func(_ *testing.T) {
+	t.Run("unsuccessful ACL retrieval using empty string", func(_ *testing.T) {
 		aclGroup, err := client.ACLs.GetByID(defaultCtx, String(""))
-		require.Nil(aclGroup)
-		require.Error(err)
+		require.Nil(t, aclGroup)
+		require.Error(t, err)
 	})
 }
 

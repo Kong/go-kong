@@ -141,14 +141,12 @@ func TestKeyAuthGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestKeyAuthGetByID(T *testing.T) {
-	RunWhenDBMode(T, "postgres")
-
-	require := require.New(T)
+func TestKeyAuthGetByID(t *testing.T) {
+	RunWhenDBMode(t, "postgres")
 
 	client, err := NewTestClient(nil, nil)
-	require.NoError(err)
-	require.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	uuid := uuid.NewString()
 	keyAuth := &KeyAuth{
@@ -162,35 +160,35 @@ func TestKeyAuthGetByID(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	require.NoError(err)
-	require.NotNil(consumer)
+	require.NoError(t, err)
+	require.NotNil(t, consumer)
 
 	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
 		consumer.ID, keyAuth)
-	require.NoError(err)
-	require.NotNil(createdKeyAuth)
+	require.NoError(t, err)
+	require.NotNil(t, createdKeyAuth)
 
-	T.Cleanup(func() {
-		require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	t.Cleanup(func() {
+		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
 	})
 
-	T.Run("successful key-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("successful key-auth retrieval by ID", func(_ *testing.T) {
 		searchKeyAuth, err := client.KeyAuths.GetByID(defaultCtx, keyAuth.ID)
-		require.NoError(err)
-		require.NotNil(searchKeyAuth)
-		require.Equal("my-apikey", *searchKeyAuth.Key)
+		require.NoError(t, err)
+		require.NotNil(t, searchKeyAuth)
+		require.Equal(t, "my-apikey", *searchKeyAuth.Key)
 	})
 
-	T.Run("unsuccessful key-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("unsuccessful key-auth retrieval by ID", func(_ *testing.T) {
 		searchKeyAuth, err := client.KeyAuths.GetByID(defaultCtx, String("does-not-exist"))
-		require.Nil(searchKeyAuth)
-		require.Error(err)
+		require.Nil(t, searchKeyAuth)
+		require.Error(t, err)
 	})
 
-	T.Run("unsuccessful key-auth retrieval using empty string", func(_ *testing.T) {
+	t.Run("unsuccessful key-auth retrieval using empty string", func(_ *testing.T) {
 		searchKeyAuth, err := client.KeyAuths.GetByID(defaultCtx, String(""))
-		require.Nil(searchKeyAuth)
-		require.Error(err)
+		require.Nil(t, searchKeyAuth)
+		require.Error(t, err)
 	})
 }
 

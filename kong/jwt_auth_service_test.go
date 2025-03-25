@@ -143,14 +143,12 @@ func TestJWTGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestJWTGetByID(T *testing.T) {
-	RunWhenDBMode(T, "postgres")
-
-	require := require.New(T)
+func TestJWTGetByID(t *testing.T) {
+	RunWhenDBMode(t, "postgres")
 
 	client, err := NewTestClient(nil, nil)
-	require.NoError(err)
-	require.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	uuid := uuid.NewString()
 	jwt := &JWTAuth{
@@ -163,35 +161,35 @@ func TestJWTGetByID(T *testing.T) {
 		Username: String("foo"),
 	}
 
-	T.Cleanup(func() {
-		require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	t.Cleanup(func() {
+		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
 	})
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	require.NoError(err)
-	require.NotNil(consumer)
+	require.NoError(t, err)
+	require.NotNil(t, consumer)
 
 	createdJWT, err := client.JWTAuths.Create(defaultCtx, consumer.ID, jwt)
-	require.NoError(err)
-	require.NotNil(createdJWT)
+	require.NoError(t, err)
+	require.NotNil(t, createdJWT)
 
-	T.Run("successful jwt-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("successful jwt-auth retrieval by ID", func(_ *testing.T) {
 		jwt, err = client.JWTAuths.GetByID(defaultCtx, jwt.ID)
-		require.NoError(err)
-		require.NotNil(jwt)
-		require.Equal("my-key", *jwt.Key)
+		require.NoError(t, err)
+		require.NotNil(t, jwt)
+		require.Equal(t, "my-key", *jwt.Key)
 	})
 
-	T.Run("unsuccessful jwt-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("unsuccessful jwt-auth retrieval by ID", func(_ *testing.T) {
 		jwt, err = client.JWTAuths.GetByID(defaultCtx, String("does-not-exist"))
-		require.Nil(jwt)
-		require.Error(err)
+		require.Nil(t, jwt)
+		require.Error(t, err)
 	})
 
-	T.Run("unsuccessful jwt-auth retrieval using empty string", func(_ *testing.T) {
+	t.Run("unsuccessful jwt-auth retrieval using empty string", func(_ *testing.T) {
 		jwt, err = client.JWTAuths.GetByID(defaultCtx, String(""))
-		require.Nil(jwt)
-		require.Error(err)
+		require.Nil(t, jwt)
+		require.Error(t, err)
 	})
 }
 

@@ -155,14 +155,12 @@ func TestBasicAuthGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestBasicAuthGetByID(T *testing.T) {
-	RunWhenDBMode(T, "postgres")
-
-	require := require.New(T)
+func TestBasicAuthGetByID(t *testing.T) {
+	RunWhenDBMode(t, "postgres")
 
 	client, err := NewTestClient(nil, nil)
-	require.NoError(err)
-	require.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	uuid := uuid.NewString()
 	basicAuth := &BasicAuth{
@@ -177,35 +175,35 @@ func TestBasicAuthGetByID(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	require.NoError(err)
-	require.NotNil(consumer)
+	require.NoError(t, err)
+	require.NotNil(t, consumer)
 
 	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx,
 		consumer.ID, basicAuth)
-	require.NoError(err)
-	require.NotNil(createdBasicAuth)
+	require.NoError(t, err)
+	require.NotNil(t, createdBasicAuth)
 
-	T.Cleanup(func() {
-		require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	t.Cleanup(func() {
+		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
 	})
 
-	T.Run("successful basic-auth retrieval by ID", func(_ *testing.T) {
+	t.Run("successful basic-auth retrieval by ID", func(_ *testing.T) {
 		basicAuth, err = client.BasicAuths.GetByID(defaultCtx, basicAuth.ID)
-		require.NoError(err)
-		require.NotNil(basicAuth)
-		require.Equal("my-username", *basicAuth.Username)
+		require.NoError(t, err)
+		require.NotNil(t, basicAuth)
+		require.Equal(t, "my-username", *basicAuth.Username)
 	})
 
-	T.Run("unsuccessful basic-auth retrieval using invalid ID", func(_ *testing.T) {
+	t.Run("unsuccessful basic-auth retrieval using invalid ID", func(_ *testing.T) {
 		basicAuth, err = client.BasicAuths.GetByID(defaultCtx, String("does-not-exist"))
-		require.Nil(basicAuth)
-		require.Error(err)
+		require.Nil(t, basicAuth)
+		require.Error(t, err)
 	})
 
-	T.Run("unsuccessful basic-auth retrieval using empty string as ID", func(_ *testing.T) {
+	t.Run("unsuccessful basic-auth retrieval using empty string as ID", func(_ *testing.T) {
 		basicAuth, err = client.BasicAuths.GetByID(defaultCtx, String(""))
-		require.Nil(basicAuth)
-		require.Error(err)
+		require.Nil(t, basicAuth)
+		require.Error(t, err)
 	})
 }
 

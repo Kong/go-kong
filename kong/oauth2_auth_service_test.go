@@ -186,14 +186,12 @@ func TestOauth2CredentialGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
-func TestOauth2CredentialGetByID(T *testing.T) {
-	RunWhenDBMode(T, "postgres")
-
-	require := require.New(T)
+func TestOauth2CredentialGetByID(t *testing.T) {
+	RunWhenDBMode(t, "postgres")
 
 	client, err := NewTestClient(nil, nil)
-	require.NoError(err)
-	require.NotNil(client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	uuid := uuid.NewString()
 	oauth2Cred := &Oauth2Credential{
@@ -209,35 +207,35 @@ func TestOauth2CredentialGetByID(T *testing.T) {
 	}
 
 	consumer, err = client.Consumers.Create(defaultCtx, consumer)
-	require.NoError(err)
-	require.NotNil(consumer)
+	require.NoError(t, err)
+	require.NotNil(t, consumer)
 
 	createdOauth2Credential, err := client.Oauth2Credentials.Create(defaultCtx,
 		consumer.ID, oauth2Cred)
-	require.NoError(err)
-	require.NotNil(createdOauth2Credential)
+	require.NoError(t, err)
+	require.NotNil(t, createdOauth2Credential)
 
-	T.Cleanup(func() {
-		require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+	t.Cleanup(func() {
+		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
 	})
 
-	T.Run("successful oauth retrieval by ID", func(_ *testing.T) {
+	t.Run("successful oauth retrieval by ID", func(_ *testing.T) {
 		oauth2Cred, err = client.Oauth2Credentials.GetByID(defaultCtx, oauth2Cred.ID)
-		require.NoError(err)
-		require.NotNil(oauth2Cred)
-		require.Equal("foo-clientid", *oauth2Cred.ClientID)
+		require.NoError(t, err)
+		require.NotNil(t, oauth2Cred)
+		require.Equal(t, "foo-clientid", *oauth2Cred.ClientID)
 	})
 
-	T.Run("unsuccessful oauth retrieval by ID", func(_ *testing.T) {
+	t.Run("unsuccessful oauth retrieval by ID", func(_ *testing.T) {
 		oauth2Cred, err = client.Oauth2Credentials.GetByID(defaultCtx, String("does-not-exist"))
-		require.Nil(oauth2Cred)
-		require.Error(err)
+		require.Nil(t, oauth2Cred)
+		require.Error(t, err)
 	})
 
-	T.Run("unsuccessful oauth retrieval using empty string", func(_ *testing.T) {
+	t.Run("unsuccessful oauth retrieval using empty string", func(_ *testing.T) {
 		oauth2Cred, err = client.Oauth2Credentials.GetByID(defaultCtx, String(""))
-		require.Nil(oauth2Cred)
-		require.Error(err)
+		require.Nil(t, oauth2Cred)
+		require.Error(t, err)
 	})
 }
 
