@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.65.0](#v0650)
 - [v0.64.1](#v0641)
 - [v0.64.0](#v0640)
 - [v0.63.0](#v0630)
@@ -78,6 +79,18 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.65.0]
+
+> Release date: 2025/03/27
+
+- Added a Client API (GetById) for the following credentials: [#526](https://github.com/Kong/go-kong/pull/526)
+  - `key-auth`
+  - `basic-auth`
+  - `hmac-auth`
+  - `oauth2`
+  - `jwt`
+  - `acl`
 
 ## [v0.64.1]
 
