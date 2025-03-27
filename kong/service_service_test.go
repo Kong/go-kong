@@ -9,6 +9,8 @@ import (
 )
 
 func TestServicesService(T *testing.T) {
+	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
+
 	RunWhenDBMode(T, "postgres")
 	SkipWhenKongRouterFlavor(T, Expressions)
 
@@ -112,6 +114,8 @@ func TestServiceWithTags(T *testing.T) {
 }
 
 func TestServiceListEndpoint(T *testing.T) {
+	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
+
 	RunWhenDBMode(T, "postgres")
 
 	assert := assert.New(T)

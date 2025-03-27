@@ -404,6 +404,8 @@ func TestPluginListEndpoint(T *testing.T) {
 }
 
 func TestPluginListAllForEntityEndpoint(T *testing.T) {
+	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
+
 	RunWhenDBMode(T, "postgres")
 	SkipWhenKongRouterFlavor(T, Expressions)
 

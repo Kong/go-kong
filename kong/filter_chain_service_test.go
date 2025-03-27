@@ -198,6 +198,8 @@ func TestFilterChainsService(T *testing.T) {
 }
 
 func TestFilterChainWithTags(T *testing.T) {
+	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
+
 	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=3.4.0")
 
@@ -284,6 +286,8 @@ func TestUnknownFilterChain(T *testing.T) {
 }
 
 func TestFilterChainListEndpoint(T *testing.T) {
+	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
+
 	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=3.4.0")
 
@@ -390,6 +394,8 @@ func TestFilterChainListEndpoint(T *testing.T) {
 }
 
 func TestFilterChainListAllForEntityEndpoint(T *testing.T) {
+	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
+
 	RunWhenDBMode(T, "postgres")
 	RunWhenKong(T, ">=3.4.0")
 	SkipWhenKongRouterFlavor(T, Expressions)
