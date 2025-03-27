@@ -37,9 +37,6 @@ function deploy_kong_postgres()
     -e "KONG_ENFORCE_RBAC=on" \
     -e "KONG_PORTAL=on" \
     -e "KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR}" \
-    -e "KONG_WASM=on" \
-    -e "KONG_WASM_FILTERS_PATH=/wasm/filters" \
-    -v "$KONG_WASM_FILTERS_PATH:/wasm/filters:ro" \
     -p 8000:8000 \
     -p 8443:8443 \
     -p 127.0.0.1:8001:8001 \
@@ -63,9 +60,6 @@ function deploy_kong_dbless()
     -e "KONG_ENFORCE_RBAC=on" \
     -e "KONG_PORTAL=on" \
     -e "KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR}" \
-    -e "KONG_WASM=on" \
-    -e "KONG_WASM_FILTERS_PATH=/wasm/filters" \
-    -v "$KONG_WASM_FILTERS_PATH:/wasm/filters:ro" \
     -p 8000:8000 \
     -p 8443:8443 \
     -p 127.0.0.1:8001:8001 \

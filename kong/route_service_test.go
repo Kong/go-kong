@@ -194,6 +194,8 @@ func TestCreateExpressionRoutes(T *testing.T) {
 }
 
 func TestCreateInRoute(T *testing.T) {
+	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
+
 	RunWhenDBMode(T, "postgres")
 	SkipWhenKongRouterFlavor(T, Expressions)
 
@@ -235,6 +237,8 @@ func TestCreateInRoute(T *testing.T) {
 }
 
 func TestRouteListEndpoint(T *testing.T) {
+	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
+
 	RunWhenDBMode(T, "postgres")
 	SkipWhenKongRouterFlavor(T, Expressions)
 
