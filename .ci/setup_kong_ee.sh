@@ -14,7 +14,6 @@ DATABASE_USER=kong
 DATABASE_NAME=kong
 KONG_DB_PASSWORD=kong
 KONG_PG_HOST=pg
-KONG_WASM_FILTERS_PATH=$PWD/assets/filters
 
 GATEWAY_CONTAINER_NAME=kong
 
@@ -48,9 +47,6 @@ function deploy_kong_ee()
     -e "KONG_PORTAL=on" \
     -e "KONG_ADMIN_GUI_SESSION_CONF={}" \
     -e "KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR}" \
-    -e "KONG_WASM=on" \
-    -e "KONG_WASM_FILTERS_PATH=/wasm/filters" \
-    -v "$KONG_WASM_FILTERS_PATH:/wasm/filters:ro" \
     -p 8000:8000 \
     -p 8443:8443 \
     -p 8001:8001 \
