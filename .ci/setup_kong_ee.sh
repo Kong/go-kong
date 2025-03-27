@@ -48,9 +48,6 @@ function deploy_kong_ee()
     -e "KONG_PORTAL=on" \
     -e "KONG_ADMIN_GUI_SESSION_CONF={}" \
     -e "KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR}" \
-    -e "KONG_WASM=on" \
-    -e "KONG_WASM_FILTERS_PATH=/wasm/filters" \
-    -v "$KONG_WASM_FILTERS_PATH:/wasm/filters:ro" \
     -p 8000:8000 \
     -p 8443:8443 \
     -p 8001:8001 \
