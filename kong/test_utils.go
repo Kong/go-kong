@@ -131,7 +131,7 @@ func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
 func RunWhenDBMode(t *testing.T, dbmode string) {
 	t.Helper()
 
-	dbMode, err := getKongConfigValue(t, "database")
+	dbMode, err := getKongConfigString(t, "database")
 	if err != nil {
 		t.Skip(err.Error())
 	}
@@ -151,7 +151,7 @@ const (
 func SkipWhenKongRouterFlavor(t *testing.T, flavor ...RouterFlavor) {
 	t.Helper()
 
-	routerFlavor, err := getKongConfigValue(t, "router_flavor")
+	routerFlavor, err := getKongConfigString(t, "router_flavor")
 	if err != nil {
 		t.Skip(err.Error())
 	}
@@ -165,7 +165,7 @@ func SkipWhenKongRouterFlavor(t *testing.T, flavor ...RouterFlavor) {
 func RunWhenKongRouterFlavor(t *testing.T, flavor RouterFlavor) {
 	t.Helper()
 
-	routerFlavor, err := getKongConfigValue(t, "router_flavor")
+	routerFlavor, err := getKongConfigString(t, "router_flavor")
 	if err != nil {
 		t.Skip(err.Error())
 	}
@@ -174,7 +174,20 @@ func RunWhenKongRouterFlavor(t *testing.T, flavor RouterFlavor) {
 	}
 }
 
-func getKongConfigValue(t *testing.T, key string) (string, error) {
+func RunWhenKongConfigEnabled(t *testing.T, key string) {
+	t.Helper()
+
+	value, err := getKongConfigBoolean(t, key)
+	if err != nil {
+		t.Skip(err.Error())
+	}
+
+	if !value {
+		t.Skipf("%q is not enabled", key)
+	}
+}
+
+func getKongConfig(t *testing.T) map[string]any {
 	t.Helper()
 	client, err := NewTestClient(nil, nil)
 	if err != nil {
@@ -187,17 +200,54 @@ func getKongConfigValue(t *testing.T, key string) (string, error) {
 
 	config, ok := info["configuration"]
 	if !ok {
-		return "", fmt.Errorf("failed to find %q config key in kong configuration", key)
+		t.Error("failed to find `configuration` key in kong admin response")
 	}
 
 	configuration, ok := config.(map[string]any)
 	if !ok {
-		return "", fmt.Errorf("%q key is not a map but %T", key, config)
+		t.Errorf("`configuration` is not a map but %T", config)
 	}
 
-	value, ok := configuration[key].(string)
+	return configuration
+}
+
+func getKongConfigValue(t *testing.T, key string) (interface{}, error) {
+	t.Helper()
+
+	configuration := getKongConfig(t)
+	value, ok := configuration[key]
 	if !ok {
-		return "", fmt.Errorf("failed to find %q config key in kong configuration", key)
+		return nil, fmt.Errorf("`configuration.%s` does not exist", key)
 	}
 	return value, nil
+}
+
+func getKongConfigString(t *testing.T, key string) (string, error) {
+	t.Helper()
+
+	value, err := getKongConfigValue(t, key)
+	if err != nil {
+		return "", err
+	}
+
+	str, ok := value.(string)
+	if !ok {
+		return "", fmt.Errorf("`configuration.%s` is not a string but a %T", key, value)
+	}
+	return str, nil
+}
+
+func getKongConfigBoolean(t *testing.T, key string) (bool, error) {
+	t.Helper()
+
+	value, err := getKongConfigValue(t, key)
+	if err != nil {
+		return false, err
+	}
+
+	boolean, ok := value.(bool)
+	if !ok {
+		return false, fmt.Errorf("`configuration.%s` is not a boolean but a %T", key, value)
+	}
+	return boolean, nil
 }
