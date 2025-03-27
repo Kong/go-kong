@@ -186,6 +186,59 @@ func TestOauth2CredentialGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
+func TestOauth2CredentialGetByID(t *testing.T) {
+	RunWhenDBMode(t, "postgres")
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	uuid := uuid.NewString()
+	oauth2Cred := &Oauth2Credential{
+		ID:           String(uuid),
+		Name:         String("name-foo"),
+		ClientID:     String("foo-clientid"),
+		RedirectURIs: StringSlice("http://foo.com", "http://bar.com"),
+	}
+
+	// consumer for the oauth2 cred
+	consumer := &Consumer{
+		Username: String("foo"),
+	}
+
+	consumer, err = client.Consumers.Create(defaultCtx, consumer)
+	require.NoError(t, err)
+	require.NotNil(t, consumer)
+
+	createdOauth2Credential, err := client.Oauth2Credentials.Create(defaultCtx,
+		consumer.ID, oauth2Cred)
+	require.NoError(t, err)
+	require.NotNil(t, createdOauth2Credential)
+
+	t.Cleanup(func() {
+		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
+	})
+
+	t.Run("successful oauth retrieval by ID", func(t *testing.T) {
+		oauth2Cred, err = client.Oauth2Credentials.GetByID(defaultCtx, oauth2Cred.ID)
+		require.NoError(t, err)
+		require.NotNil(t, oauth2Cred)
+		require.Equal(t, "foo-clientid", *oauth2Cred.ClientID)
+	})
+
+	t.Run("unsuccessful oauth retrieval by ID", func(t *testing.T) {
+		oauth2Cred, err = client.Oauth2Credentials.GetByID(defaultCtx, String("does-not-exist"))
+		require.Nil(t, oauth2Cred)
+		require.Error(t, err)
+	})
+
+	t.Run("unsuccessful oauth retrieval using empty string", func(t *testing.T) {
+		oauth2Cred, err = client.Oauth2Credentials.GetByID(defaultCtx, String(""))
+		require.Nil(t, oauth2Cred)
+		require.Error(t, err)
+	})
+}
+
 func TestOauth2CredentialUpdate(T *testing.T) {
 	RunWhenKong(T, "<=2.0.5")
 	assert := assert.New(T)

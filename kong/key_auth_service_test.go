@@ -141,6 +141,57 @@ func TestKeyAuthGet(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
 }
 
+func TestKeyAuthGetByID(t *testing.T) {
+	RunWhenDBMode(t, "postgres")
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	uuid := uuid.NewString()
+	keyAuth := &KeyAuth{
+		ID:  String(uuid),
+		Key: String("my-apikey"),
+	}
+
+	// consumer for the key-auth:
+	consumer := &Consumer{
+		Username: String("foo"),
+	}
+
+	consumer, err = client.Consumers.Create(defaultCtx, consumer)
+	require.NoError(t, err)
+	require.NotNil(t, consumer)
+
+	createdKeyAuth, err := client.KeyAuths.Create(defaultCtx,
+		consumer.ID, keyAuth)
+	require.NoError(t, err)
+	require.NotNil(t, createdKeyAuth)
+
+	t.Cleanup(func() {
+		require.NoError(t, client.Consumers.Delete(defaultCtx, consumer.ID))
+	})
+
+	t.Run("successful key-auth retrieval by ID", func(t *testing.T) {
+		searchKeyAuth, err := client.KeyAuths.GetByID(defaultCtx, keyAuth.ID)
+		require.NoError(t, err)
+		require.NotNil(t, searchKeyAuth)
+		require.Equal(t, "my-apikey", *searchKeyAuth.Key)
+	})
+
+	t.Run("unsuccessful key-auth retrieval by ID", func(t *testing.T) {
+		searchKeyAuth, err := client.KeyAuths.GetByID(defaultCtx, String("does-not-exist"))
+		require.Nil(t, searchKeyAuth)
+		require.Error(t, err)
+	})
+
+	t.Run("unsuccessful key-auth retrieval using empty string", func(t *testing.T) {
+		searchKeyAuth, err := client.KeyAuths.GetByID(defaultCtx, String(""))
+		require.Nil(t, searchKeyAuth)
+		require.Error(t, err)
+	})
+}
+
 func TestKeyAuthUpdate(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 

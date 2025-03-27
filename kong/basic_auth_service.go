@@ -12,6 +12,8 @@ type AbstractBasicAuthService interface {
 	Create(ctx context.Context, consumerUsernameOrID *string, basicAuth *BasicAuth) (*BasicAuth, error)
 	// Get fetches a basic-auth credential from Kong.
 	Get(ctx context.Context, consumerUsernameOrID, usernameOrID *string) (*BasicAuth, error)
+	// GetByID fetches a basic-auth credential from Kong using ID.
+	GetByID(ctx context.Context, id *string) (*BasicAuth, error)
 	// Update updates a basic-auth credential in Kong
 	Update(ctx context.Context, consumerUsernameOrID *string, basicAuth *BasicAuth) (*BasicAuth, error)
 	// Delete deletes a basic-auth credential in Kong
@@ -56,6 +58,25 @@ func (s *BasicAuthService) Get(ctx context.Context,
 ) (*BasicAuth, error) {
 	cred, err := s.client.credentials.Get(ctx, "basic-auth",
 		consumerUsernameOrID, usernameOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	var basicAuth BasicAuth
+	err = json.Unmarshal(cred, &basicAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	return &basicAuth, nil
+}
+
+// GetByID fetches a basic-auth credential from Kong using ID.
+func (s *BasicAuthService) GetByID(ctx context.Context,
+	id *string,
+) (*BasicAuth, error) {
+	cred, err := s.client.credentials.GetByID(ctx, "basic-auth",
+		id)
 	if err != nil {
 		return nil, err
 	}

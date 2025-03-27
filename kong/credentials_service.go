@@ -12,9 +12,11 @@ type abstractCredentialService interface {
 	// Create creates a credential in Kong of type credType.
 	Create(ctx context.Context, credType string, consumerUsernameOrID *string,
 		credential interface{}) (json.RawMessage, error)
-	// Get fetches a credential of credType with credIdentifier from Kong.
+	// Get fetches a credential of credType with consumerIdentifier and credIdentifier from Kong.
 	Get(ctx context.Context, credType string, consumerUsernameOrID *string,
 		credIdentifier *string) (json.RawMessage, error)
+	// GetByID fetches a credential of credType with ID from Kong.
+	GetByID(ctx context.Context, credType string, credIdentifier *string) (json.RawMessage, error)
 	// Update updates credential in Kong
 	Update(ctx context.Context, credType string, consumerUsernameOrID *string,
 		credential interface{}) (json.RawMessage, error)
@@ -33,6 +35,16 @@ var credPath = map[string]string{
 	"acl":        "acls",
 	"oauth2":     "oauth2",
 	"mtls-auth":  "mtls-auth",
+}
+
+var credPathAsParentResource = map[string]string{
+	"key-auth":   "key-auths",
+	"basic-auth": "basic-auths",
+	"hmac-auth":  "hmac-auths",
+	"jwt-auth":   "jwts",
+	"acl":        "acls",
+	"oauth2":     "oauth2",
+	"mtls-auth":  "mtls-auths",
 }
 
 // Create creates a credential in Kong of type credType.
@@ -78,7 +90,7 @@ func (s *credentialService) Create(ctx context.Context, credType string,
 	return createdCredential, nil
 }
 
-// Get fetches a credential of credType with credIdentifier from Kong.
+// Get fetches a credential of credType with credIdentifier and consumerIdentifier from Kong.
 func (s *credentialService) Get(ctx context.Context, credType string,
 	consumerUsernameOrID *string,
 	credIdentifier *string,
@@ -95,6 +107,32 @@ func (s *credentialService) Get(ctx context.Context, credType string,
 		return nil, fmt.Errorf("unknown credential type: %v", credType)
 	}
 	endpoint := "/consumers/" + *consumerUsernameOrID + "/" +
+		subPath + "/" + *credIdentifier
+	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var cred json.RawMessage
+	_, err = s.client.Do(ctx, req, &cred)
+	if err != nil {
+		return nil, err
+	}
+	return cred, nil
+}
+
+// GetByID fetches a credential of credType with ID from Kong.
+func (s *credentialService) GetByID(ctx context.Context, credType string, credIdentifier *string,
+) (json.RawMessage, error) {
+	if isEmptyString(credIdentifier) {
+		return nil, fmt.Errorf("credIdentifier cannot be nil for GetByID operation")
+	}
+
+	subPath, ok := credPathAsParentResource[credType]
+	if !ok {
+		return nil, fmt.Errorf("unknown credential type: %v", credType)
+	}
+	endpoint := "/" +
 		subPath + "/" + *credIdentifier
 	req, err := s.client.NewRequest("GET", endpoint, nil, nil)
 	if err != nil {
