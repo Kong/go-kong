@@ -84,7 +84,7 @@
 
 > Release date: 2025/03/27
 
-- Added a Client API (GetById) for the following credentials:
+- Added a Client API (GetById) for the following credentials: [#526](https://github.com/Kong/go-kong/pull/526)
   - `key-auth`
   - `basic-auth`
   - `hmac-auth`
