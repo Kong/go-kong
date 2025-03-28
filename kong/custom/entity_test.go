@@ -28,5 +28,5 @@ func TestEntityObject(t *testing.T) {
 
 	assert.Len(e.GetAllRelations(), 2)
 
-	assert.Equal("", e.GetRelation("none"))
+	assert.Empty(e.GetRelation("none"))
 }

@@ -1,78 +1,87 @@
+version: "2"
 run:
-  timeout: 5m
+  timeout: 8m
   build-tags:
-  - enterprise
-
+    - enterprise
 linters:
   enable:
-  - asciicheck
-  - bodyclose
-  - contextcheck
-  - dogsled
-  - durationcheck
-  - errcheck
-  - errname
-  - errorlint
-  - exhaustive
-  # TODO: enable when we set minimal Go version to 1.23
-  # - copyloopvar
-  - gci
-  - gochecknoinits
-  - gofmt
-  - gofumpt
-  - goimports
-  - mnd
-  - gomodguard
-  - gosec
-  - gosimple
-  - govet
-  - importas
-  - ineffassign
-  - lll
-  - misspell
-  - nakedret
-  - nilerr
-  - nolintlint
-  - predeclared
-  - revive
-  - staticcheck
-  - stylecheck
-  - typecheck
-  - unconvert
-  - unparam
-  - unused
-  - wastedassign
-  - testifylint
-
+    - asciicheck
+    - bodyclose
+    - contextcheck
+    - dogsled
+    - durationcheck
+    - errname
+    - errorlint
+    - exhaustive
+    - gochecknoinits
+    - gomodguard
+    - gosec
+    - importas
+    - lll
+    - misspell
+    - mnd
+    - nakedret
+    - nilerr
+    - nolintlint
+    - predeclared
+    - revive
+    - staticcheck
+    - testifylint
+    - unconvert
+    - unparam
+    - wastedassign
+  settings:
+    gomodguard:
+      blocked:
+        modules:
+          - github.com/ghodss/yaml:
+              recommendations:
+                - sigs.k8s.io/yaml
+          - gopkg.in/yaml.v2:
+              recommendations:
+                - sigs.k8s.io/yaml
+          - gopkg.in/yaml.v3:
+              recommendations:
+                - sigs.k8s.io/yaml
+          - github.com/pkg/errors:
+              recommendations:
+                - fmt
+                - errors
+          - golang.org/x/net/context:
+              recommendations:
+                - context
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - lll
+        source: "^\t*// "
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
   max-same-issues: 0
-  exclude-rules:
-  - linters:
-    - lll
-    source: "^\t*// "
-
-linters-settings:
-  gci:
-    sections:
-      - standard
-      - default
-      - prefix(github.com/kong)
-  gomodguard:
-    blocked:
-      modules:
-      - github.com/ghodss/yaml:
-          recommendations:
-          - sigs.k8s.io/yaml
-      - gopkg.in/yaml.v2:
-          recommendations:
-          - sigs.k8s.io/yaml
-      - gopkg.in/yaml.v3:
-          recommendations:
-          - sigs.k8s.io/yaml
-      - github.com/pkg/errors:
-          recommendations:
-          - fmt
-          - errors
-      - golang.org/x/net/context:
-          recommendations:
-          - context
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/kong)
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

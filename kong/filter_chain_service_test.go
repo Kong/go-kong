@@ -465,7 +465,7 @@ func TestFilterChainListAllForEntityEndpoint(T *testing.T) {
 	filterChainsFromKong, err := client.FilterChains.ListAll(defaultCtx)
 	require.NoError(T, err)
 	assert.NotNil(filterChainsFromKong)
-	assert.Equal(len(filterChains), len(filterChainsFromKong))
+	assert.Len(filterChains, len(filterChainsFromKong))
 
 	// check if we see all filterChains
 	assert.True(compareFilterChains(T, filterChains, filterChainsFromKong))

@@ -491,7 +491,7 @@ func TestPluginListAllForEntityEndpoint(T *testing.T) {
 	pluginsFromKong, err := client.Plugins.ListAll(defaultCtx)
 	require.NoError(err)
 	assert.NotNil(pluginsFromKong)
-	assert.Equal(len(plugins), len(pluginsFromKong))
+	assert.Len(plugins, len(pluginsFromKong))
 
 	// check if we see all plugins
 	assert.True(comparePlugins(T, plugins, pluginsFromKong))

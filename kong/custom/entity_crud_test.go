@@ -20,7 +20,7 @@ func TestRender(t *testing.T) {
 
 	result, err = render("/consumers/${random_id}/key-auths", entity)
 	require.Error(t, err)
-	assert.Equal("", result)
+	assert.Empty(result)
 }
 
 func TestEntityCRUDDefinition(t *testing.T) {
