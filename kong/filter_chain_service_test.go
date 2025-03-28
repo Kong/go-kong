@@ -8,12 +8,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFilterChainsService(T *testing.T) {
-	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
+func runWhenWasmIsAvailable(t *testing.T) {
+	t.Helper()
+	RunWhenDBMode(t, "postgres")
+	SkipWhenKongRouterFlavor(t, Expressions)
 
-	RunWhenDBMode(T, "postgres")
-	RunWhenKong(T, ">=3.4.0")
-	SkipWhenKongRouterFlavor(T, Expressions)
+	RunWhenKong(t, ">=3.4.0 <3.11.0")
+
+	// 3.10 was the last release with wasm, but this check is still needed for
+	// nightly images that haven't been updated to 3.11 yet
+	RunWhenKongConfigEnabled(t, "wasm")
+}
+
+func TestFilterChainsService(T *testing.T) {
+	runWhenWasmIsAvailable(T)
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -198,10 +206,7 @@ func TestFilterChainsService(T *testing.T) {
 }
 
 func TestFilterChainWithTags(T *testing.T) {
-	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
-
-	RunWhenDBMode(T, "postgres")
-	RunWhenKong(T, ">=3.4.0")
+	runWhenWasmIsAvailable(T)
 
 	require := require.New(T)
 
@@ -245,8 +250,7 @@ func TestFilterChainWithTags(T *testing.T) {
 }
 
 func TestUnknownFilterChain(T *testing.T) {
-	RunWhenDBMode(T, "postgres")
-	RunWhenKong(T, ">=3.4.0")
+	runWhenWasmIsAvailable(T)
 
 	assert := assert.New(T)
 
@@ -286,10 +290,7 @@ func TestUnknownFilterChain(T *testing.T) {
 }
 
 func TestFilterChainListEndpoint(T *testing.T) {
-	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
-
-	RunWhenDBMode(T, "postgres")
-	RunWhenKong(T, ">=3.4.0")
+	runWhenWasmIsAvailable(T)
 
 	assert := assert.New(T)
 
@@ -394,11 +395,7 @@ func TestFilterChainListEndpoint(T *testing.T) {
 }
 
 func TestFilterChainListAllForEntityEndpoint(T *testing.T) {
-	T.Skip("Skipping until https://github.com/Kong/go-kong/issues/531 is resolved")
-
-	RunWhenDBMode(T, "postgres")
-	RunWhenKong(T, ">=3.4.0")
-	SkipWhenKongRouterFlavor(T, Expressions)
+	runWhenWasmIsAvailable(T)
 
 	assert := assert.New(T)
 
