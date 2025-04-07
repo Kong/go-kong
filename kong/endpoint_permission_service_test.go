@@ -2,6 +2,7 @@ package kong
 
 import (
 	"sort"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -86,4 +87,57 @@ func TestRBACEndpointPermissionservice(T *testing.T) {
 	require.NoError(T, err)
 	err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
 	require.NoError(T, err)
+}
+
+func TestRBACEndpointPermissionList(t *testing.T) {
+	RunWhenEnterprise(t, ">=0.33.0", RequiredFeatures{RBAC: true})
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	assert.NotNil(t, client)
+
+	pageSize := 1000
+	workspace := &Workspace{
+		Name: String("rbac-endpoint-permission-list-endpoint-test-workspace"),
+	}
+
+	createdWorkspace, err := client.Workspaces.Create(defaultCtx, workspace)
+	require.NoError(t, err)
+	assert.NotNil(t, createdWorkspace)
+
+	workspaceClient, err := NewTestClient(
+		String(defaultBaseURL+"/rbac-endpoint-permission-list-endpoint-test-workspace"), nil)
+	require.NoError(t, err)
+
+	role, err := workspaceClient.RBACRoles.Create(defaultCtx, &RBACRole{Name: String("roleA")})
+	require.NoError(t, err)
+	assert.NotNil(t, role)
+
+	t.Run("load all pages", func(t *testing.T) {
+		for i := 0; i < pageSize+1; i++ {
+			endpoint := strconv.Itoa(i)
+			endpointPermission, err := workspaceClient.RBACEndpointPermissions.Create(defaultCtx, &RBACEndpointPermission{
+				Role: &RBACRole{
+					ID: role.ID,
+				},
+				Endpoint: String("/rbac_" + endpoint),
+				Actions: []*string{
+					String("create"),
+					String("read"),
+				},
+			})
+			require.NoError(t, err)
+			assert.NotNil(t, endpointPermission)
+		}
+
+		endpointPermissionsFromKong, err := workspaceClient.RBACEndpointPermissions.ListAllForRole(defaultCtx, role.ID)
+		require.NoError(t, err)
+		assert.NotNil(t, endpointPermissionsFromKong)
+		assert.Len(t, endpointPermissionsFromKong, pageSize+1)
+
+		err = workspaceClient.RBACRoles.Delete(defaultCtx, role.ID)
+		require.NoError(t, err)
+		err = client.Workspaces.Delete(defaultCtx, createdWorkspace.ID)
+		require.NoError(t, err)
+	})
 }

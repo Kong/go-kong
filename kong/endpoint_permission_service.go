@@ -144,10 +144,18 @@ func (s *RBACEndpointPermissionService) Delete(ctx context.Context,
 func (s *RBACEndpointPermissionService) ListAllForRole(ctx context.Context,
 	roleNameOrID *string,
 ) ([]*RBACEndpointPermission, error) {
-	data, _, err := s.client.list(ctx, fmt.Sprintf("/rbac/roles/%v/endpoints", *roleNameOrID), nil)
-	if err != nil {
-		return nil, err
+	var data, page []json.RawMessage
+	var err error
+	opt := &ListOpt{Size: pageSize}
+
+	for opt != nil {
+		page, opt, err = s.client.list(ctx, fmt.Sprintf("/rbac/roles/%v/endpoints", *roleNameOrID), opt)
+		if err != nil {
+			return nil, err
+		}
+		data = append(data, page...)
 	}
+
 	var eps []*RBACEndpointPermission
 	for _, object := range data {
 		b, err := object.MarshalJSON()
