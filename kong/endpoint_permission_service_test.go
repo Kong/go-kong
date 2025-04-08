@@ -96,7 +96,6 @@ func TestRBACEndpointPermissionList(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, client)
 
-	pageSize := 1000
 	workspace := &Workspace{
 		Name: String("rbac-endpoint-permission-list-endpoint-test-workspace"),
 	}
