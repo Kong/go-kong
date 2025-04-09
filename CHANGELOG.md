@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.65.1](#v0651)
 - [v0.65.0](#v0650)
 - [v0.64.1](#v0641)
 - [v0.64.0](#v0640)
@@ -79,6 +80,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.65.1]
+
+> Release date: 2025/04/09
+
+- ListAllForRole function now loads all pages of endpoint permissions for an RBAC role
+  [#533](https://github.com/Kong/go-kong/pull/533)
 
 ## [v0.65.0]
 
