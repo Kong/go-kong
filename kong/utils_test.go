@@ -4210,10 +4210,15 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 		},
 	}
 	// Kong Enterprise added `throttling` field and assigned default values since 3.11.
-	// We ignore the field here to be compatible with 3.10.
-	// TODO: set default value in the expected plugin configuration when Kong version >= 3.11?
-	ignoreThrottling := func(k string, _ any) bool {
-		return k == "throttling"
+	// We need to add the default value of `throttling` when Kong version >= 3.11.0.
+	kongVersion := GetVersionForTesting(t)
+	rlaHasThrottlingVersionRange := MustNewRange(">=3.11.0")
+	defaultRLAThrotlling := Configuration{
+		"enabled":         false,
+		"dictionary_name": "kong_rate_limiting_throttling",
+		"interval":        5,
+		"retry_times":     3,
+		"queue_limit":     3,
 	}
 
 	for _, tc := range tests {
@@ -4228,8 +4233,12 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 			}
 
 			require.NoError(t, err)
+			// Add the default value of `throttling` to the expected configuration of plugin.
+			if rlaHasThrottlingVersionRange(kongVersion) {
+				tc.expectedPlugin.Config["throttling"] = defaultRLAThrotlling
+			}
 			opts := cmpopts.IgnoreFields(*tc.plugin, "Enabled", "Protocols")
-			if diff := cmp.Diff(tc.plugin, tc.expectedPlugin, opts, cmpopts.IgnoreMapEntries(ignoreThrottling)); diff != "" {
+			if diff := cmp.Diff(tc.plugin, tc.expectedPlugin, opts); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
