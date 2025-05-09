@@ -12,11 +12,8 @@ type RequiredFeatures struct {
 	RBAC   bool
 }
 
-// RunWhenKong skips the current test if the version of Kong doesn't
-// fall in the versionRange.
-// This helper function can be used in tests to write version specific
-// tests for Kong.
-func RunWhenKong(t *testing.T, versionRange string) {
+// GetVersionForTesting returns the semantic version of Kong.
+func GetVersionForTesting(t *testing.T) Version {
 	t.Helper()
 
 	client, err := NewTestClient(nil, nil)
@@ -32,12 +29,23 @@ func RunWhenKong(t *testing.T, versionRange string) {
 	if err != nil {
 		t.Error(err)
 	}
+	return currentVersion
+}
+
+// RunWhenKong skips the current test if the version of Kong doesn't
+// fall in the versionRange.
+// This helper function can be used in tests to write version specific
+// tests for Kong.
+func RunWhenKong(t *testing.T, versionRange string) {
+	t.Helper()
+
+	currentVersion := GetVersionForTesting(t)
 	r, err := NewRange(versionRange)
 	if err != nil {
 		t.Error(err)
 	}
 	if !r(currentVersion) {
-		t.Skipf("kong version %s not in range %s", version, versionRange)
+		t.Skipf("kong version %s not in range %s", currentVersion, versionRange)
 	}
 }
 
