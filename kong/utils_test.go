@@ -4209,6 +4209,12 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 			errString: "no 'config' field found in schema",
 		},
 	}
+	// Kong Enterprise added `throttling` field and assigned default values since 3.11.
+	// We ignore the field here to be compatible with 3.10.
+	// TODO: set default value in the expected plugin configuration when Kong version >= 3.11?
+	ignoreThrottling := func(k string, _ any) bool {
+		return k == "throttling"
+	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -4223,7 +4229,7 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 
 			require.NoError(t, err)
 			opts := cmpopts.IgnoreFields(*tc.plugin, "Enabled", "Protocols")
-			if diff := cmp.Diff(tc.plugin, tc.expectedPlugin, opts); diff != "" {
+			if diff := cmp.Diff(tc.plugin, tc.expectedPlugin, opts, cmpopts.IgnoreMapEntries(ignoreThrottling)); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
