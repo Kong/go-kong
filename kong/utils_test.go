@@ -4213,12 +4213,13 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 	// We need to add the default value of `throttling` when Kong version >= 3.11.0.
 	kongVersion := GetVersionForTesting(t)
 	rlaHasThrottlingVersionRange := MustNewRange(">=3.11.0")
-	defaultRLAThrotlling := Configuration{
+	defaultRLAThrotlling := map[string]any{
 		"enabled":         false,
 		"dictionary_name": "kong_rate_limiting_throttling",
-		"interval":        5,
-		"retry_times":     3,
-		"queue_limit":     3,
+		// Numbers are converted to `float64` type in `map[string]interface{}.
+		"interval":    float64(5),
+		"queue_limit": float64(5),
+		"retry_times": float64(3),
 	}
 
 	for _, tc := range tests {
