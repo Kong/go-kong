@@ -45,7 +45,7 @@ func RunWhenKong(t *testing.T, versionRange string) {
 		t.Error(err)
 	}
 	if !r(currentVersion) {
-		t.Skipf("kong version %s not in range %s", currentVersion.String(), versionRange)
+		t.Skipf("kong version %s not in range %s", currentVersion, versionRange)
 	}
 }
 
