@@ -3,7 +3,6 @@ package kong
 import (
 	"context"
 	"fmt"
-	"net/url"
 )
 
 // AbstractConsumerGroupConsumerService handles ConsumerGroups' Consumers in Kong.
@@ -34,11 +33,9 @@ func (s *ConsumerGroupConsumerService) Create(ctx context.Context,
 	}
 
 	queryPath := "/consumer_groups/" + *consumerGroupNameOrID + "/consumers"
+	consumerGroupConsumerReq := &consumerGroupConsumerRequestBody{Consumer: consumerNameOrID}
 
-	data := url.Values{}
-	data.Set("consumer", *consumerNameOrID)
-
-	req, err := s.client.NewRequest("POST", queryPath, nil, data)
+	req, err := s.client.NewRequest("POST", queryPath, nil, consumerGroupConsumerReq)
 	if err != nil {
 		return nil, err
 	}
