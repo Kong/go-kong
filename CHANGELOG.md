@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.66.0](#v0660)
 - [v0.65.1](#v0651)
 - [v0.65.0](#v0650)
 - [v0.64.1](#v0641)
@@ -81,7 +82,9 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
-## Unreleased
+## [v0.66.0]
+
+> Release date: 2025/05/12
 
 - Implement `FillID` method for plugins. It generates ID by plugin's name,
   service, route, consumer, and consumer group (if exists).
@@ -1047,6 +1050,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.66.0]: https://github.com/Kong/go-kong/compare/v0.65.1...v0.66.0
 [v0.65.1]: https://github.com/Kong/go-kong/compare/v0.65.0...v0.65.1
 [v0.65.0]: https://github.com/Kong/go-kong/compare/v0.64.1...v0.65.0
 [v0.64.1]: https://github.com/Kong/go-kong/compare/v0.64.0...v0.64.1
