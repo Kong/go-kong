@@ -146,9 +146,6 @@ func (p *Plugin) FillID(workspace string) error {
 	}
 
 	toHash := *p.Name
-	if p.InstanceName != nil && len(*p.InstanceName) > 0 {
-		toHash = toHash + ":instance_name/" + *p.InstanceName
-	}
 	if p.Service != nil {
 		toHash = toHash + ":service/" + p.Service.FriendlyName()
 	}

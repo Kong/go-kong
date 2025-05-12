@@ -267,7 +267,7 @@ func TestFillEntityID(t *testing.T) {
 				p := e.(*kong.Plugin)
 				require.NotNil(t, p.ID)
 
-				const expectedID = "cb94463c-cbc2-5573-9b4c-226cc91c3873"
+				const expectedID = "01af8dbc-e3e8-5ccd-b20d-d55227c15cbf"
 				require.Equal(t, expectedID, *p.ID, "ID should be deterministic")
 			},
 		},
