@@ -3,6 +3,7 @@ package kong
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -128,6 +129,51 @@ func (v *Vault) FillID(workspace string) error {
 	return nil
 }
 
+// FillID fills the ID of an entity. It is a no-op if the entity already has an ID.
+// ID is generated in a deterministic way using UUIDv5.
+// The UUIDv5 namespace being used for generation is separate from other namespaces used for generating IDs for other types.
+// The name used to generate the ID for plugins is the combination of:
+// plugin.Name, name of plugin.Service, plugin.Route, plugin.Consumer, and plugin.ConsumerGroup.
+func (p *Plugin) FillID(workspace string) error {
+	if p == nil {
+		return fmt.Errorf("plugin is nil")
+	}
+	if p.ID != nil && len(*p.ID) > 0 {
+		// ID already set, do nothing.
+		return nil
+	}
+	if p.Name == nil || len(*p.Name) == 0 {
+		return fmt.Errorf("plugin name is required")
+	}
+
+	b := &strings.Builder{}
+
+	_, err := b.WriteString(*p.Name)
+	if err != nil {
+		return err
+	}
+	if p.Service != nil {
+		b.WriteString(":service/" + p.Service.FriendlyName())
+	}
+	if p.Route != nil {
+		b.WriteString(":route/" + p.Route.FriendlyName())
+	}
+	if p.Consumer != nil {
+		b.WriteString(":consumer/" + p.Consumer.FriendlyName())
+	}
+	if p.ConsumerGroup != nil {
+		b.WriteString(":consumer_group/" + p.ConsumerGroup.FriendlyName())
+	}
+
+	gen, err := idGeneratorFor(p)
+	if err != nil {
+		return fmt.Errorf("could not get id generator: %w", err)
+	}
+
+	p.ID = gen.buildIDFor(workspace, b.String())
+	return nil
+}
+
 var (
 	// _kongEntitiesNamespace is the UUIDv5 namespace used to generate IDs for Kong entities.
 	_kongEntitiesNamespace = uuid.MustParse("fd02801f-0957-4a15-a55a-c8d9606f30b5")
@@ -142,6 +188,7 @@ var (
 		reflect.TypeOf(Consumer{}):      newIDGeneratorFor("consumers"),
 		reflect.TypeOf(ConsumerGroup{}): newIDGeneratorFor("consumergroups"),
 		reflect.TypeOf(Vault{}):         newIDGeneratorFor("vaults"),
+		reflect.TypeOf(Plugin{}):        newIDGeneratorFor("plugins"),
 	}
 )
 
