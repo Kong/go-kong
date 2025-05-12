@@ -179,6 +179,98 @@ func TestFillEntityID(t *testing.T) {
 				require.Equal(t, expectedID, *v.ID, "ID should be deterministic")
 			},
 		},
+		// Plugin
+		{
+			name:      "plugin with nil pointer",
+			entity:    (*kong.Plugin)(nil),
+			expectErr: true,
+		},
+		{
+			name: "plugin with empty name",
+			entity: &kong.Plugin{
+				Name: kong.String(""),
+			},
+			expectErr: true,
+		},
+		{
+			name: "plugin with id should not be modified",
+			entity: &kong.Plugin{
+				Name: kong.String("rate-limiting"),
+				ID:   kong.String("abcd1234-5678-abcd-0123-abcdeffedcba"),
+			},
+			assertEntity: func(t *testing.T, e kong.IDFillable) {
+				p := e.(*kong.Plugin)
+				require.NotNil(t, p.ID)
+
+				const expectedID = "abcd1234-5678-abcd-0123-abcdeffedcba"
+				require.Equal(t, expectedID, *p.ID, "ID should not be changed")
+			},
+		},
+		{
+			name: "plugin with name",
+			entity: &kong.Plugin{
+				Name: kong.String("rate-limiting"),
+			},
+			assertEntity: func(t *testing.T, e kong.IDFillable) {
+				p := e.(*kong.Plugin)
+				require.NotNil(t, p.ID)
+
+				const expectedID = "f0f8012b-f709-5685-9812-0130e5d83c5a"
+				require.Equal(t, expectedID, *p.ID, "ID should be deterministic")
+			},
+		},
+		{
+			name: "plugin with name and service",
+			entity: &kong.Plugin{
+				Name: kong.String("rate-limiting"),
+				Service: &kong.Service{
+					Name: kong.String("service-1"),
+				},
+			},
+			assertEntity: func(t *testing.T, e kong.IDFillable) {
+				p := e.(*kong.Plugin)
+				require.NotNil(t, p.ID)
+
+				const expectedID = "b0df9683-8b2f-5557-8b66-204b1529ed7f"
+				require.Equal(t, expectedID, *p.ID, "ID should be deterministic")
+			},
+		},
+		{
+			name: "plugin with with name, route and consumer",
+			entity: &kong.Plugin{
+				Name: kong.String("rate-limiting"),
+				Route: &kong.Route{
+					Name: kong.String("route-1"),
+				},
+				Consumer: &kong.Consumer{
+					Username: kong.String("consumer-1"),
+				},
+			},
+			assertEntity: func(t *testing.T, e kong.IDFillable) {
+				p := e.(*kong.Plugin)
+				require.NotNil(t, p.ID)
+
+				const expectedID = "d6a8d8fd-f156-5809-a2d0-c75b23db07a5"
+				require.Equal(t, expectedID, *p.ID, "ID should be deterministic")
+			},
+		},
+		{
+			name: "plugin with name, instance name and consumer group",
+			entity: &kong.Plugin{
+				Name:         kong.String("rate-limiting"),
+				InstanceName: kong.String("rl-1"),
+				ConsumerGroup: &kong.ConsumerGroup{
+					Name: kong.String("group-1"),
+				},
+			},
+			assertEntity: func(t *testing.T, e kong.IDFillable) {
+				p := e.(*kong.Plugin)
+				require.NotNil(t, p.ID)
+
+				const expectedID = "01af8dbc-e3e8-5ccd-b20d-d55227c15cbf"
+				require.Equal(t, expectedID, *p.ID, "ID should be deterministic")
+			},
+		},
 	}
 
 	for _, tc := range testCases {
