@@ -84,7 +84,7 @@
 ## Unreleased
 
 - Implement `FillID` method for plugins. It generates ID by plugin's name,
-  instance name, service, route, consumer, and consumer group (if exists).
+  service, route, consumer, and consumer group (if exists).
   [#542](https://github.com/Kong/go-kong/pull/542)
 
 ## [v0.65.1]

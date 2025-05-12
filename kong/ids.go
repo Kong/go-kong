@@ -3,6 +3,7 @@ package kong
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -132,7 +133,7 @@ func (v *Vault) FillID(workspace string) error {
 // ID is generated in a deterministic way using UUIDv5.
 // The UUIDv5 namespace being used for generation is separate from other namespaces used for generating IDs for other types.
 // The name used to generate the ID for plugins is the combination of:
-// plugin.Name, plugin.InstanceName, name of plugin.Service, plugin.Route, plugin.Consumer, and plugin.ConsumerGroup.
+// plugin.Name, name of plugin.Service, plugin.Route, plugin.Consumer, and plugin.ConsumerGroup.
 func (p *Plugin) FillID(workspace string) error {
 	if p == nil {
 		return fmt.Errorf("plugin is nil")
@@ -145,18 +146,23 @@ func (p *Plugin) FillID(workspace string) error {
 		return fmt.Errorf("plugin name is required")
 	}
 
-	toHash := *p.Name
+	b := &strings.Builder{}
+
+	_, err := b.WriteString(*p.Name)
+	if err != nil {
+		return err
+	}
 	if p.Service != nil {
-		toHash = toHash + ":service/" + p.Service.FriendlyName()
+		b.WriteString(":service/" + p.Service.FriendlyName())
 	}
 	if p.Route != nil {
-		toHash = toHash + ":route/" + p.Route.FriendlyName()
+		b.WriteString(":route/" + p.Route.FriendlyName())
 	}
 	if p.Consumer != nil {
-		toHash = toHash + ":consumer/" + p.Consumer.FriendlyName()
+		b.WriteString(":consumer/" + p.Consumer.FriendlyName())
 	}
 	if p.ConsumerGroup != nil {
-		toHash = toHash + ":consumer_group/" + p.ConsumerGroup.FriendlyName()
+		b.WriteString(":consumer_group/" + p.ConsumerGroup.FriendlyName())
 	}
 
 	gen, err := idGeneratorFor(p)
@@ -164,7 +170,7 @@ func (p *Plugin) FillID(workspace string) error {
 		return fmt.Errorf("could not get id generator: %w", err)
 	}
 
-	p.ID = gen.buildIDFor(workspace, toHash)
+	p.ID = gen.buildIDFor(workspace, b.String())
 	return nil
 }
 
