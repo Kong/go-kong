@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.66.1](#v0661)
 - [v0.66.0](#v0660)
 - [v0.65.1](#v0651)
 - [v0.65.0](#v0650)
@@ -81,6 +82,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.66.1]
+
+> Release date: 2025/05/13
+
+- Fix request body for Consumer Group Consumer creation.
+  [#545](https://github.com/Kong/go-kong/pull/545)
 
 ## [v0.66.0]
 
@@ -1050,6 +1058,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.66.1]: https://github.com/Kong/go-kong/compare/v0.66.0...v0.66.1
 [v0.66.0]: https://github.com/Kong/go-kong/compare/v0.65.1...v0.66.0
 [v0.65.1]: https://github.com/Kong/go-kong/compare/v0.65.0...v0.65.1
 [v0.65.0]: https://github.com/Kong/go-kong/compare/v0.64.1...v0.65.0
