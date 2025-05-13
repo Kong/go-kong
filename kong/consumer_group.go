@@ -25,6 +25,11 @@ type ConsumerGroupConsumer struct {
 	CreatedAt     *int64         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
 
+// Represents the request body to add a Consumer to a Consumer Group in Kong.
+type consumerGroupConsumerRequestBody struct {
+	Consumer *string `json:"consumer,omitempty" yaml:"consumer,omitempty"`
+}
+
 // ConsumerGroupRLA represents a ConsumerGroupRLA in Kong.
 // +k8s:deepcopy-gen=true
 type ConsumerGroupRLA struct {
