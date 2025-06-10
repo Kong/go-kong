@@ -3,26 +3,28 @@ package kong
 // Upstream represents an Upstream in Kong.
 // +k8s:deepcopy-gen=true
 type Upstream struct {
-	ID                     *string      `json:"id,omitempty" yaml:"id,omitempty"`
-	Name                   *string      `json:"name,omitempty" yaml:"name,omitempty"`
-	HostHeader             *string      `json:"host_header,omitempty" yaml:"host_header,omitempty"`
-	ClientCertificate      *Certificate `json:"client_certificate,omitempty" yaml:"client_certificate,omitempty"`
-	Algorithm              *string      `json:"algorithm,omitempty" yaml:"algorithm,omitempty"`
-	Slots                  *int         `json:"slots,omitempty" yaml:"slots,omitempty"`
-	Healthchecks           *Healthcheck `json:"healthchecks,omitempty" yaml:"healthchecks,omitempty"`
-	CreatedAt              *int64       `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	HashOn                 *string      `json:"hash_on,omitempty" yaml:"hash_on,omitempty"`
-	HashFallback           *string      `json:"hash_fallback,omitempty" yaml:"hash_fallback,omitempty"`
-	HashOnHeader           *string      `json:"hash_on_header,omitempty" yaml:"hash_on_header,omitempty"`
-	HashFallbackHeader     *string      `json:"hash_fallback_header,omitempty" yaml:"hash_fallback_header,omitempty"`
-	HashOnCookie           *string      `json:"hash_on_cookie,omitempty" yaml:"hash_on_cookie,omitempty"`
-	HashOnCookiePath       *string      `json:"hash_on_cookie_path,omitempty" yaml:"hash_on_cookie_path,omitempty"`
-	HashOnQueryArg         *string      `json:"hash_on_query_arg,omitempty" yaml:"hash_on_query_arg,omitempty"`
-	HashFallbackQueryArg   *string      `json:"hash_fallback_query_arg,omitempty" yaml:"hash_fallback_query_arg,omitempty"` //nolint:lll
-	HashOnURICapture       *string      `json:"hash_on_uri_capture,omitempty" yaml:"hash_on_uri_capture,omitempty"`
-	HashFallbackURICapture *string      `json:"hash_fallback_uri_capture,omitempty" yaml:"hash_fallback_uri_capture,omitempty"` //nolint:lll
-	UseSrvName             *bool        `json:"use_srv_name,omitempty" yaml:"use_srv_name,omitempty"`
-	Tags                   []*string    `json:"tags,omitempty" yaml:"tags,omitempty"`
+	ID                       *string      `json:"id,omitempty" yaml:"id,omitempty"`
+	Name                     *string      `json:"name,omitempty" yaml:"name,omitempty"`
+	HostHeader               *string      `json:"host_header,omitempty" yaml:"host_header,omitempty"`
+	ClientCertificate        *Certificate `json:"client_certificate,omitempty" yaml:"client_certificate,omitempty"`
+	Algorithm                *string      `json:"algorithm,omitempty" yaml:"algorithm,omitempty"`
+	Slots                    *int         `json:"slots,omitempty" yaml:"slots,omitempty"`
+	Healthchecks             *Healthcheck `json:"healthchecks,omitempty" yaml:"healthchecks,omitempty"`
+	CreatedAt                *int64       `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	HashOn                   *string      `json:"hash_on,omitempty" yaml:"hash_on,omitempty"`
+	HashFallback             *string      `json:"hash_fallback,omitempty" yaml:"hash_fallback,omitempty"`
+	HashOnHeader             *string      `json:"hash_on_header,omitempty" yaml:"hash_on_header,omitempty"`
+	HashFallbackHeader       *string      `json:"hash_fallback_header,omitempty" yaml:"hash_fallback_header,omitempty"`
+	HashOnCookie             *string      `json:"hash_on_cookie,omitempty" yaml:"hash_on_cookie,omitempty"`
+	HashOnCookiePath         *string      `json:"hash_on_cookie_path,omitempty" yaml:"hash_on_cookie_path,omitempty"`
+	HashOnQueryArg           *string      `json:"hash_on_query_arg,omitempty" yaml:"hash_on_query_arg,omitempty"`
+	HashFallbackQueryArg     *string      `json:"hash_fallback_query_arg,omitempty" yaml:"hash_fallback_query_arg,omitempty"` //nolint:lll
+	HashOnURICapture         *string      `json:"hash_on_uri_capture,omitempty" yaml:"hash_on_uri_capture,omitempty"`
+	HashFallbackURICapture   *string      `json:"hash_fallback_uri_capture,omitempty" yaml:"hash_fallback_uri_capture,omitempty"` //nolint:lll
+	UseSrvName               *bool        `json:"use_srv_name,omitempty" yaml:"use_srv_name,omitempty"`
+	StickySessionsCookie     *string      `json:"sticky_sessions_cookie,omitempty" yaml:"sticky_sessions_cookie,omitempty"`
+	StickySessionsCookiePath *string      `json:"sticky_sessions_cookie_path,omitempty" yaml:"sticky_sessions_cookie_path,omitempty"` //nolint:lll
+	Tags                     []*string    `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 // Healthy configures thresholds and HTTP status codes
