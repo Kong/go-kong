@@ -2752,6 +2752,16 @@ func (in *Upstream) DeepCopyInto(out *Upstream) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.StickySessionsCookie != nil {
+		in, out := &in.StickySessionsCookie, &out.StickySessionsCookie
+		*out = new(string)
+		**out = **in
+	}
+	if in.StickySessionsCookiePath != nil {
+		in, out := &in.StickySessionsCookiePath, &out.StickySessionsCookiePath
+		*out = new(string)
+		**out = **in
+	}
 	if in.Tags != nil {
 		in, out := &in.Tags, &out.Tags
 		*out = make([]*string, len(*in))
