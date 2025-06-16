@@ -23,6 +23,14 @@ type Service struct {
 	TLSVerify         *bool        `json:"tls_verify,omitempty" yaml:"tls_verify,omitempty"`
 	TLSVerifyDepth    *int         `json:"tls_verify_depth,omitempty" yaml:"tls_verify_depth,omitempty"`
 	CACertificates    []*string    `json:"ca_certificates,omitempty" yaml:"ca_certificates,omitempty"`
+	TLSSANs           *TLSSANs     `json:"tls_sans,omitempty" yaml:"tls_sans,omitempty"`
+}
+
+// TLSSANs represents additional Subject Alternative Names that can be matched on Upstream server's TLS certificate.
+// +k8s:deepcopy-gen=true
+type TLSSANs struct {
+	DNSNames []*string `json:"dnsnames,omitempty" yaml:"dnsnames,omitempty"`
+	URIs     []*string `json:"uris,omitempty" yaml:"uris,omitempty"`
 }
 
 // FriendlyName returns the endpoint key name or ID.
