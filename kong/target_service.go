@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
 // AbstractTargetService handles Targets in Kong.
@@ -22,6 +23,8 @@ type AbstractTargetService interface {
 	// MarkUnhealthy marks target belonging to upstreamNameOrID as unhealthy in
 	// Kong's load balancer.
 	MarkUnhealthy(ctx context.Context, upstreamNameOrID *string, target *Target) error
+	// Update updates a Target in Kong under upstreamID.
+	Update(ctx context.Context, upstreamNameOrID *string, targetOrID *string, target *Target) (*Target, error)
 }
 
 // TargetService handles Targets in Kong.
@@ -38,7 +41,7 @@ func (s *TargetService) Create(ctx context.Context,
 	upstreamNameOrID *string, target *Target,
 ) (*Target, error) {
 	if isEmptyString(upstreamNameOrID) {
-		return nil, fmt.Errorf("upstreamNameOrID can not be nil")
+		return nil, fmt.Errorf("upstreamNameOrID cannot be nil for Post operation")
 	}
 	queryPath := "/upstreams/" + *upstreamNameOrID + "/targets"
 	method := "POST"
@@ -194,4 +197,29 @@ func (s *TargetService) MarkUnhealthy(ctx context.Context,
 
 	_, err = s.client.Do(ctx, req, nil)
 	return err
+}
+
+// Update updates a Target in Kong.
+func (s *TargetService) Update(ctx context.Context,
+	upstreamNameOrID *string, targetOrID *string, target *Target,
+) (*Target, error) {
+	if isEmptyString(upstreamNameOrID) {
+		return nil, fmt.Errorf("upstreamNameOrID cannot be nil for Patch operation")
+	}
+	if isEmptyString(targetOrID) {
+		return nil, fmt.Errorf("targetOrID cannot be nil for Patch operation")
+	}
+
+	endpoint := fmt.Sprintf("/upstreams/%v/targets/%v", *upstreamNameOrID, *targetOrID)
+	req, err := s.client.NewRequest(http.MethodPatch, endpoint, nil, target)
+	if err != nil {
+		return nil, err
+	}
+
+	var updatedTarget Target
+	_, err = s.client.Do(ctx, req, &updatedTarget)
+	if err != nil {
+		return nil, err
+	}
+	return &updatedTarget, nil
 }

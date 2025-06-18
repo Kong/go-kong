@@ -223,6 +223,53 @@ func TestTargetListEndpoint(T *testing.T) {
 	require.NoError(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
 }
 
+func TestTargetsUpdatePatch(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	assert.NotNil(client)
+	client.SetDebugMode(true)
+
+	// create a upstream
+	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
+		Name: String("vhost.com"),
+	})
+	require.NoError(err)
+	require.NotNil(fixtureUpstream)
+	assert.NotNil(fixtureUpstream.ID)
+
+	targetID := "0fa49cd2-ee93-492a-bedf-b80778d539ae"
+	createdTarget, err := client.Targets.Create(defaultCtx,
+		fixtureUpstream.ID, &Target{
+			ID:     &targetID,
+			Weight: Int(100),
+			Target: String("10.0.0.1:80"),
+		})
+	require.NoError(err)
+	assert.NotNil(createdTarget)
+	assert.Equal(targetID, *createdTarget.ID)
+	assert.Equal(100, *createdTarget.Weight)
+
+	updatedTarget, err := client.Targets.Update(defaultCtx,
+		fixtureUpstream.ID, createdTarget.ID, &Target{
+			ID:     createdTarget.ID,
+			Weight: Int(10000), // Update weight
+			Target: createdTarget.Target,
+		})
+	require.NoError(err)
+	assert.NotNil(updatedTarget)
+	assert.Equal(targetID, *updatedTarget.ID)
+	assert.Equal("10.0.0.1:80", *updatedTarget.Target)
+	assert.Equal(10000, *updatedTarget.Weight)
+
+	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
+	require.NoError(err)
+}
+
 func compareTargets(expected, actual []*Target) bool {
 	var expectedUsernames, actualUsernames []string
 	for _, target := range expected {
