@@ -40,7 +40,7 @@ func (s *TargetService) Create(ctx context.Context,
 	upstreamNameOrID *string, target *Target,
 ) (*Target, error) {
 	if isEmptyString(upstreamNameOrID) {
-		return nil, fmt.Errorf("upstreamNameOrID cannot be nil for Post operation")
+		return nil, fmt.Errorf("upstreamNameOrID can not be nil")
 	}
 	queryPath := "/upstreams/" + *upstreamNameOrID + "/targets"
 
@@ -222,10 +222,10 @@ func (s *TargetService) Update(ctx context.Context,
 	upstreamNameOrID *string, targetOrID *string, target *Target,
 ) (*Target, error) {
 	if isEmptyString(upstreamNameOrID) {
-		return nil, fmt.Errorf("upstreamNameOrID cannot be nil for Patch operation")
+		return nil, fmt.Errorf("upstreamNameOrID cannot be nil")
 	}
 	if isEmptyString(targetOrID) {
-		return nil, fmt.Errorf("targetOrID cannot be nil for Patch operation")
+		return nil, fmt.Errorf("targetOrID cannot be nil")
 	}
 
 	endpoint := fmt.Sprintf("/upstreams/%v/targets/%v", *upstreamNameOrID, *targetOrID)
