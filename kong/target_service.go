@@ -44,17 +44,35 @@ func (s *TargetService) Create(ctx context.Context,
 		return nil, fmt.Errorf("upstreamNameOrID cannot be nil for Post operation")
 	}
 	queryPath := "/upstreams/" + *upstreamNameOrID + "/targets"
-	method := "POST"
-	// if target.ID != nil {
-	// 	queryPath = queryPath + "/" + *target.ID
-	// 	method = "PUT"
-	// }
-	req, err := s.client.NewRequest(method, queryPath, nil, target)
+
+	var createdTarget Target
+	var err error
+
+	// If the target has an ID, we will try to update it.
+	if target.ID != nil {
+		req, err := s.client.NewRequest(http.MethodPut, queryPath+"/"+*target.ID, nil, target)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = s.client.Do(ctx, req, &createdTarget)
+
+		// If the target does not exist, we will create it, otherwise we will
+		// return the error or the updated target.
+		if !IsNotFoundErr(err) {
+			if err != nil {
+				return nil, err
+			}
+			return &createdTarget, nil
+		}
+	}
+
+	// If the target does not have an ID OR does not exist, we will create it.
+	req, err := s.client.NewRequest(http.MethodPost, queryPath, nil, target)
 	if err != nil {
 		return nil, err
 	}
 
-	var createdTarget Target
 	_, err = s.client.Do(ctx, req, &createdTarget)
 	if err != nil {
 		return nil, err
