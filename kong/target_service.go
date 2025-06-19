@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 )
 
 // AbstractTargetService handles Targets in Kong.
@@ -45,16 +44,15 @@ func (s *TargetService) Create(ctx context.Context,
 	}
 	queryPath := "/upstreams/" + *upstreamNameOrID + "/targets"
 
-	var createdTarget Target
-	var err error
-
 	// If the target has an ID, we will try to update it.
 	if target.ID != nil {
-		req, err := s.client.NewRequest(http.MethodPut, queryPath+"/"+*target.ID, nil, target)
+		method := "PUT"
+		req, err := s.client.NewRequest(method, queryPath+"/"+*target.ID, nil, target)
 		if err != nil {
 			return nil, err
 		}
 
+		var createdTarget Target
 		_, err = s.client.Do(ctx, req, &createdTarget)
 
 		// If the target does not exist, we will create it, otherwise we will
@@ -68,11 +66,13 @@ func (s *TargetService) Create(ctx context.Context,
 	}
 
 	// If the target does not have an ID OR does not exist, we will create it.
-	req, err := s.client.NewRequest(http.MethodPost, queryPath, nil, target)
+	method := "POST"
+	req, err := s.client.NewRequest(method, queryPath, nil, target)
 	if err != nil {
 		return nil, err
 	}
 
+	var createdTarget Target
 	_, err = s.client.Do(ctx, req, &createdTarget)
 	if err != nil {
 		return nil, err
@@ -229,7 +229,7 @@ func (s *TargetService) Update(ctx context.Context,
 	}
 
 	endpoint := fmt.Sprintf("/upstreams/%v/targets/%v", *upstreamNameOrID, *targetOrID)
-	req, err := s.client.NewRequest(http.MethodPatch, endpoint, nil, target)
+	req, err := s.client.NewRequest("PATCH", endpoint, nil, target)
 	if err != nil {
 		return nil, err
 	}
