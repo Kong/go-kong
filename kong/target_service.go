@@ -22,6 +22,9 @@ type AbstractTargetService interface {
 	// MarkUnhealthy marks target belonging to upstreamNameOrID as unhealthy in
 	// Kong's load balancer.
 	MarkUnhealthy(ctx context.Context, upstreamNameOrID *string, target *Target) error
+	// Update updates a Target in Kong under upstreamID.
+	// Note: The update is performed using the "PATCH" method.
+	Update(ctx context.Context, upstreamNameOrID *string, targetOrID *string, target *Target) (*Target, error)
 }
 
 // TargetService handles Targets in Kong.
@@ -41,12 +44,29 @@ func (s *TargetService) Create(ctx context.Context,
 		return nil, fmt.Errorf("upstreamNameOrID can not be nil")
 	}
 	queryPath := "/upstreams/" + *upstreamNameOrID + "/targets"
-	method := "POST"
-	// if target.ID != nil {
-	// 	queryPath = queryPath + "/" + *target.ID
-	// 	method = "PUT"
-	// }
-	req, err := s.client.NewRequest(method, queryPath, nil, target)
+
+	// If the target has an ID, we will try to update it.
+	if target.ID != nil {
+		req, err := s.client.NewRequest("PUT", queryPath+"/"+*target.ID, nil, target)
+		if err != nil {
+			return nil, err
+		}
+
+		var createdTarget Target
+		_, err = s.client.Do(ctx, req, &createdTarget)
+
+		// If the target does not exist, we will create it, otherwise we will
+		// return the error or the updated target.
+		if !IsNotFoundErr(err) {
+			if err != nil {
+				return nil, err
+			}
+			return &createdTarget, nil
+		}
+	}
+
+	// If the target does not have an ID OR does not exist, we will create it.
+	req, err := s.client.NewRequest("POST", queryPath, nil, target)
 	if err != nil {
 		return nil, err
 	}
@@ -194,4 +214,29 @@ func (s *TargetService) MarkUnhealthy(ctx context.Context,
 
 	_, err = s.client.Do(ctx, req, nil)
 	return err
+}
+
+// Update updates a Target in Kong.
+func (s *TargetService) Update(ctx context.Context,
+	upstreamNameOrID *string, targetOrID *string, target *Target,
+) (*Target, error) {
+	if isEmptyString(upstreamNameOrID) {
+		return nil, fmt.Errorf("upstreamNameOrID cannot be nil")
+	}
+	if isEmptyString(targetOrID) {
+		return nil, fmt.Errorf("targetOrID cannot be nil")
+	}
+
+	endpoint := fmt.Sprintf("/upstreams/%v/targets/%v", *upstreamNameOrID, *targetOrID)
+	req, err := s.client.NewRequest("PATCH", endpoint, nil, target)
+	if err != nil {
+		return nil, err
+	}
+
+	var updatedTarget Target
+	_, err = s.client.Do(ctx, req, &updatedTarget)
+	if err != nil {
+		return nil, err
+	}
+	return &updatedTarget, nil
 }
