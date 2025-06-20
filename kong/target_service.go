@@ -23,6 +23,7 @@ type AbstractTargetService interface {
 	// Kong's load balancer.
 	MarkUnhealthy(ctx context.Context, upstreamNameOrID *string, target *Target) error
 	// Update updates a Target in Kong under upstreamID.
+	// Note: The update is performed using the "PATCH" method.
 	Update(ctx context.Context, upstreamNameOrID *string, targetOrID *string, target *Target) (*Target, error)
 }
 
@@ -46,8 +47,7 @@ func (s *TargetService) Create(ctx context.Context,
 
 	// If the target has an ID, we will try to update it.
 	if target.ID != nil {
-		method := "PUT"
-		req, err := s.client.NewRequest(method, queryPath+"/"+*target.ID, nil, target)
+		req, err := s.client.NewRequest("PUT", queryPath+"/"+*target.ID, nil, target)
 		if err != nil {
 			return nil, err
 		}
@@ -66,8 +66,7 @@ func (s *TargetService) Create(ctx context.Context,
 	}
 
 	// If the target does not have an ID OR does not exist, we will create it.
-	method := "POST"
-	req, err := s.client.NewRequest(method, queryPath, nil, target)
+	req, err := s.client.NewRequest("POST", queryPath, nil, target)
 	if err != nil {
 		return nil, err
 	}
