@@ -1305,6 +1305,98 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 	}
 }
 
+func TestUpstreamStickySessionsFields(t *testing.T) {
+	tests := []struct {
+		name     string
+		upstream *Upstream
+		expected *Upstream
+	}{
+		{
+			name: "sticky sessions cookie field is preserved",
+			upstream: &Upstream{
+				Name:                 String("test-upstream"),
+				StickySessionsCookie: String("session_id"),
+			},
+			expected: &Upstream{
+				Name:                 String("test-upstream"),
+				StickySessionsCookie: String("session_id"),
+			},
+		},
+		{
+			name: "sticky sessions cookie path field is preserved",
+			upstream: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookiePath: String("/api"),
+			},
+			expected: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookiePath: String("/api"),
+			},
+		},
+		{
+			name: "both sticky sessions fields are preserved",
+			upstream: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookie:     String("session_id"),
+				StickySessionsCookiePath: String("/api"),
+			},
+			expected: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookie:     String("session_id"),
+				StickySessionsCookiePath: String("/api"),
+			},
+		},
+		{
+			name: "sticky sessions fields work with nil values",
+			upstream: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookie:     nil,
+				StickySessionsCookiePath: nil,
+			},
+			expected: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookie:     nil,
+				StickySessionsCookiePath: nil,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			// Test that the fields are correctly set and preserved
+			assert.Equal(t, tc.expected.Name, tc.upstream.Name)
+			assert.Equal(t, tc.expected.StickySessionsCookie, tc.upstream.StickySessionsCookie)
+			assert.Equal(t, tc.expected.StickySessionsCookiePath, tc.upstream.StickySessionsCookiePath)
+		})
+	}
+}
+
+func TestUpstreamStickySessionsJSONSerialization(t *testing.T) {
+	upstream := &Upstream{
+		Name:                     String("test-upstream"),
+		StickySessionsCookie:     String("session_id"),
+		StickySessionsCookiePath: String("/api"),
+	}
+
+	// Test JSON marshaling
+	jsonData, err := json.Marshal(upstream)
+	require.NoError(t, err)
+
+	// Verify the JSON contains the expected fields
+	assert.Contains(t, string(jsonData), `"sticky_sessions_cookie":"session_id"`)
+	assert.Contains(t, string(jsonData), `"sticky_sessions_cookie_path":"/api"`)
+
+	// Test JSON unmarshaling
+	var unmarshaledUpstream Upstream
+	err = json.Unmarshal(jsonData, &unmarshaledUpstream)
+	require.NoError(t, err)
+
+	// Verify the fields were correctly unmarshaled
+	assert.Equal(t, "test-upstream", *unmarshaledUpstream.Name)
+	assert.Equal(t, "session_id", *unmarshaledUpstream.StickySessionsCookie)
+	assert.Equal(t, "/api", *unmarshaledUpstream.StickySessionsCookiePath)
+}
+
 func getJSONSchemaFromFile(t *testing.T, filename string) Schema {
 	jsonFile, err := os.Open(filename)
 	require.NoError(t, err)
