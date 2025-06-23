@@ -73,7 +73,7 @@ func TestTargetsUpdate(T *testing.T) {
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
-	assert.NotNil(client)
+	require.NotNil(client)
 
 	// create a upstream
 	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
@@ -81,9 +81,8 @@ func TestTargetsUpdate(T *testing.T) {
 	})
 	require.NoError(err)
 	require.NotNil(fixtureUpstream)
-	assert.NotNil(fixtureUpstream.ID)
+	require.NotNil(fixtureUpstream.ID)
 
-	// create a new target with a predefined ID
 	targetID := "0fa49cd2-ee93-492a-bedf-b80778d539ae"
 	createdTarget, err := client.Targets.Create(defaultCtx,
 		fixtureUpstream.ID, &Target{
@@ -91,15 +90,13 @@ func TestTargetsUpdate(T *testing.T) {
 			Target: String("10.0.0.1:80"),
 		})
 	require.NoError(err)
-	assert.NotNil(createdTarget)
+	require.NotNil(createdTarget)
 	assert.Equal(targetID, *createdTarget.ID)
 
-	// determine the target with predefined ID
 	err = client.Targets.Delete(defaultCtx, fixtureUpstream.ID,
 		createdTarget.ID)
 	require.NoError(err)
 
-	// create a new target with the same predefined ID
 	createdTarget, err = client.Targets.Create(defaultCtx,
 		fixtureUpstream.ID, &Target{
 			ID:     &targetID,
@@ -107,12 +104,11 @@ func TestTargetsUpdate(T *testing.T) {
 			Target: String("10.0.0.2:80"),
 		})
 	require.NoError(err)
-	assert.NotNil(createdTarget)
+	require.NotNil(createdTarget)
 	assert.Equal(targetID, *createdTarget.ID)
 	assert.Equal(1, *createdTarget.Weight)
 	assert.Equal("10.0.0.2:80", *createdTarget.Target)
 
-	// update the target with the same predefined ID
 	updatedTarget, err := client.Targets.Create(defaultCtx,
 		fixtureUpstream.ID, &Target{
 			ID:     &targetID,
@@ -120,7 +116,7 @@ func TestTargetsUpdate(T *testing.T) {
 			Target: String("10.0.0.3:80"),
 		})
 	require.NoError(err)
-	assert.NotNil(updatedTarget)
+	require.NotNil(updatedTarget)
 	assert.Equal(targetID, *updatedTarget.ID)
 	assert.Equal(2, *updatedTarget.Weight)
 	assert.Equal("10.0.0.3:80", *updatedTarget.Target)
@@ -249,7 +245,7 @@ func TestTargetsUpdatePatch(T *testing.T) {
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
-	assert.NotNil(client)
+	require.NotNil(client)
 	client.SetDebugMode(true)
 
 	// create a upstream
@@ -258,7 +254,7 @@ func TestTargetsUpdatePatch(T *testing.T) {
 	})
 	require.NoError(err)
 	require.NotNil(fixtureUpstream)
-	assert.NotNil(fixtureUpstream.ID)
+	require.NotNil(fixtureUpstream.ID)
 
 	targetID := "0fa49cd2-ee93-492a-bedf-b80778d539ae"
 	createdTarget, err := client.Targets.Create(defaultCtx,
@@ -268,7 +264,7 @@ func TestTargetsUpdatePatch(T *testing.T) {
 			Target: String("10.0.0.1:80"),
 		})
 	require.NoError(err)
-	assert.NotNil(createdTarget)
+	require.NotNil(createdTarget)
 	assert.Equal(targetID, *createdTarget.ID)
 	assert.Equal(100, *createdTarget.Weight)
 
@@ -279,7 +275,7 @@ func TestTargetsUpdatePatch(T *testing.T) {
 			Target: createdTarget.Target,
 		})
 	require.NoError(err)
-	assert.NotNil(updatedTarget)
+	require.NotNil(updatedTarget)
 	assert.Equal(targetID, *updatedTarget.ID)
 	assert.Equal("10.0.0.1:80", *updatedTarget.Target)
 	assert.Equal(10000, *updatedTarget.Weight)
