@@ -110,6 +110,10 @@ func TestWorkspaceServiceList(T *testing.T) {
 	require.NoError(err)
 	assert.Nil(next)
 	assert.NotNil(workspaces)
+	// log the workspaces
+	for _, w := range workspaces {
+		T.Log(w.Name)
+	}
 	// Counts default workspace
 	assert.Len(workspaces, 3)
 
