@@ -33,6 +33,7 @@ func TestRBACUserService(T *testing.T) {
 	assert.NotNil(user)
 
 	user.Comment = String("new comment")
+	user.UserTokenIdent = nil
 	user, err = client.RBACUsers.Update(defaultCtx, user)
 	require.NoError(T, err)
 	assert.NotNil(user)
@@ -81,6 +82,7 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 	assert.NotNil(user)
 
 	user.Comment = String("new comment")
+	user.UserTokenIdent = nil
 	user, err = workspaceClient.RBACUsers.Update(defaultCtx, user)
 	require.NoError(T, err)
 	assert.NotNil(user)
