@@ -1285,6 +1285,10 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 			},
 		},
 	}
+	// Kong Enterprise added `StickySessionsCookiePath` field and assigned default values since 3.11.
+	// We need to add the default value of `StickySessionsCookiePath` when Kong version >= 3.11.0.
+	kongVersion := GetVersionForTesting(T)
+	hasStickySessionsCookiePathVersionRange := MustNewRange(">=3.11.0")
 
 	for _, tc := range tests {
 		T.Run(tc.name, func(t *testing.T) {
@@ -1298,6 +1302,12 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 				cmpopts.IgnoreFields(Healthcheck{}, "Threshold"),
 				cmpopts.IgnoreFields(Upstream{}, "UseSrvName"),
 			}
+
+			// Add the default value of `throttling` to the expected configuration of plugin.
+			if hasStickySessionsCookiePathVersionRange(kongVersion) {
+				tc.expected.StickySessionsCookiePath = String("/")
+			}
+
 			if diff := cmp.Diff(u, tc.expected, opts...); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}
@@ -4301,10 +4311,12 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 			errString: "no 'config' field found in schema",
 		},
 	}
-	// Kong Enterprise added `throttling` field and assigned default values since 3.11.
-	// We need to add the default value of `throttling` when Kong version >= 3.11.0.
+	// Kong Enterprise added `throttling` field and assigned default values since 3.12.
+	// https://github.com/Kong/kong-ee/pull/12579
+	// We need to add the default value of `throttling` when Kong version >= 3.12.0.
 	kongVersion := GetVersionForTesting(t)
-	rlaHasThrottlingVersionRange := MustNewRange(">=3.11.0")
+	// for nightly tests, we assume the Kong version is >= 3.13.0
+	rlaHasThrottlingVersionRange := MustNewRange(">=3.13.0")
 	defaultRLAThrotlling := map[string]any{
 		"enabled":         false,
 		"dictionary_name": "kong_rate_limiting_throttling",
@@ -4316,6 +4328,8 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Log(kongVersion)
+
 			err := FillPluginsDefaultsWithPartials(tc.plugin, tc.pluginSchema, tc.partials)
 			if tc.wantErr {
 				if err == nil {
@@ -4326,10 +4340,13 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 			}
 
 			require.NoError(t, err)
+
 			// Add the default value of `throttling` to the expected configuration of plugin.
-			if rlaHasThrottlingVersionRange(kongVersion) {
+			if rlaHasThrottlingVersionRange(kongVersion) && tc.expectedPlugin != nil {
+				t.Log("Add default throttling")
 				tc.expectedPlugin.Config["throttling"] = defaultRLAThrotlling
 			}
+
 			opts := cmpopts.IgnoreFields(*tc.plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(tc.plugin, tc.expectedPlugin, opts); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)

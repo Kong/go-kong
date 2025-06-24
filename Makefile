@@ -37,12 +37,8 @@ golangci-lint: mise yq ## Download golangci-lint locally if necessary.
 
 .PHONY: kong.supported-versions
 kong.supported-versions:
-	@echo ["3.8", "3.9"]
-
-# TODO(Jintao): disabled it temporarily, because it need some time to fix
-#               once the docs team fix the issue, we can enable it again.
-#	@curl -s https://docs.konghq.com/_api/gateway-versions.json | \
-#   jq '[.[] | select(.label == null) | select(.endOfLifeDate > (now | strftime("%Y-%m-%d")))] | [.[].tag]'
+	@curl -s https://developer.konghq.com/_api/gateway-versions.json | \
+	    jq '[.[] | select(.label == null) | select(.endOfLifeDate > (now | strftime("%Y-%m-%d")))] | [.[].tag]'
 
 # ------------------------------------------------------------------------------
 # Testing
