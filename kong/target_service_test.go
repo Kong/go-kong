@@ -79,6 +79,10 @@ func TestTargetsUpdate(T *testing.T) {
 	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
 		Name: String("vhost.com"),
 	})
+	T.Cleanup(func() {
+		err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
+		require.NoError(err)
+	})
 	require.NoError(err)
 	require.NotNil(fixtureUpstream)
 	require.NotNil(fixtureUpstream.ID)
@@ -103,6 +107,10 @@ func TestTargetsUpdate(T *testing.T) {
 			Weight: Int(1),
 			Target: String("10.0.0.2:80"),
 		})
+	T.Cleanup(func() {
+		err = client.Targets.Delete(defaultCtx, fixtureUpstream.ID, createdTarget.ID)
+		require.NoError(err)
+	})
 	require.NoError(err)
 	require.NotNil(createdTarget)
 	assert.Equal(targetID, *createdTarget.ID)
@@ -117,12 +125,12 @@ func TestTargetsUpdate(T *testing.T) {
 		})
 	require.NoError(err)
 	require.NotNil(updatedTarget)
+	require.NotNil(updatedTarget.ID)
+	require.NotNil(updatedTarget.Target)
+	require.NotNil(updatedTarget.Weight)
 	assert.Equal(targetID, *updatedTarget.ID)
 	assert.Equal(2, *updatedTarget.Weight)
 	assert.Equal("10.0.0.3:80", *updatedTarget.Target)
-
-	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
-	require.NoError(err)
 }
 
 func TestTargetWithTags(T *testing.T) {
@@ -263,8 +271,14 @@ func TestTargetsUpdatePatch(T *testing.T) {
 			Weight: Int(100),
 			Target: String("10.0.0.1:80"),
 		})
+	T.Cleanup(func() {
+		err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
+		require.NoError(err)
+	})
 	require.NoError(err)
 	require.NotNil(createdTarget)
+	require.NotNil(createdTarget.ID)
+	require.NotNil(createdTarget.Weight)
 	assert.Equal(targetID, *createdTarget.ID)
 	assert.Equal(100, *createdTarget.Weight)
 
@@ -276,12 +290,12 @@ func TestTargetsUpdatePatch(T *testing.T) {
 		})
 	require.NoError(err)
 	require.NotNil(updatedTarget)
+	require.NotNil(updatedTarget.ID)
+	require.NotNil(updatedTarget.Target)
+	require.NotNil(updatedTarget.Weight)
 	assert.Equal(targetID, *updatedTarget.ID)
 	assert.Equal("10.0.0.1:80", *updatedTarget.Target)
 	assert.Equal(10000, *updatedTarget.Weight)
-
-	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
-	require.NoError(err)
 }
 
 func compareTargets(expected, actual []*Target) bool {
