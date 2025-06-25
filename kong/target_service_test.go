@@ -95,6 +95,7 @@ func TestTargetsUpdate(T *testing.T) {
 		})
 	require.NoError(err)
 	require.NotNil(createdTarget)
+	require.NotNil(createdTarget.ID)
 	assert.Equal(targetID, *createdTarget.ID)
 
 	err = client.Targets.Delete(defaultCtx, fixtureUpstream.ID,
@@ -113,6 +114,9 @@ func TestTargetsUpdate(T *testing.T) {
 	})
 	require.NoError(err)
 	require.NotNil(createdTarget)
+	require.NotNil(createdTarget.ID)
+	require.NotNil(createdTarget.Target)
+	require.NotNil(createdTarget.Weight)
 	assert.Equal(targetID, *createdTarget.ID)
 	assert.Equal(1, *createdTarget.Weight)
 	assert.Equal("10.0.0.2:80", *createdTarget.Target)
