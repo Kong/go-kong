@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.67.0](#v0670)
 - [v0.66.1](#v0661)
 - [v0.66.0](#v0660)
 - [v0.65.1](#v0651)
@@ -82,6 +83,18 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.67.0]
+
+> Release date: 2025/05/26
+
+- Added an `Update` method to the `TargetService` using the `PATCH` operation,
+  enabling partial updates to existing targets.
+  [#555](https://github.com/Kong/go-kong/pull/555)
+- Update the `TargetService` `Create` method to leverage the `PUT` operation
+  when target ID is provided and the target already exists, allowing for the
+  update of targets with a specific ID.
+  [#555](https://github.com/Kong/go-kong/pull/555)
 
 ## [v0.66.1]
 
