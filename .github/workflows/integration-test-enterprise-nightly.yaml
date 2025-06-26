@@ -17,7 +17,7 @@ on:
 
 jobs:
   secret-available:
-    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT || 10) }}
     outputs:
       ok: ${{ steps.exists.outputs.ok }}
     runs-on: ubuntu-latest
@@ -32,7 +32,7 @@ jobs:
         fi
 
   test-enterprise:
-    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT || 10) }}
     strategy:
       matrix:
         router_flavor:
