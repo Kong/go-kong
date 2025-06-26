@@ -86,7 +86,7 @@
 
 ## [v0.67.0]
 
-> Release date: 2025/05/20
+> Release date: 2025/05/26
 
 - Added an `Update` method to the `TargetService` using the `PATCH` operation,
   enabling partial updates to existing targets.
