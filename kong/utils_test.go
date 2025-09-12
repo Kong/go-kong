@@ -1148,6 +1148,9 @@ func TestFillTargetDefaults(T *testing.T) {
 		},
 	}
 
+	kongVersion := GetVersionForTesting(T)
+	hasFailoverVersionRange := MustNewRange(">=3.12.0")
+
 	for _, tc := range tests {
 		T.Run(tc.name, func(t *testing.T) {
 			target := tc.target
@@ -1155,6 +1158,11 @@ func TestFillTargetDefaults(T *testing.T) {
 			require.NoError(T, err)
 			assert.NotNil(fullSchema)
 			require.NoError(t, FillEntityDefaults(target, fullSchema))
+
+			if hasFailoverVersionRange(kongVersion) {
+				tc.expected.Failover = Bool(false)
+			}
+
 			if diff := cmp.Diff(target, tc.expected); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}

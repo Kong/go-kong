@@ -165,6 +165,59 @@ func TestTargetWithTags(T *testing.T) {
 	require.NoError(err)
 }
 
+func TestTargetWithFailover(T *testing.T) {
+	RunWhenKong(T, ">=3.12.0")
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
+		Name: String("vhost.com"),
+	})
+	require.NoError(err)
+
+	createdTarget, err := client.Targets.Create(defaultCtx,
+		fixtureUpstream.ID, &Target{
+			Target:   String("10.0.0.1:80"),
+			Failover: Bool(true),
+		})
+	require.NoError(err)
+	require.NotNil(createdTarget)
+	assert.True(*createdTarget.Failover)
+
+	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
+	require.NoError(err)
+}
+
+func TestTargetWithFailoverDefault(T *testing.T) {
+	RunWhenKong(T, ">=3.12.0")
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
+		Name: String("vhost.com"),
+	})
+	require.NoError(err)
+
+	createdTarget, err := client.Targets.Create(defaultCtx,
+		fixtureUpstream.ID, &Target{
+			Target: String("10.0.0.1:80"),
+		})
+	require.NoError(err)
+	require.NotNil(createdTarget)
+	assert.False(*createdTarget.Failover)
+
+	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
+	require.NoError(err)
+}
+
 func TestTargetListEndpoint(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
