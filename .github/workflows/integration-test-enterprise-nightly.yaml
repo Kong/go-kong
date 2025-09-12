@@ -45,14 +45,12 @@ jobs:
     env:
       KONG_ROUTER_FLAVOR: ${{ matrix.router_flavor }}
       KONG_ADMIN_TOKEN: kong
-      KONG_IMAGE_REPO: "kong/kong-gateway-internal"
-      KONG_IMAGE_TAG: "master"
+      KONG_IMAGE_REPO: "kong/kong-gateway-dev"
+      KONG_IMAGE_TAG: "latest"
       KONG_ANONYMOUS_REPORTS: "off"
-      TEST_KONG_PULL_USERNAME: ${{ secrets.GHA_DOCKERHUB_PULL_USER }}
-      TEST_KONG_PULL_PASSWORD: ${{ secrets.GHA_KONG_ORG_DOCKERHUB_PUBLIC_TOKEN }}
     runs-on: ubuntu-latest
     steps:
-      # This will set KONG_LINCENSE_DATA environment variable.
+      # This will set KONG_LICENSE_DATA environment variable.
       - uses: Kong/kong-license@c4decf08584f84ff8fe8e7cd3c463e0192f6111b
         id: license_step
         with:
