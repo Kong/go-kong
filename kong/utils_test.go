@@ -4317,14 +4317,6 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 	kongVersion := GetVersionForTesting(t)
 	// for nightly tests, we assume the Kong version is >= 3.13.0
 	rlaHasThrottlingVersionRange := MustNewRange(">=3.13.0")
-	defaultRLAThrotlling := map[string]any{
-		"enabled":         false,
-		"dictionary_name": "kong_rate_limiting_throttling",
-		// Numbers are converted to `float64` type in `map[string]interface{}.
-		"interval":    float64(5),
-		"queue_limit": float64(5),
-		"retry_times": float64(3),
-	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -4344,7 +4336,7 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 			// Add the default value of `throttling` to the expected configuration of plugin.
 			if rlaHasThrottlingVersionRange(kongVersion) && tc.expectedPlugin != nil {
 				t.Log("Add default throttling")
-				tc.expectedPlugin.Config["throttling"] = defaultRLAThrotlling
+				tc.expectedPlugin.Config["throttling"] = nil
 			}
 
 			opts := cmpopts.IgnoreFields(*tc.plugin, "Enabled", "Protocols")
