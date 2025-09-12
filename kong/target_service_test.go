@@ -167,7 +167,6 @@ func TestTargetWithTags(T *testing.T) {
 
 func TestTargetWithFailover(T *testing.T) {
 	RunWhenKong(T, ">=3.12.0")
-	assert := assert.New(T)
 	require := require.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -178,6 +177,9 @@ func TestTargetWithFailover(T *testing.T) {
 		Name: String("vhost.com"),
 	})
 	require.NoError(err)
+	T.Cleanup(func() {
+		require.NoError(client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID))
+	})
 
 	createdTarget, err := client.Targets.Create(defaultCtx,
 		fixtureUpstream.ID, &Target{
@@ -186,10 +188,7 @@ func TestTargetWithFailover(T *testing.T) {
 		})
 	require.NoError(err)
 	require.NotNil(createdTarget)
-	assert.True(*createdTarget.Failover)
-
-	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
-	require.NoError(err)
+	require.True(*createdTarget.Failover)
 }
 
 func TestTargetWithFailoverDefault(T *testing.T) {
@@ -205,6 +204,9 @@ func TestTargetWithFailoverDefault(T *testing.T) {
 		Name: String("vhost.com"),
 	})
 	require.NoError(err)
+	T.Cleanup(func() {
+		require.NoError(client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID))
+	})
 
 	createdTarget, err := client.Targets.Create(defaultCtx,
 		fixtureUpstream.ID, &Target{
@@ -213,9 +215,6 @@ func TestTargetWithFailoverDefault(T *testing.T) {
 	require.NoError(err)
 	require.NotNil(createdTarget)
 	assert.False(*createdTarget.Failover)
-
-	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
-	require.NoError(err)
 }
 
 func TestTargetListEndpoint(T *testing.T) {

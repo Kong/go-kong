@@ -1150,16 +1150,19 @@ func TestFillTargetDefaults(T *testing.T) {
 
 	kongVersion := GetVersionForTesting(T)
 	hasFailoverVersionRange := MustNewRange(">=3.12.0")
+	shouldContainFailover := hasFailoverVersionRange(kongVersion)
 
 	for _, tc := range tests {
 		T.Run(tc.name, func(t *testing.T) {
 			target := tc.target
 			fullSchema, err := client.Schemas.Get(defaultCtx, "targets")
-			require.NoError(T, err)
-			assert.NotNil(fullSchema)
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
 			require.NoError(t, FillEntityDefaults(target, fullSchema))
 
-			if hasFailoverVersionRange(kongVersion) {
+			// Gateway 3.12 added a new Failover field to targets
+			// which has a default of False
+			if shouldContainFailover {
 				tc.expected.Failover = Bool(false)
 			}
 
