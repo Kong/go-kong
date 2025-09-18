@@ -32,7 +32,7 @@ jobs:
       run: |
         {
           echo 'versions<<EOF'
-          make kong.supported-versions
+          make kong.supported-versions.oss
           echo EOF
         } >> "$GITHUB_OUTPUT"
     - run: |

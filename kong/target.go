@@ -9,6 +9,7 @@ type Target struct {
 	Upstream  *Upstream `json:"upstream,omitempty" yaml:"upstream,omitempty"`
 	Weight    *int      `json:"weight,omitempty" yaml:"weight,omitempty"`
 	Tags      []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Failover  *bool     `json:"failover,omitempty" yaml:"failover,omitempty"`
 }
 
 // FriendlyName returns the endpoint key name or ID.

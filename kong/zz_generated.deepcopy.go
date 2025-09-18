@@ -2600,6 +2600,11 @@ func (in *Target) DeepCopyInto(out *Target) {
 			}
 		}
 	}
+	if in.Failover != nil {
+		in, out := &in.Failover, &out.Failover
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 
