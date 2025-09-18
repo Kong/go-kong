@@ -1071,6 +1071,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.67.0]: https://github.com/Kong/go-kong/compare/v0.66.1...v0.67.0
 [v0.66.1]: https://github.com/Kong/go-kong/compare/v0.66.0...v0.66.1
 [v0.66.0]: https://github.com/Kong/go-kong/compare/v0.65.1...v0.66.0
 [v0.65.1]: https://github.com/Kong/go-kong/compare/v0.65.0...v0.65.1
