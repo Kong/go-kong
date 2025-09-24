@@ -170,7 +170,7 @@ func (s *BasicAuthService) UpdateWithOptions(ctx context.Context,
 	}
 
 	cred, err := s.client.credentials.Update(ctx, "basic-auth",
-		consumerUsernameOrID, opts.BasicAuth, skipHash)
+		consumerUsernameOrID, &opts.BasicAuth, skipHash)
 	if err != nil {
 		return nil, err
 	}
