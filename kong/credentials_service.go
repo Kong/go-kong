@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"reflect"
 )
 
@@ -11,15 +12,15 @@ import (
 type abstractCredentialService interface {
 	// Create creates a credential in Kong of type credType.
 	Create(ctx context.Context, credType string, consumerUsernameOrID *string,
-		credential interface{}) (json.RawMessage, error)
-	// Get fetches a credential of credType with consumerIdentifier and credIdentifier from Kong.
+		credential interface{}, skipHash bool) (json.RawMessage, error)
+	// Get fetches a credential of credType with credIdentifier from Kong.
 	Get(ctx context.Context, credType string, consumerUsernameOrID *string,
 		credIdentifier *string) (json.RawMessage, error)
 	// GetByID fetches a credential of credType with ID from Kong.
 	GetByID(ctx context.Context, credType string, credIdentifier *string) (json.RawMessage, error)
 	// Update updates credential in Kong
 	Update(ctx context.Context, credType string, consumerUsernameOrID *string,
-		credential interface{}) (json.RawMessage, error)
+		credential interface{}, skipHash bool) (json.RawMessage, error)
 	// Delete deletes a credential in Kong
 	Delete(ctx context.Context, credType string, consumerUsernameOrID, credIdentifier *string) error
 }
@@ -47,6 +48,11 @@ var credPathAsParentResource = map[string]string{
 	"mtls-auth":  "mtls-auths",
 }
 
+type queryStruct struct {
+	// Skip hashing of password when creating/updating basic-auth credentials.
+	SkipHash string `url:"skip_hash,omitempty"`
+}
+
 // Create creates a credential in Kong of type credType.
 // If an ID is specified in the credential, it will be used to
 // create a credential in Kong, otherwise an ID
@@ -54,6 +60,7 @@ var credPathAsParentResource = map[string]string{
 func (s *credentialService) Create(ctx context.Context, credType string,
 	consumerUsernameOrID *string,
 	credential interface{},
+	skipHash bool,
 ) (json.RawMessage, error) {
 	if isEmptyString(consumerUsernameOrID) {
 		return nil, fmt.Errorf("consumerUsernameOrID cannot be nil")
@@ -77,7 +84,19 @@ func (s *credentialService) Create(ctx context.Context, credType string,
 		}
 	}
 
-	req, err := s.client.NewRequest(method, endpoint, nil, credential)
+	var (
+		req *http.Request
+		err error
+		q   *queryStruct
+	)
+
+	if credType == "basic-auth" && skipHash {
+		q = &queryStruct{
+			SkipHash: "true",
+		}
+	}
+
+	req, err = s.client.NewRequest(method, endpoint, q, credential)
 	if err != nil {
 		return nil, err
 	}
@@ -151,6 +170,7 @@ func (s *credentialService) GetByID(ctx context.Context, credType string, credId
 func (s *credentialService) Update(ctx context.Context, credType string,
 	consumerUsernameOrID *string,
 	credential interface{},
+	skipHash bool,
 ) (json.RawMessage, error) {
 	if isEmptyString(consumerUsernameOrID) {
 		return nil, fmt.Errorf("consumerUsernameOrID cannot be nil")
@@ -180,7 +200,17 @@ func (s *credentialService) Update(ctx context.Context, credType string,
 
 	endpoint = endpoint + credID
 
-	req, err := s.client.NewRequest("PATCH", endpoint, nil, credential)
+	var (
+		req *http.Request
+		err error
+		q   *queryStruct
+	)
+	if credType == "basic-auth" && skipHash {
+		q = &queryStruct{
+			SkipHash: "true",
+		}
+	}
+	req, err = s.client.NewRequest("PATCH", endpoint, q, credential)
 	if err != nil {
 		return nil, err
 	}

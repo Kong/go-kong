@@ -3,19 +3,33 @@ package kong
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 )
+
+// BasicAuthOptions provides configuration options for basic auth operations
+// +k8s:deepcopy-gen=true
+type BasicAuthOptions struct {
+	BasicAuth
+	SkipHash *bool `json:"_skip_hash,omitempty" yaml:"_skip_hash,omitempty"`
+}
 
 // AbstractBasicAuthService handles basic-auth credentials in Kong.
 type AbstractBasicAuthService interface {
 	// Create creates a basic-auth credential in Kong
 	// is auto-generated.
 	Create(ctx context.Context, consumerUsernameOrID *string, basicAuth *BasicAuth) (*BasicAuth, error)
+	// CreateWithOptions creates a basic-auth credential in Kong
+	// with the options provided.
+	CreateWithOptions(ctx context.Context, consumerUsernameOrID *string, opts *BasicAuthOptions) (*BasicAuth, error)
 	// Get fetches a basic-auth credential from Kong.
 	Get(ctx context.Context, consumerUsernameOrID, usernameOrID *string) (*BasicAuth, error)
 	// GetByID fetches a basic-auth credential from Kong using ID.
 	GetByID(ctx context.Context, id *string) (*BasicAuth, error)
 	// Update updates a basic-auth credential in Kong
 	Update(ctx context.Context, consumerUsernameOrID *string, basicAuth *BasicAuth) (*BasicAuth, error)
+	// UpdateWithOptions updates a basic-auth credential in Kong
+	// with the options provided.
+	UpdateWithOptions(ctx context.Context, consumerUsernameOrID *string, opts *BasicAuthOptions) (*BasicAuth, error)
 	// Delete deletes a basic-auth credential in Kong
 	Delete(ctx context.Context, consumerUsernameOrID, usernameOrID *string) error
 	// List fetches a list of basic-auth credentials in Kong.
@@ -38,7 +52,39 @@ func (s *BasicAuthService) Create(ctx context.Context,
 	consumerUsernameOrID *string, basicAuth *BasicAuth,
 ) (*BasicAuth, error) {
 	cred, err := s.client.credentials.Create(ctx, "basic-auth",
-		consumerUsernameOrID, basicAuth)
+		consumerUsernameOrID, basicAuth, false)
+	if err != nil {
+		return nil, err
+	}
+
+	var createdBasicAuth BasicAuth
+	err = json.Unmarshal(cred, &createdBasicAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	return &createdBasicAuth, nil
+}
+
+// CreateWithOptions creates a basic-auth credential in Kong
+// with the options provided.
+// If an ID is specified, it will be used to
+// create a basic-auth in Kong, otherwise an ID
+// is auto-generated.
+func (s *BasicAuthService) CreateWithOptions(ctx context.Context,
+	consumerUsernameOrID *string, opts *BasicAuthOptions,
+) (*BasicAuth, error) {
+	if opts == nil {
+		return nil, fmt.Errorf("basic auth options and credential are required")
+	}
+
+	var skipHash bool
+	if opts.SkipHash != nil {
+		skipHash = *opts.SkipHash
+	}
+
+	cred, err := s.client.credentials.Create(ctx, "basic-auth",
+		consumerUsernameOrID, &opts.BasicAuth, skipHash)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +141,36 @@ func (s *BasicAuthService) Update(ctx context.Context,
 	consumerUsernameOrID *string, basicAuth *BasicAuth,
 ) (*BasicAuth, error) {
 	cred, err := s.client.credentials.Update(ctx, "basic-auth",
-		consumerUsernameOrID, basicAuth)
+		consumerUsernameOrID, basicAuth, false)
+	if err != nil {
+		return nil, err
+	}
+
+	var updatedBasicAuth BasicAuth
+	err = json.Unmarshal(cred, &updatedBasicAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	return &updatedBasicAuth, nil
+}
+
+// UpdateWithOptions updates a basic-auth credential in Kong
+// with the options provided.
+func (s *BasicAuthService) UpdateWithOptions(ctx context.Context,
+	consumerUsernameOrID *string, opts *BasicAuthOptions,
+) (*BasicAuth, error) {
+	if opts == nil {
+		return nil, fmt.Errorf("basic auth options and credential are required")
+	}
+
+	var skipHash bool
+	if opts.SkipHash != nil {
+		skipHash = *opts.SkipHash
+	}
+
+	cred, err := s.client.credentials.Update(ctx, "basic-auth",
+		consumerUsernameOrID, opts.BasicAuth, skipHash)
 	if err != nil {
 		return nil, err
 	}
