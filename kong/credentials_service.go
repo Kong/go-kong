@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"reflect"
 )
 
@@ -84,11 +83,7 @@ func (s *credentialService) Create(ctx context.Context, credType string,
 		}
 	}
 
-	var (
-		req *http.Request
-		err error
-		q   *queryStruct
-	)
+	var q *queryStruct
 
 	if credType == "basic-auth" && skipHash {
 		q = &queryStruct{
@@ -96,7 +91,7 @@ func (s *credentialService) Create(ctx context.Context, credType string,
 		}
 	}
 
-	req, err = s.client.NewRequest(method, endpoint, q, credential)
+	req, err := s.client.NewRequest(method, endpoint, q, credential)
 	if err != nil {
 		return nil, err
 	}
@@ -200,17 +195,14 @@ func (s *credentialService) Update(ctx context.Context, credType string,
 
 	endpoint = endpoint + credID
 
-	var (
-		req *http.Request
-		err error
-		q   *queryStruct
-	)
+	var q *queryStruct
+
 	if credType == "basic-auth" && skipHash {
 		q = &queryStruct{
 			SkipHash: "true",
 		}
 	}
-	req, err = s.client.NewRequest("PATCH", endpoint, q, credential)
+	req, err := s.client.NewRequest("PATCH", endpoint, q, credential)
 	if err != nil {
 		return nil, err
 	}

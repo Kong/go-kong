@@ -10,7 +10,7 @@ import (
 // +k8s:deepcopy-gen=true
 type BasicAuthOptions struct {
 	BasicAuth
-	SkipHash *bool `json:"_skip_hash,omitempty" yaml:"_skip_hash,omitempty"`
+	SkipHash *bool
 }
 
 // AbstractBasicAuthService handles basic-auth credentials in Kong.
