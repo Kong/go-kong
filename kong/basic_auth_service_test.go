@@ -398,3 +398,194 @@ func TestBasicAuthListMethods(T *testing.T) {
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer1.ID))
 	require.NoError(client.Consumers.Delete(defaultCtx, consumer2.ID))
 }
+
+func TestBasicAuthCreateWithOptions(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	assert.NotNil(client)
+
+	// Test with nil options
+	basicAuth, err := client.BasicAuths.CreateWithOptions(defaultCtx,
+		String("foo"), nil)
+	require.Error(err)
+	assert.Nil(basicAuth)
+	assert.Contains(err.Error(), "basic auth options and credential are required")
+
+	// consumer for the basic-auth:
+	consumer := &Consumer{
+		Username: String("foo"),
+	}
+
+	consumer, err = client.Consumers.Create(defaultCtx, consumer)
+	require.NoError(err)
+	require.NotNil(consumer)
+
+	// Test with empty consumer ID
+	opts := &BasicAuthOptions{
+		BasicAuth: BasicAuth{
+			Username: String("test-username"),
+			Password: String("test-password"),
+		},
+	}
+	basicAuth, err = client.BasicAuths.CreateWithOptions(defaultCtx,
+		String(""), opts)
+	require.Error(err)
+	assert.Nil(basicAuth)
+
+	// Test with non-existent consumer
+	basicAuth, err = client.BasicAuths.CreateWithOptions(defaultCtx,
+		String("does-not-exist"), opts)
+	require.Error(err)
+	assert.Nil(basicAuth)
+
+	// Test with missing username
+	optsNoUsername := &BasicAuthOptions{
+		BasicAuth: BasicAuth{
+			Password: String("test-password"),
+		},
+	}
+	basicAuth, err = client.BasicAuths.CreateWithOptions(defaultCtx,
+		consumer.ID, optsNoUsername)
+	require.Error(err)
+	assert.Nil(basicAuth)
+
+	// Test successful creation with SkipHash = false
+	uuid1 := uuid.NewString()
+	skipHashFalse := false
+	opts = &BasicAuthOptions{
+		BasicAuth: BasicAuth{
+			ID:       String(uuid1),
+			Username: String("test-username"),
+			Password: String("test-password"),
+		},
+		SkipHash: &skipHashFalse,
+	}
+	basicAuth, err = client.BasicAuths.CreateWithOptions(defaultCtx,
+		consumer.ID, opts)
+	require.NoError(err)
+	assert.NotNil(basicAuth)
+	assert.Equal(uuid1, *basicAuth.ID)
+	assert.Equal("test-username", *basicAuth.Username)
+	// password should be hashed when SkipHash is false
+	assert.NotEqual("test-password", *basicAuth.Password)
+
+	// Clean up
+	err = client.BasicAuths.Delete(defaultCtx, consumer.ID, basicAuth.Username)
+	require.NoError(err)
+
+	// Test with SkipHash = true can work only with Konnect for now
+	// TODO: enable this test for Konnect when we have a way to run tests against Konnect
+
+	// Test successful creation with nil SkipHash (should default to false)
+	uuid3 := uuid.NewString()
+	opts = &BasicAuthOptions{
+		BasicAuth: BasicAuth{
+			ID:       String(uuid3),
+			Username: String("test-username-3"),
+			Password: String("test-password-3"),
+		},
+		SkipHash: nil,
+	}
+	basicAuthNilSkip, err := client.BasicAuths.CreateWithOptions(defaultCtx,
+		consumer.ID, opts)
+	require.NoError(err)
+	assert.NotNil(basicAuthNilSkip)
+	assert.Equal(uuid3, *basicAuthNilSkip.ID)
+	assert.Equal("test-username-3", *basicAuthNilSkip.Username)
+	// password should be hashed when SkipHash is nil (defaults to false)
+	assert.NotEqual("test-password-3", *basicAuthNilSkip.Password)
+
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+}
+
+func TestBasicAuthUpdateWithOptions(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	assert.NotNil(client)
+
+	// consumer for the basic-auth:
+	consumer := &Consumer{
+		Username: String("foo"),
+	}
+
+	consumer, err = client.Consumers.Create(defaultCtx, consumer)
+	require.NoError(err)
+	require.NotNil(consumer)
+
+	// Create initial basic auth credential
+	uuidStr := uuid.NewString()
+	basicAuth := &BasicAuth{
+		ID:       String(uuidStr),
+		Username: String("initial-username"),
+		Password: String("initial-password"),
+	}
+
+	createdBasicAuth, err := client.BasicAuths.Create(defaultCtx,
+		consumer.ID, basicAuth)
+	require.NoError(err)
+	assert.NotNil(createdBasicAuth)
+
+	// Test with nil options
+	updatedBasicAuth, err := client.BasicAuths.UpdateWithOptions(defaultCtx,
+		consumer.ID, nil)
+	require.Error(err)
+	assert.Nil(updatedBasicAuth)
+	assert.Contains(err.Error(), "basic auth options and credential are required")
+
+	// Test successful update with SkipHash = false
+	skipHashFalse := false
+	opts := &BasicAuthOptions{
+		BasicAuth: BasicAuth{
+			ID:       createdBasicAuth.ID,
+			Username: String("updated-username"),
+			Password: String("updated-password"),
+		},
+		SkipHash: &skipHashFalse,
+	}
+	updatedBasicAuth, err = client.BasicAuths.UpdateWithOptions(defaultCtx,
+		consumer.ID, opts)
+	require.NoError(err)
+	assert.NotNil(updatedBasicAuth)
+	assert.Equal("updated-username", *updatedBasicAuth.Username)
+	// password should be hashed when SkipHash is false
+	assert.NotEqual("updated-password", *updatedBasicAuth.Password)
+
+	// Test successful update with SkipHash = true
+	// Test with SkipHash = true can work only with Konnect for now
+	// TODO: enable this test for Konnect when we have a way to run tests against Konnect
+
+	// Test successful update with nil SkipHash (should default to false)
+	opts = &BasicAuthOptions{
+		BasicAuth: BasicAuth{
+			ID:       createdBasicAuth.ID,
+			Username: String("updated-username-3"),
+			Password: String("updated-password-3"),
+		},
+		SkipHash: nil,
+	}
+	updatedBasicAuth, err = client.BasicAuths.UpdateWithOptions(defaultCtx,
+		consumer.ID, opts)
+	require.NoError(err)
+	assert.NotNil(updatedBasicAuth)
+	assert.Equal("updated-username-3", *updatedBasicAuth.Username)
+	// password should be hashed when SkipHash is nil (defaults to false)
+	assert.NotEqual("updated-password-3", *updatedBasicAuth.Password)
+
+	// Verify the credential was actually updated
+	retrievedBasicAuth, err := client.BasicAuths.Get(defaultCtx,
+		consumer.ID, updatedBasicAuth.Username)
+	require.NoError(err)
+	assert.Equal("updated-username-3", *retrievedBasicAuth.Username)
+
+	require.NoError(client.Consumers.Delete(defaultCtx, consumer.ID))
+}

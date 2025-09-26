@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.68.0](#v0680)
 - [v0.67.0](#v0670)
 - [v0.66.1](#v0661)
 - [v0.66.0](#v0660)
@@ -83,6 +84,15 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.68.0]
+
+> Release date: 2025/09/26
+
+- Added `BasicAuthOptions` to allow skipping hashing for
+  BasicAuth passwords. `CreateWithOptions` and `UpdateWitOptions`
+  methods are added for basic-auth for the same.
+  [#576](https://github.com/Kong/go-kong/pull/576)
 
 ## [v0.67.0]
 
