@@ -51,21 +51,11 @@ type BasicAuthService service
 func (s *BasicAuthService) Create(ctx context.Context,
 	consumerUsernameOrID *string, basicAuth *BasicAuth,
 ) (*BasicAuth, error) {
-	cred, err := s.client.credentials.Create(ctx, "basic-auth",
-		consumerUsernameOrID, credentialOptions{
-			credential: basicAuth,
-		})
-	if err != nil {
-		return nil, err
+	if basicAuth == nil {
+		return nil, fmt.Errorf("basic auth credential is required")
 	}
 
-	var createdBasicAuth BasicAuth
-	err = json.Unmarshal(cred, &createdBasicAuth)
-	if err != nil {
-		return nil, err
-	}
-
-	return &createdBasicAuth, nil
+	return s.CreateWithOptions(ctx, consumerUsernameOrID, &BasicAuthOptions{BasicAuth: *basicAuth, SkipHash: nil})
 }
 
 // CreateWithOptions creates a basic-auth credential in Kong
@@ -145,21 +135,11 @@ func (s *BasicAuthService) GetByID(ctx context.Context,
 func (s *BasicAuthService) Update(ctx context.Context,
 	consumerUsernameOrID *string, basicAuth *BasicAuth,
 ) (*BasicAuth, error) {
-	cred, err := s.client.credentials.Update(ctx, "basic-auth",
-		consumerUsernameOrID, credentialOptions{
-			credential: basicAuth,
-		})
-	if err != nil {
-		return nil, err
+	if basicAuth == nil {
+		return nil, fmt.Errorf("basic auth credential is required")
 	}
 
-	var updatedBasicAuth BasicAuth
-	err = json.Unmarshal(cred, &updatedBasicAuth)
-	if err != nil {
-		return nil, err
-	}
-
-	return &updatedBasicAuth, nil
+	return s.UpdateWithOptions(ctx, consumerUsernameOrID, &BasicAuthOptions{BasicAuth: *basicAuth, SkipHash: nil})
 }
 
 // UpdateWithOptions updates a basic-auth credential in Kong
