@@ -52,7 +52,9 @@ func (s *BasicAuthService) Create(ctx context.Context,
 	consumerUsernameOrID *string, basicAuth *BasicAuth,
 ) (*BasicAuth, error) {
 	cred, err := s.client.credentials.Create(ctx, "basic-auth",
-		consumerUsernameOrID, basicAuth, false)
+		consumerUsernameOrID, credentialOptions{
+			credential: basicAuth,
+		})
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +86,10 @@ func (s *BasicAuthService) CreateWithOptions(ctx context.Context,
 	}
 
 	cred, err := s.client.credentials.Create(ctx, "basic-auth",
-		consumerUsernameOrID, &opts.BasicAuth, skipHash)
+		consumerUsernameOrID, credentialOptions{
+			credential: &opts.BasicAuth,
+			skipHash:   skipHash,
+		})
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +146,9 @@ func (s *BasicAuthService) Update(ctx context.Context,
 	consumerUsernameOrID *string, basicAuth *BasicAuth,
 ) (*BasicAuth, error) {
 	cred, err := s.client.credentials.Update(ctx, "basic-auth",
-		consumerUsernameOrID, basicAuth, false)
+		consumerUsernameOrID, credentialOptions{
+			credential: basicAuth,
+		})
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +177,10 @@ func (s *BasicAuthService) UpdateWithOptions(ctx context.Context,
 	}
 
 	cred, err := s.client.credentials.Update(ctx, "basic-auth",
-		consumerUsernameOrID, &opts.BasicAuth, skipHash)
+		consumerUsernameOrID, credentialOptions{
+			credential: &opts.BasicAuth,
+			skipHash:   skipHash,
+		})
 	if err != nil {
 		return nil, err
 	}

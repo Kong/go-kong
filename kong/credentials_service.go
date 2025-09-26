@@ -7,11 +7,16 @@ import (
 	"reflect"
 )
 
+type credentialOptions struct {
+	credential interface{}
+	skipHash   bool
+}
+
 // abstractCredentialService handles credentials in Kong.
 type abstractCredentialService interface {
 	// Create creates a credential in Kong of type credType.
 	Create(ctx context.Context, credType string, consumerUsernameOrID *string,
-		credential interface{}, skipHash bool) (json.RawMessage, error)
+		credentialOptions credentialOptions) (json.RawMessage, error)
 	// Get fetches a credential of credType with credIdentifier from Kong.
 	Get(ctx context.Context, credType string, consumerUsernameOrID *string,
 		credIdentifier *string) (json.RawMessage, error)
@@ -19,7 +24,7 @@ type abstractCredentialService interface {
 	GetByID(ctx context.Context, credType string, credIdentifier *string) (json.RawMessage, error)
 	// Update updates credential in Kong
 	Update(ctx context.Context, credType string, consumerUsernameOrID *string,
-		credential interface{}, skipHash bool) (json.RawMessage, error)
+		credentialOptions credentialOptions) (json.RawMessage, error)
 	// Delete deletes a credential in Kong
 	Delete(ctx context.Context, credType string, consumerUsernameOrID, credIdentifier *string) error
 }
@@ -58,8 +63,7 @@ type queryStruct struct {
 // is auto-generated.
 func (s *credentialService) Create(ctx context.Context, credType string,
 	consumerUsernameOrID *string,
-	credential interface{},
-	skipHash bool,
+	credentialOptions credentialOptions,
 ) (json.RawMessage, error) {
 	if isEmptyString(consumerUsernameOrID) {
 		return nil, fmt.Errorf("consumerUsernameOrID cannot be nil")
@@ -71,8 +75,8 @@ func (s *credentialService) Create(ctx context.Context, credType string,
 	}
 	endpoint := "/consumers/" + *consumerUsernameOrID + "/" + subPath
 	method := "POST"
-	if credential != nil {
-		if id, ok := credential.(id); ok {
+	if credentialOptions.credential != nil {
+		if id, ok := credentialOptions.credential.(id); ok {
 			if !reflect.ValueOf(id).IsNil() {
 				uuid := id.id()
 				if !isEmptyString(uuid) {
@@ -85,13 +89,13 @@ func (s *credentialService) Create(ctx context.Context, credType string,
 
 	var q *queryStruct
 
-	if credType == "basic-auth" && skipHash {
+	if credType == "basic-auth" && credentialOptions.skipHash {
 		q = &queryStruct{
 			SkipHash: "true",
 		}
 	}
 
-	req, err := s.client.NewRequest(method, endpoint, q, credential)
+	req, err := s.client.NewRequest(method, endpoint, q, credentialOptions.credential)
 	if err != nil {
 		return nil, err
 	}
@@ -164,8 +168,7 @@ func (s *credentialService) GetByID(ctx context.Context, credType string, credId
 // Update updates credential in Kong
 func (s *credentialService) Update(ctx context.Context, credType string,
 	consumerUsernameOrID *string,
-	credential interface{},
-	skipHash bool,
+	credentialOptions credentialOptions,
 ) (json.RawMessage, error) {
 	if isEmptyString(consumerUsernameOrID) {
 		return nil, fmt.Errorf("consumerUsernameOrID cannot be nil")
@@ -179,8 +182,8 @@ func (s *credentialService) Update(ctx context.Context, credType string,
 	endpoint := "/consumers/" + *consumerUsernameOrID + "/" + subPath + "/"
 
 	credID := ""
-	if credential != nil {
-		if id, ok := credential.(id); ok {
+	if credentialOptions.credential != nil {
+		if id, ok := credentialOptions.credential.(id); ok {
 			if !reflect.ValueOf(id).IsNil() {
 				uuid := id.id()
 				if !isEmptyString(uuid) {
@@ -197,12 +200,12 @@ func (s *credentialService) Update(ctx context.Context, credType string,
 
 	var q *queryStruct
 
-	if credType == "basic-auth" && skipHash {
+	if credType == "basic-auth" && credentialOptions.skipHash {
 		q = &queryStruct{
 			SkipHash: "true",
 		}
 	}
-	req, err := s.client.NewRequest("PATCH", endpoint, q, credential)
+	req, err := s.client.NewRequest("PATCH", endpoint, q, credentialOptions.credential)
 	if err != nil {
 		return nil, err
 	}
