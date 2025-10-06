@@ -73,15 +73,19 @@ func TestTargetsUpdate(T *testing.T) {
 
 	client, err := NewTestClient(nil, nil)
 	require.NoError(err)
-	assert.NotNil(client)
+	require.NotNil(client)
 
 	// create a upstream
 	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
 		Name: String("vhost.com"),
 	})
+	T.Cleanup(func() {
+		err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
+		require.NoError(err)
+	})
 	require.NoError(err)
 	require.NotNil(fixtureUpstream)
-	assert.NotNil(fixtureUpstream.ID)
+	require.NotNil(fixtureUpstream.ID)
 
 	targetID := "0fa49cd2-ee93-492a-bedf-b80778d539ae"
 	createdTarget, err := client.Targets.Create(defaultCtx,
@@ -90,7 +94,8 @@ func TestTargetsUpdate(T *testing.T) {
 			Target: String("10.0.0.1:80"),
 		})
 	require.NoError(err)
-	assert.NotNil(createdTarget)
+	require.NotNil(createdTarget)
+	require.NotNil(createdTarget.ID)
 	assert.Equal(targetID, *createdTarget.ID)
 
 	err = client.Targets.Delete(defaultCtx, fixtureUpstream.ID,
@@ -100,15 +105,36 @@ func TestTargetsUpdate(T *testing.T) {
 	createdTarget, err = client.Targets.Create(defaultCtx,
 		fixtureUpstream.ID, &Target{
 			ID:     &targetID,
+			Weight: Int(1),
 			Target: String("10.0.0.2:80"),
 		})
+	T.Cleanup(func() {
+		err = client.Targets.Delete(defaultCtx, fixtureUpstream.ID, createdTarget.ID)
+		require.NoError(err)
+	})
 	require.NoError(err)
-	assert.NotNil(createdTarget)
+	require.NotNil(createdTarget)
+	require.NotNil(createdTarget.ID)
+	require.NotNil(createdTarget.Target)
+	require.NotNil(createdTarget.Weight)
 	assert.Equal(targetID, *createdTarget.ID)
+	assert.Equal(1, *createdTarget.Weight)
 	assert.Equal("10.0.0.2:80", *createdTarget.Target)
 
-	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
+	updatedTarget, err := client.Targets.Create(defaultCtx,
+		fixtureUpstream.ID, &Target{
+			ID:     &targetID,
+			Weight: Int(2),
+			Target: String("10.0.0.3:80"),
+		})
 	require.NoError(err)
+	require.NotNil(updatedTarget)
+	require.NotNil(updatedTarget.ID)
+	require.NotNil(updatedTarget.Target)
+	require.NotNil(updatedTarget.Weight)
+	assert.Equal(targetID, *updatedTarget.ID)
+	assert.Equal(2, *updatedTarget.Weight)
+	assert.Equal("10.0.0.3:80", *updatedTarget.Target)
 }
 
 func TestTargetWithTags(T *testing.T) {
@@ -137,6 +163,58 @@ func TestTargetWithTags(T *testing.T) {
 
 	err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
 	require.NoError(err)
+}
+
+func TestTargetWithFailover(T *testing.T) {
+	RunWhenKong(T, ">=3.12.0")
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
+		Name: String("vhost.com"),
+	})
+	require.NoError(err)
+	T.Cleanup(func() {
+		require.NoError(client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID))
+	})
+
+	createdTarget, err := client.Targets.Create(defaultCtx,
+		fixtureUpstream.ID, &Target{
+			Target:   String("10.0.0.1:80"),
+			Failover: Bool(true),
+		})
+	require.NoError(err)
+	require.NotNil(createdTarget)
+	require.True(*createdTarget.Failover)
+}
+
+func TestTargetWithFailoverDefault(T *testing.T) {
+	RunWhenKong(T, ">=3.12.0")
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
+		Name: String("vhost.com"),
+	})
+	require.NoError(err)
+	T.Cleanup(func() {
+		require.NoError(client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID))
+	})
+
+	createdTarget, err := client.Targets.Create(defaultCtx,
+		fixtureUpstream.ID, &Target{
+			Target: String("10.0.0.1:80"),
+		})
+	require.NoError(err)
+	require.NotNil(createdTarget)
+	assert.False(*createdTarget.Failover)
 }
 
 func TestTargetListEndpoint(T *testing.T) {
@@ -221,6 +299,59 @@ func TestTargetListEndpoint(T *testing.T) {
 	assert.Len(targets, 3)
 
 	require.NoError(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
+}
+
+func TestTargetsUpdatePatch(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+	client.SetDebugMode(true)
+
+	// create a upstream
+	fixtureUpstream, err := client.Upstreams.Create(defaultCtx, &Upstream{
+		Name: String("vhost.com"),
+	})
+	require.NoError(err)
+	require.NotNil(fixtureUpstream)
+	require.NotNil(fixtureUpstream.ID)
+
+	targetID := "0fa49cd2-ee93-492a-bedf-b80778d539ae"
+	createdTarget, err := client.Targets.Create(defaultCtx,
+		fixtureUpstream.ID, &Target{
+			ID:     &targetID,
+			Weight: Int(100),
+			Target: String("10.0.0.1:80"),
+		})
+	T.Cleanup(func() {
+		err = client.Upstreams.Delete(defaultCtx, fixtureUpstream.ID)
+		require.NoError(err)
+	})
+	require.NoError(err)
+	require.NotNil(createdTarget)
+	require.NotNil(createdTarget.ID)
+	require.NotNil(createdTarget.Weight)
+	assert.Equal(targetID, *createdTarget.ID)
+	assert.Equal(100, *createdTarget.Weight)
+
+	updatedTarget, err := client.Targets.Update(defaultCtx,
+		fixtureUpstream.ID, createdTarget.ID, &Target{
+			ID:     createdTarget.ID,
+			Weight: Int(10000), // Update weight
+			Target: createdTarget.Target,
+		})
+	require.NoError(err)
+	require.NotNil(updatedTarget)
+	require.NotNil(updatedTarget.ID)
+	require.NotNil(updatedTarget.Target)
+	require.NotNil(updatedTarget.Weight)
+	assert.Equal(targetID, *updatedTarget.ID)
+	assert.Equal("10.0.0.1:80", *updatedTarget.Target)
+	assert.Equal(10000, *updatedTarget.Weight)
 }
 
 func compareTargets(expected, actual []*Target) bool {

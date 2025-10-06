@@ -35,7 +35,9 @@ func (s *MTLSAuthService) Create(ctx context.Context,
 	consumerUsernameOrID *string, mtlsAuth *MTLSAuth,
 ) (*MTLSAuth, error) {
 	cred, err := s.client.credentials.Create(ctx, "mtls-auth",
-		consumerUsernameOrID, mtlsAuth)
+		consumerUsernameOrID, credentialOptions{
+			credential: mtlsAuth,
+		})
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +75,9 @@ func (s *MTLSAuthService) Update(ctx context.Context,
 	consumerUsernameOrID *string, mtlsAuth *MTLSAuth,
 ) (*MTLSAuth, error) {
 	cred, err := s.client.credentials.Update(ctx, "mtls-auth",
-		consumerUsernameOrID, mtlsAuth)
+		consumerUsernameOrID, credentialOptions{
+			credential: mtlsAuth,
+		})
 	if err != nil {
 		return nil, err
 	}

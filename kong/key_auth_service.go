@@ -36,7 +36,9 @@ func (s *KeyAuthService) Create(ctx context.Context,
 	consumerUsernameOrID *string, keyAuth *KeyAuth,
 ) (*KeyAuth, error) {
 	cred, err := s.client.credentials.Create(ctx, "key-auth",
-		consumerUsernameOrID, keyAuth)
+		consumerUsernameOrID, credentialOptions{
+			credential: keyAuth,
+		})
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +94,9 @@ func (s *KeyAuthService) Update(ctx context.Context,
 	consumerUsernameOrID *string, keyAuth *KeyAuth,
 ) (*KeyAuth, error) {
 	cred, err := s.client.credentials.Update(ctx, "key-auth",
-		consumerUsernameOrID, keyAuth)
+		consumerUsernameOrID, credentialOptions{
+			credential: keyAuth,
+		})
 	if err != nil {
 		return nil, err
 	}

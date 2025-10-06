@@ -96,6 +96,10 @@ func (s *RBACUserService) Update(ctx context.Context,
 		return nil, fmt.Errorf("ID and Name cannot both be nil for Update operation")
 	}
 
+	if user.UserTokenIdent != nil {
+		return nil, fmt.Errorf("UserTokenIdent cannot be set for Update operation")
+	}
+
 	endpoint := fmt.Sprintf("/rbac/users/%v", *user.ID)
 	req, err := s.client.NewRequest("PATCH", endpoint, nil, user)
 	if err != nil {

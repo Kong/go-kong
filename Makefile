@@ -37,8 +37,13 @@ golangci-lint: mise yq ## Download golangci-lint locally if necessary.
 
 .PHONY: kong.supported-versions
 kong.supported-versions:
-	@curl -s https://docs.konghq.com/_api/gateway-versions.json | \
-		jq '[.[] | select(.label == null) | select(.endOfLifeDate > (now | strftime("%Y-%m-%d")))] | [.[].tag]'
+	@curl -s https://developer.konghq.com/_api/gateway-versions.json | \
+	    jq '[.[] | select(.label == null) | select(.endOfLifeDate > (now | strftime("%Y-%m-%d")))] | [.[].tag]'
+
+.PHONY: kong.supported-versions.oss
+kong.supported-versions.oss:
+	@curl -s https://developer.konghq.com/_api/gateway-versions.json | \
+		jq '[.[] | select(.label == null) | select(.endOfLifeDate > (now | strftime("%Y-%m-%d"))) | select(.tag | split(".") | .[1] | tonumber <= 9)] | [.[].tag]'
 
 # ------------------------------------------------------------------------------
 # Testing

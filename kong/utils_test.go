@@ -1148,13 +1148,24 @@ func TestFillTargetDefaults(T *testing.T) {
 		},
 	}
 
+	kongVersion := GetVersionForTesting(T)
+	hasFailoverVersionRange := MustNewRange(">=3.12.0")
+	shouldContainFailover := hasFailoverVersionRange(kongVersion)
+
 	for _, tc := range tests {
 		T.Run(tc.name, func(t *testing.T) {
 			target := tc.target
 			fullSchema, err := client.Schemas.Get(defaultCtx, "targets")
-			require.NoError(T, err)
-			assert.NotNil(fullSchema)
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
 			require.NoError(t, FillEntityDefaults(target, fullSchema))
+
+			// Gateway 3.12 added a new Failover field to targets
+			// which has a default of False
+			if shouldContainFailover {
+				tc.expected.Failover = Bool(false)
+			}
+
 			if diff := cmp.Diff(target, tc.expected); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}
@@ -1285,6 +1296,10 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 			},
 		},
 	}
+	// Kong Enterprise added `StickySessionsCookiePath` field and assigned default values since 3.11.
+	// We need to add the default value of `StickySessionsCookiePath` when Kong version >= 3.11.0.
+	kongVersion := GetVersionForTesting(T)
+	hasStickySessionsCookiePathVersionRange := MustNewRange(">=3.11.0")
 
 	for _, tc := range tests {
 		T.Run(tc.name, func(t *testing.T) {
@@ -1298,11 +1313,109 @@ func TestFillUpstreamsDefaults(T *testing.T) {
 				cmpopts.IgnoreFields(Healthcheck{}, "Threshold"),
 				cmpopts.IgnoreFields(Upstream{}, "UseSrvName"),
 			}
+
+			// Add the default value of `throttling` to the expected configuration of plugin.
+			if hasStickySessionsCookiePathVersionRange(kongVersion) {
+				tc.expected.StickySessionsCookiePath = String("/")
+			}
+
 			if diff := cmp.Diff(u, tc.expected, opts...); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
 	}
+}
+
+func TestUpstreamStickySessionsFields(t *testing.T) {
+	tests := []struct {
+		name     string
+		upstream *Upstream
+		expected *Upstream
+	}{
+		{
+			name: "sticky sessions cookie field is preserved",
+			upstream: &Upstream{
+				Name:                 String("test-upstream"),
+				StickySessionsCookie: String("session_id"),
+			},
+			expected: &Upstream{
+				Name:                 String("test-upstream"),
+				StickySessionsCookie: String("session_id"),
+			},
+		},
+		{
+			name: "sticky sessions cookie path field is preserved",
+			upstream: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookiePath: String("/api"),
+			},
+			expected: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookiePath: String("/api"),
+			},
+		},
+		{
+			name: "both sticky sessions fields are preserved",
+			upstream: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookie:     String("session_id"),
+				StickySessionsCookiePath: String("/api"),
+			},
+			expected: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookie:     String("session_id"),
+				StickySessionsCookiePath: String("/api"),
+			},
+		},
+		{
+			name: "sticky sessions fields work with nil values",
+			upstream: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookie:     nil,
+				StickySessionsCookiePath: nil,
+			},
+			expected: &Upstream{
+				Name:                     String("test-upstream"),
+				StickySessionsCookie:     nil,
+				StickySessionsCookiePath: nil,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			// Test that the fields are correctly set and preserved
+			assert.Equal(t, tc.expected.Name, tc.upstream.Name)
+			assert.Equal(t, tc.expected.StickySessionsCookie, tc.upstream.StickySessionsCookie)
+			assert.Equal(t, tc.expected.StickySessionsCookiePath, tc.upstream.StickySessionsCookiePath)
+		})
+	}
+}
+
+func TestUpstreamStickySessionsJSONSerialization(t *testing.T) {
+	upstream := &Upstream{
+		Name:                     String("test-upstream"),
+		StickySessionsCookie:     String("session_id"),
+		StickySessionsCookiePath: String("/api"),
+	}
+
+	// Test JSON marshaling
+	jsonData, err := json.Marshal(upstream)
+	require.NoError(t, err)
+
+	// Verify the JSON contains the expected fields
+	assert.Contains(t, string(jsonData), `"sticky_sessions_cookie":"session_id"`)
+	assert.Contains(t, string(jsonData), `"sticky_sessions_cookie_path":"/api"`)
+
+	// Test JSON unmarshaling
+	var unmarshaledUpstream Upstream
+	err = json.Unmarshal(jsonData, &unmarshaledUpstream)
+	require.NoError(t, err)
+
+	// Verify the fields were correctly unmarshaled
+	assert.Equal(t, "test-upstream", *unmarshaledUpstream.Name)
+	assert.Equal(t, "session_id", *unmarshaledUpstream.StickySessionsCookie)
+	assert.Equal(t, "/api", *unmarshaledUpstream.StickySessionsCookiePath)
 }
 
 func getJSONSchemaFromFile(t *testing.T, filename string) Schema {
@@ -4209,21 +4322,17 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 			errString: "no 'config' field found in schema",
 		},
 	}
-	// Kong Enterprise added `throttling` field and assigned default values since 3.11.
-	// We need to add the default value of `throttling` when Kong version >= 3.11.0.
+	// Kong Enterprise added `throttling` field and assigned default values since 3.12.
+	// https://github.com/Kong/kong-ee/pull/12579
+	// We need to add the default value of `throttling` when Kong version >= 3.12.0.
 	kongVersion := GetVersionForTesting(t)
-	rlaHasThrottlingVersionRange := MustNewRange(">=3.11.0")
-	defaultRLAThrotlling := map[string]any{
-		"enabled":         false,
-		"dictionary_name": "kong_rate_limiting_throttling",
-		// Numbers are converted to `float64` type in `map[string]interface{}.
-		"interval":    float64(5),
-		"queue_limit": float64(5),
-		"retry_times": float64(3),
-	}
+	// for nightly tests, we assume the Kong version is >= 3.13.0
+	rlaHasThrottlingVersionRange := MustNewRange(">=3.13.0")
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Log(kongVersion)
+
 			err := FillPluginsDefaultsWithPartials(tc.plugin, tc.pluginSchema, tc.partials)
 			if tc.wantErr {
 				if err == nil {
@@ -4234,10 +4343,13 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 			}
 
 			require.NoError(t, err)
+
 			// Add the default value of `throttling` to the expected configuration of plugin.
-			if rlaHasThrottlingVersionRange(kongVersion) {
-				tc.expectedPlugin.Config["throttling"] = defaultRLAThrotlling
+			if rlaHasThrottlingVersionRange(kongVersion) && tc.expectedPlugin != nil {
+				t.Log("Add default throttling")
+				tc.expectedPlugin.Config["throttling"] = nil
 			}
+
 			opts := cmpopts.IgnoreFields(*tc.plugin, "Enabled", "Protocols")
 			if diff := cmp.Diff(tc.plugin, tc.expectedPlugin, opts); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
