@@ -238,3 +238,54 @@ func TestServiceWithClientCert(T *testing.T) {
 	err = client.Certificates.Delete(defaultCtx, createdCertificate.ID)
 	require.NoError(err)
 }
+
+func TestServiceWithTLSSANs(T *testing.T) {
+	RunWhenDBMode(T, "postgres")
+	RunWhenKong(T, ">=3.10.0.6")
+	assert := assert.New(T)
+	require := require.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	// Create a service with tls_sans property
+	service := &Service{
+		Name:     String("service-with-tls-sans"),
+		Host:     String("example.com"),
+		Protocol: String("https"),
+		TLSSANs: &SANs{
+			DNSNames: StringSlice("example.com", "test.example.com"),
+			Uris:     StringSlice("https://example.com"),
+		},
+	}
+
+	createdService, err := client.Services.Create(defaultCtx, service)
+	require.NoError(err)
+	require.NotNil(createdService)
+	require.NotNil(createdService.TLSSANs)
+	assert.Equal(StringSlice("example.com", "test.example.com"), createdService.TLSSANs.DNSNames)
+	assert.Equal(StringSlice("https://example.com"), createdService.TLSSANs.Uris)
+
+	// Update tls_sans property
+	createdService.TLSSANs = &SANs{
+		DNSNames: StringSlice("new-example.com"),
+		Uris:     StringSlice("https://new-example.com", "https://api.new-example.com"),
+	}
+
+	updatedService, err := client.Services.Update(defaultCtx, createdService)
+	require.NoError(err)
+	require.NotNil(updatedService)
+	require.Equal(updatedService.ID, createdService.ID)
+	require.NotNil(updatedService.TLSSANs)
+	assert.Equal(StringSlice("new-example.com"), updatedService.TLSSANs.DNSNames)
+	assert.Equal(StringSlice("https://new-example.com", "https://api.new-example.com"), updatedService.TLSSANs.Uris)
+
+	// Delete service
+	err = client.Services.Delete(defaultCtx, updatedService.ID)
+	require.NoError(err)
+
+	// Verify deletion
+	_, err = client.Services.Get(defaultCtx, updatedService.ID)
+	require.Error(err)
+}
