@@ -3788,7 +3788,7 @@ func Test_FillPartialDefaults(t *testing.T) {
 	}
 }
 
-func Test_FillPluginWithPartials(t *testing.T) {
+func Test_FillPluginWithPartials_310_and_311(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
 	client, err := NewTestClient(nil, nil)
 	require.NoError(t, err)
@@ -4039,7 +4039,7 @@ func Test_FillPluginWithPartials(t *testing.T) {
 	}
 }
 
-func Test_FillPluginsDefaultsWithPartials_312x(t *testing.T) {
+func Test_FillPluginsDefaultsWithPartials_312_and_up(t *testing.T) {
 	RunWhenEnterprise(t, ">=3.12.0", RequiredFeatures{})
 	client, err := NewTestClient(nil, nil)
 	require.NoError(t, err)
