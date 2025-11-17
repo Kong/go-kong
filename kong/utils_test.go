@@ -3789,7 +3789,7 @@ func Test_FillPartialDefaults(t *testing.T) {
 }
 
 func Test_FillPluginWithPartials_310_and_311(t *testing.T) {
-	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+	RunWhenEnterprise(t, ">=3.10.0 <3.12.0", RequiredFeatures{})
 	client, err := NewTestClient(nil, nil)
 	require.NoError(t, err)
 	require.NotNil(t, client)
