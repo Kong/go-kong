@@ -241,7 +241,8 @@ func TestServiceWithClientCert(T *testing.T) {
 
 func TestServiceWithTLSSANs(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
-	RunWhenKong(T, ">=3.10.0.6")
+	RunWhenEnterprise(T, ">=3.10.0.6", RequiredFeatures{})
+
 	assert := assert.New(T)
 	require := require.New(T)
 
