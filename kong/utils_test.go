@@ -3788,8 +3788,8 @@ func Test_FillPartialDefaults(t *testing.T) {
 	}
 }
 
-func Test_FillPluginWithPartials(t *testing.T) {
-	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+func Test_FillPluginWithPartials_310_and_311(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.10.0 <3.12.0", RequiredFeatures{})
 	client, err := NewTestClient(nil, nil)
 	require.NoError(t, err)
 	require.NotNil(t, client)
@@ -4039,8 +4039,330 @@ func Test_FillPluginWithPartials(t *testing.T) {
 	}
 }
 
+func Test_FillPluginsDefaultsWithPartials_312_and_up(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.12.0", RequiredFeatures{})
+	client, err := NewTestClient(nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	rlaPluginSchema, err := client.Schemas.Get(defaultCtx, "plugins/rate-limiting-advanced")
+	require.NoError(t, err)
+	require.NotNil(t, rlaPluginSchema)
+
+	tests := []struct {
+		name           string
+		plugin         *Plugin
+		pluginSchema   map[string]interface{}
+		partials       []*Partial
+		expectedPlugin *Plugin
+		wantErr        bool
+		errString      string
+	}{
+		{
+			name: "empty config, no partials present",
+			plugin: &Plugin{
+				Config: Configuration{},
+			},
+			pluginSchema: rlaPluginSchema,
+			partials:     nil,
+			expectedPlugin: &Plugin{
+				Config: Configuration{
+					"compound_identifier":     nil,
+					"consumer_groups":         nil,
+					"dictionary_name":         string("kong_rate_limiting_counters"),
+					"disable_penalty":         bool(false),
+					"enforce_consumer_groups": bool(false),
+					"error_code":              float64(429),
+					"error_message":           string("API rate limit exceeded"),
+					"header_name":             nil,
+					"hide_client_headers":     bool(false),
+					"identifier":              string("consumer"),
+					"limit":                   nil,
+					"lock_dictionary_name":    string("kong_locks"),
+					"namespace":               nil,
+					"path":                    nil,
+					"redis": map[string]any{
+						"cluster_max_redirections": float64(5),
+						"cluster_nodes":            nil,
+						"connect_timeout":          float64(2000),
+						"connection_is_proxied":    bool(false),
+						"database":                 float64(0),
+						"host":                     string("127.0.0.1"),
+						"keepalive_backlog":        nil,
+						"keepalive_pool_size":      float64(256),
+						"password":                 nil,
+						"port":                     float64(6379),
+						"read_timeout":             float64(2000),
+						"redis_proxy_type":         nil,
+						"send_timeout":             float64(2000),
+						"sentinel_master":          nil,
+						"sentinel_nodes":           nil,
+						"sentinel_password":        nil,
+						"sentinel_role":            nil,
+						"sentinel_username":        nil,
+						"server_name":              nil,
+						"ssl":                      bool(false),
+						"ssl_verify":               bool(false),
+						"username":                 nil,
+					},
+					"retry_after_jitter_max": float64(0),
+					"strategy":               string("local"),
+					"sync_rate":              nil,
+					"throttling":             nil,
+					"window_size":            nil,
+					"window_type":            string("sliding"),
+				},
+			},
+		},
+		{
+			name: "fill plugin defaults, single partial present",
+			plugin: &Plugin{
+				Config: Configuration{},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+					},
+				},
+			},
+			pluginSchema: rlaPluginSchema,
+			partials: []*Partial{
+				{
+					ID:   String("abc"),
+					Type: String("redis-ee"),
+					Config: Configuration{
+						"cluster_max_redirections": float64(5),
+						"cluster_nodes":            nil,
+						"connect_timeout":          float64(2000),
+						"connection_is_proxied":    bool(false),
+						"database":                 float64(0),
+						"host":                     string("127.0.0.1"),
+						"keepalive_backlog":        nil,
+						"keepalive_pool_size":      float64(256),
+						"password":                 nil,
+						"port":                     float64(7000),
+						"read_timeout":             float64(2000),
+						"send_timeout":             float64(2000),
+						"sentinel_master":          nil,
+						"sentinel_nodes":           nil,
+						"sentinel_password":        nil,
+						"sentinel_role":            nil,
+						"sentinel_username":        nil,
+						"server_name":              nil,
+						"ssl":                      bool(false),
+						"ssl_verify":               bool(false),
+						"username":                 nil,
+					},
+				},
+			},
+			expectedPlugin: &Plugin{
+				Config: Configuration{
+					"compound_identifier":     nil,
+					"consumer_groups":         nil,
+					"dictionary_name":         string("kong_rate_limiting_counters"),
+					"disable_penalty":         bool(false),
+					"enforce_consumer_groups": bool(false),
+					"error_code":              float64(429),
+					"error_message":           string("API rate limit exceeded"),
+					"header_name":             nil,
+					"hide_client_headers":     bool(false),
+					"identifier":              string("consumer"),
+					"limit":                   nil,
+					"lock_dictionary_name":    string("kong_locks"),
+					"namespace":               nil,
+					"path":                    nil,
+					"redis": Configuration{
+						"cluster_max_redirections": float64(5),
+						"cluster_nodes":            nil,
+						"connect_timeout":          float64(2000),
+						"connection_is_proxied":    bool(false),
+						"database":                 float64(0),
+						"host":                     string("127.0.0.1"),
+						"keepalive_backlog":        nil,
+						"keepalive_pool_size":      float64(256),
+						"password":                 nil,
+						"port":                     float64(7000),
+						"read_timeout":             float64(2000),
+						"send_timeout":             float64(2000),
+						"sentinel_master":          nil,
+						"sentinel_nodes":           nil,
+						"sentinel_password":        nil,
+						"sentinel_role":            nil,
+						"sentinel_username":        nil,
+						"server_name":              nil,
+						"ssl":                      bool(false),
+						"ssl_verify":               bool(false),
+						"username":                 nil,
+					},
+					"retry_after_jitter_max": float64(0),
+					"strategy":               string("local"),
+					"sync_rate":              nil,
+					"throttling":             nil,
+					"window_size":            nil,
+					"window_type":            string("sliding"),
+				},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+						Path: String("config.redis"),
+					},
+				},
+			},
+		},
+		{
+			name: "fill plugin defaults, single partial and path present",
+			plugin: &Plugin{
+				Config: Configuration{},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+						Path: String("config.redis"),
+					},
+				},
+			},
+			pluginSchema: rlaPluginSchema,
+			partials: []*Partial{
+				{
+					ID:   String("abc"),
+					Type: String("redis-ee"),
+					Config: Configuration{
+						"cluster_max_redirections": float64(5),
+						"cluster_nodes":            nil,
+						"connect_timeout":          float64(2000),
+						"connection_is_proxied":    bool(false),
+						"database":                 float64(0),
+						"host":                     string("127.0.0.1"),
+						"keepalive_backlog":        nil,
+						"keepalive_pool_size":      float64(256),
+						"password":                 nil,
+						"port":                     float64(7000),
+						"read_timeout":             float64(2000),
+						"send_timeout":             float64(2000),
+						"sentinel_master":          nil,
+						"sentinel_nodes":           nil,
+						"sentinel_password":        nil,
+						"sentinel_role":            nil,
+						"sentinel_username":        nil,
+						"server_name":              nil,
+						"ssl":                      bool(false),
+						"ssl_verify":               bool(false),
+						"username":                 nil,
+					},
+				},
+			},
+			expectedPlugin: &Plugin{
+				Config: Configuration{
+					"compound_identifier":     nil,
+					"consumer_groups":         nil,
+					"dictionary_name":         string("kong_rate_limiting_counters"),
+					"disable_penalty":         bool(false),
+					"enforce_consumer_groups": bool(false),
+					"error_code":              float64(429),
+					"error_message":           string("API rate limit exceeded"),
+					"header_name":             nil,
+					"hide_client_headers":     bool(false),
+					"identifier":              string("consumer"),
+					"limit":                   nil,
+					"lock_dictionary_name":    string("kong_locks"),
+					"namespace":               nil,
+					"path":                    nil,
+					"redis": Configuration{
+						"cluster_max_redirections": float64(5),
+						"cluster_nodes":            nil,
+						"connect_timeout":          float64(2000),
+						"connection_is_proxied":    bool(false),
+						"database":                 float64(0),
+						"host":                     string("127.0.0.1"),
+						"keepalive_backlog":        nil,
+						"keepalive_pool_size":      float64(256),
+						"password":                 nil,
+						"port":                     float64(7000),
+						"read_timeout":             float64(2000),
+						"send_timeout":             float64(2000),
+						"sentinel_master":          nil,
+						"sentinel_nodes":           nil,
+						"sentinel_password":        nil,
+						"sentinel_role":            nil,
+						"sentinel_username":        nil,
+						"server_name":              nil,
+						"ssl":                      bool(false),
+						"ssl_verify":               bool(false),
+						"username":                 nil,
+					},
+					"retry_after_jitter_max": float64(0),
+					"strategy":               string("local"),
+					"sync_rate":              nil,
+					"throttling":             nil,
+					"window_size":            nil,
+					"window_type":            string("sliding"),
+				},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("abc"),
+						},
+						Path: String("config.redis"),
+					},
+				},
+			},
+		},
+		{
+			name: "invalid schema passed",
+			plugin: &Plugin{
+				ID:     String("test-plugin"),
+				Config: Configuration{},
+			},
+			pluginSchema: map[string]interface{}{
+				"type": "invalid",
+			},
+			partials:  nil,
+			wantErr:   true,
+			errString: "no 'config' field found in schema",
+		},
+	}
+	// Kong Enterprise added `throttling` field and assigned default values since 3.12.
+	// https://github.com/Kong/kong-ee/pull/12579
+	// We need to add the default value of `throttling` when Kong version >= 3.12.0.
+	kongVersion := GetVersionForTesting(t)
+	// for nightly tests, we assume the Kong version is >= 3.13.0
+	rlaHasThrottlingVersionRange := MustNewRange(">=3.13.0")
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Log(kongVersion)
+
+			err := FillPluginsDefaultsWithPartials(tc.plugin, tc.pluginSchema, tc.partials)
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("FillPluginsDefaultsWithPartials expected error but got none")
+				}
+				assert.ErrorContains(t, err, tc.errString)
+				return
+			}
+
+			require.NoError(t, err)
+
+			// Add the default value of `throttling` to the expected configuration of plugin.
+			if rlaHasThrottlingVersionRange(kongVersion) && tc.expectedPlugin != nil {
+				t.Log("Add default throttling")
+				tc.expectedPlugin.Config["throttling"] = nil
+			}
+
+			opts := cmpopts.IgnoreFields(*tc.plugin, "Enabled", "Protocols")
+			if diff := cmp.Diff(tc.plugin, tc.expectedPlugin, opts); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
 func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
-	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+	RunWhenEnterprise(t, ">=3.10.0 <3.12.0", RequiredFeatures{})
 	client, err := NewTestClient(nil, nil)
 	require.NoError(t, err)
 	require.NotNil(t, client)
