@@ -20,9 +20,18 @@ type Service struct {
 	URL               *string      `json:"url,omitempty" yaml:"url,omitempty"`
 	WriteTimeout      *int         `json:"write_timeout,omitempty" yaml:"write_timeout,omitempty"`
 	Tags              []*string    `json:"tags,omitempty" yaml:"tags,omitempty"`
+	TLSSANs           *SANs        `json:"tls_sans,omitempty" yaml:"tls_sans,omitempty"`
 	TLSVerify         *bool        `json:"tls_verify,omitempty" yaml:"tls_verify,omitempty"`
 	TLSVerifyDepth    *int         `json:"tls_verify_depth,omitempty" yaml:"tls_verify_depth,omitempty"`
 	CACertificates    []*string    `json:"ca_certificates,omitempty" yaml:"ca_certificates,omitempty"`
+}
+
+// SANs represents Additional Subject Alternative names,
+// that can be matched on Upstream server's TLS certificates, in addition to host.
+// +k8s:deepcopy-gen=true
+type SANs struct {
+	DNSNames []*string `json:"dnsnames,omitempty" yaml:"dnsnames,omitempty"`
+	Uris     []*string `json:"uris,omitempty" yaml:"uris,omitempty"`
 }
 
 // FriendlyName returns the endpoint key name or ID.
