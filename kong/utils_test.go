@@ -1033,7 +1033,7 @@ func TestFillRoutesDefaults(T *testing.T) {
 }
 
 func TestFillServiceDefaults_pre_310(T *testing.T) {
-	RunWhenEnterprise(T, "<3.10.0", RequiredFeatures{})
+	RunWhenKong(T, "<3.10.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
