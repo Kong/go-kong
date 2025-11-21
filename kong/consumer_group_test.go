@@ -360,3 +360,89 @@ func TestConsumerGroupGetEndpointPostGW39(t *testing.T) {
 		assert.Nil(consumerGroupFromKong.Consumers, "consumers should not be listed")
 	})
 }
+
+func TestConsumerGroupPluginWithPartials(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+	require := require.New(t)
+	assert := assert.New(t)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	// create a consumer group
+	cg := &ConsumerGroup{
+		Name: String("test-group-with-partials"),
+	}
+	createdConsumerGroup, err := client.ConsumerGroups.Create(defaultCtx, cg)
+	require.NoError(err)
+	require.NotNil(createdConsumerGroup)
+	t.Cleanup(func() {
+		if createdConsumerGroup != nil {
+			require.NoError(client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID))
+		}
+	})
+
+	// create a partial
+	partial := &Partial{
+		Name: String("test-redis-partial"),
+		Type: String("redis-ee"),
+		Config: Configuration{
+			"send_timeout":    2001,
+			"read_timeout":    3001,
+			"connect_timeout": 4001,
+		},
+	}
+	createdPartial, err := client.Partials.Create(defaultCtx, partial)
+	require.NoError(err)
+	require.NotNil(createdPartial)
+	t.Cleanup(func() {
+		require.NoError(client.Partials.Delete(defaultCtx, createdPartial.ID))
+	})
+
+	// create a consumer group plugin with partial
+	plugin := &Plugin{
+		Name: String("rate-limiting-advanced"),
+		Config: Configuration{
+			"limit":       []interface{}{50},
+			"window_size": []interface{}{30},
+		},
+		Partials: []*PartialLink{
+			{
+				Partial: &Partial{
+					ID: createdPartial.ID,
+				},
+			},
+		},
+	}
+
+	createdPlugin, err := client.Plugins.CreateForConsumerGroup(defaultCtx, createdConsumerGroup.ID, plugin)
+	require.NoError(err)
+	require.NotNil(createdPlugin)
+	t.Cleanup(func() {
+		if createdPlugin != nil {
+			require.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
+		}
+	})
+
+	// verify the plugin has the partial link
+	assert.NotNil(createdPlugin.Partials)
+	assert.Len(createdPlugin.Partials, 1)
+	assert.Equal(createdPartial.ID, createdPlugin.Partials[0].ID)
+	assert.Equal(String("config.redis"), createdPlugin.Partials[0].Path)
+
+	// verify the partial config was applied
+	redisConfig, ok := createdPlugin.Config["redis"].(map[string]interface{})
+	require.True(ok, "redis config should be present")
+	assert.InEpsilon(2001, redisConfig["send_timeout"], 0.1)
+	assert.InEpsilon(3001, redisConfig["read_timeout"], 0.1)
+	assert.InEpsilon(4001, redisConfig["connect_timeout"], 0.1)
+
+	// get the plugin and verify partials are returned
+	fetchedPlugin, err := client.Plugins.Get(defaultCtx, createdPlugin.ID)
+	require.NoError(err)
+	assert.NotNil(fetchedPlugin)
+	assert.NotNil(fetchedPlugin.Partials)
+	assert.Len(fetchedPlugin.Partials, 1)
+	assert.Equal(createdPartial.ID, fetchedPlugin.Partials[0].ID)
+}
