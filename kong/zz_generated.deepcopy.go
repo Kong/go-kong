@@ -658,6 +658,17 @@ func (in *ConsumerGroupPlugin) DeepCopyInto(out *ConsumerGroupPlugin) {
 			}
 		}
 	}
+	if in.Partials != nil {
+		in, out := &in.Partials, &out.Partials
+		*out = make([]*PartialLink, len(*in))
+		for i := range *in {
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
+				*out = new(PartialLink)
+				(*in).DeepCopyInto(*out)
+			}
+		}
+	}
 	return
 }
 
