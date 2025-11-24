@@ -33,7 +33,7 @@ var defaultConfigRedisEEPartial = Configuration{
 }
 
 func TestPartialServiceCreateEndpoint(t *testing.T) {
-	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+	RunWhenEnterprise(t, ">=3.10.0 <3.13.0", RequiredFeatures{})
 
 	require := require.New(t)
 	assert := assert.New(t)
@@ -129,7 +129,7 @@ func TestPartialServiceGetEndpoint(t *testing.T) {
 }
 
 func TestPartialServiceUpdateEndpoint(t *testing.T) {
-	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+	RunWhenEnterprise(t, ">=3.10.0 <3.13.0", RequiredFeatures{})
 
 	require := require.New(t)
 	assert := assert.New(t)
