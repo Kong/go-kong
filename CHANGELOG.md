@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.70.0](#v0700)
 - [v0.69.0](#v0690)
 - [v0.68.0](#v0680)
 - [v0.67.0](#v0670)
@@ -85,6 +86,15 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.70.0]
+
+> Release date: 2025/11/24
+
+- Added `TLSSans` parameter for `Service`
+  [#585](https://github.com/Kong/go-kong/pull/585)
+- Added partials support for `ConsumerGroupPlugin`
+  [#586](https://github.com/Kong/go-kong/pull/586)
 
 ## [v0.69.0]
 
@@ -1089,6 +1099,9 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.70.0]: https://github.com/Kong/go-kong/compare/v0.69.0...v0.70.0
+[v0.69.0]: https://github.com/Kong/go-kong/compare/v0.68.0...v0.69.0
+[v0.68.0]: https://github.com/Kong/go-kong/compare/v0.67.0...v0.68.0
 [v0.67.0]: https://github.com/Kong/go-kong/compare/v0.66.1...v0.67.0
 [v0.66.1]: https://github.com/Kong/go-kong/compare/v0.66.0...v0.66.1
 [v0.66.0]: https://github.com/Kong/go-kong/compare/v0.65.1...v0.66.0
