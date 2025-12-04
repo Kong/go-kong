@@ -69,7 +69,7 @@ func (v Version) Revision() (uint64, error) {
 	if v.version.Revision < 0 {
 		return 0, errors.New("revision is unavailable for version")
 	}
-	return uint64(v.version.Revision), nil //nolint:gosec
+	return uint64(v.version.Revision), nil
 }
 
 // PreRelease returns the pre-release string of Version.
