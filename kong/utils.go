@@ -870,6 +870,42 @@ func getDefaultPartialPath(partialLinks []*PartialLink, pluginSchema gjson.Resul
 	return nil
 }
 
+// getOrCreateConfigArray retrieves an existing array from the config map or creates a new one.
+// Returns an error if the path exists but is not an array type.
+func getOrCreateConfigArray(config Configuration, path string) ([]interface{}, error) {
+	existingValue, exists := config[path]
+	if !exists {
+		return []interface{}{}, nil
+	}
+
+	arraySlice, ok := existingValue.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("expected array at path %s but found different type", path)
+	}
+	return arraySlice, nil
+}
+
+// configExistsInArray checks if a config already exists in the passed config array
+// by comparing JSON representations.
+func configExistsInArray(configArr []interface{}, config Configuration) bool {
+	configJSON, err := json.Marshal(config)
+	if err != nil {
+		return false
+	}
+
+	for _, item := range configArr {
+		itemJSON, err := json.Marshal(item)
+		if err != nil {
+			continue
+		}
+
+		if string(itemJSON) == string(configJSON) {
+			return true
+		}
+	}
+	return false
+}
+
 func fillPartialConfigsInPlugin(plugin *Plugin, partials []*Partial) error {
 	// internal function to find a partial by its ID
 	// this is useful to get partial's type for finding
@@ -886,14 +922,31 @@ func fillPartialConfigsInPlugin(plugin *Plugin, partials []*Partial) error {
 	const configString string = "config."
 
 	for _, partialLink := range plugin.Partials {
-		sanitisedPath := strings.ReplaceAll(*partialLink.Path, configString, "")
 		partialNeeded := findPartialByID(*partialLink.ID)
 		if partialNeeded == nil {
 			return fmt.Errorf("partial with ID %s not found", *partialLink.ID)
 		}
-		// Gateway does not support overrides yet.
-		// Thus, we are adding the config directly
-		plugin.Config[sanitisedPath] = partialNeeded.Config
+		sanitisedPath := strings.ReplaceAll(*partialLink.Path, configString, "")
+		partialAppendsRequired := strings.HasSuffix(sanitisedPath, "[]")
+
+		if !partialAppendsRequired {
+			// Replacing the config directly as partial doesn't require appending here.
+			// Gateway does not support overrides yet, so add config directly
+			plugin.Config[sanitisedPath] = partialNeeded.Config
+			continue
+		}
+
+		// Handle append operation
+		arrayPath := strings.TrimSuffix(sanitisedPath, "[]")
+		arraySlice, err := getOrCreateConfigArray(plugin.Config, arrayPath)
+		if err != nil {
+			return err
+		}
+
+		// Only append if config doesn't already exist in array
+		if !configExistsInArray(arraySlice, partialNeeded.Config) {
+			plugin.Config[arrayPath] = append(arraySlice, partialNeeded.Config)
+		}
 	}
 
 	return nil
