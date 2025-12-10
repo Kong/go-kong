@@ -4770,3 +4770,361 @@ func Test_FillPluginsDefaultsWithPartials(t *testing.T) {
 		})
 	}
 }
+
+func Test_fillPartialConfigsInPlugin(t *testing.T) {
+	tests := []struct {
+		name           string
+		plugin         *Plugin
+		partials       []*Partial
+		expectedConfig Configuration
+		wantErr        bool
+		errString      string
+	}{
+		{
+			name: "no partials - plugin unchanged",
+			plugin: &Plugin{
+				Config:   Configuration{"existing": "value"},
+				Partials: nil,
+			},
+			partials: nil,
+			expectedConfig: Configuration{
+				"existing": "value",
+			},
+			wantErr: false,
+		},
+		{
+			name: "single partial without append - replace config",
+			plugin: &Plugin{
+				Config: Configuration{},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("partial-1"),
+						},
+						Path: String("config.redis"),
+					},
+				},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("partial-1"),
+					Type: String("redis"),
+					Config: Configuration{
+						"host": "127.0.0.1",
+						"port": float64(6379),
+					},
+				},
+			},
+			expectedConfig: Configuration{
+				"redis": Configuration{
+					"host": "127.0.0.1",
+					"port": float64(6379),
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "single partial with append - append to array",
+			plugin: &Plugin{
+				Config: Configuration{},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("partial-1"),
+						},
+						Path: String("config.allow[]"),
+					},
+				},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("partial-1"),
+					Type: String("ip"),
+					Config: Configuration{
+						"ip": "192.168.1.1",
+					},
+				},
+			},
+			expectedConfig: Configuration{
+				"allow": []interface{}{
+					Configuration{
+						"ip": "192.168.1.1",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "append to existing array",
+			plugin: &Plugin{
+				Config: Configuration{
+					"allow": []interface{}{
+						Configuration{
+							"ip": "10.0.0.1",
+						},
+					},
+				},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("partial-1"),
+						},
+						Path: String("config.allow[]"),
+					},
+				},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("partial-1"),
+					Type: String("ip"),
+					Config: Configuration{
+						"ip": "192.168.1.1",
+					},
+				},
+			},
+			expectedConfig: Configuration{
+				"allow": []interface{}{
+					Configuration{
+						"ip": "10.0.0.1",
+					},
+					Configuration{
+						"ip": "192.168.1.1",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "append duplicate config - should not append",
+			plugin: &Plugin{
+				Config: Configuration{
+					"allow": []interface{}{
+						Configuration{
+							"ip": "192.168.1.1",
+						},
+					},
+				},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("partial-1"),
+						},
+						Path: String("config.allow[]"),
+					},
+				},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("partial-1"),
+					Type: String("ip"),
+					Config: Configuration{
+						"ip": "192.168.1.1",
+					},
+				},
+			},
+			expectedConfig: Configuration{
+				"allow": []interface{}{
+					Configuration{
+						"ip": "192.168.1.1",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "multiple partials with different paths",
+			plugin: &Plugin{
+				Config: Configuration{},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("partial-1"),
+						},
+						Path: String("config.redis"),
+					},
+					{
+						Partial: &Partial{
+							ID: String("partial-2"),
+						},
+						Path: String("config.allow[]"),
+					},
+				},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("partial-1"),
+					Type: String("redis"),
+					Config: Configuration{
+						"host": "127.0.0.1",
+						"port": float64(6379),
+					},
+				},
+				{
+					ID:   String("partial-2"),
+					Type: String("ip"),
+					Config: Configuration{
+						"ip": "192.168.1.1",
+					},
+				},
+			},
+			expectedConfig: Configuration{
+				"redis": Configuration{
+					"host": "127.0.0.1",
+					"port": float64(6379),
+				},
+				"allow": []interface{}{
+					Configuration{
+						"ip": "192.168.1.1",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "partial not found - should error",
+			plugin: &Plugin{
+				Config: Configuration{},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("partial-1"),
+						},
+						Path: String("config.redis"),
+					},
+				},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("partial-2"),
+					Type: String("redis"),
+					Config: Configuration{
+						"host": "127.0.0.1",
+					},
+				},
+			},
+			wantErr:   true,
+			errString: "partial with ID partial-1 not found",
+		},
+		{
+			name: "append to non-array path - should error",
+			plugin: &Plugin{
+				Config: Configuration{
+					"redis": "not-an-array",
+				},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("partial-1"),
+						},
+						Path: String("config.redis[]"),
+					},
+				},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("partial-1"),
+					Type: String("redis"),
+					Config: Configuration{
+						"host": "127.0.0.1",
+					},
+				},
+			},
+			wantErr:   true,
+			errString: "expected array at path redis but found different type",
+		},
+		{
+			name: "nested path without append",
+			plugin: &Plugin{
+				Config: Configuration{},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("partial-1"),
+						},
+						Path: String("config.storage.redis"),
+					},
+				},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("partial-1"),
+					Type: String("redis"),
+					Config: Configuration{
+						"host": "127.0.0.1",
+					},
+				},
+			},
+			expectedConfig: Configuration{
+				"storage": map[string]interface{}{
+					"redis": Configuration{
+						"host": "127.0.0.1",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "nested path with append",
+			plugin: &Plugin{
+				Config: Configuration{
+					"storage": map[string]interface{}{
+						"targets": []interface{}{
+							Configuration{
+								"host": "127.0.0.2",
+							},
+						},
+					},
+				},
+				Partials: []*PartialLink{
+					{
+						Partial: &Partial{
+							ID: String("partial-1"),
+						},
+						Path: String("config.storage.targets[]"),
+					},
+				},
+			},
+			partials: []*Partial{
+				{
+					ID:   String("partial-1"),
+					Type: String("model"),
+					Config: Configuration{
+						"host": "127.0.0.1",
+					},
+				},
+			},
+			expectedConfig: Configuration{
+				"storage": map[string]interface{}{
+					"targets": []interface{}{
+						Configuration{
+							"host": "127.0.0.2",
+						},
+						Configuration{
+							"host": "127.0.0.1",
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			err := fillPartialConfigsInPlugin(tc.plugin, tc.partials)
+
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("fillPartialConfigsInPlugin() expected error but got none")
+				}
+				assert.ErrorContains(t, err, tc.errString)
+				return
+			}
+
+			require.NoError(t, err)
+			if diff := cmp.Diff(tc.plugin.Config, tc.expectedConfig); diff != "" {
+				t.Errorf("unexpected config diff:\n%s", diff)
+			}
+		})
+	}
+}

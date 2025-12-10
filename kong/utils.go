@@ -870,10 +870,42 @@ func getDefaultPartialPath(partialLinks []*PartialLink, pluginSchema gjson.Resul
 	return nil
 }
 
+// traverseOrCreateNestedMap navigates through a configuration map following the given path,
+// creating intermediate maps as needed. Returns the final parent map containing the last key.
+// This is a helper function used by both getOrCreateConfigArray and setConfigValue.
+func traverseOrCreateNestedMap(config Configuration, pathParts []string) (Configuration, error) {
+	current := config
+	for i := 0; i < len(pathParts)-1; i++ {
+		part := pathParts[i]
+
+		if val, exists := current[part]; exists {
+			if nestedMap, ok := val.(map[string]interface{}); ok {
+				current = nestedMap
+			} else {
+				return nil, fmt.Errorf("expected map at path segment %s but found different type", part)
+			}
+		} else {
+			// Create intermediate map
+			nestedMap := make(map[string]interface{})
+			current[part] = nestedMap
+			current = nestedMap
+		}
+	}
+	return current, nil
+}
+
 // getOrCreateConfigArray retrieves an existing array from the config map or creates a new one.
+// Supports nested paths like "config.x.y[]" by traversing and creating intermediate maps as needed.
 // Returns an error if the path exists but is not an array type.
 func getOrCreateConfigArray(config Configuration, path string) ([]interface{}, error) {
-	existingValue, exists := config[path]
+	pathParts := strings.Split(path, ".")
+	current, err := traverseOrCreateNestedMap(config, pathParts)
+	if err != nil {
+		return nil, err
+	}
+
+	finalKey := pathParts[len(pathParts)-1]
+	existingValue, exists := current[finalKey]
 	if !exists {
 		return []interface{}{}, nil
 	}
@@ -906,6 +938,22 @@ func configExistsInArray(configArr []interface{}, config Configuration) bool {
 	return false
 }
 
+// setConfigValue sets a value at a potentially nested path in the config map.
+// Creates intermediate maps as needed for paths like "config.a.b".
+func setConfigValue(config Configuration, path string, configValue interface{}) error {
+	pathParts := strings.Split(path, ".")
+
+	current, err := traverseOrCreateNestedMap(config, pathParts)
+	if err != nil {
+		return err
+	}
+
+	finalKey := pathParts[len(pathParts)-1]
+	current[finalKey] = configValue
+
+	return nil
+}
+
 func fillPartialConfigsInPlugin(plugin *Plugin, partials []*Partial) error {
 	// internal function to find a partial by its ID
 	// this is useful to get partial's type for finding
@@ -932,7 +980,10 @@ func fillPartialConfigsInPlugin(plugin *Plugin, partials []*Partial) error {
 		if !partialAppendsRequired {
 			// Replacing the config directly as partial doesn't require appending here.
 			// Gateway does not support overrides yet, so add config directly
-			plugin.Config[sanitisedPath] = partialNeeded.Config
+			err := setConfigValue(plugin.Config, sanitisedPath, partialNeeded.Config)
+			if err != nil {
+				return err
+			}
 			continue
 		}
 
@@ -945,7 +996,11 @@ func fillPartialConfigsInPlugin(plugin *Plugin, partials []*Partial) error {
 
 		// Only append if config doesn't already exist in array
 		if !configExistsInArray(arraySlice, partialNeeded.Config) {
-			plugin.Config[arrayPath] = append(arraySlice, partialNeeded.Config)
+			updatedArray := append(arraySlice, partialNeeded.Config)
+			err := setConfigValue(plugin.Config, arrayPath, updatedArray)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
