@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.71.0](#v0710)
 - [v0.70.0](#v0700)
 - [v0.69.0](#v0690)
 - [v0.68.0](#v0680)
@@ -86,6 +87,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.71.0]
+
+> Release date: 2025/12/16
+
+- Added support for appending partials in config arrays
+  [#591](https://github.com/Kong/go-kong/pull/591)
 
 ## [v0.70.0]
 
@@ -1099,6 +1107,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.71.0]: https://github.com/Kong/go-kong/compare/v0.70.0...v0.71.0
 [v0.70.0]: https://github.com/Kong/go-kong/compare/v0.69.0...v0.70.0
 [v0.69.0]: https://github.com/Kong/go-kong/compare/v0.68.0...v0.69.0
 [v0.68.0]: https://github.com/Kong/go-kong/compare/v0.67.0...v0.68.0
