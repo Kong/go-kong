@@ -90,7 +90,7 @@
 
 ## [v0.71.0]
 
-> Release date: 2025/12/12
+> Release date: 2025/12/16
 
 - Added support for appending partials in config arrays
   [#591](https://github.com/Kong/go-kong/pull/591)
