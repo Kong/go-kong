@@ -1,2 +1,2 @@
 # renovate: datasource=github-releases depName=golangci/golangci-lint
-golangci-lint: "2.7.0"
+golangci-lint: "2.7.2"
