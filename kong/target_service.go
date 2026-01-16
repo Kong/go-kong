@@ -25,6 +25,10 @@ type AbstractTargetService interface {
 	// Update updates a Target in Kong under upstreamID.
 	// Note: The update is performed using the "PATCH" method.
 	Update(ctx context.Context, upstreamNameOrID *string, targetOrID *string, target *Target) (*Target, error)
+	// ListAllTargets fetches a list of Targets in Kong using the global `/targets` endpoint.
+	ListAllTargets(ctx context.Context, opt *ListOpt) ([]*Target, *ListOpt, error)
+	// ListAllTargetsAll fetches *all* Targets in Kong using the global `/targets` endpoint.
+	ListAllTargetsAll(ctx context.Context) ([]*Target, error)
 }
 
 // TargetService handles Targets in Kong.
@@ -239,4 +243,43 @@ func (s *TargetService) Update(ctx context.Context,
 		return nil, err
 	}
 	return &updatedTarget, nil
+}
+
+// ListAllTargets fetches a list of Targets in Kong using the global `/targets` endpoint.
+func (s *TargetService) ListAllTargets(ctx context.Context, opt *ListOpt) ([]*Target, *ListOpt, error) {
+	data, next, err := s.client.list(ctx, "/targets", opt)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var targets []*Target
+	for _, object := range data {
+		b, err := object.MarshalJSON()
+		if err != nil {
+			return nil, nil, err
+		}
+		var target Target
+		if err := json.Unmarshal(b, &target); err != nil {
+			return nil, nil, err
+		}
+		targets = append(targets, &target)
+	}
+
+	return targets, next, nil
+}
+
+// ListAllTargetsAll fetches *all* Targets in Kong using the global `/targets` endpoint.
+func (s *TargetService) ListAllTargetsAll(ctx context.Context) ([]*Target, error) {
+	var targets, data []*Target
+	var err error
+	opt := &ListOpt{Size: pageSize}
+
+	for opt != nil {
+		data, opt, err = s.ListAllTargets(ctx, opt)
+		if err != nil {
+			return nil, err
+		}
+		targets = append(targets, data...)
+	}
+	return targets, nil
 }
