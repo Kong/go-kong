@@ -636,6 +636,11 @@ func (in *ConsumerGroupPlugin) DeepCopyInto(out *ConsumerGroupPlugin) {
 		*out = new(int64)
 		**out = **in
 	}
+	if in.InstanceName != nil {
+		in, out := &in.InstanceName, &out.InstanceName
+		*out = new(string)
+		**out = **in
+	}
 	out.Config = in.Config.DeepCopy()
 	if in.ConsumerGroup != nil {
 		in, out := &in.ConsumerGroup, &out.ConsumerGroup
