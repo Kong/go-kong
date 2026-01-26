@@ -773,6 +773,13 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 		return fmt.Errorf("unsupported entity: '%T'", entity)
 	}
 	defaults, err := getDefaultsObj(schema)
+	// If entity is *ConsumerGroupPlugin, fill InstanceName if missing
+	if cgPlugin, ok := entity.(*ConsumerGroupPlugin); ok {
+		if cgPlugin.InstanceName == nil || *cgPlugin.InstanceName == "" {
+			// Use a default instance name or fetch from schema if needed
+			cgPlugin.InstanceName = String("default-instance-name")
+		}
+	}
 	if err != nil {
 		return fmt.Errorf("parse schema for defaults: %w", err)
 	}
