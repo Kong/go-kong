@@ -773,13 +773,6 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 		return fmt.Errorf("unsupported entity: '%T'", entity)
 	}
 	defaults, err := getDefaultsObj(schema)
-	// If entity is *ConsumerGroupPlugin, fill InstanceName if missing
-	if cgPlugin, ok := entity.(*ConsumerGroupPlugin); ok {
-		if cgPlugin.InstanceName == nil || *cgPlugin.InstanceName == "" {
-			// Use a default instance name or fetch from schema if needed
-			cgPlugin.InstanceName = String("default-instance-name")
-		}
-	}
 	if err != nil {
 		return fmt.Errorf("parse schema for defaults: %w", err)
 	}
@@ -790,6 +783,15 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 		entity, tmpEntity, mergo.WithTransformers(zeroValueTransformer{}),
 	); err != nil {
 		return fmt.Errorf("merge entity with its defaults: %w", err)
+	}
+	return nil
+}
+
+func FillDefaultInstanceName(entity interface{}) error {
+	if cgPlugin, ok := entity.(*ConsumerGroupPlugin); ok {
+		if cgPlugin.InstanceName == nil || *cgPlugin.InstanceName == "" {
+			cgPlugin.InstanceName = String("default-instance-name")
+		}
 	}
 	return nil
 }

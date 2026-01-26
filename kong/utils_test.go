@@ -1970,6 +1970,7 @@ func TestInstanceNameConsumerGroupPlugin(T *testing.T) {
 			require.NoError(T, err)
 			assert.NotNil(fullSchema)
 			require.NoError(t, FillEntityDefaults(plugin, fullSchema))
+			require.NoError(t, FillDefaultInstanceName(plugin))
 			if diff := cmp.Diff(plugin, tc.expected); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}
