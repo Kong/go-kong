@@ -66,10 +66,11 @@ func (v Version) Patch() uint64 {
 // Revision returns the revision digit of Version; if revision has not been set then an error
 // will be returned.
 func (v Version) Revision() (uint64, error) {
-	if v.version.Revision < 0 {
+	rev := v.version.Revision
+	if rev < 0 {
 		return 0, errors.New("revision is unavailable for version")
 	}
-	return uint64(v.version.Revision), nil
+	return uint64(rev), nil
 }
 
 // PreRelease returns the pre-release string of Version.
@@ -89,7 +90,7 @@ func (v Version) PreRelease() string {
 func (v Version) Build() string {
 	var buildStr strings.Builder
 	if len(v.version.Build) > 0 {
-		fmt.Fprintf(&buildStr, "+%s", v.version.Build[0])
+		_, _ = fmt.Fprintf(&buildStr, "+%s", v.version.Build[0])
 		for _, build := range v.version.Build[1:] {
 			buildStr.WriteString(".")
 			buildStr.WriteString(build)
