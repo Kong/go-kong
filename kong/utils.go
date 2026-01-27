@@ -788,10 +788,12 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 }
 
 func setInstanceName(entity interface{}) error {
-	if cgPlugin, ok := entity.(*ConsumerGroupPlugin); ok {
-		if cgPlugin.InstanceName == nil || *cgPlugin.InstanceName == "" {
-			cgPlugin.InstanceName = String("default-instance-name")
-		}
+	cgPlugin, ok := entity.(*ConsumerGroupPlugin)
+	if !ok {
+		return fmt.Errorf("unsupported type: %T, expected *ConsumerGroupPlugin", entity)
+	}
+	if cgPlugin.InstanceName == nil || *cgPlugin.InstanceName == "" {
+		cgPlugin.InstanceName = String("default-instance-name")
 	}
 	return nil
 }
