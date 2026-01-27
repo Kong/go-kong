@@ -787,7 +787,7 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 	return nil
 }
 
-func FillDefaultInstanceName(entity interface{}) error {
+func setInstanceName(entity interface{}) error {
 	if cgPlugin, ok := entity.(*ConsumerGroupPlugin); ok {
 		if cgPlugin.InstanceName == nil || *cgPlugin.InstanceName == "" {
 			cgPlugin.InstanceName = String("default-instance-name")
@@ -1373,4 +1373,11 @@ func FillPartialDefaults(partial *Partial, schema Schema) error {
 		FillAuto:     false,
 	})
 	return nil
+}
+
+func StringValue(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
 }

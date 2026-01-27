@@ -1938,7 +1938,7 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 }
 
 func TestInstanceNameConsumerGroupPlugin(T *testing.T) {
-	RunWhenEnterprise(T, ">=2.7.0", RequiredFeatures{})
+	RunWhenEnterprise(T, ">=3.4.0", RequiredFeatures{})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -1970,7 +1970,7 @@ func TestInstanceNameConsumerGroupPlugin(T *testing.T) {
 			require.NoError(T, err)
 			assert.NotNil(fullSchema)
 			require.NoError(t, FillEntityDefaults(plugin, fullSchema))
-			require.NoError(t, FillDefaultInstanceName(plugin))
+			require.NoError(t, setInstanceName(plugin))
 			if diff := cmp.Diff(plugin, tc.expected); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}

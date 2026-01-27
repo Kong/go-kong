@@ -8,14 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Helper to safely dereference *string
-func StringValue(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
-}
-
 func TestConsumerGroupsService(t *testing.T) {
 	RunWhenEnterprise(t, ">=2.7.0", RequiredFeatures{})
 	assert := assert.New(t)
@@ -456,7 +448,7 @@ func TestConsumerGroupPluginWithPartials(t *testing.T) {
 }
 
 func TestConsumerGroupPluginWithInstanceName(t *testing.T) {
-	RunWhenEnterprise(t, ">=3.10.0", RequiredFeatures{})
+	RunWhenEnterprise(t, ">=3.4.0", RequiredFeatures{})
 	req := require.New(t)
 	asrt := assert.New(t)
 
