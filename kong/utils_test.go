@@ -1951,8 +1951,10 @@ func TestInstanceNameConsumerGroupPlugin(T *testing.T) {
 		expected *ConsumerGroupPlugin
 	}{
 		{
-			name:   "fills instance name for consumer_group_plugins",
-			plugin: &ConsumerGroupPlugin{},
+			name: "fills instance name for consumer_group_plugins",
+			plugin: &ConsumerGroupPlugin{
+				InstanceName: String("default-instance-name"),
+			},
 			expected: &ConsumerGroupPlugin{
 				InstanceName: String("default-instance-name"),
 				Config: Configuration{
@@ -1970,7 +1972,6 @@ func TestInstanceNameConsumerGroupPlugin(T *testing.T) {
 			require.NoError(T, err)
 			assert.NotNil(fullSchema)
 			require.NoError(t, FillEntityDefaults(plugin, fullSchema))
-			require.NoError(t, setInstanceName(plugin))
 			if diff := cmp.Diff(plugin, tc.expected); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}

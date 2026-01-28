@@ -787,17 +787,6 @@ func FillEntityDefaults(entity interface{}, schema Schema) error {
 	return nil
 }
 
-func setInstanceName(entity interface{}) error {
-	cgPlugin, ok := entity.(*ConsumerGroupPlugin)
-	if !ok {
-		return fmt.Errorf("unsupported type: %T, expected *ConsumerGroupPlugin", entity)
-	}
-	if cgPlugin.InstanceName == nil || *cgPlugin.InstanceName == "" {
-		cgPlugin.InstanceName = String("default-instance-name")
-	}
-	return nil
-}
-
 func fillConfigRecordDefaultsAutoFields(plugin *Plugin, schema map[string]interface{}, partials []*Partial,
 	opts FillRecordOptions,
 ) error {
