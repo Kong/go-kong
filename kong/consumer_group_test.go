@@ -446,3 +446,49 @@ func TestConsumerGroupPluginWithPartials(t *testing.T) {
 	assert.Len(fetchedPlugin.Partials, 1)
 	assert.Equal(createdPartial.ID, fetchedPlugin.Partials[0].ID)
 }
+
+func TestConsumerGroupPluginWithInstanceName(t *testing.T) {
+	RunWhenEnterprise(t, ">=3.4.0", RequiredFeatures{})
+	req := require.New(t)
+	asrt := assert.New(t)
+
+	client, err := NewTestClient(nil, nil)
+	req.NoError(err)
+	req.NotNil(client)
+
+	// create a consumer group
+	cg := &ConsumerGroup{
+		Name: String("test-group-with-instance-name"),
+	}
+	createdConsumerGroup, err := client.ConsumerGroups.Create(defaultCtx, cg)
+	req.NoError(err)
+	asrt.NotNil(createdConsumerGroup)
+	t.Cleanup(func() {
+		if createdConsumerGroup != nil {
+			req.NoError(client.ConsumerGroups.Delete(defaultCtx, createdConsumerGroup.ID))
+		}
+	})
+
+	// create a consumer group plugin with instance-name
+	plugin := &Plugin{
+		Name:         String("rate-limiting-advanced"),
+		InstanceName: String("test-instance"),
+		Config: Configuration{
+			"limit":       []interface{}{50},
+			"window_size": []interface{}{30},
+		},
+	}
+
+	createdPlugin, err := client.Plugins.CreateForConsumerGroup(defaultCtx, createdConsumerGroup.ID, plugin)
+	req.NoError(err)
+	req.NotNil(createdPlugin)
+	t.Cleanup(func() {
+		if createdPlugin != nil {
+			req.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
+		}
+	})
+
+	asrt.Equal("test-instance", StringValue(createdPlugin.InstanceName))
+	asrt.Equal("rate-limiting-advanced", StringValue(createdPlugin.Name))
+	asrt.NotNil(createdPlugin.ID)
+}

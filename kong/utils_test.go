@@ -1937,6 +1937,48 @@ func TestFillConsumerGroupPluginDefaults(T *testing.T) {
 	}
 }
 
+func TestInstanceNameConsumerGroupPlugin(T *testing.T) {
+	RunWhenEnterprise(T, ">=3.4.0", RequiredFeatures{})
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(T, err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		plugin   *ConsumerGroupPlugin
+		expected *ConsumerGroupPlugin
+	}{
+		{
+			name: "fills instance name for consumer_group_plugins",
+			plugin: &ConsumerGroupPlugin{
+				InstanceName: String("default-instance-name"),
+			},
+			expected: &ConsumerGroupPlugin{
+				InstanceName: String("default-instance-name"),
+				Config: Configuration{
+					"window_type":            "sliding",
+					"retry_after_jitter_max": float64(0),
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+			fullSchema, err := client.Schemas.Get(defaultCtx, "consumer_group_plugins")
+			require.NoError(T, err)
+			assert.NotNil(fullSchema)
+			require.NoError(t, FillEntityDefaults(plugin, fullSchema))
+			if diff := cmp.Diff(plugin, tc.expected); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
 const fillConfigRecordTestSchema = `{
 	"fields": {
 		"config": {

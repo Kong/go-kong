@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.72.1](#v0721)
 - [v0.72.0](#v0720)
 - [v0.71.0](#v0710)
 - [v0.70.0](#v0700)
@@ -88,6 +89,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.72.1]
+
+> Release date: 2026/02/02
+
+- Added support for instance-name field in consumer group plugin
+  [#600](https://github.com/Kong/go-kong/pull/600)
 
 ## [v0.72.0]
 

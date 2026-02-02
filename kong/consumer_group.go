@@ -44,6 +44,7 @@ type ConsumerGroupPlugin struct {
 	ID            *string        `json:"id,omitempty" yaml:"id,omitempty"`
 	Name          *string        `json:"name,omitempty" yaml:"name,omitempty"`
 	CreatedAt     *int64         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	InstanceName  *string        `json:"instance_name,omitempty" yaml:"instance_name,omitempty"`
 	Config        Configuration  `json:"config,omitempty" yaml:"config,omitempty"`
 	ConsumerGroup *ConsumerGroup `json:"consumer_group,omitempty" yaml:"consumer_group,omitempty"`
 	ConfigSource  *string        `json:"_config,omitempty" yaml:"_config,omitempty"`
