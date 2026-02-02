@@ -13,7 +13,7 @@ retract v0.39.1
 
 require (
 	github.com/google/go-cmp v0.7.0
-	github.com/google/go-querystring v1.1.0
+	github.com/google/go-querystring v1.2.0
 	github.com/google/uuid v1.6.0
 	github.com/imdario/mergo v0.3.12
 	github.com/kong/semver/v4 v4.0.1
