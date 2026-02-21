@@ -1147,7 +1147,6 @@ func TestFillServiceDefaults_310_and_up(T *testing.T) {
 				ReadTimeout:    Int(60000),
 				Retries:        Int(5),
 				WriteTimeout:   Int(60000),
-				TLSSANs:        &SANs{},
 			},
 		},
 		{
@@ -1166,7 +1165,6 @@ func TestFillServiceDefaults_310_and_up(T *testing.T) {
 				ReadTimeout:    Int(60000),
 				Retries:        Int(5),
 				WriteTimeout:   Int(60000),
-				TLSSANs:        &SANs{},
 			},
 		},
 		{
@@ -1187,7 +1185,6 @@ func TestFillServiceDefaults_310_and_up(T *testing.T) {
 				Retries:        Int(5),
 				WriteTimeout:   Int(60000),
 				Tags:           []*string{String("tag1"), String("tag2")},
-				TLSSANs:        &SANs{},
 			},
 		},
 	}
