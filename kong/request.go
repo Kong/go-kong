@@ -67,3 +67,9 @@ func (c *Client) NewRequest(method, endpoint string, qs interface{},
 ) (*http.Request, error) {
 	return c.NewRequestRaw(method, c.workspacedBaseURL(c.Workspace()), endpoint, qs, body)
 }
+
+func (c *Client) NewKonnectWorkspaceRequest(method, endpoint string, qs interface{},
+	body interface{},
+) (*http.Request, error) {
+	return c.NewRequestRaw(method, c.baseRootURL, endpoint, qs, body)
+}

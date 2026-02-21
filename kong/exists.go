@@ -26,3 +26,20 @@ func (c *Client) exists(ctx context.Context,
 	}
 	return resp.StatusCode == http.StatusOK, nil
 }
+
+func (c *Client) existsForKonnect(ctx context.Context,
+	endpoint string,
+) (bool, error) {
+	req, err := c.NewKonnectWorkspaceRequest("GET", endpoint, nil, nil)
+	if err != nil {
+		return false, err
+	}
+	resp, err := c.Do(ctx, req, nil)
+	if err != nil {
+		if IsNotFoundErr(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	return resp.StatusCode == http.StatusOK, nil
+}
