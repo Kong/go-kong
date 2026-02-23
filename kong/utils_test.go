@@ -2,7 +2,6 @@ package kong
 
 import (
 	"encoding/json"
-	"fmt"
 	"math"
 	"net/http"
 	"net/http/httptest"
@@ -1120,8 +1119,8 @@ func TestFillServiceDefaults_pre_310(T *testing.T) {
 	}
 }
 
-func TestFillServiceDefaults_310_and_up(T *testing.T) {
-	RunWhenEnterprise(T, ">=3.10.0", RequiredFeatures{})
+func TestFillServiceDefaults_31006_and_up(T *testing.T) {
+	RunWhenEnterprise(T, ">=3.10.0.6", RequiredFeatures{})
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -1199,7 +1198,93 @@ func TestFillServiceDefaults_310_and_up(T *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "services")
 			require.NoError(T, err)
 			assert.NotNil(fullSchema)
-			fmt.Println(fullSchema)
+			require.NoError(t, FillEntityDefaults(s, fullSchema))
+			opt := []cmp.Option{
+				cmpopts.IgnoreFields(Service{}, "Enabled"),
+			}
+			if diff := cmp.Diff(s, tc.expected, opt...); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestFillServiceDefaults_31000_till_31006(T *testing.T) {
+	RunWhenEnterprise(T, ">=3.10.0.0 < 3.10.0.6", RequiredFeatures{})
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(T, err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		service  *Service
+		expected *Service
+	}{
+		{
+			name: "fills defaults for all fields, leaves name and host unchanged",
+			service: &Service{
+				Name: String("svc1"),
+				Host: String("mockbin.org"),
+			},
+			expected: &Service{
+				Name:           String("svc1"),
+				Host:           String("mockbin.org"),
+				Port:           Int(80),
+				Protocol:       String("http"),
+				ConnectTimeout: Int(60000),
+				ReadTimeout:    Int(60000),
+				Retries:        Int(5),
+				WriteTimeout:   Int(60000),
+			},
+		},
+		{
+			name: "fills defaults for all fields except port, leaves name and host unchanged",
+			service: &Service{
+				Name: String("svc1"),
+				Host: String("mockbin.org"),
+				Port: Int(8080),
+			},
+			expected: &Service{
+				Name:           String("svc1"),
+				Host:           String("mockbin.org"),
+				Port:           Int(8080),
+				Protocol:       String("http"),
+				ConnectTimeout: Int(60000),
+				ReadTimeout:    Int(60000),
+				Retries:        Int(5),
+				WriteTimeout:   Int(60000),
+			},
+		},
+		{
+			name: "fills defaults for all fields except port, leaves name, tags and host unchanged",
+			service: &Service{
+				Name: String("svc1"),
+				Host: String("mockbin.org"),
+				Port: Int(8080),
+				Tags: []*string{String("tag1"), String("tag2")},
+			},
+			expected: &Service{
+				Name:           String("svc1"),
+				Host:           String("mockbin.org"),
+				Port:           Int(8080),
+				Protocol:       String("http"),
+				ConnectTimeout: Int(60000),
+				ReadTimeout:    Int(60000),
+				Retries:        Int(5),
+				WriteTimeout:   Int(60000),
+				Tags:           []*string{String("tag1"), String("tag2")},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			s := tc.service
+			fullSchema, err := client.Schemas.Get(defaultCtx, "services")
+			require.NoError(T, err)
+			assert.NotNil(fullSchema)
 			require.NoError(t, FillEntityDefaults(s, fullSchema))
 			opt := []cmp.Option{
 				cmpopts.IgnoreFields(Service{}, "Enabled"),
