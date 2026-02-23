@@ -2,6 +2,7 @@ package kong
 
 import (
 	"encoding/json"
+	"fmt"
 	"math"
 	"net/http"
 	"net/http/httptest"
@@ -1147,6 +1148,7 @@ func TestFillServiceDefaults_310_and_up(T *testing.T) {
 				ReadTimeout:    Int(60000),
 				Retries:        Int(5),
 				WriteTimeout:   Int(60000),
+				TLSSANs:        &SANs{},
 			},
 		},
 		{
@@ -1165,6 +1167,7 @@ func TestFillServiceDefaults_310_and_up(T *testing.T) {
 				ReadTimeout:    Int(60000),
 				Retries:        Int(5),
 				WriteTimeout:   Int(60000),
+				TLSSANs:        &SANs{},
 			},
 		},
 		{
@@ -1185,6 +1188,7 @@ func TestFillServiceDefaults_310_and_up(T *testing.T) {
 				Retries:        Int(5),
 				WriteTimeout:   Int(60000),
 				Tags:           []*string{String("tag1"), String("tag2")},
+				TLSSANs:        &SANs{},
 			},
 		},
 	}
@@ -1195,6 +1199,7 @@ func TestFillServiceDefaults_310_and_up(T *testing.T) {
 			fullSchema, err := client.Schemas.Get(defaultCtx, "services")
 			require.NoError(T, err)
 			assert.NotNil(fullSchema)
+			fmt.Println(fullSchema)
 			require.NoError(t, FillEntityDefaults(s, fullSchema))
 			opt := []cmp.Option{
 				cmpopts.IgnoreFields(Service{}, "Enabled"),
