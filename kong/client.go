@@ -59,7 +59,6 @@ type Client struct {
 	UpstreamNodeHealth      AbstractUpstreamNodeHealthService
 	Targets                 AbstractTargetService
 	Workspaces              AbstractWorkspaceService
-	KonnectWorkspaces       AbstractKonnectWorkspaceService
 	Admins                  AbstractAdminService
 	RBACUsers               AbstractRBACUserService
 	RBACRoles               AbstractRBACRoleService
@@ -93,6 +92,7 @@ type Client struct {
 	debug          bool
 	CustomEntities AbstractCustomEntityService
 	doer           Doer
+	isKonnect      bool
 
 	custom.Registry
 }
@@ -160,7 +160,6 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.UpstreamNodeHealth = (*UpstreamNodeHealthService)(&kong.common)
 	kong.Targets = (*TargetService)(&kong.common)
 	kong.Workspaces = (*WorkspaceService)(&kong.common)
-	kong.KonnectWorkspaces = (*KonnectWorkspaceService)(&kong.common)
 	kong.Admins = (*AdminService)(&kong.common)
 	kong.RBACUsers = (*RBACUserService)(&kong.common)
 	kong.RBACRoles = (*RBACRoleService)(&kong.common)
@@ -229,6 +228,10 @@ func (c *Client) Workspace() string {
 	c.workspaceLock.RLock()
 	defer c.workspaceLock.RUnlock()
 	return c.workspace
+}
+
+func (c *Client) IsKonnectMode() bool {
+	return c.isKonnect
 }
 
 // baseURL build the base URL from the rootURL and the workspace
@@ -380,6 +383,11 @@ func (c *Client) SetLogger(w io.Writer) {
 		return
 	}
 	c.logger = w
+}
+
+// SetKonnectFlag sets the konnect boolean true, if konnect flow
+func (c *Client) SetKonnectFlag(isKonnect bool) {
+	c.isKonnect = isKonnect
 }
 
 // Status returns the status of a Kong node
