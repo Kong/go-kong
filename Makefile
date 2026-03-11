@@ -42,9 +42,8 @@ kong.supported-versions:
 
 .PHONY: kong.supported-versions.oss
 kong.supported-versions.oss:
-	@curl -s https://developer.konghq.com/_api/gateway-versions.json | \
-		jq '[.[] | select(.label == null) | select(.endOfLifeDate > (now | strftime("%Y-%m-%d"))) | select(.tag | split(".") | .[1] | tonumber <= 9)] | [.[].tag]'
-
+	@curl -s "https://hub.docker.com/v2/repositories/library/kong/tags?page_size=100" | \
+    		jq '[.results[].name | select(test("^[0-9]+[.][0-9]+$$"))] | unique | sort_by(split(".") | map(tonumber)) | reverse'
 # ------------------------------------------------------------------------------
 # Testing
 # ------------------------------------------------------------------------------
