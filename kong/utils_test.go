@@ -948,7 +948,7 @@ func Test_requestWithHeaders(t *testing.T) {
 
 func TestFillRoutesDefaults(T *testing.T) {
 	SkipWhenKongRouterFlavor(T, Expressions)
-	RunWhenKong(T, ">=3.4.0")
+	RunWhenKong(T, "<3.14.0")
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -1009,6 +1009,57 @@ func TestFillRoutesDefaults(T *testing.T) {
 				Protocols:               []*string{String("grpc")},
 				RegexPriority:           Int(0),
 				StripPath:               Bool(false),
+				HTTPSRedirectStatusCode: Int(426),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		T.Run(tc.name, func(t *testing.T) {
+			r := tc.route
+			fullSchema, err := client.Schemas.Get(defaultCtx, "routes")
+			require.NoError(T, err)
+			assert.NotNil(fullSchema)
+			require.NoError(t, FillEntityDefaults(r, fullSchema))
+			// Ignore fields to make tests pass despite small differences across releases.
+			opts := cmpopts.IgnoreFields(
+				Route{},
+				"RequestBuffering", "ResponseBuffering", "PathHandling",
+			)
+			if diff := cmp.Diff(r, tc.expected, opts); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestFillRoutesDefaults_ge_314(T *testing.T) {
+	SkipWhenKongRouterFlavor(T, Expressions)
+	RunWhenKong(T, ">=3.14.0")
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(T, err)
+	assert.NotNil(client)
+
+	tests := []struct {
+		name     string
+		route    *Route
+		expected *Route
+	}{
+		{
+			name: "fills defaults for all fields except paths, leaves name unchanged",
+			route: &Route{
+				Name:  String("r1"),
+				Paths: []*string{String("/r1")},
+			},
+			expected: &Route{
+				Name:                    String("r1"),
+				Paths:                   []*string{String("/r1")},
+				PreserveHost:            Bool(false),
+				Protocols:               []*string{String("https")},
+				RegexPriority:           Int(0),
+				StripPath:               Bool(true),
 				HTTPSRedirectStatusCode: Int(426),
 			},
 		},
