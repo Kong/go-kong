@@ -9,6 +9,8 @@ import (
 type AbstractGraphqlRateLimitingCostDecorationService interface {
 	// Creates a cost decoration for the GraphQL rate-limiting plugin in Kong.
 	Create(ctx context.Context, costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
+	// Creates a cost decoration with a specified ID for the GraphQL rate-limiting plugin in Kong.
+	CreateWithID(ctx context.Context, costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
 	// Fetches a cost decoration for the GraphQL rate-limiting plugin from Kong.
 	Get(ctx context.Context, ID *string) (*GraphqlRateLimitingCostDecoration, error)
 	// UPdates a cost decoration for the GraphQL rate-limiting plugin in Kong.
@@ -33,6 +35,32 @@ func (s *GraphqlRateLimitingCostDecorationService) Create(
 	if costDeco.ID != nil {
 		return nil, fmt.Errorf("can't specify an ID for creating new Cost Decoration")
 	}
+	req, err := s.client.NewRequest("POST", queryPath, nil, costDeco)
+	if err != nil {
+		return nil, err
+	}
+
+	var createdCostDeco GraphqlRateLimitingCostDecoration
+	err = ErrorOrResponseError(s.client.Do(ctx, req, &createdCostDeco))
+	if err != nil {
+		return nil, err
+	}
+
+	return &createdCostDeco, nil
+}
+
+// CreateWithID creates a CostDecoration item in Kong for the GraphQL rate limiting advanced plugin
+// with a specified ID.
+func (s *GraphqlRateLimitingCostDecorationService) CreateWithID(
+	ctx context.Context,
+	costDeco *GraphqlRateLimitingCostDecoration,
+) (*GraphqlRateLimitingCostDecoration, error) {
+	if isEmptyString(costDeco.ID) {
+		return nil, fmt.Errorf("ID cannot be nil for CreateWithID operation")
+	}
+
+	const queryPath = "/graphql-rate-limiting-advanced/costs"
+
 	req, err := s.client.NewRequest("POST", queryPath, nil, costDeco)
 	if err != nil {
 		return nil, err
