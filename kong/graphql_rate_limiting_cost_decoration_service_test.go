@@ -53,4 +53,46 @@ func TestGraphqlRateLimitingCostDecorationService(t *testing.T) {
 		require.Error(t, err, "can't specify an ID for creating new Cost Decoration")
 		require.Nil(t, createdDeco)
 	})
+
+	t.Run("CreateWithID create/get/update/delete cycle", func(t *testing.T) {
+		id := uuid.NewString()
+		deco := &GraphqlRateLimitingCostDecoration{
+			ID:           String(id),
+			TypePath:     String("Vehicle.name"),
+			AddConstant:  Float64(8),
+			MulArguments: []*string{String("first")},
+		}
+
+		createdDeco, err := client.GraphqlRateLimitingCostDecorations.CreateWithID(defaultCtx, deco)
+		require.NoError(t, err)
+		require.NotNil(t, createdDeco)
+		require.Equal(t, id, *createdDeco.ID)
+
+		deco, err = client.GraphqlRateLimitingCostDecorations.Get(defaultCtx, createdDeco.ID)
+		require.NoError(t, err)
+		require.NotNil(t, deco)
+		require.Equal(t, id, *deco.ID)
+
+		deco.TypePath = String("car.designation")
+		deco, err = client.GraphqlRateLimitingCostDecorations.Update(defaultCtx, deco)
+		require.NoError(t, err)
+		require.NotNil(t, deco)
+		require.Equal(t, id, *deco.ID)
+		require.Equal(t, "car.designation", *deco.TypePath)
+
+		err = client.GraphqlRateLimitingCostDecorations.Delete(defaultCtx, createdDeco.ID)
+		require.NoError(t, err)
+	})
+
+	t.Run("Can't CreateWithID Cost Decoration without ID", func(t *testing.T) {
+		deco := &GraphqlRateLimitingCostDecoration{
+			TypePath:     String("car.name"),
+			AddConstant:  Float64(8),
+			MulArguments: []*string{String("first")},
+		}
+
+		createdDeco, err := client.GraphqlRateLimitingCostDecorations.CreateWithID(defaultCtx, deco)
+		require.Error(t, err, "ID cannot be nil for CreateWithID operation")
+		require.Nil(t, createdDeco)
+	})
 }
