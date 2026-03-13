@@ -92,6 +92,7 @@ type Client struct {
 	debug          bool
 	CustomEntities AbstractCustomEntityService
 	doer           Doer
+	isKonnect      bool
 
 	custom.Registry
 }
@@ -227,6 +228,10 @@ func (c *Client) Workspace() string {
 	c.workspaceLock.RLock()
 	defer c.workspaceLock.RUnlock()
 	return c.workspace
+}
+
+func (c *Client) IsKonnectMode() bool {
+	return c.isKonnect
 }
 
 // baseURL build the base URL from the rootURL and the workspace
@@ -378,6 +383,11 @@ func (c *Client) SetLogger(w io.Writer) {
 		return
 	}
 	c.logger = w
+}
+
+// SetKonnectFlag sets the konnect boolean true, if konnect flow
+func (c *Client) SetKonnectFlag(isKonnect bool) {
+	c.isKonnect = isKonnect
 }
 
 // Status returns the status of a Kong node

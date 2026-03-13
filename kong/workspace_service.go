@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
 // AbstractWorkspaceService handles Workspaces in Kong.
@@ -64,6 +65,10 @@ func (s *WorkspaceService) ExistsByName(ctx context.Context,
 		return false, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
 
+	if s.client.IsKonnectMode() {
+		endpoint := fmt.Sprintf("/workspaces/%s", *name)
+		return s.client.existsForKonnect(ctx, endpoint)
+	}
 	endpoint := fmt.Sprintf("/%v/workspaces/%v", *name, *name)
 	return s.client.exists(ctx, endpoint)
 }
@@ -76,13 +81,19 @@ func (s *WorkspaceService) Create(ctx context.Context,
 		return nil, fmt.Errorf("cannot create a nil workspace")
 	}
 
-	endpoint := "/workspaces"
+	var req *http.Request
+	var err error
 	method := "POST"
+	endpoint := "/workspaces"
 	if workspace.ID != nil {
 		endpoint = endpoint + "/" + *workspace.ID
 		method = "PUT"
 	}
-	req, err := s.client.NewRequest(method, endpoint, nil, workspace)
+	if s.client.IsKonnectMode() {
+		req, err = s.client.NewKonnectWorkspaceRequest(method, endpoint, nil, workspace)
+	} else {
+		req, err = s.client.NewRequest(method, endpoint, nil, workspace)
+	}
 	if err != nil {
 		return nil, err
 	}
