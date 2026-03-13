@@ -66,15 +66,18 @@ func TestGraphqlRateLimitingCostDecorationService(t *testing.T) {
 		createdDeco, err := client.GraphqlRateLimitingCostDecorations.CreateWithID(defaultCtx, deco)
 		require.NoError(t, err)
 		require.NotNil(t, createdDeco)
+		require.Equal(t, id, *createdDeco.ID)
 
 		deco, err = client.GraphqlRateLimitingCostDecorations.Get(defaultCtx, createdDeco.ID)
 		require.NoError(t, err)
 		require.NotNil(t, deco)
+		require.Equal(t, id, *deco.ID)
 
 		deco.TypePath = String("car.designation")
 		deco, err = client.GraphqlRateLimitingCostDecorations.Update(defaultCtx, deco)
 		require.NoError(t, err)
 		require.NotNil(t, deco)
+		require.Equal(t, id, *deco.ID)
 		require.Equal(t, "car.designation", *deco.TypePath)
 
 		err = client.GraphqlRateLimitingCostDecorations.Delete(defaultCtx, createdDeco.ID)
