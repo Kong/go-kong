@@ -43,8 +43,7 @@ kong.supported-versions:
 .PHONY: kong.supported-versions.oss
 kong.supported-versions.oss:
 	@curl -s https://developer.konghq.com/_api/gateway-versions.json | \
-		jq '[.[] | select(.label == null) | select(.endOfLifeDate > (now | strftime("%Y-%m-%d"))) | .tag | split(".")[0:2] | join(".")] | unique'
-# ------------------------------------------------------------------------------
+         jq '[.[] | select(.label == null) | select(.endOfLifeDate > (now | strftime("%Y-%m-%d"))) | select(.tag | split(".") | .[1] | tonumber <= 9)] | [.[].tag | split(".") | .[0:2] | join(".")] | unique'
 # Testing
 # ------------------------------------------------------------------------------
 
