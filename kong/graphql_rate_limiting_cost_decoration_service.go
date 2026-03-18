@@ -14,7 +14,7 @@ type AbstractGraphqlRateLimitingCostDecorationService interface {
 		*GraphqlRateLimitingCostDecoration, error)
 	// Fetches a cost decoration for the GraphQL rate-limiting plugin from Kong.
 	Get(ctx context.Context, ID *string) (*GraphqlRateLimitingCostDecoration, error)
-	// UPdates a cost decoration for the GraphQL rate-limiting plugin in Kong.
+	// Updates a cost decoration for the GraphQL rate-limiting plugin in Kong.
 	Update(ctx context.Context, costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
 	// Deletes a cost decoration for the GraphQL rate-limiting plugin in Kong.
 	Delete(ctx context.Context, ID *string) error
@@ -22,6 +22,16 @@ type AbstractGraphqlRateLimitingCostDecorationService interface {
 	List(ctx context.Context, opt *ListOpt) ([]*GraphqlRateLimitingCostDecoration, *ListOpt, error)
 	// Retrieves all decorations for the GraphQL rate-limiting plugin in Kong.
 	ListAll(ctx context.Context) ([]*GraphqlRateLimitingCostDecoration, error)
+	// Creates a cost decoration scoped to a Service for the GraphQL rate-limiting plugin in Kong.
+	CreateForService(ctx context.Context, costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
+	// Creates a cost decoration with a specified ID scoped to a Service for the GraphQL rate-limiting plugin in Kong.
+	CreateForServiceWithID(ctx context.Context, costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
+	// Updates a cost decoration scoped to a Service for the GraphQL rate-limiting plugin in Kong.
+	UpdateForService(ctx context.Context, costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
+	// Retrieves a page of cost decorations scoped to a Service for the GraphQL rate-limiting plugin in Kong.
+	ListForService(ctx context.Context, serviceNameOrID *string, opt *ListOpt) ([]*GraphqlRateLimitingCostDecoration, *ListOpt, error)
+	// Retrieves all decorations scoped to a Service for the GraphQL rate-limiting plugin in Kong.
+	ListAllForService(ctx context.Context, serviceNameOrID *string) ([]*GraphqlRateLimitingCostDecoration, error)
 }
 
 type GraphqlRateLimitingCostDecorationService service
@@ -174,18 +184,170 @@ func (s *GraphqlRateLimitingCostDecorationService) List(
 
 // ListAll fetches all CostDecoration items present in Kong.
 // This method can take a while to pull all pages of content
-// if there are many items present
+// if there are many items present.
 func (s *GraphqlRateLimitingCostDecorationService) ListAll(
 	ctx context.Context,
-) (
-	[]*GraphqlRateLimitingCostDecoration, error,
-) {
+) ([]*GraphqlRateLimitingCostDecoration, error) {
 	var decos, data []*GraphqlRateLimitingCostDecoration
 	var err error
 	opt := &ListOpt{Size: pageSize}
 
 	for opt != nil {
 		data, opt, err = s.List(ctx, opt)
+		if err != nil {
+			return nil, err
+		}
+		decos = append(decos, data...)
+	}
+	return decos, nil
+}
+
+// CreateForService creates a CostDecoration item in Kong for the GraphQL rate limiting
+// advanced plugin, scoped to a specific Service.
+// The Service must be specified in the cost decoration.
+func (s *GraphqlRateLimitingCostDecorationService) CreateForService(
+	ctx context.Context,
+	costDeco *GraphqlRateLimitingCostDecoration,
+) (*GraphqlRateLimitingCostDecoration, error) {
+	if costDeco == nil {
+		return nil, fmt.Errorf("cannot create a nil cost decoration")
+	}
+	if costDeco.ID != nil {
+		return nil, fmt.Errorf("can't specify an ID for creating new Cost Decoration")
+	}
+	serviceNameOrID := getServiceNameOrID(costDeco.Service)
+	if serviceNameOrID == nil {
+		return nil, fmt.Errorf("cannot create a cost decoration for a service without name or ID")
+	}
+
+	endpoint := fmt.Sprintf("/services/%s/graphql-rate-limiting-advanced/costs", *serviceNameOrID)
+	req, err := s.client.NewRequest("POST", endpoint, nil, costDeco)
+	if err != nil {
+		return nil, err
+	}
+
+	var createdCostDeco GraphqlRateLimitingCostDecoration
+	err = ErrorOrResponseError(s.client.Do(ctx, req, &createdCostDeco))
+	if err != nil {
+		return nil, err
+	}
+
+	return &createdCostDeco, nil
+}
+
+// CreateForServiceWithID creates a CostDecoration item in Kong for the GraphQL rate limiting
+// advanced plugin with a specified ID, scoped to a specific Service.
+// This uses PUT for idempotent creation.
+// The Service must be specified in the cost decoration.
+func (s *GraphqlRateLimitingCostDecorationService) CreateForServiceWithID(
+	ctx context.Context,
+	costDeco *GraphqlRateLimitingCostDecoration,
+) (*GraphqlRateLimitingCostDecoration, error) {
+	if costDeco == nil {
+		return nil, fmt.Errorf("cannot create a nil cost decoration")
+	}
+	if isEmptyString(costDeco.ID) {
+		return nil, fmt.Errorf("ID cannot be nil for CreateForServiceWithID operation")
+	}
+	serviceNameOrID := getServiceNameOrID(costDeco.Service)
+	if serviceNameOrID == nil {
+		return nil, fmt.Errorf("cannot create a cost decoration for a service without name or ID")
+	}
+
+	endpoint := fmt.Sprintf("/services/%s/graphql-rate-limiting-advanced/costs", *serviceNameOrID)
+	req, err := s.client.NewRequest("POST", endpoint, nil, costDeco)
+	if err != nil {
+		return nil, err
+	}
+
+	var createdCostDeco GraphqlRateLimitingCostDecoration
+	err = ErrorOrResponseError(s.client.Do(ctx, req, &createdCostDeco))
+	if err != nil {
+		return nil, err
+	}
+
+	return &createdCostDeco, nil
+}
+
+// TODO: Currently this API is throwing 500 with msg as "An unexpected error occurred". Currently using existing Update
+
+// UpdateForService updates a CostDecoration item in Kong, scoped to a specific Service.
+// The given data must include the ID and Service of an existing item.
+func (s *GraphqlRateLimitingCostDecorationService) UpdateForService(
+	ctx context.Context,
+	costDeco *GraphqlRateLimitingCostDecoration,
+) (*GraphqlRateLimitingCostDecoration, error) {
+	if isEmptyString(costDeco.ID) {
+		return nil, fmt.Errorf("ID cannot be nil for UpdateForService operation")
+	}
+	serviceNameOrID := getServiceNameOrID(costDeco.Service)
+	if serviceNameOrID == nil {
+		return nil, fmt.Errorf("cannot update a cost decoration without a valid service")
+	}
+
+	endpoint := fmt.Sprintf("/services/%s/graphql-rate-limiting-advanced/costs", *serviceNameOrID)
+	req, err := s.client.NewRequest("PUT", endpoint, nil, costDeco)
+	if err != nil {
+		return nil, err
+	}
+
+	var updatedCostDeco GraphqlRateLimitingCostDecoration
+	err = ErrorOrResponseError(s.client.Do(ctx, req, &updatedCostDeco))
+	if err != nil {
+		return nil, err
+	}
+
+	return &updatedCostDeco, nil
+}
+
+// ListForService fetches a list of CostDecoration items from Kong,
+// all associated to the specified Service.
+// opt can be used to control pagination.
+func (s *GraphqlRateLimitingCostDecorationService) ListForService(
+	ctx context.Context,
+	serviceNameOrID *string,
+	opt *ListOpt,
+) ([]*GraphqlRateLimitingCostDecoration, *ListOpt, error) {
+	if isEmptyString(serviceNameOrID) {
+		return nil, nil, fmt.Errorf("serviceNameOrID cannot be nil for listing cost decorations")
+	}
+
+	endpoint := fmt.Sprintf("/services/%s/graphql-rate-limiting-advanced/costs", *serviceNameOrID)
+	data, next, err := s.client.list(ctx, endpoint, opt)
+	if err != nil {
+		return nil, nil, err
+	}
+	costDecos := make([]*GraphqlRateLimitingCostDecoration, 0, len(data))
+
+	for _, object := range data {
+		b, err := object.MarshalJSON()
+		if err != nil {
+			return nil, nil, err
+		}
+		var deco GraphqlRateLimitingCostDecoration
+		err = json.Unmarshal(b, &deco)
+		if err != nil {
+			return nil, nil, err
+		}
+		costDecos = append(costDecos, &deco)
+	}
+
+	return costDecos, next, nil
+}
+
+// ListAllForService fetches all CostDecoration items associated with the given Service present in Kong.
+// This method can take a while to pull all pages of content
+// if there are many items present.
+func (s *GraphqlRateLimitingCostDecorationService) ListAllForService(
+	ctx context.Context,
+	serviceNameOrID *string,
+) ([]*GraphqlRateLimitingCostDecoration, error) {
+	var decos, data []*GraphqlRateLimitingCostDecoration
+	var err error
+	opt := &ListOpt{Size: pageSize}
+
+	for opt != nil {
+		data, opt, err = s.ListForService(ctx, serviceNameOrID, opt)
 		if err != nil {
 			return nil, err
 		}
