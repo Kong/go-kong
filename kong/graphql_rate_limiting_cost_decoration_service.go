@@ -23,13 +23,17 @@ type AbstractGraphqlRateLimitingCostDecorationService interface {
 	// Retrieves all decorations for the GraphQL rate-limiting plugin in Kong.
 	ListAll(ctx context.Context) ([]*GraphqlRateLimitingCostDecoration, error)
 	// Creates a cost decoration scoped to a Service for the GraphQL rate-limiting plugin in Kong.
-	CreateForService(ctx context.Context, costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
+	CreateForService(ctx context.Context,
+		costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
 	// Creates a cost decoration with a specified ID scoped to a Service for the GraphQL rate-limiting plugin in Kong.
-	CreateForServiceWithID(ctx context.Context, costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
+	CreateForServiceWithID(ctx context.Context,
+		costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
 	// Updates a cost decoration scoped to a Service for the GraphQL rate-limiting plugin in Kong.
-	UpdateForService(ctx context.Context, costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
+	UpdateForService(ctx context.Context,
+		costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
 	// Retrieves a page of cost decorations scoped to a Service for the GraphQL rate-limiting plugin in Kong.
-	ListForService(ctx context.Context, serviceNameOrID *string, opt *ListOpt) ([]*GraphqlRateLimitingCostDecoration, *ListOpt, error)
+	ListForService(ctx context.Context, serviceNameOrID *string,
+		opt *ListOpt) ([]*GraphqlRateLimitingCostDecoration, *ListOpt, error)
 	// Retrieves all decorations scoped to a Service for the GraphQL rate-limiting plugin in Kong.
 	ListAllForService(ctx context.Context, serviceNameOrID *string) ([]*GraphqlRateLimitingCostDecoration, error)
 }
