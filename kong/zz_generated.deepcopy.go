@@ -985,6 +985,11 @@ func (in *GraphqlRateLimitingCostDecoration) DeepCopyInto(out *GraphqlRateLimiti
 		*out = new(string)
 		**out = **in
 	}
+	if in.Service != nil {
+		in, out := &in.Service, &out.Service
+		*out = new(Service)
+		(*in).DeepCopyInto(*out)
+	}
 	if in.TypePath != nil {
 		in, out := &in.TypePath, &out.TypePath
 		*out = new(string)
