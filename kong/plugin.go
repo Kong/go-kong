@@ -4,21 +4,30 @@ package kong
 // Read https://docs.konghq.com/gateway/latest/admin-api/#plugin-object
 // +k8s:deepcopy-gen=true
 type Plugin struct {
-	CreatedAt     *int            `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	ID            *string         `json:"id,omitempty" yaml:"id,omitempty"`
-	Name          *string         `json:"name,omitempty" yaml:"name,omitempty"`
-	InstanceName  *string         `json:"instance_name,omitempty" yaml:"instance_name,omitempty"`
-	Route         *Route          `json:"route,omitempty" yaml:"route,omitempty"`
-	Service       *Service        `json:"service,omitempty" yaml:"service,omitempty"`
-	Consumer      *Consumer       `json:"consumer,omitempty" yaml:"consumer,omitempty"`
-	ConsumerGroup *ConsumerGroup  `json:"consumer_group,omitempty" yaml:"consumer_group,omitempty"`
-	Config        Configuration   `json:"config,omitempty" yaml:"config,omitempty"`
-	Enabled       *bool           `json:"enabled,omitempty" yaml:"enabled,omitempty"`
-	RunOn         *string         `json:"run_on,omitempty" yaml:"run_on,omitempty"`
-	Ordering      *PluginOrdering `json:"ordering,omitempty" yaml:"ordering,omitempty"`
-	Protocols     []*string       `json:"protocols,omitempty" yaml:"protocols,omitempty"`
-	Tags          []*string       `json:"tags,omitempty" yaml:"tags,omitempty"`
-	Partials      []*PartialLink  `json:"partials,omitempty" yaml:"partials,omitempty"`
+	CreatedAt     *int              `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID            *string           `json:"id,omitempty" yaml:"id,omitempty"`
+	Name          *string           `json:"name,omitempty" yaml:"name,omitempty"`
+	InstanceName  *string           `json:"instance_name,omitempty" yaml:"instance_name,omitempty"`
+	Route         *Route            `json:"route,omitempty" yaml:"route,omitempty"`
+	Service       *Service          `json:"service,omitempty" yaml:"service,omitempty"`
+	Consumer      *Consumer         `json:"consumer,omitempty" yaml:"consumer,omitempty"`
+	ConsumerGroup *ConsumerGroup    `json:"consumer_group,omitempty" yaml:"consumer_group,omitempty"`
+	Config        Configuration     `json:"config,omitempty" yaml:"config,omitempty"`
+	Enabled       *bool             `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	RunOn         *string           `json:"run_on,omitempty" yaml:"run_on,omitempty"`
+	Ordering      *PluginOrdering   `json:"ordering,omitempty" yaml:"ordering,omitempty"`
+	Protocols     []*string         `json:"protocols,omitempty" yaml:"protocols,omitempty"`
+	Tags          []*string         `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Partials      []*PartialLink    `json:"partials,omitempty" yaml:"partials,omitempty"`
+	Condition     *PluginCondition  `json:"condition,omitempty" yaml:"condition,omitempty"`
+}
+
+// PluginCondition represents the condition under which a plugin is executed.
+// It uses Kong expressions to determine if the plugin should run for a given request.
+// +k8s:deepcopy-gen=true
+type PluginCondition struct {
+	Type       *string `json:"type,omitempty" yaml:"type,omitempty"`
+	Expression *string `json:"expression,omitempty" yaml:"expression,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
