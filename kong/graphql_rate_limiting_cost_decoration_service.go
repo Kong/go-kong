@@ -23,10 +23,8 @@ type AbstractGraphqlRateLimitingCostDecorationService interface {
 	// Retrieves all decorations for the GraphQL rate-limiting plugin in Kong.
 	ListAll(ctx context.Context) ([]*GraphqlRateLimitingCostDecoration, error)
 	// Creates a cost decoration scoped to a Service for the GraphQL rate-limiting plugin in Kong.
+	// Uses PUT if an ID is provided, POST otherwise.
 	CreateForService(ctx context.Context,
-		costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
-	// Creates a cost decoration with a specified ID scoped to a Service for the GraphQL rate-limiting plugin in Kong.
-	CreateForServiceWithID(ctx context.Context,
 		costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
 	// Updates a cost decoration scoped to a Service for the GraphQL rate-limiting plugin in Kong.
 	UpdateForService(ctx context.Context,
@@ -209,6 +207,7 @@ func (s *GraphqlRateLimitingCostDecorationService) ListAll(
 // CreateForService creates a CostDecoration item in Kong for the GraphQL rate limiting
 // advanced plugin, scoped to a specific Service.
 // The Service must be specified in the cost decoration.
+// If no ID is provided, create operation is performed otherwise update operation is performed.
 func (s *GraphqlRateLimitingCostDecorationService) CreateForService(
 	ctx context.Context,
 	costDeco *GraphqlRateLimitingCostDecoration,
@@ -216,50 +215,17 @@ func (s *GraphqlRateLimitingCostDecorationService) CreateForService(
 	if costDeco == nil {
 		return nil, fmt.Errorf("cannot create a nil cost decoration")
 	}
+	serviceNameOrID := getServiceNameOrID(costDeco.Service)
+	if serviceNameOrID == nil {
+		return nil, fmt.Errorf("cannot create a cost decoration for a service without name or ID")
+	}
+	endpoint := fmt.Sprintf("/services/%s/graphql-rate-limiting-advanced/costs", *serviceNameOrID)
+	method := "POST"
 	if costDeco.ID != nil {
-		return nil, fmt.Errorf("can't specify an ID for creating new Cost Decoration")
+		method = "PUT"
+		endpoint = fmt.Sprintf("/services/%s/graphql-rate-limiting-advanced/costs/%s", *serviceNameOrID, *costDeco.ID)
 	}
-	serviceNameOrID := getServiceNameOrID(costDeco.Service)
-	if serviceNameOrID == nil {
-		return nil, fmt.Errorf("cannot create a cost decoration for a service without name or ID")
-	}
-
-	endpoint := fmt.Sprintf("/services/%s/graphql-rate-limiting-advanced/costs", *serviceNameOrID)
-	req, err := s.client.NewRequest("POST", endpoint, nil, costDeco)
-	if err != nil {
-		return nil, err
-	}
-
-	var createdCostDeco GraphqlRateLimitingCostDecoration
-	err = ErrorOrResponseError(s.client.Do(ctx, req, &createdCostDeco))
-	if err != nil {
-		return nil, err
-	}
-
-	return &createdCostDeco, nil
-}
-
-// CreateForServiceWithID creates a CostDecoration item in Kong for the GraphQL rate limiting
-// advanced plugin with a specified ID, scoped to a specific Service.
-// This uses PUT for idempotent creation.
-// The Service must be specified in the cost decoration.
-func (s *GraphqlRateLimitingCostDecorationService) CreateForServiceWithID(
-	ctx context.Context,
-	costDeco *GraphqlRateLimitingCostDecoration,
-) (*GraphqlRateLimitingCostDecoration, error) {
-	if costDeco == nil {
-		return nil, fmt.Errorf("cannot create a nil cost decoration")
-	}
-	if isEmptyString(costDeco.ID) {
-		return nil, fmt.Errorf("ID cannot be nil for CreateForServiceWithID operation")
-	}
-	serviceNameOrID := getServiceNameOrID(costDeco.Service)
-	if serviceNameOrID == nil {
-		return nil, fmt.Errorf("cannot create a cost decoration for a service without name or ID")
-	}
-
-	endpoint := fmt.Sprintf("/services/%s/graphql-rate-limiting-advanced/costs", *serviceNameOrID)
-	req, err := s.client.NewRequest("POST", endpoint, nil, costDeco)
+	req, err := s.client.NewRequest(method, endpoint, nil, costDeco)
 	if err != nil {
 		return nil, err
 	}
@@ -289,7 +255,8 @@ func (s *GraphqlRateLimitingCostDecorationService) UpdateForService(
 		return nil, fmt.Errorf("cannot update a cost decoration without a valid service")
 	}
 
-	endpoint := fmt.Sprintf("/services/%s/graphql-rate-limiting-advanced/costs", *serviceNameOrID)
+	endpoint := fmt.Sprintf("/services/%s/graphql-rate-limiting-advanced/costs/%s",
+		*serviceNameOrID, *costDeco.ID)
 	req, err := s.client.NewRequest("PUT", endpoint, nil, costDeco)
 	if err != nil {
 		return nil, err
