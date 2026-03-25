@@ -100,8 +100,6 @@
 - Added new `CreateWithId` method to the `GraphqlRateLimitingCostDecorationService` using the `POST` operation, enabling
   creation of `GraphqlRateLimitingCostDecoration` with specific ID.
   [#606](https://github.com/Kong/go-kong/pull/606)
-- Updated OSS integration test configuration to use only the first two digits of the Kong version tag.
-  [#604](https://github.com/Kong/go-kong/pull/604)
 
 ## [v0.72.1]
 
