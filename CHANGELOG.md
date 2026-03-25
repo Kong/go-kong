@@ -93,7 +93,7 @@
 
 ## [v0.73.0]
 
-> Release date: 2026/03/18
+> Release date: 2026/03/25
 
 - Added support for `Workspaces` in the `Konnect` flow.
   [#602](https://github.com/Kong/go-kong/pull/602)
