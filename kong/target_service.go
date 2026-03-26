@@ -23,7 +23,7 @@ type AbstractTargetService interface {
 	// Kong's load balancer.
 	MarkUnhealthy(ctx context.Context, upstreamNameOrID *string, target *Target) error
 	// Update updates a Target in Kong under upstreamID.
-	// Note: The update is performed using the "PATCH" method.
+	// Note: The update is performed using the "PUT" method.
 	Update(ctx context.Context, upstreamNameOrID *string, targetOrID *string, target *Target) (*Target, error)
 	// ListAllTargets fetches a list of Targets in Kong using the global `/targets` endpoint.
 	ListAllTargets(ctx context.Context, opt *ListOpt) ([]*Target, *ListOpt, error)
