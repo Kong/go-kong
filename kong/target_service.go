@@ -232,7 +232,7 @@ func (s *TargetService) Update(ctx context.Context,
 	}
 
 	endpoint := fmt.Sprintf("/upstreams/%v/targets/%v", *upstreamNameOrID, *targetOrID)
-	req, err := s.client.NewRequest("PATCH", endpoint, nil, target)
+	req, err := s.client.NewRequest("PUT", endpoint, nil, target)
 	if err != nil {
 		return nil, err
 	}
