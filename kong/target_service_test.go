@@ -301,7 +301,7 @@ func TestTargetListEndpoint(T *testing.T) {
 	require.NoError(client.Upstreams.Delete(defaultCtx, createdUpstream.ID))
 }
 
-func TestTargetsUpdatePatch(T *testing.T) {
+func TestTargetsUpdatePut(T *testing.T) {
 	RunWhenDBMode(T, "postgres")
 
 	assert := assert.New(T)

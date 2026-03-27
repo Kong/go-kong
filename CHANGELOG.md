@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.73.0](#v0730)
 - [v0.72.1](#v0721)
 - [v0.72.0](#v0720)
 - [v0.71.0](#v0710)
@@ -89,6 +90,16 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.73.0]
+
+> Release date: 2026/03/25
+
+- Added support for `Workspaces` in the `Konnect` flow.
+  [#602](https://github.com/Kong/go-kong/pull/602)
+- Added new `CreateWithId` method to the `GraphqlRateLimitingCostDecorationService` using the `POST` operation, enabling
+  creation of `GraphqlRateLimitingCostDecoration` with specific ID.
+  [#606](https://github.com/Kong/go-kong/pull/606)
 
 ## [v0.72.1]
 
@@ -1123,6 +1134,8 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.73.0]: https://github.com/Kong/go-kong/compare/v0.72.1...v0.73.0
+[v0.72.1]: https://github.com/Kong/go-kong/compare/v0.72.0...v0.72.1
 [v0.72.0]: https://github.com/Kong/go-kong/compare/v0.71.0...v0.72.0
 [v0.71.0]: https://github.com/Kong/go-kong/compare/v0.70.0...v0.71.0
 [v0.70.0]: https://github.com/Kong/go-kong/compare/v0.69.0...v0.70.0
