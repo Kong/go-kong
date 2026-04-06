@@ -1907,6 +1907,11 @@ func (in *Plugin) DeepCopyInto(out *Plugin) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.Condition != nil {
+		in, out := &in.Condition, &out.Condition
+		*out = new(string)
+		**out = **in
+	}
 	if in.Ordering != nil {
 		in, out := &in.Ordering, &out.Ordering
 		*out = new(PluginOrdering)
