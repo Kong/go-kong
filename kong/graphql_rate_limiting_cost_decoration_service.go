@@ -29,6 +29,9 @@ type AbstractGraphqlRateLimitingCostDecorationService interface {
 	// Updates a cost decoration scoped to a Service for the GraphQL rate-limiting plugin in Kong.
 	UpdateForService(ctx context.Context,
 		costDeco *GraphqlRateLimitingCostDecoration) (*GraphqlRateLimitingCostDecoration, error)
+	// Deletes a cost decoration scoped to a Service for the GraphQL rate-limiting plugin in Kong.
+	DeleteForService(ctx context.Context,
+		costDeco *GraphqlRateLimitingCostDecoration) error
 	// Retrieves a page of cost decorations scoped to a Service for the GraphQL rate-limiting plugin in Kong.
 	ListForService(ctx context.Context, serviceNameOrID *string,
 		opt *ListOpt) ([]*GraphqlRateLimitingCostDecoration, *ListOpt, error)
@@ -269,6 +272,30 @@ func (s *GraphqlRateLimitingCostDecorationService) UpdateForService(
 	}
 
 	return &updatedCostDeco, nil
+}
+
+// DeleteForService deletes a CostDecoration item in Kong, scoped to a specific Service.
+// The given data must include the ID and Service of an existing item.
+func (s *GraphqlRateLimitingCostDecorationService) DeleteForService(
+	ctx context.Context,
+	costDeco *GraphqlRateLimitingCostDecoration,
+) error {
+	if isEmptyString(costDeco.ID) {
+		return fmt.Errorf("ID cannot be nil for DeleteForService operation")
+	}
+	serviceNameOrID := getServiceNameOrID(costDeco.Service)
+	if serviceNameOrID == nil {
+		return fmt.Errorf("cannot delete a cost decoration without a valid service")
+	}
+
+	endpoint := fmt.Sprintf("/services/%s/graphql-rate-limiting-advanced/costs/%s",
+		*serviceNameOrID, *costDeco.ID)
+	req, err := s.client.NewRequest("DELETE", endpoint, nil, costDeco)
+	if err != nil {
+		return err
+	}
+	err = ErrorOrResponseError(s.client.Do(ctx, req, nil))
+	return err
 }
 
 // ListForService fetches a list of CostDecoration items from Kong,
