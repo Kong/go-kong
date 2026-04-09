@@ -1,5 +1,7 @@
 # Table of Contents
 
+- [v0.74.0](#v0740)
+- [v0.73.1](#v0731)
 - [v0.73.0](#v0730)
 - [v0.72.1](#v0721)
 - [v0.72.0](#v0720)
@@ -90,6 +92,21 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.74.0]
+
+> Release date: 2026/04/06
+
+- Added support for `Condition` field in Plugins
+  [#612](https://github.com/Kong/go-kong/pull/612)
+
+## [v0.73.1]
+
+> Release date: 2026/03/27
+
+- Fixed `TargetService` `Update` method to use `PUT` instead of `PATCH`, 
+  as `Konnect` does not support `PATCH` operations.
+  [#610](https://github.com/Kong/go-kong/pull/610)
 
 ## [v0.73.0]
 
@@ -1134,6 +1151,8 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.74.0]: https://github.com/Kong/go-kong/compare/v0.73.1...v0.74.0
+[v0.73.1]: https://github.com/Kong/go-kong/compare/v0.73.0...v0.73.1
 [v0.73.0]: https://github.com/Kong/go-kong/compare/v0.72.1...v0.73.0
 [v0.72.1]: https://github.com/Kong/go-kong/compare/v0.72.0...v0.72.1
 [v0.72.0]: https://github.com/Kong/go-kong/compare/v0.71.0...v0.72.0

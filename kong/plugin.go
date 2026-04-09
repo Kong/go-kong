@@ -15,6 +15,7 @@ type Plugin struct {
 	Config        Configuration   `json:"config,omitempty" yaml:"config,omitempty"`
 	Enabled       *bool           `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 	RunOn         *string         `json:"run_on,omitempty" yaml:"run_on,omitempty"`
+	Condition     *string         `json:"condition,omitempty" yaml:"condition,omitempty"`
 	Ordering      *PluginOrdering `json:"ordering,omitempty" yaml:"ordering,omitempty"`
 	Protocols     []*string       `json:"protocols,omitempty" yaml:"protocols,omitempty"`
 	Tags          []*string       `json:"tags,omitempty" yaml:"tags,omitempty"`

@@ -980,6 +980,33 @@ func TestPluginsWithPartialLinks(T *testing.T) {
 	})
 }
 
+func TestPluginsWithConditionalExpressions(T *testing.T) {
+	RunWhenEnterprise(T, ">=3.14.0", RequiredFeatures{})
+	require := require.New(T)
+	assert := assert.New(T)
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	pluginCondition := "route.name != \"health\""
+
+	plugin := &Plugin{
+		Name:      String("key-auth"),
+		Condition: String(pluginCondition),
+		Config: Configuration{
+			"key_names": []interface{}{"apikey"},
+		},
+	}
+	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
+	require.NoError(err)
+	require.NotNil(createdPlugin)
+	assert.Equal(pluginCondition, *createdPlugin.Condition)
+
+	T.Cleanup(func() {
+		require.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
+	})
+}
+
 func comparePlugins(T *testing.T, expected, actual []*Plugin) bool {
 	var expectedNames, actualNames []string
 	for _, plugin := range expected {
