@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.75.0](#v0750)
 - [v0.74.0](#v0740)
 - [v0.73.1](#v0731)
 - [v0.73.0](#v0730)
@@ -92,6 +93,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.75.0]
+
+> Release date: 2026/04/16
+
+- Added support for `Service` field in `GraphqlRateLimitingCostDecoration`.
+  [#608](https://github.com/Kong/go-kong/pull/608)
 
 ## [v0.74.0]
 
@@ -1151,6 +1159,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.75.0]: https://github.com/Kong/go-kong/compare/v0.74.0...v0.75.0
 [v0.74.0]: https://github.com/Kong/go-kong/compare/v0.73.1...v0.74.0
 [v0.73.1]: https://github.com/Kong/go-kong/compare/v0.73.0...v0.73.1
 [v0.73.0]: https://github.com/Kong/go-kong/compare/v0.72.1...v0.73.0
