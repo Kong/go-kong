@@ -242,8 +242,6 @@ func (s *GraphqlRateLimitingCostDecorationService) CreateForService(
 	return &createdCostDeco, nil
 }
 
-// TODO: Currently this API is throwing 500 with msg as "An unexpected error occurred". Currently using existing Update
-
 // UpdateForService updates a CostDecoration item in Kong, scoped to a specific Service.
 // The given data must include the ID and Service of an existing item.
 func (s *GraphqlRateLimitingCostDecorationService) UpdateForService(
