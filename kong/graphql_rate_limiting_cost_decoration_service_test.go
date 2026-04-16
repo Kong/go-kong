@@ -98,7 +98,8 @@ func TestGraphqlRateLimitingCostDecorationService(t *testing.T) {
 }
 
 func TestGraphqlRateLimitingCostDecorationServiceForService(t *testing.T) {
-	RunWhenEnterprise(t, "=3.4.3.25 || =3.10.0.10 || =3.11.0.9 || =3.12.0.5 || =3.13.0.3", RequiredFeatures{})
+	RunWhenEnterprise(t, "=3.4.3.25 || =3.10.0.10 || =3.11.0.9 || =3.12.0.5 || =3.13.0.3 || >=3.14.0.2",
+		RequiredFeatures{})
 	RunWhenDBMode(t, "postgres")
 
 	client, err := NewTestClient(nil, nil)
