@@ -110,7 +110,7 @@ func (s *ConsumerGroupService) Update(ctx context.Context,
 	}
 
 	endpoint := fmt.Sprintf("/consumer_groups/%v", *consumerGroup.ID)
-	req, err := s.client.NewRequest("PATCH", endpoint, nil, consumerGroup)
+	req, err := s.client.NewRequest("PUT", endpoint, nil, consumerGroup)
 	if err != nil {
 		return nil, err
 	}
