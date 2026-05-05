@@ -108,9 +108,12 @@ func (s *ConsumerGroupService) Update(ctx context.Context,
 	if isEmptyString(consumerGroup.ID) {
 		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
-
+	method := "PATCH"
+	if s.client.isKonnect {
+		method = "PUT"
+	}
 	endpoint := fmt.Sprintf("/consumer_groups/%v", *consumerGroup.ID)
-	req, err := s.client.NewRequest("PUT", endpoint, nil, consumerGroup)
+	req, err := s.client.NewRequest(method, endpoint, nil, consumerGroup)
 	if err != nil {
 		return nil, err
 	}
