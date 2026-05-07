@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.75.1](#v0751)
 - [v0.75.0](#v0750)
 - [v0.74.0](#v0740)
 - [v0.73.1](#v0731)
@@ -93,6 +94,13 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.75.1]
+
+> Release date: 2026/05/07
+
+- Fixed `ConsumerGroupSerivce` `Update` method to support `PUT`, as `Konnect` does not support `PATCH` operations.
+  [#616](https://github.com/Kong/go-kong/pull/616)
 
 ## [v0.75.0]
 
@@ -1159,6 +1167,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.75.1]: https://github.com/Kong/go-kong/compare/v0.75.0...v0.75.1
 [v0.75.0]: https://github.com/Kong/go-kong/compare/v0.74.0...v0.75.0
 [v0.74.0]: https://github.com/Kong/go-kong/compare/v0.73.1...v0.74.0
 [v0.73.1]: https://github.com/Kong/go-kong/compare/v0.73.0...v0.73.1
