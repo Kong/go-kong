@@ -468,6 +468,16 @@ func fillConfigRecord(
 					// an arbitrary map, field is already set.
 					return true
 				}
+				// A field of type "json" holds an arbitrary JSON object
+				// (e.g. ai-mcp-proxy's tools[].request_body). There is no
+				// sub-schema to recurse into, so a populated value is already
+				// fully set. Without this, the field falls through to the
+				// default-assignment branch below and is overwritten with its
+				// (nil) default, producing a perpetual no-op diff in decK.
+				// See https://github.com/Kong/go-kong/issues/524.
+				if value.Get(fname+".type").String() == "json" {
+					return true
+				}
 			case []interface{}:
 				if value.Get(fname).Get("elements.type").String() != "record" &&
 					config[fname] != nil {
