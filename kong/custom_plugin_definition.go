@@ -1,8 +1,8 @@
 package kong
 
-// CustomPluginDefintion represents a custom-plugin definition in Kong.
+// CustomPluginDefinition represents a custom-plugin definition in Kong.
 // +k8s:deepcopy-gen=true
-type CustomPluginDefintion struct {
+type CustomPluginDefinition struct {
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Name      *string   `json:"name,omitempty" yaml:"name,omitempty"`
 	Handler   *string   `json:"handler,omitempty" yaml:"handler,omitempty"`
@@ -13,7 +13,7 @@ type CustomPluginDefintion struct {
 }
 
 // FriendlyName returns the entity name or ID.
-func (c *CustomPluginDefintion) FriendlyName() string {
+func (c *CustomPluginDefinition) FriendlyName() string {
 	if c.Name != nil {
 		return *c.Name
 	}

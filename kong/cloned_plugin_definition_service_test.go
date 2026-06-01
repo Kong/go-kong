@@ -18,7 +18,7 @@ func TestClonedPluginService(T *testing.T) {
 	require.NoError(err)
 	assert.NotNil(client)
 
-	plugin := &ClonedPluginDefintion{
+	plugin := &ClonedPluginDefinition{
 		Name:     String("my-cloned-plugin"),
 		Priority: Uint64(100),
 		Ref:      String("file-log"),
@@ -59,7 +59,7 @@ func TestClonedPluginService(T *testing.T) {
 
 	// ID can be specified
 	id := uuid.NewString()
-	plugin = &ClonedPluginDefintion{
+	plugin = &ClonedPluginDefinition{
 		Name:     String("my-new-cloned-plugin"),
 		ID:       String(id),
 		Priority: Uint64(100),
@@ -88,7 +88,7 @@ func TestClonedPluginServiceListAll(T *testing.T) {
 	assert.NotNil(client)
 
 	// fixtures
-	plugins := []*ClonedPluginDefintion{
+	plugins := []*ClonedPluginDefinition{
 		{
 			Name:     String("cloned-plugin-1"),
 			Priority: Uint64(100),

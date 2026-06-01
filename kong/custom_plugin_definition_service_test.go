@@ -45,7 +45,7 @@ func TestCustomPluginService(T *testing.T) {
 	require.NoError(err)
 	assert.NotNil(client)
 
-	plugin := &CustomPluginDefintion{
+	plugin := &CustomPluginDefinition{
 		Name:    String("my-custom-plugin"),
 		Handler: String(testCustomPluginHandler),
 		Schema:  String(testCustomPluginSchema("my-custom-plugin")),
@@ -73,7 +73,7 @@ func TestCustomPluginService(T *testing.T) {
 
 	// ID can be specified
 	id := uuid.NewString()
-	plugin = &CustomPluginDefintion{
+	plugin = &CustomPluginDefinition{
 		Name:    String("my-custom-plugin-2"),
 		ID:      String(id),
 		Handler: String(testCustomPluginHandler),
@@ -102,7 +102,7 @@ func TestCustomPluginServiceListAll(T *testing.T) {
 	assert.NotNil(client)
 
 	// fixtures
-	plugins := []*CustomPluginDefintion{
+	plugins := []*CustomPluginDefinition{
 		{
 			Name:    String("custom-plugin-1"),
 			Handler: String(testCustomPluginHandler),

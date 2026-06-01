@@ -1,8 +1,8 @@
 package kong
 
-// ClonedPluginDefintion represents a cloned-plugin definition in Kong.
+// ClonedPluginDefinition represents a cloned-plugin definition in Kong.
 // +k8s:deepcopy-gen=true
-type ClonedPluginDefintion struct {
+type ClonedPluginDefinition struct {
 	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
 	Name      *string   `json:"name,omitempty" yaml:"name,omitempty"`
 	Priority  *uint64   `json:"priority,omitempty" yaml:"priority,omitempty"`
@@ -13,7 +13,7 @@ type ClonedPluginDefintion struct {
 }
 
 // FriendlyName returns the entity name or ID.
-func (c *ClonedPluginDefintion) FriendlyName() string {
+func (c *ClonedPluginDefinition) FriendlyName() string {
 	if c.Name != nil {
 		return *c.Name
 	}

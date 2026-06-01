@@ -9,17 +9,17 @@ import (
 // AbstractClonedPluginService handles ClonedPluginDefintions in Kong.
 type AbstractClonedPluginService interface {
 	// Create creates a ClonedPluginDefintion in Kong.
-	Create(ctx context.Context, plugin *ClonedPluginDefintion) (*ClonedPluginDefintion, error)
+	Create(ctx context.Context, plugin *ClonedPluginDefinition) (*ClonedPluginDefinition, error)
 	// Get fetches a ClonedPluginDefintion in Kong.
-	Get(ctx context.Context, nameOrID *string) (*ClonedPluginDefintion, error)
+	Get(ctx context.Context, nameOrID *string) (*ClonedPluginDefinition, error)
 	// Update updates a ClonedPluginDefintion in Kong.
-	Update(ctx context.Context, plugin *ClonedPluginDefintion) (*ClonedPluginDefintion, error)
+	Update(ctx context.Context, plugin *ClonedPluginDefinition) (*ClonedPluginDefinition, error)
 	// Delete deletes a ClonedPluginDefintion in Kong.
 	Delete(ctx context.Context, nameOrID *string) error
 	// List fetches a list of ClonedPluginDefintions in Kong.
-	List(ctx context.Context, opt *ListOpt) ([]*ClonedPluginDefintion, *ListOpt, error)
+	List(ctx context.Context, opt *ListOpt) ([]*ClonedPluginDefinition, *ListOpt, error)
 	// ListAll fetches all ClonedPluginDefintions in Kong.
-	ListAll(ctx context.Context) ([]*ClonedPluginDefintion, error)
+	ListAll(ctx context.Context) ([]*ClonedPluginDefinition, error)
 }
 
 // ClonedPluginService handles ClonedPluginDefintions in Kong.
@@ -30,8 +30,8 @@ type ClonedPluginService service
 // create the cloned plugin definition in Kong, otherwise an ID
 // is auto-generated.
 func (s *ClonedPluginService) Create(ctx context.Context,
-	plugin *ClonedPluginDefintion,
-) (*ClonedPluginDefintion, error) {
+	plugin *ClonedPluginDefinition,
+) (*ClonedPluginDefinition, error) {
 	queryPath := "/cloned-plugins"
 	method := "POST"
 	if plugin.ID != nil {
@@ -43,7 +43,7 @@ func (s *ClonedPluginService) Create(ctx context.Context,
 		return nil, err
 	}
 
-	var createdPlugin ClonedPluginDefintion
+	var createdPlugin ClonedPluginDefinition
 	_, err = s.client.Do(ctx, req, &createdPlugin)
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (s *ClonedPluginService) Create(ctx context.Context,
 // Get fetches a ClonedPluginDefintion in Kong.
 func (s *ClonedPluginService) Get(ctx context.Context,
 	nameOrID *string,
-) (*ClonedPluginDefintion, error) {
+) (*ClonedPluginDefinition, error) {
 	if isEmptyString(nameOrID) {
 		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -65,7 +65,7 @@ func (s *ClonedPluginService) Get(ctx context.Context,
 		return nil, err
 	}
 
-	var plugin ClonedPluginDefintion
+	var plugin ClonedPluginDefinition
 	_, err = s.client.Do(ctx, req, &plugin)
 	if err != nil {
 		return nil, err
@@ -75,8 +75,8 @@ func (s *ClonedPluginService) Get(ctx context.Context,
 
 // Update updates a ClonedPluginDefintion in Kong.
 func (s *ClonedPluginService) Update(ctx context.Context,
-	plugin *ClonedPluginDefintion,
-) (*ClonedPluginDefintion, error) {
+	plugin *ClonedPluginDefinition,
+) (*ClonedPluginDefinition, error) {
 	if isEmptyString(plugin.ID) {
 		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
@@ -87,7 +87,7 @@ func (s *ClonedPluginService) Update(ctx context.Context,
 		return nil, err
 	}
 
-	var updatedPlugin ClonedPluginDefintion
+	var updatedPlugin ClonedPluginDefinition
 	_, err = s.client.Do(ctx, req, &updatedPlugin)
 	if err != nil {
 		return nil, err
@@ -117,19 +117,19 @@ func (s *ClonedPluginService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *ClonedPluginService) List(ctx context.Context,
 	opt *ListOpt,
-) ([]*ClonedPluginDefintion, *ListOpt, error) {
+) ([]*ClonedPluginDefinition, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/cloned-plugins", opt)
 	if err != nil {
 		return nil, nil, err
 	}
-	var plugins []*ClonedPluginDefintion
+	var plugins []*ClonedPluginDefinition
 
 	for _, object := range data {
 		b, err := object.MarshalJSON()
 		if err != nil {
 			return nil, nil, err
 		}
-		var plugin ClonedPluginDefintion
+		var plugin ClonedPluginDefinition
 		err = json.Unmarshal(b, &plugin)
 		if err != nil {
 			return nil, nil, err
@@ -143,8 +143,8 @@ func (s *ClonedPluginService) List(ctx context.Context,
 // ListAll fetches all ClonedPluginDefintions in Kong.
 // This method can take a while if there
 // are a lot of ClonedPluginDefintions present.
-func (s *ClonedPluginService) ListAll(ctx context.Context) ([]*ClonedPluginDefintion, error) {
-	var plugins, data []*ClonedPluginDefintion
+func (s *ClonedPluginService) ListAll(ctx context.Context) ([]*ClonedPluginDefinition, error) {
+	var plugins, data []*ClonedPluginDefinition
 	var err error
 	opt := &ListOpt{Size: pageSize}
 

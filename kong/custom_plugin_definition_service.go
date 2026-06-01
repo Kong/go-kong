@@ -9,17 +9,17 @@ import (
 // AbstractCustomPluginService handles CustomPluginDefintions in Kong.
 type AbstractCustomPluginService interface {
 	// Create creates a CustomPluginDefintion in Kong.
-	Create(ctx context.Context, plugin *CustomPluginDefintion) (*CustomPluginDefintion, error)
+	Create(ctx context.Context, plugin *CustomPluginDefinition) (*CustomPluginDefinition, error)
 	// Get fetches a CustomPluginDefintion in Kong.
-	Get(ctx context.Context, nameOrID *string) (*CustomPluginDefintion, error)
+	Get(ctx context.Context, nameOrID *string) (*CustomPluginDefinition, error)
 	// Update updates a CustomPluginDefintion in Kong.
-	Update(ctx context.Context, plugin *CustomPluginDefintion) (*CustomPluginDefintion, error)
+	Update(ctx context.Context, plugin *CustomPluginDefinition) (*CustomPluginDefinition, error)
 	// Delete deletes a CustomPluginDefintion in Kong.
 	Delete(ctx context.Context, nameOrID *string) error
 	// List fetches a list of CustomPluginDefintions in Kong.
-	List(ctx context.Context, opt *ListOpt) ([]*CustomPluginDefintion, *ListOpt, error)
+	List(ctx context.Context, opt *ListOpt) ([]*CustomPluginDefinition, *ListOpt, error)
 	// ListAll fetches all CustomPluginDefintions in Kong.
-	ListAll(ctx context.Context) ([]*CustomPluginDefintion, error)
+	ListAll(ctx context.Context) ([]*CustomPluginDefinition, error)
 }
 
 // CustomPluginService handles CustomPluginDefintions in Kong.
@@ -30,8 +30,8 @@ type CustomPluginService service
 // create the custom plugin definition in Kong, otherwise an ID
 // is auto-generated.
 func (s *CustomPluginService) Create(ctx context.Context,
-	plugin *CustomPluginDefintion,
-) (*CustomPluginDefintion, error) {
+	plugin *CustomPluginDefinition,
+) (*CustomPluginDefinition, error) {
 	queryPath := "/custom-plugins"
 	method := "POST"
 	if plugin.ID != nil {
@@ -43,7 +43,7 @@ func (s *CustomPluginService) Create(ctx context.Context,
 		return nil, err
 	}
 
-	var createdPlugin CustomPluginDefintion
+	var createdPlugin CustomPluginDefinition
 	_, err = s.client.Do(ctx, req, &createdPlugin)
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (s *CustomPluginService) Create(ctx context.Context,
 // Get fetches a CustomPluginDefintion in Kong.
 func (s *CustomPluginService) Get(ctx context.Context,
 	nameOrID *string,
-) (*CustomPluginDefintion, error) {
+) (*CustomPluginDefinition, error) {
 	if isEmptyString(nameOrID) {
 		return nil, fmt.Errorf("nameOrID cannot be nil for Get operation")
 	}
@@ -65,7 +65,7 @@ func (s *CustomPluginService) Get(ctx context.Context,
 		return nil, err
 	}
 
-	var plugin CustomPluginDefintion
+	var plugin CustomPluginDefinition
 	_, err = s.client.Do(ctx, req, &plugin)
 	if err != nil {
 		return nil, err
@@ -75,8 +75,8 @@ func (s *CustomPluginService) Get(ctx context.Context,
 
 // Update updates a CustomPluginDefintion in Kong.
 func (s *CustomPluginService) Update(ctx context.Context,
-	plugin *CustomPluginDefintion,
-) (*CustomPluginDefintion, error) {
+	plugin *CustomPluginDefinition,
+) (*CustomPluginDefinition, error) {
 	if isEmptyString(plugin.ID) {
 		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
@@ -87,7 +87,7 @@ func (s *CustomPluginService) Update(ctx context.Context,
 		return nil, err
 	}
 
-	var updatedPlugin CustomPluginDefintion
+	var updatedPlugin CustomPluginDefinition
 	_, err = s.client.Do(ctx, req, &updatedPlugin)
 	if err != nil {
 		return nil, err
@@ -117,19 +117,19 @@ func (s *CustomPluginService) Delete(ctx context.Context,
 // opt can be used to control pagination.
 func (s *CustomPluginService) List(ctx context.Context,
 	opt *ListOpt,
-) ([]*CustomPluginDefintion, *ListOpt, error) {
+) ([]*CustomPluginDefinition, *ListOpt, error) {
 	data, next, err := s.client.list(ctx, "/custom-plugins", opt)
 	if err != nil {
 		return nil, nil, err
 	}
-	var plugins []*CustomPluginDefintion
+	var plugins []*CustomPluginDefinition
 
 	for _, object := range data {
 		b, err := object.MarshalJSON()
 		if err != nil {
 			return nil, nil, err
 		}
-		var plugin CustomPluginDefintion
+		var plugin CustomPluginDefinition
 		err = json.Unmarshal(b, &plugin)
 		if err != nil {
 			return nil, nil, err
@@ -143,8 +143,8 @@ func (s *CustomPluginService) List(ctx context.Context,
 // ListAll fetches all CustomPluginDefintions in Kong.
 // This method can take a while if there
 // are a lot of CustomPluginDefintions present.
-func (s *CustomPluginService) ListAll(ctx context.Context) ([]*CustomPluginDefintion, error) {
-	var plugins, data []*CustomPluginDefintion
+func (s *CustomPluginService) ListAll(ctx context.Context) ([]*CustomPluginDefinition, error) {
+	var plugins, data []*CustomPluginDefinition
 	var err error
 	opt := &ListOpt{Size: pageSize}
 
