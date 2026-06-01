@@ -71,6 +71,8 @@ type Client struct {
 	Licenses                AbstractLicenseService
 	FilterChains            AbstractFilterChainService
 	Partials                AbstractPartialService
+	ClonedPlugins           AbstractClonedPluginService
+	CustomPlugins           AbstractCustomPluginService
 
 	credentials       abstractCredentialService
 	KeyAuths          AbstractKeyAuthService
@@ -172,6 +174,8 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.Licenses = (*LicenseService)(&kong.common)
 	kong.FilterChains = (*FilterChainService)(&kong.common)
 	kong.Partials = (*PartialService)(&kong.common)
+	kong.ClonedPlugins = (*ClonedPluginService)(&kong.common)
+	kong.CustomPlugins = (*CustomPluginService)(&kong.common)
 
 	kong.credentials = (*credentialService)(&kong.common)
 	kong.KeyAuths = (*KeyAuthService)(&kong.common)

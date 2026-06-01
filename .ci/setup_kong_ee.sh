@@ -48,6 +48,7 @@ function deploy_kong_ee()
     -e "KONG_PORTAL=on" \
     -e "KONG_ADMIN_GUI_SESSION_CONF={}" \
     -e "KONG_ROUTER_FLAVOR=${KONG_ROUTER_FLAVOR}" \
+    -e "KONG_CUSTOM_PLUGINS_ENABLED=on" \
     -p 8000:8000 \
     -p 8443:8443 \
     -p 8001:8001 \

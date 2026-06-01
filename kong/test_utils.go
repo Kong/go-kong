@@ -8,8 +8,9 @@ import (
 )
 
 type RequiredFeatures struct {
-	Portal bool
-	RBAC   bool
+	CustomPlugins bool
+	Portal        bool
+	RBAC          bool
 }
 
 // GetVersionForTesting returns the semantic version of Kong.
@@ -86,6 +87,13 @@ func RunWhenEnterprise(t *testing.T, versionRange string, required RequiredFeatu
 
 	if required.Portal && !configuration["portal"].(bool) {
 		t.Skip("Portal not enabled on test Kong instance, skipping")
+	}
+
+	if required.CustomPlugins {
+		enabled, ok := configuration["custom_plugins_enabled"].(bool)
+		if !ok || !enabled {
+			t.Skip("Custom Plugins not enabled on test Kong instance, skipping")
+		}
 	}
 
 	r, err := NewRange(versionRange)
