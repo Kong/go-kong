@@ -89,8 +89,11 @@ func RunWhenEnterprise(t *testing.T, versionRange string, required RequiredFeatu
 		t.Skip("Portal not enabled on test Kong instance, skipping")
 	}
 
-	if required.CustomPlugins && !configuration["custom_plugins_enabled"].(bool) {
-		t.Skip("Custom Plugins not enabled on test Kong instance, skipping")
+	if required.CustomPlugins {
+		enabled, ok := configuration["custom_plugins_enabled"].(bool)
+		if !ok || !enabled {
+			t.Skip("Custom Plugins not enabled on test Kong instance, skipping")
+		}
 	}
 
 	r, err := NewRange(versionRange)
