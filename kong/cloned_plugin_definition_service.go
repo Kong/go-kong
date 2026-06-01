@@ -81,8 +81,13 @@ func (s *ClonedPluginService) Update(ctx context.Context,
 		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
+	method := "PATCH"
+	if s.client.isKonnect {
+		method = "PUT"
+	}
+
 	endpoint := fmt.Sprintf("/cloned-plugins/%v", *plugin.ID)
-	req, err := s.client.NewRequest("PATCH", endpoint, nil, plugin)
+	req, err := s.client.NewRequest(method, endpoint, nil, plugin)
 	if err != nil {
 		return nil, err
 	}
