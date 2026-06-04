@@ -20,7 +20,7 @@ func TestClonedPluginService(T *testing.T) {
 
 	plugin := &ClonedPluginDefinition{
 		Name:     String("my-cloned-plugin"),
-		Priority: Uint64(100),
+		Priority: Int(100),
 		Ref:      String("file-log"),
 		Tags:     StringSlice("tag1", "tag2"),
 	}
@@ -51,18 +51,18 @@ func TestClonedPluginService(T *testing.T) {
 	assert.Equal(StringSlice("tag1", "tag2"), plugin.Tags)
 
 	// Update priority
-	plugin.Priority = Uint64(200)
+	plugin.Priority = Int(200)
 	plugin, err = client.ClonedPlugins.Update(defaultCtx, plugin)
 	require.NoError(err)
 	require.NotNil(plugin)
-	assert.Equal(Uint64(200), plugin.Priority)
+	assert.Equal(Int(200), plugin.Priority)
 
 	// ID can be specified
 	id := uuid.NewString()
 	plugin = &ClonedPluginDefinition{
 		Name:     String("my-new-cloned-plugin"),
 		ID:       String(id),
-		Priority: Uint64(100),
+		Priority: Int(100),
 		Ref:      String("file-log"),
 	}
 
@@ -91,19 +91,19 @@ func TestClonedPluginServiceListAll(T *testing.T) {
 	plugins := []*ClonedPluginDefinition{
 		{
 			Name:     String("cloned-plugin-1"),
-			Priority: Uint64(100),
+			Priority: Int(100),
 			Ref:      String("file-log"),
 			Tags:     StringSlice("tag1", "tag2"),
 		},
 		{
 			Name:     String("cloned-plugin-2"),
-			Priority: Uint64(200),
+			Priority: Int(200),
 			Ref:      String("key-auth"),
 			Tags:     StringSlice("tag2", "tag3"),
 		},
 		{
 			Name:     String("cloned-plugin-3"),
-			Priority: Uint64(300),
+			Priority: Int(300),
 			Ref:      String("acl"),
 			Tags:     StringSlice("tag1", "tag3"),
 		},

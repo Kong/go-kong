@@ -470,7 +470,7 @@ func (in *ClonedPluginDefinition) DeepCopyInto(out *ClonedPluginDefinition) {
 	}
 	if in.Priority != nil {
 		in, out := &in.Priority, &out.Priority
-		*out = new(uint64)
+		*out = new(int)
 		**out = **in
 	}
 	if in.Ref != nil {

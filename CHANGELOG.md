@@ -96,6 +96,14 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
+## [v0.76.1]
+
+> Release date: 2026/06/04
+
+- Converted `Priority` field for ClonedPlugins from an
+  unsigned-integer to integer to allow negative values.
+  [#621](https://github.com/Kong/go-kong/pull/621)
+
 ## [v0.76.0]
 
 > Release date: 2026/06/01
