@@ -260,6 +260,44 @@ const TestSchemaSetType = `{
 	}]
 }`
 
+// TestSchemaJSONType mirrors a plugin like ai-mcp-proxy: config.tools is an
+// array of records, and each tool carries a `request_body` field declared with
+// the Kong "json" type (an arbitrary JSON object with no default). `path` has a
+// default so the tests also confirm normal default-filling still happens.
+const TestSchemaJSONType = `{
+	"fields": [{
+		"config": {
+			"type": "record",
+			"fields": [{
+				"tools": {
+					"type": "array",
+					"elements": {
+						"type": "record",
+						"fields": [
+							{
+								"name": {
+									"type": "string"
+								}
+							},
+							{
+								"path": {
+									"type": "string",
+									"default": "/"
+								}
+							},
+							{
+								"request_body": {
+									"type": "json"
+								}
+							}
+						]
+					}
+				}
+			}]
+		}
+	}]
+}`
+
 const AcmeSchema = `{
     "fields": [
         {
@@ -2897,6 +2935,111 @@ func Test_FillPluginsDefaults_SetType(t *testing.T) {
 
 			var fullSchema map[string]interface{}
 			err := json.Unmarshal([]byte(TestSchemaSetType), &fullSchema)
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+
+			require.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			opts := cmpopts.IgnoreFields(*plugin,
+				"Protocols", "Enabled",
+			)
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_FillPluginsDefaults_JSONType(t *testing.T) {
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			name: "preserves a populated json field while filling sibling defaults",
+			plugin: &Plugin{
+				Config: Configuration{
+					"tools": []interface{}{
+						map[string]interface{}{
+							"name": "search",
+							"request_body": map[string]interface{}{
+								"type": "object",
+								"properties": map[string]interface{}{
+									"q": map[string]interface{}{"type": "string"},
+								},
+								"required": []interface{}{"q"},
+							},
+						},
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"tools": []interface{}{
+						Configuration{
+							"name": "search",
+							"path": "/",
+							"request_body": map[string]interface{}{
+								"type": "object",
+								"properties": map[string]interface{}{
+									"q": map[string]interface{}{"type": "string"},
+								},
+								"required": []interface{}{"q"},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "preserves distinct json values across multiple records",
+			plugin: &Plugin{
+				Config: Configuration{
+					"tools": []interface{}{
+						map[string]interface{}{
+							"name":         "a",
+							"path":         "/a",
+							"request_body": map[string]interface{}{"type": "object"},
+						},
+						map[string]interface{}{
+							"name": "b",
+							"path": "/b",
+							"request_body": map[string]interface{}{
+								"type":     "object",
+								"required": []interface{}{"x"},
+							},
+						},
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"tools": []interface{}{
+						Configuration{
+							"name":         "a",
+							"path":         "/a",
+							"request_body": map[string]interface{}{"type": "object"},
+						},
+						Configuration{
+							"name": "b",
+							"path": "/b",
+							"request_body": map[string]interface{}{
+								"type":     "object",
+								"required": []interface{}{"x"},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+
+			var fullSchema map[string]interface{}
+			err := json.Unmarshal([]byte(TestSchemaJSONType), &fullSchema)
 			require.NoError(t, err)
 			require.NotNil(t, fullSchema)
 
