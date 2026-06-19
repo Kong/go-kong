@@ -2356,6 +2356,49 @@ const fillConfigRecordTestSchemaWithAutoFields = `{
 }
 `
 
+const fillPluginsDefaultsRateLimitingAdvancedSchema = `{
+	"fields": [
+		{
+			"config": {
+				"type": "record",
+				"fields": [
+					{
+						"dictionary_name": {
+							"type": "string",
+							"default": "kong_rate_limiting_counters"
+						}
+					},
+					{
+						"identifier": {
+							"type": "string",
+							"default": "consumer"
+						}
+					},
+					{
+						"window_size": {
+							"type": "array",
+							"elements": [
+								{
+									"type": "number"
+								}
+							],
+							"required": true
+						}
+					},
+					{
+						"namespace": {
+							"type": "string",
+							"auto": true,
+							"required": true
+						}
+					}
+				]
+			}
+		}
+	]
+}
+`
+
 const fillConfigRecordTestSchemaWithRecord = `{
 	"fields": {
 		"config": {
@@ -2698,6 +2741,21 @@ func Test_FillPluginsDefaults(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_FillPluginsDefaults_SkipsAutoFields(t *testing.T) {
+	var fullSchema map[string]any
+	err := json.Unmarshal([]byte(fillPluginsDefaultsRateLimitingAdvancedSchema), &fullSchema)
+	require.NoError(t, err)
+	require.NotNil(t, fullSchema)
+
+	plugin := &Plugin{
+		Config: Configuration{},
+	}
+
+	require.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+	require.Equal(t, "kong_rate_limiting_counters", plugin.Config["dictionary_name"])
+	require.NotContains(t, plugin.Config, "namespace")
 }
 
 func Test_FillPluginsDefaults_RequestTransformer(t *testing.T) {

@@ -1,5 +1,7 @@
 # Table of Contents
 
+- [v0.76.2](#v0762)
+- [v0.76.1](#v0761)
 - [v0.76.0](#v0760)
 - [v0.75.1](#v0751)
 - [v0.75.0](#v0750)
@@ -95,6 +97,17 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.76.2]
+
+> Release date: 2026/06/19
+
+- Do not fill auto fields with `FillPluginsDefaults`.
+  Those fields are meant to be set by Kong.
+  Filling them might cause issues, for example: filling in the namespace field
+  in rate-limiting-advanced plugin (setting it it to nil) will cause the config
+  to be rejected by Kong as the namespace field is required to be set to a non-nil value.
+  [#623](https://github.com/Kong/go-kong/pull/623)
 
 ## [v0.76.1]
 
@@ -1184,6 +1197,8 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.76.2]: https://github.com/Kong/go-kong/compare/v0.76.1...v0.76.2
+[v0.76.1]: https://github.com/Kong/go-kong/compare/v0.76.0...v0.76.1
 [v0.76.0]: https://github.com/Kong/go-kong/compare/v0.75.1...v0.76.0
 [v0.75.1]: https://github.com/Kong/go-kong/compare/v0.75.0...v0.75.1
 [v0.75.0]: https://github.com/Kong/go-kong/compare/v0.74.0...v0.75.0

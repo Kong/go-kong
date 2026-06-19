@@ -1039,7 +1039,11 @@ func fillConfigRecordWithPartialsConfig(plugin *Plugin, pluginSchema map[string]
 func FillPluginsDefaults(plugin *Plugin, schema Schema) error {
 	return fillConfigRecordDefaultsAutoFields(plugin, schema, nil, FillRecordOptions{
 		FillDefaults: true,
-		FillAuto:     true,
+		// Do not fill auto fields as they are meant to be set by Kong.
+		// Filling them might cause issues, for example: filling in the namespace field
+		// in rate-limiting-advanced plugin (setting it it to nil) will cause the config
+		// to be rejected by Kong as the namespace field is required to be set to a non-nil value.
+		FillAuto: false,
 	})
 }
 
