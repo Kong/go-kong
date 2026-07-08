@@ -55,6 +55,7 @@ type Client struct {
 	Certificates            AbstractCertificateService
 	Plugins                 AbstractPluginService
 	SNIs                    AbstractSNIService
+	AIModels                AbstractAIModelService
 	Upstreams               AbstractUpstreamService
 	UpstreamNodeHealth      AbstractUpstreamNodeHealthService
 	Targets                 AbstractTargetService
@@ -158,6 +159,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.Certificates = (*CertificateService)(&kong.common)
 	kong.CACertificates = (*CACertificateService)(&kong.common)
 	kong.SNIs = (*SNIService)(&kong.common)
+	kong.AIModels = (*AIModelService)(&kong.common)
 	kong.Upstreams = (*UpstreamService)(&kong.common)
 	kong.UpstreamNodeHealth = (*UpstreamNodeHealthService)(&kong.common)
 	kong.Targets = (*TargetService)(&kong.common)
