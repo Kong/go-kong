@@ -2121,6 +2121,11 @@ func (in *Plugin) DeepCopyInto(out *Plugin) {
 			}
 		}
 	}
+	if in.Model != nil {
+		in, out := &in.Model, &out.Model
+		*out = new(AIModel)
+		(*in).DeepCopyInto(*out)
+	}
 	return
 }
 
