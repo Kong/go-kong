@@ -128,6 +128,49 @@ func SkipWhenEnterprise(t *testing.T) {
 	}
 }
 
+// Skip all the tests which were not meant for AI Gateway.
+// This implementation depends on existence of ai_model_selector plugin in the list
+// of available plugins on the test Kong instance, as well as the version being < 3.0.0
+func RunWhenAIGateway(t *testing.T, versionRange string) {
+	t.Helper()
+
+	client, err := NewTestClient(nil, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	info, err := client.Root(defaultCtx)
+	if err != nil {
+		t.Error(err)
+	}
+	version := VersionFromInfo(info)
+	currentVersion, err := ParseSemanticVersion(version)
+	if err != nil {
+		t.Error(err)
+	}
+
+	r, err := NewRange(versionRange)
+	if err != nil {
+		t.Error(err)
+	}
+	if !r(currentVersion) {
+		t.Skipf("kong version %s not in range %s", version, versionRange)
+	}
+
+	pluginConfig, ok := info["plugins"].(map[string]interface{})
+	if !ok {
+		t.Errorf("failed to cast 'plugins' to map[string]interface{}")
+	}
+
+	availablePlugins, ok := pluginConfig["available_on_server"].(map[string]interface{})
+	if !ok {
+		t.Errorf("failed to cast 'available_on_server' to map[string]interface{}")
+	}
+
+	if modelSelector, ok := availablePlugins["ai-model-selector"]; !ok || modelSelector == nil {
+		t.Skip("Not an AI Gateway instance, skipping")
+	}
+}
+
 func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
 	if value, exists := os.LookupEnv("KONG_ADMIN_TOKEN"); exists && value != "" {
 		c := &http.Client{}

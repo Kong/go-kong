@@ -9,7 +9,7 @@ import (
 )
 
 func TestAIModelsCRUD(T *testing.T) {
-	RunWhenDBMode(T, "postgres")
+	RunWhenAIGateway(T, "<3.0.0")
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -64,8 +64,8 @@ func TestAIModelsCRUD(T *testing.T) {
 }
 
 func TestAIModelWithTags(T *testing.T) {
-	RunWhenDBMode(T, "postgres")
-	RunWhenKong(T, ">=1.1.0")
+	RunWhenAIGateway(T, "<3.0.0")
+
 	assert := assert.New(T)
 	require := require.New(T)
 
@@ -87,7 +87,7 @@ func TestAIModelWithTags(T *testing.T) {
 }
 
 func TestAIModelListEndpoint(T *testing.T) {
-	RunWhenDBMode(T, "postgres")
+	RunWhenAIGateway(T, "<3.0.0")
 
 	assert := assert.New(T)
 	require := require.New(T)
