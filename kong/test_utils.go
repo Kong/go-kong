@@ -48,6 +48,8 @@ func RunWhenKong(t *testing.T, versionRange string) {
 	if !r(currentVersion) {
 		t.Skipf("kong version %s not in range %s", currentVersion, versionRange)
 	}
+
+	SkipWhenAIGateway(t)
 }
 
 // RunWhenEnterprise skips a test if the version
@@ -128,6 +130,24 @@ func SkipWhenEnterprise(t *testing.T) {
 	}
 }
 
+// SkipWhenAIGateway skips a test if the Kong version is an AI Gateway version
+func SkipWhenAIGateway(t *testing.T) {
+	t.Helper()
+
+	client, err := NewTestClient(nil, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	info, err := client.Root(defaultCtx)
+	if err != nil {
+		t.Error(err)
+	}
+	isKongAIGateway := isKongAIGateway(info["plugins"].(map[string]interface{}))
+	if isKongAIGateway {
+		t.Skip("AI Gateway test Kong instance, skipping")
+	}
+}
+
 // Skip all the tests which were not meant for AI Gateway.
 // This implementation depends on existence of ai_model_selector plugin in the list
 // of available plugins on the test Kong instance, as well as the version being < 3.0.0
@@ -156,19 +176,21 @@ func RunWhenAIGateway(t *testing.T, versionRange string) {
 		t.Skipf("kong version %s not in range %s", version, versionRange)
 	}
 
-	pluginConfig, ok := info["plugins"].(map[string]interface{})
-	if !ok {
-		t.Errorf("failed to cast 'plugins' to map[string]interface{}")
-	}
-
-	availablePlugins, ok := pluginConfig["available_on_server"].(map[string]interface{})
-	if !ok {
-		t.Errorf("failed to cast 'available_on_server' to map[string]interface{}")
-	}
-
-	if modelSelector, ok := availablePlugins["ai-model-selector"]; !ok || modelSelector == nil {
+	isKongAIGateway := isKongAIGateway(info["plugins"].(map[string]interface{}))
+	if !isKongAIGateway {
 		t.Skip("Not an AI Gateway instance, skipping")
 	}
+}
+
+func isKongAIGateway(pluginConfig map[string]interface{}) bool {
+	availablePlugins, ok := pluginConfig["available_on_server"].(map[string]interface{})
+	if !ok {
+		return false
+	}
+	if modelSelector, ok := availablePlugins["ai-model-selector"]; !ok || modelSelector == nil {
+		return false
+	}
+	return true
 }
 
 func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {

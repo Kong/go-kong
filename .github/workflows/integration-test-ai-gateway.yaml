@@ -43,8 +43,8 @@ jobs:
           - 'traditional_compatible'
     env:
       KONG_ROUTER_FLAVOR: ${{ matrix.router_flavor }}
-      KONG_IMAGE_REPO: kong/kong-ai-gateway
-      KONG_IMAGE_TAG: '2.0.0'
+      KONG_IMAGE_REPO: kong/kong-ai-gateway-dev
+      KONG_IMAGE_TAG: '2.0.1-rc.1'
       KONG_ANONYMOUS_REPORTS: "off"
       KONG_ADMIN_TOKEN: kong
     runs-on: ubuntu-latest
