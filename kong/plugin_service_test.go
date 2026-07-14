@@ -1024,7 +1024,7 @@ func comparePlugins(T *testing.T, expected, actual []*Plugin) bool {
 }
 
 func TestPluginsWithAIModels(T *testing.T) {
-	RunWhenAIGateway(T, "<3.0.0")
+	RunWhenAIGateway(T, ">=2.0.0")
 	require := require.New(T)
 	assert := assert.New(T)
 

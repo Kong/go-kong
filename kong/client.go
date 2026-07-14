@@ -454,6 +454,31 @@ func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 	return info, nil
 }
 
+// Server returns the Server header of GET request on root of Admin API (GET / or /kong with a workspace).
+func (c *Client) Server(ctx context.Context) (string, error) {
+	endpoint := "/"
+	ws := c.Workspace()
+	if len(ws) > 0 {
+		endpoint = "/kong"
+	}
+	req, err := c.NewRequestRaw("GET", c.workspacedBaseURL(ws), endpoint, nil, nil)
+	if err != nil {
+		return "", err
+	}
+	var info map[string]interface{}
+	response, err := c.Do(ctx, req, &info)
+	if err != nil {
+		return "", err
+	}
+
+	// return the Server header as a map[string]interface{}
+	serverHeader := response.Header.Get("Server")
+	if serverHeader == "" {
+		return "", errors.New("Server header not found in response")
+	}
+	return serverHeader, nil
+}
+
 // RootJSON returns the response of GET request on the root of the Admin API
 // (GET / or /kong with a workspace) returning the raw JSON response data.
 func (c *Client) RootJSON(ctx context.Context) ([]byte, error) {

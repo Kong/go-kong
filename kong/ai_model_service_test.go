@@ -9,7 +9,7 @@ import (
 )
 
 func TestAIModelsCRUD(T *testing.T) {
-	RunWhenAIGateway(T, "<3.0.0")
+	RunWhenAIGateway(T, ">=2.0.0")
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -64,7 +64,7 @@ func TestAIModelsCRUD(T *testing.T) {
 }
 
 func TestAIModelWithTags(T *testing.T) {
-	RunWhenAIGateway(T, "<3.0.0")
+	RunWhenAIGateway(T, ">=2.0.0")
 
 	assert := assert.New(T)
 	require := require.New(T)
@@ -87,7 +87,7 @@ func TestAIModelWithTags(T *testing.T) {
 }
 
 func TestAIModelListEndpoint(T *testing.T) {
-	RunWhenAIGateway(T, "<3.0.0")
+	RunWhenAIGateway(T, ">=2.0.0")
 
 	assert := assert.New(T)
 	require := require.New(T)

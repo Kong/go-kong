@@ -78,8 +78,13 @@ func (s *AIModelService) Update(ctx context.Context, aiModel *AIModel) (*AIModel
 		return nil, fmt.Errorf("ID cannot be nil for Update operation")
 	}
 
+	method := "PATCH"
+	if s.client.isKonnect {
+		method = "PUT"
+	}
+
 	endpoint := fmt.Sprintf("/ai-models/%v", *aiModel.ID)
-	req, err := s.client.NewRequest("PATCH", endpoint, nil, aiModel)
+	req, err := s.client.NewRequest(method, endpoint, nil, aiModel)
 	if err != nil {
 		return nil, err
 	}

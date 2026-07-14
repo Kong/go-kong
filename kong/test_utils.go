@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -105,6 +106,7 @@ func RunWhenEnterprise(t *testing.T, versionRange string, required RequiredFeatu
 	if !r(currentVersion) {
 		t.Skipf("kong version %s not in range %s", version, versionRange)
 	}
+	SkipWhenAIGateway(t)
 }
 
 // SkipWhenEnterprise skips a test if the Kong version is an Enterprise version
@@ -134,23 +136,18 @@ func SkipWhenEnterprise(t *testing.T) {
 func SkipWhenAIGateway(t *testing.T) {
 	t.Helper()
 
-	client, err := NewTestClient(nil, nil)
+	IsKongAIGateway, err := IsKongAIGateway()
 	if err != nil {
 		t.Error(err)
 	}
-	info, err := client.Root(defaultCtx)
-	if err != nil {
-		t.Error(err)
-	}
-	isKongAIGateway := isKongAIGateway(info["plugins"].(map[string]interface{}))
-	if isKongAIGateway {
+	if IsKongAIGateway {
 		t.Skip("AI Gateway test Kong instance, skipping")
 	}
 }
 
 // Skip all the tests which were not meant for AI Gateway.
-// This implementation depends on existence of ai_model_selector plugin in the list
-// of available plugins on the test Kong instance, as well as the version being < 3.0.0
+// This implementation depends on Server header returned by the Admin API.
+// If the Server header contains "ai-gateway" then it is an AI Gateway instance.
 func RunWhenAIGateway(t *testing.T, versionRange string) {
 	t.Helper()
 
@@ -176,21 +173,26 @@ func RunWhenAIGateway(t *testing.T, versionRange string) {
 		t.Skipf("kong version %s not in range %s", version, versionRange)
 	}
 
-	isKongAIGateway := isKongAIGateway(info["plugins"].(map[string]interface{}))
-	if !isKongAIGateway {
+	IsKongAIGateway, err := IsKongAIGateway()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !IsKongAIGateway {
 		t.Skip("Not an AI Gateway instance, skipping")
 	}
 }
 
-func isKongAIGateway(pluginConfig map[string]interface{}) bool {
-	availablePlugins, ok := pluginConfig["available_on_server"].(map[string]interface{})
-	if !ok {
-		return false
+func IsKongAIGateway() (bool, error) {
+	client, err := NewTestClient(nil, nil)
+	if err != nil {
+		return false, err
 	}
-	if modelSelector, ok := availablePlugins["ai-model-selector"]; !ok || modelSelector == nil {
-		return false
+	server, err := client.Server(defaultCtx)
+	if err != nil {
+		return false, fmt.Errorf("failed to get server info: %w", err)
 	}
-	return true
+	return strings.Contains(server, "ai-gateway"), nil
 }
 
 func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {
