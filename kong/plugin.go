@@ -20,6 +20,7 @@ type Plugin struct {
 	Protocols     []*string       `json:"protocols,omitempty" yaml:"protocols,omitempty"`
 	Tags          []*string       `json:"tags,omitempty" yaml:"tags,omitempty"`
 	Partials      []*PartialLink  `json:"partials,omitempty" yaml:"partials,omitempty"`
+	Model         *AIModel        `json:"model,omitempty" yaml:"model,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true

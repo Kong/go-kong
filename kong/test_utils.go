@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -48,6 +49,8 @@ func RunWhenKong(t *testing.T, versionRange string) {
 	if !r(currentVersion) {
 		t.Skipf("kong version %s not in range %s", currentVersion, versionRange)
 	}
+
+	SkipWhenAIGateway(t)
 }
 
 // RunWhenEnterprise skips a test if the version
@@ -103,6 +106,7 @@ func RunWhenEnterprise(t *testing.T, versionRange string, required RequiredFeatu
 	if !r(currentVersion) {
 		t.Skipf("kong version %s not in range %s", version, versionRange)
 	}
+	SkipWhenAIGateway(t)
 }
 
 // SkipWhenEnterprise skips a test if the Kong version is an Enterprise version
@@ -126,6 +130,69 @@ func SkipWhenEnterprise(t *testing.T) {
 	if currentVersion.IsKongGatewayEnterprise() {
 		t.Skip("Enterprise test Kong instance, skipping")
 	}
+}
+
+// SkipWhenAIGateway skips a test if the Kong version is an AI Gateway version
+func SkipWhenAIGateway(t *testing.T) {
+	t.Helper()
+
+	IsKongAIGateway, err := IsKongAIGateway()
+	if err != nil {
+		t.Error(err)
+	}
+	if IsKongAIGateway {
+		t.Skip("AI Gateway test Kong instance, skipping")
+	}
+}
+
+// Skip all the tests which were not meant for AI Gateway.
+// This implementation depends on Server header returned by the Admin API.
+// If the Server header contains "ai-gateway" then it is an AI Gateway instance.
+func RunWhenAIGateway(t *testing.T, versionRange string) {
+	t.Helper()
+
+	client, err := NewTestClient(nil, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	info, err := client.Root(defaultCtx)
+	if err != nil {
+		t.Error(err)
+	}
+	version := VersionFromInfo(info)
+	currentVersion, err := ParseSemanticVersion(version)
+	if err != nil {
+		t.Error(err)
+	}
+
+	r, err := NewRange(versionRange)
+	if err != nil {
+		t.Error(err)
+	}
+	if !r(currentVersion) {
+		t.Skipf("kong version %s not in range %s", version, versionRange)
+	}
+
+	IsKongAIGateway, err := IsKongAIGateway()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !IsKongAIGateway {
+		t.Skip("Not an AI Gateway instance, skipping")
+	}
+}
+
+func IsKongAIGateway() (bool, error) {
+	client, err := NewTestClient(nil, nil)
+	if err != nil {
+		return false, err
+	}
+	server, err := client.Server(defaultCtx)
+	if err != nil {
+		return false, fmt.Errorf("failed to get server info: %w", err)
+	}
+	return strings.Contains(server, "ai-gateway"), nil
 }
 
 func NewTestClient(baseURL *string, client *http.Client) (*Client, error) {

@@ -306,6 +306,7 @@ func TestBasicAuthListMethods(T *testing.T) {
 	// check against Enterprise, as the behavior is otherwise generally the same: if the endpoint works on community,
 	// it will work on Enterprise, but you'll get different pagination for the same set of consumers
 	SkipWhenEnterprise(T)
+	SkipWhenAIGateway(T)
 	assert := assert.New(T)
 	require := require.New(T)
 

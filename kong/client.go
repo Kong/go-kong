@@ -55,6 +55,7 @@ type Client struct {
 	Certificates            AbstractCertificateService
 	Plugins                 AbstractPluginService
 	SNIs                    AbstractSNIService
+	AIModels                AbstractAIModelService
 	Upstreams               AbstractUpstreamService
 	UpstreamNodeHealth      AbstractUpstreamNodeHealthService
 	Targets                 AbstractTargetService
@@ -158,6 +159,7 @@ func NewClient(baseURL *string, client *http.Client) (*Client, error) {
 	kong.Certificates = (*CertificateService)(&kong.common)
 	kong.CACertificates = (*CACertificateService)(&kong.common)
 	kong.SNIs = (*SNIService)(&kong.common)
+	kong.AIModels = (*AIModelService)(&kong.common)
 	kong.Upstreams = (*UpstreamService)(&kong.common)
 	kong.UpstreamNodeHealth = (*UpstreamNodeHealthService)(&kong.common)
 	kong.Targets = (*TargetService)(&kong.common)
@@ -450,6 +452,31 @@ func (c *Client) Root(ctx context.Context) (map[string]interface{}, error) {
 		return nil, err
 	}
 	return info, nil
+}
+
+// Server returns the Server header of GET request on root of Admin API (GET / or /kong with a workspace).
+func (c *Client) Server(ctx context.Context) (string, error) {
+	endpoint := "/"
+	ws := c.Workspace()
+	if len(ws) > 0 {
+		endpoint = "/kong"
+	}
+	req, err := c.NewRequestRaw("GET", c.workspacedBaseURL(ws), endpoint, nil, nil)
+	if err != nil {
+		return "", err
+	}
+	var info map[string]interface{}
+	response, err := c.Do(ctx, req, &info)
+	if err != nil {
+		return "", err
+	}
+
+	// return the Server header as a map[string]interface{}
+	serverHeader := response.Header.Get("Server")
+	if serverHeader == "" {
+		return "", errors.New("Server header not found in response")
+	}
+	return serverHeader, nil
 }
 
 // RootJSON returns the response of GET request on the root of the Admin API

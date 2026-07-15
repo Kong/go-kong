@@ -1387,6 +1387,7 @@ func TestFillServiceDefaults_31000_till_31006(T *testing.T) {
 }
 
 func TestFillTargetDefaults(T *testing.T) {
+	SkipWhenAIGateway(T)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)
@@ -1442,6 +1443,7 @@ func TestFillTargetDefaults(T *testing.T) {
 }
 
 func TestFillUpstreamsDefaults(T *testing.T) {
+	SkipWhenAIGateway(T)
 	assert := assert.New(T)
 
 	client, err := NewTestClient(nil, nil)

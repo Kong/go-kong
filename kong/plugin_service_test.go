@@ -1022,3 +1022,61 @@ func comparePlugins(T *testing.T, expected, actual []*Plugin) bool {
 
 	return (compareSlices(expectedNames, actualNames))
 }
+
+func TestPluginsWithAIModels(T *testing.T) {
+	RunWhenAIGateway(T, ">=2.0.0")
+	require := require.New(T)
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	// create an ai-model
+	newAIModel, err := client.AIModels.Create(defaultCtx, &AIModel{
+		Name:  String("my-test-ai-model"),
+		Alias: String("test"),
+	})
+	require.NoError(err)
+	require.NotNil(newAIModel)
+	T.Cleanup(func() {
+		require.NoError(client.AIModels.Delete(defaultCtx, newAIModel.ID))
+	})
+
+	plugin := &Plugin{
+		Name: String("ai-proxy-advanced"),
+		Config: Configuration{
+			"llm_format": "anthropic",
+			"targets": []interface{}{
+				map[string]interface{}{
+					"route_type": "llm/v1/chat",
+
+					"logging": map[string]interface{}{
+						"log_statistics": true,
+						"log_payloads":   false,
+					},
+					"auth": map[string]interface{}{
+						"header_name":  "Authorization",
+						"header_value": "Bearer var.huggingface_api_token",
+					},
+					"model": map[string]interface{}{
+						"provider": "huggingface",
+						"name":     "meta-llama/Llama-3.3-70B-Instruct",
+					},
+				},
+			},
+		},
+		Model: &AIModel{
+			ID: newAIModel.ID,
+		},
+	}
+
+	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
+	require.NoError(err)
+	require.NotNil(createdPlugin)
+	assert.Equal(createdPlugin.Model.ID, newAIModel.ID)
+
+	T.Cleanup(func() {
+		require.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
+	})
+}

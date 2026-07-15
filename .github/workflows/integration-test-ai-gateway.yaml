@@ -1,0 +1,90 @@
+name: 'Integration Test : AI Gateway'
+
+concurrency:
+  # Run only for most recent commit in PRs but for all tags and commits on main
+  # Ref: https://docs.github.com/en/actions/using-jobs/using-concurrency
+  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+    - 'main'
+    - 'release/*'
+  pull_request:
+    branches:
+    - '*'
+
+jobs:
+  secret-available:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT || 10) }}
+    outputs:
+      ok: ${{ steps.exists.outputs.ok }}
+    runs-on: ubuntu-latest
+    env:
+      PULP_PASSWORD: ${{ secrets.PULP_PASSWORD }}
+    steps:
+    - name: check for secret availability
+      id: exists
+      run: |
+        if [ ! -z "$PULP_PASSWORD" ]; then
+          echo "ok=true" >> $GITHUB_OUTPUT
+        fi
+
+  test-ai-gateway:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT || 10) }}
+    continue-on-error: true
+    needs:
+    - secret-available
+    if: needs.secret-available.outputs.ok
+    strategy:
+      matrix:
+        kong_image_tag:
+          - '2.0.1-rc.2'
+    env:
+      KONG_ROUTER_FLAVOR: 'traditional_compatible'
+      KONG_IMAGE_REPO: kong/kong-ai-gateway-dev
+      KONG_IMAGE_TAG: ${{ matrix.kong_image_tag }}
+      KONG_ANONYMOUS_REPORTS: "off"
+      KONG_ADMIN_TOKEN: kong
+    runs-on: ubuntu-latest
+    steps:
+      # This will set KONG_LINCENSE_DATA environment variable.
+      # NOTE:
+      # This could be (?) made a shared step but for some reason it's impossible
+      # to override:
+      # Warning: Skip output 'license' since it may contain secret.
+      # on Github Actions when setting a job output.
+      - uses: Kong/kong-license@c4decf08584f84ff8fe8e7cd3c463e0192f6111b
+        id: license_step
+        with:
+          password: ${{ secrets.PULP_PASSWORD }}
+          op-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: Setup Kong
+        run: make setup-kong-ee
+      - name: Run tests
+        run: make test-coverage-enterprise
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
+        continue-on-error: true
+        with:
+          name: codecov-ai-gateway-${{ matrix.kong_image_tag }}
+          flags: ai-gateway,integration,enterprise
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+
+  test-ai-gateway-passed:
+    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT || 10) }}
+    runs-on: ubuntu-latest
+    needs: test-ai-gateway
+    if: always()
+    steps:
+    - name: Set workflow outcome
+      if: needs.test-ai-gateway.result == 'failure' || needs.test-ai-gateway.result == 'cancelled'
+      run: ${{ false }}
