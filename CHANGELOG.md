@@ -100,7 +100,7 @@
 
 ## [v0.77.0]
 
-> Release date: 2026/07/13
+> Release date: 2026/07/15
 
 - Added Client APIs (Create, Delete, Get, List, Update) 
   to interact with `AIModel`.
