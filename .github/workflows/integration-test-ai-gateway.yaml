@@ -40,7 +40,7 @@ jobs:
     strategy:
       matrix:
         kong_image_tag:
-          - '29019036398-31e991be3666685cf27cfa3858438beaf7e52dae'
+          - '2.0.1-rc.2'
     env:
       KONG_ROUTER_FLAVOR: 'traditional_compatible'
       KONG_IMAGE_REPO: kong/kong-ai-gateway-dev
