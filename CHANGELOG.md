@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.67.1](#v0671)
 - [v0.67.0](#v0670)
 - [v0.66.1](#v0661)
 - [v0.66.0](#v0660)
@@ -83,6 +84,15 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.67.1]
+
+> Release date: 2026/07/29
+
+- Fixed `FillPluginsDefaults` overwriting user-provided values of plugin
+  config fields of type `json` with `nil`. JSON object values are now
+  preserved as-is.
+  [#627](https://github.com/Kong/go-kong/pull/627)
 
 ## [v0.67.0]
 
@@ -1071,6 +1081,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.67.1]: https://github.com/Kong/go-kong/compare/v0.67.0...v0.67.1
 [v0.66.1]: https://github.com/Kong/go-kong/compare/v0.66.0...v0.66.1
 [v0.66.0]: https://github.com/Kong/go-kong/compare/v0.65.1...v0.66.0
 [v0.65.1]: https://github.com/Kong/go-kong/compare/v0.65.0...v0.65.1
