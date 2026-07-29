@@ -14,6 +14,7 @@
 - [v0.70.0](#v0700)
 - [v0.69.0](#v0690)
 - [v0.68.0](#v0680)
+- [v0.67.1](#v0671)
 - [v0.67.0](#v0670)
 - [v0.66.1](#v0661)
 - [v0.66.0](#v0660)
@@ -206,6 +207,15 @@
 
 - Added `Failover` parameter to Target
   [#574](https://github.com/Kong/go-kong/pull/574)
+
+## [v0.67.1]
+
+> Release date: 2026/07/29
+
+- Fixed `FillPluginsDefaults` overwriting user-provided values of plugin
+  config fields of type `json` with `nil`. JSON object values are now
+  preserved as-is.
+  [#627](https://github.com/Kong/go-kong/pull/627)
 
 ## [v0.67.0]
 
@@ -1208,6 +1218,7 @@ authentication credentials in Kong.
 [v0.70.0]: https://github.com/Kong/go-kong/compare/v0.69.0...v0.70.0
 [v0.69.0]: https://github.com/Kong/go-kong/compare/v0.68.0...v0.69.0
 [v0.68.0]: https://github.com/Kong/go-kong/compare/v0.67.0...v0.68.0
+[v0.67.1]: https://github.com/Kong/go-kong/compare/v0.67.0...v0.67.1
 [v0.67.0]: https://github.com/Kong/go-kong/compare/v0.66.1...v0.67.0
 [v0.66.1]: https://github.com/Kong/go-kong/compare/v0.66.0...v0.66.1
 [v0.66.0]: https://github.com/Kong/go-kong/compare/v0.65.1...v0.66.0
