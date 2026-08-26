@@ -471,12 +471,7 @@ func (c *Client) Server(ctx context.Context) (string, error) {
 		return "", err
 	}
 
-	// return the Server header as a map[string]interface{}
-	serverHeader := response.Header.Get("Server")
-	if serverHeader == "" {
-		return "", errors.New("Server header not found in response")
-	}
-	return serverHeader, nil
+	return response.Header.Get("Server"), nil
 }
 
 // RootJSON returns the response of GET request on the root of the Admin API
