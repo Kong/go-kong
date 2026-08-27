@@ -212,5 +212,5 @@ func compareSNIs(T *testing.T, expected, actual []*SNI) bool {
 		actualUsernames = append(actualUsernames, *sni.Name)
 	}
 
-	return (compareSlices(expectedUsernames, actualUsernames))
+	return compareSlices(expectedUsernames, actualUsernames)
 }

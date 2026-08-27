@@ -288,11 +288,11 @@ func compareConsumers(expected, actual []*Consumer) bool {
 		actualUsernames = append(actualUsernames, *consumer.Username)
 	}
 
-	return (compareSlices(expectedUsernames, actualUsernames))
+	return compareSlices(expectedUsernames, actualUsernames)
 }
 
 func compareSlices(expected, actual []string) bool {
 	sort.Strings(expected)
 	sort.Strings(actual)
-	return (reflect.DeepEqual(expected, actual))
+	return reflect.DeepEqual(expected, actual)
 }

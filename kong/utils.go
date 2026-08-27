@@ -727,7 +727,7 @@ func getDefaultsObj(schema Schema) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	gjsonSchema := gjson.ParseBytes((jsonSchema))
+	gjsonSchema := gjson.ParseBytes(jsonSchema)
 	defaults := flattenDefaultsSchema(gjsonSchema)
 	jsonSchemaWithDefaults, err := json.Marshal(&defaults)
 	if err != nil {
@@ -794,7 +794,7 @@ func fillConfigRecordDefaultsAutoFields(plugin *Plugin, schema map[string]interf
 	if err != nil {
 		return err
 	}
-	gjsonSchema := gjson.ParseBytes((jsonb))
+	gjsonSchema := gjson.ParseBytes(jsonb)
 	configSchema, err := getConfigSchema(gjsonSchema)
 	if err != nil {
 		return err

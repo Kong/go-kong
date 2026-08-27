@@ -265,5 +265,5 @@ func compareCACertificates(expected, actual []*CACertificate) bool {
 		actualUsernames = append(actualUsernames, *certificate.Cert)
 	}
 
-	return (compareSlices(expectedUsernames, actualUsernames))
+	return compareSlices(expectedUsernames, actualUsernames)
 }

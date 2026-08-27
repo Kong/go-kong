@@ -334,7 +334,7 @@ func compareUpstreams(T *testing.T, expected, actual []*Upstream) bool {
 		actualNames = append(actualNames, *upstream.Name)
 	}
 
-	return (compareSlices(expectedNames, actualNames))
+	return compareSlices(expectedNames, actualNames)
 }
 
 func TestUpstreamsWithHostHeader(T *testing.T) {

@@ -364,7 +364,7 @@ func compareTargets(expected, actual []*Target) bool {
 		actualUsernames = append(actualUsernames, *target.Target)
 	}
 
-	return (compareSlices(expectedUsernames, actualUsernames))
+	return compareSlices(expectedUsernames, actualUsernames)
 }
 
 func TestTargetMarkHealthy(T *testing.T) {

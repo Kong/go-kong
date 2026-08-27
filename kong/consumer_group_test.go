@@ -240,7 +240,7 @@ func compareConsumerGroups(expected, actual []*ConsumerGroup) bool {
 		actualNames = append(actualNames, *cg.Name)
 	}
 
-	return (compareSlices(expectedNames, actualNames))
+	return compareSlices(expectedNames, actualNames)
 }
 
 func TestConsumerGroupGetEndpointPreGW39(t *testing.T) {

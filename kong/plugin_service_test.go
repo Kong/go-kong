@@ -1020,7 +1020,7 @@ func comparePlugins(T *testing.T, expected, actual []*Plugin) bool {
 		actualNames = append(actualNames, *plugin.Name)
 	}
 
-	return (compareSlices(expectedNames, actualNames))
+	return compareSlices(expectedNames, actualNames)
 }
 
 func TestPluginsWithAIModels(T *testing.T) {

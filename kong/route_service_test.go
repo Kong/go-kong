@@ -343,7 +343,7 @@ func compareRoutes(T *testing.T, expected, actual []*Route) bool {
 		actualUsernames = append(actualUsernames, *route.Paths[0])
 	}
 
-	return (compareSlices(expectedUsernames, actualUsernames))
+	return compareSlices(expectedUsernames, actualUsernames)
 }
 
 func TestRouteWithHeaders(T *testing.T) {

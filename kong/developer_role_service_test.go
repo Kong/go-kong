@@ -198,5 +198,5 @@ func compareDeveloperRoles(expected, actual []*DeveloperRole) bool {
 		actualNames = append(actualNames, *role.Name)
 	}
 
-	return (compareSlices(expectedNames, actualNames))
+	return compareSlices(expectedNames, actualNames)
 }

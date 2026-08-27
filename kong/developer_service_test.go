@@ -178,5 +178,5 @@ func compareDevelopers(expected, actual []*Developer) bool {
 		actualEmails = append(actualEmails, *developer.Email)
 	}
 
-	return (compareSlices(expectedEmails, actualEmails))
+	return compareSlices(expectedEmails, actualEmails)
 }

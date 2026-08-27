@@ -508,5 +508,5 @@ func compareFilterChains(T *testing.T, expected, actual []*FilterChain) bool {
 		actualNames = append(actualNames, *filterChain.Name)
 	}
 
-	return (compareSlices(expectedNames, actualNames))
+	return compareSlices(expectedNames, actualNames)
 }

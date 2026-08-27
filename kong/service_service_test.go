@@ -199,7 +199,7 @@ func compareServices(T *testing.T, expected, actual []*Service) bool {
 		actualUsernames = append(actualUsernames, *service.Name)
 	}
 
-	return (compareSlices(expectedUsernames, actualUsernames))
+	return compareSlices(expectedUsernames, actualUsernames)
 }
 
 func TestServiceWithClientCert(T *testing.T) {

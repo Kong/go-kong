@@ -210,5 +210,5 @@ func compareRBACRoles(expected, actual []*RBACRole) bool {
 		actualNames = append(actualNames, *role.Name)
 	}
 
-	return (compareSlices(expectedNames, actualNames))
+	return compareSlices(expectedNames, actualNames)
 }
