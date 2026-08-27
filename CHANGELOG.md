@@ -8,12 +8,14 @@
 - [v0.74.0](#v0740)
 - [v0.73.1](#v0731)
 - [v0.73.0](#v0730)
+- [v0.72.2](#v0722)
 - [v0.72.1](#v0721)
 - [v0.72.0](#v0720)
 - [v0.71.0](#v0710)
 - [v0.70.0](#v0700)
 - [v0.69.0](#v0690)
 - [v0.68.0](#v0680)
+- [v0.67.1](#v0671)
 - [v0.67.0](#v0670)
 - [v0.66.1](#v0661)
 - [v0.66.0](#v0660)
@@ -161,6 +163,15 @@
   creation of `GraphqlRateLimitingCostDecoration` with specific ID.
   [#606](https://github.com/Kong/go-kong/pull/606)
 
+## [v0.72.2]
+
+> Release date: 2026/07/30
+
+- Fixed `FillPluginsDefaults` overwriting user-provided values of plugin
+  config fields of type `json` with `nil`. JSON object values are now
+  preserved as-is.
+  [#625](https://github.com/Kong/go-kong/pull/625)
+
 ## [v0.72.1]
 
 > Release date: 2026/02/02
@@ -206,6 +217,15 @@
 
 - Added `Failover` parameter to Target
   [#574](https://github.com/Kong/go-kong/pull/574)
+
+## [v0.67.1]
+
+> Release date: 2026/07/29
+
+- Fixed `FillPluginsDefaults` overwriting user-provided values of plugin
+  config fields of type `json` with `nil`. JSON object values are now
+  preserved as-is.
+  [#627](https://github.com/Kong/go-kong/pull/627)
 
 ## [v0.67.0]
 
@@ -1202,12 +1222,14 @@ authentication credentials in Kong.
 [v0.74.0]: https://github.com/Kong/go-kong/compare/v0.73.1...v0.74.0
 [v0.73.1]: https://github.com/Kong/go-kong/compare/v0.73.0...v0.73.1
 [v0.73.0]: https://github.com/Kong/go-kong/compare/v0.72.1...v0.73.0
+[v0.72.2]: https://github.com/Kong/go-kong/compare/v0.72.1...v0.72.2
 [v0.72.1]: https://github.com/Kong/go-kong/compare/v0.72.0...v0.72.1
 [v0.72.0]: https://github.com/Kong/go-kong/compare/v0.71.0...v0.72.0
 [v0.71.0]: https://github.com/Kong/go-kong/compare/v0.70.0...v0.71.0
 [v0.70.0]: https://github.com/Kong/go-kong/compare/v0.69.0...v0.70.0
 [v0.69.0]: https://github.com/Kong/go-kong/compare/v0.68.0...v0.69.0
 [v0.68.0]: https://github.com/Kong/go-kong/compare/v0.67.0...v0.68.0
+[v0.67.1]: https://github.com/Kong/go-kong/compare/v0.67.0...v0.67.1
 [v0.67.0]: https://github.com/Kong/go-kong/compare/v0.66.1...v0.67.0
 [v0.66.1]: https://github.com/Kong/go-kong/compare/v0.66.0...v0.66.1
 [v0.66.0]: https://github.com/Kong/go-kong/compare/v0.65.1...v0.66.0

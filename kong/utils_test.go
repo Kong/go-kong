@@ -2217,6 +2217,49 @@ func Test_fillConfigRecord(t *testing.T) {
 				"empty_record": map[string]any{},
 			},
 		},
+		{
+			// A field of type "json" holding a JSON object (e.g. ai-mcp-proxy's
+			// tool.request_body / tool.responses) must be preserved as-is and
+			// never overwritten with nil while filling defaults.
+			name:   "preserves json-typed field holding an object",
+			schema: gjson.Parse(fillConfigRecordTestSchemaWithJSONField),
+			config: Configuration{
+				"request_body": map[string]any{
+					"content": map[string]any{
+						"application/json": map[string]any{
+							"schema": map[string]any{"type": "object"},
+						},
+					},
+				},
+			},
+			expected: Configuration{
+				"enabled": true,
+				"request_body": map[string]any{
+					"content": map[string]any{
+						"application/json": map[string]any{
+							"schema": map[string]any{"type": "object"},
+						},
+					},
+				},
+			},
+		},
+		{
+			// A field of type "json" holding a JSON array (e.g. ai-mcp-proxy's
+			// tool.parameters) must likewise be preserved as-is.
+			name:   "preserves json-typed field holding an array",
+			schema: gjson.Parse(fillConfigRecordTestSchemaWithJSONField),
+			config: Configuration{
+				"request_body": []any{
+					map[string]any{"name": "updateHistory", "in": "query"},
+				},
+			},
+			expected: Configuration{
+				"enabled": true,
+				"request_body": []any{
+					map[string]any{"name": "updateHistory", "in": "query"},
+				},
+			},
+		},
 	}
 
 	for _, tc := range tests {
@@ -2234,6 +2277,30 @@ func Test_fillConfigRecord(t *testing.T) {
 		})
 	}
 }
+
+const fillConfigRecordTestSchemaWithJSONField = `{
+	"fields": {
+		"config": {
+			"type": "record",
+			"fields": [
+				{
+					"enabled": {
+						"type": "boolean",
+						"default": true,
+						"required": true
+					}
+				},
+				{
+					"request_body": {
+						"type": "json",
+						"required": false
+					}
+				}
+			]
+		}
+	}
+}
+`
 
 const fillConfigRecordTestSchemaWithShorthandFields = `{
 	"fields": {

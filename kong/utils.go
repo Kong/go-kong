@@ -483,6 +483,16 @@ func fillConfigRecord(
 
 		ftype := value.Get(fname + ".type")
 		frequired := value.Get(fname + ".required")
+		// A field of type "json" holds an opaque JSON value (object or array).
+		// It never needs recursive default-filling. When a value is already
+		// provided in the config, keep it as-is; otherwise the fall-through
+		// below would overwrite a JSON object (which arrives as a
+		// map[string]interface{} and is not matched by the earlier switch)
+		// with nil for lack of a default. A JSON array value is preserved by
+		// the []interface{} switch case above, but objects reach here.
+		if ftype.String() == "json" && config[fname] != nil {
+			return true
+		}
 		// Recursively fill defaults only if the field is either required or a subconfig is provided
 		if ftype.String() == "record" && (config[fname] != nil || (frequired.Exists() && frequired.Bool())) {
 			var fieldConfig Configuration
