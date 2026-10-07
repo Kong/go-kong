@@ -1,6 +1,7 @@
 # Table of Contents
 
 - [v0.79.0](#v0790)
+- [v0.78.0](#v0780)
 - [v0.77.0](#v0770)
 - [v0.76.1](#v0761)
 - [v0.76.0](#v0760)
@@ -110,6 +111,15 @@
   but intentionally omits schema defaults to prevent perpetual
   empty-bodied updates.
   [#636](https://github.com/Kong/go-kong/pull/636)
+
+## [v0.78.0]
+
+> Release date: 2026/07/30
+
+- Fixed default-filling of plugin config so that fields of type `json`
+  holding a JSON object are preserved as-is instead of being overwritten
+  with `nil`.
+  [#625](https://github.com/Kong/go-kong/pull/625)
 
 ## [v0.77.0]
 
