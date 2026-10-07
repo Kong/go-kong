@@ -1063,6 +1063,16 @@ func FillPluginsDefaultsWithPartials(plugin *Plugin, schema Schema, partials []*
 	})
 }
 
+// FillPluginImplicitDefaults normalizes plugin-level fields Kong derives outside
+// the schema's default set, intentionally omitting schema defaults to prevent
+// perpetual empty-bodied updates.
+func FillPluginImplicitDefaults(plugin *Plugin, schema map[string]any) error {
+	return FillPluginsDefaultsWithOpts(plugin, schema, FillRecordOptions{
+		FillDefaults: false,
+		FillAuto:     true,
+	})
+}
+
 // same as FillPluginsDefaults but allows configuring whether to fill defaults and auto fields.
 func FillPluginsDefaultsWithOpts(plugin *Plugin, schema map[string]interface{}, opts FillRecordOptions) error {
 	return fillConfigRecordDefaultsAutoFields(plugin, schema, nil, opts)
