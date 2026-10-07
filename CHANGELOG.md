@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.79.0](#v0790)
 - [v0.77.0](#v0770)
 - [v0.76.1](#v0761)
 - [v0.76.0](#v0760)
@@ -99,6 +100,16 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.79.0]
+
+> Release date: 2026/10/07
+
+- Added `FillPluginImplicitDefaults` to normalize plugin-level fields
+  that Kong derives outside the schema's default set. It fills auto fields
+  but intentionally omits schema defaults to prevent perpetual
+  empty-bodied updates.
+  [#636](https://github.com/Kong/go-kong/pull/636)
 
 ## [v0.77.0]
 
