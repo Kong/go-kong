@@ -25,14 +25,19 @@ jobs:
     timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT || 10) }}
     outputs:
       result: ${{ steps.result.outputs.versions }}
+      empty: ${{ steps.result.outputs.empty }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - id: result
       run: |
+        versions="$(make kong.supported-versions.oss)"
+        if [ "$(echo "$versions" | jq 'length')" -eq 0 ]; then
+          echo "empty=true" >> "$GITHUB_OUTPUT"
+        fi
         {
           echo 'versions<<EOF'
-          make kong.supported-versions.oss
+          echo "$versions"
           echo EOF
         } >> "$GITHUB_OUTPUT"
     - run: |
@@ -42,6 +47,9 @@ jobs:
     timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT || 10) }}
     needs:
     - supported-kong-versions
+    # Skip when there are no supported versions instead of evaluating an empty
+    # matrix, which GitHub Actions treats as an error (failing the job).
+    if: needs.supported-kong-versions.outputs.empty != 'true'
     strategy:
       matrix:
         # Skip explicitly to avoid spawning many unnecessary jobs,
