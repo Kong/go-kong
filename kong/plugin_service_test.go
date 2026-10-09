@@ -1007,6 +1007,41 @@ func TestPluginsWithConditionalExpressions(T *testing.T) {
 	})
 }
 
+func TestPluginsWithExpressions(T *testing.T) {
+	RunWhenEnterprise(T, ">=3.16.0", RequiredFeatures{})
+	require := require.New(T)
+	assert := assert.New(T)
+
+	client, err := NewTestClient(nil, nil)
+	require.NoError(err)
+	require.NotNil(client)
+
+	// expressions drive individual plugin config fields per request with CEL,
+	// falling back to the sibling static config value when evaluation fails.
+	expression := `consumer.tags.exists(t, t == "vip") ? 1000 : 10`
+	plugin := &Plugin{
+		Name: String("rate-limiting-advanced"),
+		Config: Configuration{
+			"limit":       []interface{}{10},
+			"window_size": []interface{}{60},
+			"strategy":    "local",
+		},
+		Expressions: PluginExpressions{
+			"limit": []interface{}{expression},
+		},
+	}
+
+	createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
+	require.NoError(err)
+	require.NotNil(createdPlugin)
+	require.NotNil(createdPlugin.Expressions)
+	assert.Equal([]interface{}{expression}, createdPlugin.Expressions["limit"])
+
+	T.Cleanup(func() {
+		require.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
+	})
+}
+
 func comparePlugins(T *testing.T, expected, actual []*Plugin) bool {
 	var expectedNames, actualNames []string
 	for _, plugin := range expected {
