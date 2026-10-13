@@ -1007,6 +1007,119 @@ func TestPluginsWithConditionalExpressions(T *testing.T) {
 	})
 }
 
+func TestPluginsWithExpressions(T *testing.T) {
+	RunWhenEnterprise(T, ">=3.16.0", RequiredFeatures{})
+
+	T.Run("rate-limiting-advanced expressible array field", func(T *testing.T) {
+		require := require.New(T)
+		assert := assert.New(T)
+
+		client, err := NewTestClient(nil, nil)
+		require.NoError(err)
+		require.NotNil(client)
+
+		// expressions drive individual plugin config fields per request with CEL,
+		// falling back to the sibling static config value when evaluation fails.
+		// For array fields such as limit, each element gets its own expression.
+		expression := `consumer.tags.exists(t, t == "vip") ? 1000 : 10`
+		plugin := &Plugin{
+			Name: String("rate-limiting-advanced"),
+			Config: Configuration{
+				"limit":       []interface{}{10},
+				"window_size": []interface{}{60},
+				"strategy":    "local",
+			},
+			Expressions: PluginExpressions{
+				"limit": []interface{}{expression},
+			},
+		}
+
+		createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
+		require.NoError(err)
+		require.NotNil(createdPlugin)
+		require.NotNil(createdPlugin.Expressions)
+		assert.Equal([]interface{}{expression}, createdPlugin.Expressions["limit"])
+
+		T.Cleanup(func() {
+			require.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
+		})
+	})
+
+	T.Run("rate-limiting expressible scalar fields", func(T *testing.T) {
+		require := require.New(T)
+		assert := assert.New(T)
+
+		client, err := NewTestClient(nil, nil)
+		require.NoError(err)
+		require.NotNil(client)
+
+		// rate-limiting exposes scalar expressible fields
+		// (second, minute, hour, day, month, year, custom_key), each
+		// paired with its static fallback value in config.
+		minuteExpression := `consumer.tags.exists(t, t == "vip") ? 1000 : 10`
+		dayExpression := `consumer.tags.exists(t, t == "vip") ? 10000 : 1000`
+		plugin := &Plugin{
+			Name: String("rate-limiting"),
+			Config: Configuration{
+				"policy": "local",
+				"minute": 10,
+				"day":    1000,
+			},
+			Expressions: PluginExpressions{
+				"minute": minuteExpression,
+				"day":    dayExpression,
+			},
+		}
+
+		createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
+		require.NoError(err)
+		require.NotNil(createdPlugin)
+		require.NotNil(createdPlugin.Expressions)
+		assert.Equal(minuteExpression, createdPlugin.Expressions["minute"])
+		assert.Equal(dayExpression, createdPlugin.Expressions["day"])
+		assert.InEpsilon(10, createdPlugin.Config["minute"], 0.1)
+		assert.InEpsilon(1000, createdPlugin.Config["day"], 0.1)
+
+		T.Cleanup(func() {
+			require.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
+		})
+	})
+
+	T.Run("acl direct CEL fields", func(T *testing.T) {
+		require := require.New(T)
+		assert := assert.New(T)
+
+		client, err := NewTestClient(nil, nil)
+		require.NoError(err)
+		require.NotNil(client)
+
+		// ACL doesn't use the top-level expressions block: its
+		// allow_when/deny_when fields are direct CEL fields inside
+		// config, mutually exclusive with the static allow/deny lists.
+		allowWhen := `has(principal.metadata.tier) && principal.metadata.tier == "partner"`
+		plugin := &Plugin{
+			Name: String("acl"),
+			Config: Configuration{
+				"allow_when": []interface{}{allowWhen},
+			},
+		}
+
+		createdPlugin, err := client.Plugins.Create(defaultCtx, plugin)
+		require.NoError(err)
+		require.NotNil(createdPlugin)
+		assert.Nil(createdPlugin.Expressions)
+
+		allowWhenConfig, ok := createdPlugin.Config["allow_when"].([]interface{})
+		require.True(ok)
+		require.Len(allowWhenConfig, 1)
+		assert.Equal(allowWhen, allowWhenConfig[0])
+
+		T.Cleanup(func() {
+			require.NoError(client.Plugins.Delete(defaultCtx, createdPlugin.ID))
+		})
+	})
+}
+
 func comparePlugins(T *testing.T, expected, actual []*Plugin) bool {
 	var expectedNames, actualNames []string
 	for _, plugin := range expected {

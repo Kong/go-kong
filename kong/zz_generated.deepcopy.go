@@ -2126,6 +2126,7 @@ func (in *Plugin) DeepCopyInto(out *Plugin) {
 		*out = new(AIModel)
 		(*in).DeepCopyInto(*out)
 	}
+	out.Expressions = in.Expressions.DeepCopy()
 	return
 }
 
