@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.80.0](#v0800)
 - [v0.79.0](#v0790)
 - [v0.78.0](#v0780)
 - [v0.77.0](#v0770)
@@ -101,6 +102,14 @@
 - [0.3.0](#030)
 - [0.2.0](#020)
 - [0.1.0](#010)
+
+## [v0.80.0]
+
+> Release date: 2026/10/13
+
+- Added `Expressions` field to `Plugin` to support plugin expressions,
+  backed by a new `PluginExpressions` type.
+  [#639](https://github.com/Kong/go-kong/pull/639)
 
 ## [v0.79.0]
 
@@ -1235,6 +1244,7 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.80.0]: https://github.com/Kong/go-kong/compare/v0.79.0...v0.80.0
 [v0.79.0]: https://github.com/Kong/go-kong/compare/v0.78.0...v0.79.0
 [v0.78.0]: https://github.com/Kong/go-kong/compare/v0.77.0...v0.78.0
 [v0.77.0]: https://github.com/Kong/go-kong/compare/v0.76.1...v0.77.0
