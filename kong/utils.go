@@ -534,8 +534,12 @@ func fillConfigRecord(
 		if ftype.String() == "array" || ftype.String() == "set" {
 			if value.Get(fname).Get("elements.type").String() == "record" {
 				if config[fname] != nil {
-					// Check sub config is of type array and it is non-empty
-					if subConfigArray, ok := config[fname].([]interface{}); ok && len(subConfigArray) > 0 {
+					if subConfigArray, ok := config[fname].([]interface{}); ok {
+						// An empty array is an explicit value: keep it, the field's
+						// default must not replace it.
+						if len(subConfigArray) == 0 {
+							return true
+						}
 						processedSubConfigArray := make([]interface{}, len(subConfigArray))
 
 						for i, configRecord := range subConfigArray {

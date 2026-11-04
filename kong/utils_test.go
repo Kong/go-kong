@@ -2716,11 +2716,27 @@ func Test_FillPluginsDefaults(t *testing.T) {
 			},
 		},
 		{
-			name: "fills defaults when empty array of records in config",
+			// An empty array is an explicit value: the field default must not replace
+			// it. See Test_FillPluginsDefaults_EmptySetOfRecords.
+			name: "keeps empty array of records in config",
 			plugin: &Plugin{
 				Config: Configuration{
 					"metrics": []any{},
 				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"host":    "localhost",
+					"port":    float64(8125),
+					"prefix":  "kong",
+					"metrics": []any{},
+				},
+			},
+		},
+		{
+			name: "fills defaults when array of records in config is absent",
+			plugin: &Plugin{
+				Config: Configuration{},
 			},
 			expected: &Plugin{
 				Config: Configuration{
@@ -2928,7 +2944,7 @@ func Test_FillPluginsDefaults_SetType(t *testing.T) {
 			},
 		},
 		{
-			name: "fills defaults when empty set of records in config",
+			name: "keeps empty set of records in config",
 			plugin: &Plugin{
 				Config: Configuration{
 					"bootstrap_servers": []any{},
@@ -2936,12 +2952,7 @@ func Test_FillPluginsDefaults_SetType(t *testing.T) {
 			},
 			expected: &Plugin{
 				Config: Configuration{
-					"bootstrap_servers": []any{
-						map[string]any{
-							"host": "127.0.0.1",
-							"port": float64(42),
-						},
-					},
+					"bootstrap_servers": []any{},
 				},
 			},
 		},
@@ -2978,6 +2989,150 @@ func Test_FillPluginsDefaults_SetType(t *testing.T) {
 			}
 		})
 	}
+}
+
+// Schema shape of Kong's key-auth plugin around Kong Identity: a set of records
+// whose field default is exactly what the plugin's own validation rejects when
+// principals are enabled. See https://konghq.atlassian.net/browse/FTI-8081.
+const keyAuthIdentityRealmsSchema = `{
+	"fields": [{
+		"config": {
+			"type": "record",
+			"fields": [{
+				"identity_realms": {
+					"type": "set",
+					"elements": {
+						"type": "record",
+						"fields": [
+							{ "scope": { "type": "string" } },
+							{ "id": { "type": "string" } },
+							{ "region": { "type": "string" } }
+						]
+					},
+					"default": [ { "scope": "cp", "region": null, "id": null } ]
+				}
+			}]
+		}
+	}]
+}`
+
+func Test_FillPluginsDefaults_EmptySetOfRecords(t *testing.T) {
+	defaultRealms := []any{
+		map[string]any{
+			"scope":  "cp",
+			"id":     nil,
+			"region": nil,
+		},
+	}
+
+	tests := []struct {
+		name     string
+		plugin   *Plugin
+		expected *Plugin
+	}{
+		{
+			// Putting the default back makes principals.enabled invalid, which the
+			// plugin rejects after the config has left the client.
+			name: "keeps an explicitly provided empty set of records",
+			plugin: &Plugin{
+				Config: Configuration{
+					"identity_realms": []any{},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"identity_realms": []any{},
+				},
+			},
+		},
+		{
+			name: "fills the field default when the field is absent",
+			plugin: &Plugin{
+				Config: Configuration{},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"identity_realms": defaultRealms,
+				},
+			},
+		},
+		{
+			name: "keeps an explicitly provided null",
+			plugin: &Plugin{
+				Config: Configuration{
+					"identity_realms": nil,
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"identity_realms": nil,
+				},
+			},
+		},
+		{
+			name: "fills defaults for all missing fields of a provided record",
+			plugin: &Plugin{
+				Config: Configuration{
+					"identity_realms": []any{
+						map[string]any{"scope": "remote", "id": "realm-id"},
+					},
+				},
+			},
+			expected: &Plugin{
+				Config: Configuration{
+					"identity_realms": []any{
+						Configuration{"scope": "remote", "id": "realm-id", "region": nil},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := tc.plugin
+
+			var fullSchema map[string]interface{}
+			err := json.Unmarshal([]byte(keyAuthIdentityRealmsSchema), &fullSchema)
+			require.NoError(t, err)
+			require.NotNil(t, fullSchema)
+
+			require.NoError(t, FillPluginsDefaults(plugin, fullSchema))
+			opts := cmpopts.IgnoreFields(*plugin, "Protocols", "Enabled")
+			if diff := cmp.Diff(plugin, tc.expected, opts); diff != "" {
+				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+// The same value is also lost when the field carries no default: the
+// fall-through sets an explicit nil.
+func Test_FillPluginsDefaults_EmptySetOfRecordsWithoutFieldDefault(t *testing.T) {
+	const schemaJSON = `{
+		"fields": [{
+			"config": {
+				"type": "record",
+				"fields": [{
+					"identity_realms": {
+						"type": "set",
+						"elements": {
+							"type": "record",
+							"fields": [ { "scope": { "type": "string" } } ]
+						}
+					}
+				}]
+			}
+		}]
+	}`
+
+	var schema map[string]any
+	require.NoError(t, json.Unmarshal([]byte(schemaJSON), &schema))
+
+	plugin := &Plugin{Config: Configuration{"identity_realms": []any{}}}
+	require.NoError(t, FillPluginsDefaults(plugin, schema))
+
+	require.Equal(t, []any{}, plugin.Config["identity_realms"])
 }
 
 func Test_FillPluginsDefaults_Acme(t *testing.T) {
