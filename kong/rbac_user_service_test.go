@@ -58,6 +58,9 @@ func TestRBACUserServiceWorkspace(T *testing.T) {
 	createdWorkspace, err := client.Workspaces.Create(defaultCtx, &workspace)
 	require.NoError(T, err)
 	assert.NotNil(createdWorkspace)
+	T.Cleanup(func() {
+		_ = client.Workspaces.Delete(defaultCtx, createdWorkspace.Name)
+	})
 	// Setup Workspace aware client
 	url, err := url.Parse(defaultBaseURL)
 	require.NoError(T, err)

@@ -99,6 +99,10 @@ func TestWorkspaceServiceList(T *testing.T) {
 	require.NoError(err)
 	createdWorkspaceB, err := client.Workspaces.Create(defaultCtx, workspaceB)
 	require.NoError(err)
+	T.Cleanup(func() {
+		_ = client.Workspaces.Delete(defaultCtx, createdWorkspaceA.ID)
+		_ = client.Workspaces.Delete(defaultCtx, createdWorkspaceB.ID)
+	})
 	// paged List
 	page1, next, err := client.Workspaces.List(defaultCtx, &ListOpt{Size: 1})
 	require.NoError(err)
@@ -142,6 +146,10 @@ func TestWorkspaceServiceListAll(T *testing.T) {
 	require.NoError(err)
 	createdWorkspaceB, err := client.Workspaces.Create(defaultCtx, workspaceB)
 	require.NoError(err)
+	T.Cleanup(func() {
+		_ = client.Workspaces.Delete(defaultCtx, createdWorkspaceA.ID)
+		_ = client.Workspaces.Delete(defaultCtx, createdWorkspaceB.ID)
+	})
 
 	workspaces, err := client.Workspaces.ListAll(defaultCtx)
 	require.NoError(err)
