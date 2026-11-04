@@ -28,12 +28,21 @@ func TestAdminService(T *testing.T) {
 	createdAdmin, err := client.Admins.Create(defaultCtx, admin)
 	require.NoError(T, err)
 	assert.NotNil(createdAdmin)
+	// Deleting at the end of the test body is not enough: a failing assertion
+	// aborts the test and leaves the admin behind, which then breaks every other
+	// test using the same username.
+	T.Cleanup(func() {
+		_ = client.Admins.Delete(defaultCtx, createdAdmin.ID)
+	})
 
 	admin, err = client.Admins.Get(defaultCtx, createdAdmin.ID)
 	require.NoError(T, err)
 	assert.NotNil(admin)
 
 	admin.CustomID = String("admin321")
+	// Kong 3.17 rejects a PATCH carrying 'status': the admin registration flow
+	// owns that transition.
+	admin.Status = nil
 	admin, err = client.Admins.Update(defaultCtx, admin)
 	require.NoError(T, err)
 	assert.NotNil(admin)
@@ -58,6 +67,9 @@ func TestAdminServiceWorkspace(T *testing.T) {
 	createdWorkspace, err := client.Workspaces.Create(defaultCtx, &workspace)
 	require.NoError(T, err)
 	assert.NotNil(createdWorkspace)
+	T.Cleanup(func() {
+		_ = client.Workspaces.Delete(defaultCtx, createdWorkspace.Name)
+	})
 
 	workspaceClient, err := NewTestClient(String(path.Join(defaultBaseURL, *createdWorkspace.Name)), nil)
 	require.NoError(T, err)
@@ -73,12 +85,18 @@ func TestAdminServiceWorkspace(T *testing.T) {
 	createdAdmin, err := client.Admins.Create(defaultCtx, admin)
 	require.NoError(T, err)
 	assert.NotNil(createdAdmin)
+	T.Cleanup(func() {
+		_ = client.Admins.Delete(defaultCtx, createdAdmin.ID)
+	})
 
 	admin, err = client.Admins.Get(defaultCtx, createdAdmin.ID)
 	require.NoError(T, err)
 	assert.NotNil(admin)
 
 	admin.CustomID = String("admin321")
+	// Kong 3.17 rejects a PATCH carrying 'status': the admin registration flow
+	// owns that transition.
+	admin.Status = nil
 	admin, err = client.Admins.Update(defaultCtx, admin)
 	require.NoError(T, err)
 	assert.NotNil(admin)
@@ -115,9 +133,15 @@ func TestAdminServiceList(T *testing.T) {
 	createdAdmin1, err := client.Admins.Create(defaultCtx, admin1)
 	require.NoError(T, err)
 	assert.NotNil(createdAdmin1)
+	T.Cleanup(func() {
+		_ = client.Admins.Delete(defaultCtx, createdAdmin1.ID)
+	})
 	createdAdmin2, err := client.Admins.Create(defaultCtx, admin2)
 	require.NoError(T, err)
 	assert.NotNil(createdAdmin2)
+	T.Cleanup(func() {
+		_ = client.Admins.Delete(defaultCtx, createdAdmin2.ID)
+	})
 
 	admins, _, err := client.Admins.List(defaultCtx, nil)
 	require.NoError(T, err)
@@ -159,6 +183,10 @@ func TestAdminServiceRegisterCredentials(T *testing.T) {
 	admin, err = client.Admins.Invite(defaultCtx, admin)
 	require.NoError(T, err)
 	assert.NotNil(admin)
+	invitedAdmin := admin
+	T.Cleanup(func() {
+		_ = client.Admins.Delete(defaultCtx, invitedAdmin.ID)
+	})
 
 	// Generate a new registration URL for the Admin
 	admin, err = client.Admins.GenerateRegisterURL(defaultCtx, admin.ID)
