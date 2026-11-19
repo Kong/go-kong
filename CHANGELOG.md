@@ -1,7 +1,9 @@
 # Table of Contents
 
+- [v0.80.1](#v0801)
 - [v0.80.0](#v0800)
 - [v0.79.0](#v0790)
+- [v0.78.1](#v0781)
 - [v0.78.0](#v0780)
 - [v0.77.0](#v0770)
 - [v0.76.1](#v0761)
@@ -103,6 +105,15 @@
 - [0.2.0](#020)
 - [0.1.0](#010)
 
+## [v0.80.1]
+
+> Release date: 2026/11/19
+
+- Fixed default-filling of plugin config so that an explicitly provided
+  empty array of records is kept instead of being replaced with the
+  field's default.
+  [#643](https://github.com/Kong/go-kong/pull/643)
+
 ## [v0.80.0]
 
 > Release date: 2026/10/13
@@ -120,6 +131,15 @@
   but intentionally omits schema defaults to prevent perpetual
   empty-bodied updates.
   [#636](https://github.com/Kong/go-kong/pull/636)
+
+## [v0.78.1]
+
+> Release date: 2026/11/19
+
+- Fixed default-filling of plugin config so that an explicitly provided
+  empty array of records is kept instead of being replaced with the
+  field's default. Backport of #643 to the v0.78 line.
+  [#645](https://github.com/Kong/go-kong/pull/645)
 
 ## [v0.78.0]
 
@@ -1244,8 +1264,10 @@ authentication credentials in Kong.
   releases of Kong since every release of Kong is introducing breaking changes
   to the Admin API.
 
+[v0.80.1]: https://github.com/Kong/go-kong/compare/v0.80.0...v0.80.1
 [v0.80.0]: https://github.com/Kong/go-kong/compare/v0.79.0...v0.80.0
 [v0.79.0]: https://github.com/Kong/go-kong/compare/v0.78.0...v0.79.0
+[v0.78.1]: https://github.com/Kong/go-kong/compare/v0.78.0...v0.78.1
 [v0.78.0]: https://github.com/Kong/go-kong/compare/v0.77.0...v0.78.0
 [v0.77.0]: https://github.com/Kong/go-kong/compare/v0.76.1...v0.77.0
 [v0.76.1]: https://github.com/Kong/go-kong/compare/v0.76.0...v0.76.1
