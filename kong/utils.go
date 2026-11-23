@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/imdario/mergo"
+	"dario.cat/mergo"
 	"github.com/tidwall/gjson"
 )
 

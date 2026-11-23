@@ -8,7 +8,6 @@ trap "rm -f kong/${GENERATED_FILE_NEW}" EXIT
 
 deepcopy-gen \
   -v 2 \
-  --bounding-dirs kong \
   --output-file ${GENERATED_FILE_NEW} \
   --go-header-file hack/header-template.go.tmpl \
   ./kong
