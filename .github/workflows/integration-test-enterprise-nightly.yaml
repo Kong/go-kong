@@ -57,7 +57,7 @@ jobs:
           password: ${{ secrets.PULP_PASSWORD }}
           op-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup go
         uses: actions/setup-go@v6
         with:
